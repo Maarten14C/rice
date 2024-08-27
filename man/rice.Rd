@@ -5,7 +5,7 @@
 \alias{rice}
 \title{Radiocarbon Calibration Equations}
 \description{
-Provides functions for the calibration of radiocarbon dates, as well as options to calculate different radiocarbon realms (C14 age, F14C, pMC, D14C) and estimating the effects of contamination. This package accompanies the data package rintcal.
+Provides functions for the calibration of radiocarbon dates, as well as options to calculate different radiocarbon realms (C14 age, F14C, pMC, D14C) and estimating the effects of contamination. The methods follow long-established recommendations such as Stuiver and Polach (1977) \doi{10.1017/S0033822200003672} and Reimer et al. (2004) \doi{10.1017/S0033822200033154}. This package accompanies the data package 'rintcal'.
 
 Provides equations for the calibration of radiocarbon dates, as well as to calculate different radiocarbon realms (C14 age, F14C, pMC, D14C) and estimating the effects of contamination. This package accompanies the data package rintcal.
 }

@@ -1,4 +1,4 @@
-# functions copied and adapted from the clam R package (by the same author and he agreed)
+# functions copied and adapted from the rintcal R package (by the same author and he agreed)
 
 
 #' @name caldist
@@ -230,32 +230,59 @@ l.calib <- function(yr, y, er, cc=rintcal::ccurve(1,FALSE), normal=TRUE, t.a=3, 
 
 #' @name younger
 #' @title Find the probability of a calibrated date being of a certain age or younger than it
-#' @description Find the probability that a sample is of a certain calendar age or younger than it. It takes the entire calibrated distribution and finds the proportion of the distribution to the right of year x.
-#' @details The function can only deal with one date at a time
+#' @description Find the probability that a sample is of a certain calendar age x or younger than it, by calculating the proportion of the calibrated distribution up to and including x (i.e., summing the calibrated distribution up to year x).
+#' @details The function can only deal with one date at a time.
 #' @return The probability of a date being of a certain calendar age or younger than it.
 #' @param x The year of interest, in cal BP by default.
 #' @param y The radiocarbon date's mean.
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
+#' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param threshold Report only values above a threshold. Defaults to \code{threshold=0}.
 #' @author Maarten Blaauw
 #' @examples
 #' younger(2800, 2450, 20)
 #' younger(2400, 2450, 20)
 #' calibrate(160, 20, BCAD=TRUE)
 #' younger(1750, 160, 20, BCAD=TRUE)
-#' # we can also use this to calculate older-than probabilities:
-#' older <- 1 - younger(2400, 2450, 20)
-#' older
 #' @export
-younger <- function(x, y, er, cc=1, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE) {
+younger <- function(x, y, er, cc=1, postbomb=FALSE, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
   if(length(y)>1 || length(er) >1)
     stop("I can only deal with one date at a time")
-  cal <- rintcal::caldist(y, er, cc, normal=normal, t.a=t.a, t.b=t.b, BCAD=BCAD)
-  return(approx(cal[,1], cumsum(cal[,2])/sum(cal[,2]), x, rule=2)$y)
+  cal <- caldist(y, er, cc, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, BCAD=BCAD, threshold=threshold)
+  prob <- approx(cal[,1], cumsum(cal[,2])/sum(cal[,2]), x, rule=2)$y # cumulative prob
+  return(prob)
 }
 
 
+
+#' @name older
+#' @title Find the probability of a calibrated date being older than a certain age
+#' @description Find the probability of a calibrated date being older than an age x.
+#' @description Find the probability that a sample is older than a certain calendar age x, by calculating the proportion of the calibrated distribution 'after' x (i.e., 1 - the summed calibrated distribution up to year x).
+#' @details The function can only deal with one date at a time.
+#' @return The probability of a date being older than a certain calendar age.
+#' @param x The year of interest, in cal BP by default.
+#' @param y The radiocarbon date's mean.
+#' @param er The radiocarbon date's lab error.
+#' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
+#' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
+#' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
+#' @param t.a Value a of the t distribution (defaults to 3).
+#' @param t.b Value b of the t distribution (defaults to 4).
+#' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param threshold Report only values above a threshold. Defaults to \code{threshold=0}.
+#' @author Maarten Blaauw
+#' @examples
+#' older(2800, 2450, 20)
+#' older(2400, 2450, 20)
+#' calibrate(160, 20, BCAD=TRUE)
+#' older(1750, 160, 20, BCAD=TRUE)
+#' @export
+older <- function(x, y, er, cc=1, postbomb=FALSE, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+  return(1 - younger(x, y, er, cc, postbomb=postbomb, normal, t.a, t.b, BCAD, threshold=threshold))
+}

@@ -9,6 +9,7 @@ calibrate(
   error = 50,
   cc = 1,
   postbomb = FALSE,
+  bombalert = TRUE,
   reservoir = 0,
   prob = 0.95,
   BCAD = FALSE,
@@ -54,6 +55,8 @@ calibrate(
 \item{cc}{Calibration curve for C-14 dates (1, 2, 3, or 4, or, e.g., "IntCal20", "Marine20", "SHCal20", "nh1", "sh3", or "mixed").}
 
 \item{postbomb}{Whether or not this is a postbomb age. Defaults to FALSE.}
+
+\item{bombalert}{Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.}
 
 \item{reservoir}{Reservoir age, or reservoir age and age offset.}
 

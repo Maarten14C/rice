@@ -185,6 +185,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 #' @param error Error of the uncalibrated C-14 age.
 #' @param cc Calibration curve for C-14 dates (1, 2, 3, or 4, or, e.g., "IntCal20", "Marine20", "SHCal20", "nh1", "sh3", or "mixed").
 #' @param postbomb Whether or not this is a postbomb age. Defaults to FALSE. 
+#' @param bombalert Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.
 #' @param reservoir Reservoir age, or reservoir age and age offset.
 #' @param prob Probability confidence intervals (between 0 and 1).
 #' @param BCAD Use BC/AD or cal BP scale (default cal BP).
@@ -230,23 +231,25 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 #' calibrate(age=130, error=10, BCAD=TRUE)
 #' calibrate(4450, 40, reservoir=c(100, 50))
 #' @export
-calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.2), dist.fill=rgb(0,0,0,0.2), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=FALSE, yr.steps=FALSE, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, ...) {
+calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.2), dist.fill=rgb(0,0,0,0.2), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=FALSE, yr.steps=FALSE, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, ...) {
   # read the data
   age <- age-reservoir[1]
   if(length(reservoir) > 1)
     error <- sqrt(error^2 + reservoir[2]^2)
   youngest.cc <- c(95,603,118,0,0) # youngest C14 ages of IntCal20, Marine20, SHCal20, and extra entries
-  if((age - (3*error)) < youngest.cc[cc]) { # at or beyond younger IntCal limit 
-    if(!postbomb) # note that there are no postbomb curves for Marine20
-      if(!(cc %in% c("nh1", "nh2", "nh3", "sh1-2", "sh3")))
-        stop("This appears to be a postbomb age (or is close to being one). Please provide a postbomb curve")
-    Cc <- rintcal::glue.ccurves(cc, postbomb, cc.dir) # doesn't do resample
+  if(bombalert) {
+    if((age - (3*error)) < youngest.cc[cc]) { # at or beyond younger IntCal limit 
+      if(!postbomb) # note that there are no postbomb curves for Marine20
+        if(!(cc %in% c("nh1", "nh2", "nh3", "sh1-2", "sh3")))
+          stop("This appears to be a postbomb age (or is close to being one). Please provide a postbomb curve")
+      Cc <- rintcal::glue.ccurves(cc, postbomb, cc.dir) # doesn't do resample
   } else {
       if(postbomb > 0) # postbomb has been defined
         Cc <- rintcal::glue.ccurves(cc, postbomb, cc.dir) else
           Cc <- rintcal::ccurve(cc, postbomb=FALSE, cc.dir)
     }
-
+  } else
+    Cc <- rintcal::ccurve(cc, postbomb=FALSE, cc.dir)
   cc.cal <- 1
   if(BCAD) {
     Cc[,4] <- 1950 - Cc[,1]
