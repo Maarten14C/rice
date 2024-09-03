@@ -36,6 +36,19 @@ bibentry(
     textVersion = "Reimer, R., Brown, T.A., Reimer, R.W., 2004. Discussion: Reporting and calibration of post-bomb 14C Data. Radiocarbon 46, 1299-1304. doi:10.1017/S0033822200033154"
   )
 
+  reimerreimer <- bibentry(
+     bibtype = "Article",
+    title = "A marine reservoir correction database and on-line interface",
+    author = c(person("Paula", "Reimer"),
+               person("Ron W.", "Reimer")),
+    journal = "Radiocarbon",
+    year = "2001",
+    volume = "43",
+    pages = "461-463",
+    doi = "10.1017/S0033822200038339",
+    textVersion = "Reimer, P.J., Reimer, R.W., 2001. A marine reservoir correction database and on-line interface. Radiocarbon 43:461-463. doi:10.1017/S0033822200038339"
+  )
+
   stuiverpolach <- bibentry(
     bibtype = "Article",
     title = "Discussion: Reporting of 14C Data",

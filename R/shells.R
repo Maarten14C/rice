@@ -1,0 +1,29 @@
+#' shells Data
+#'
+#' A dataset containing the deltaR values and accompanying data from the marine database
+#'
+#' @docType data
+#' @format A data frame with 1968 rows and 15 variables.
+#' \describe{
+#'   \item{lon}{Longitude of the datapoint}
+#'   \item{lat}{Latitude of the datapoint}
+#'   \item{no}{Map or ID number of the datapoint}
+#'   \item{taxonN}{Taxon number of the datapoint}
+#'   \item{dR}{calculated deltaR of the datapoint}
+#'   \item{dSTD}{uncertainty of the deltaR of the datapoint}
+#'   \item{collected}{Collection year for the datapoint}
+#'   \item{res}{Reservoir effect of the datapoint}
+#'   \item{res.error}{Uncertainty of the reservoir effect of the datapoint}
+#'   \item{C14}{Radiocarbon age of the datapoint}
+#'   \item{er}{Error of the radiocarbon age of the datapoint}
+#'   \item{lab}{Lab code of the datapoint}
+#'   \item{ref}{Reference for the datapoint}
+#'   \item{taxon}{Taxon of the datapoint}
+#'   \item{feeding}{Feeding ecology of the datapoint (if known)}
+#' }
+#' @source Data downloaded from calib.org/marine
+#' @examples
+#' data(shells)
+#' head(shells)
+"shells"
+

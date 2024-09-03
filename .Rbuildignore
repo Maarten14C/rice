@@ -4,3 +4,5 @@
 ^Meta$
 ^README.Md
 ^CRAN-SUBMISSION$
+^data-raw$
+
