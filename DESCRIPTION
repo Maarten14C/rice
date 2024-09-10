@@ -1,6 +1,6 @@
 Package: rice
 Type: Package
-Title: Radiocarbon Calibration Equations
+Title: Radiocarbon Equations
 Version: 0.1.2
 Date: 2024-09-03
 Author: Maarten Blaauw [aut, cre] (<https://orcid.org/0000-0002-5680-1515>)
@@ -11,7 +11,7 @@ Description: Provides functions for the calibration of radiocarbon dates, as wel
 License: GPL (>= 2)
 Encoding: UTF-8
 RoxygenNote: 7.3.2
-Imports: rintcal (>= 0.6.4), ggplot2, rlang, rnaturalearth, rnaturalearthdata
+Imports: rintcal (>= 1.0.0), rlang, ggplot2, rnaturalearth, rnaturalearthdata
 Suggests: knitr, rmarkdown, utf8, remotes
 Depends: R (>= 3.5.0)
 VignetteBuilder: knitr

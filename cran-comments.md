@@ -4,6 +4,6 @@
 * win-builder (devel and release)
 
 ## R CMD check results
-There were no ERRORs or WARNINGs. The NOTE about possibly misspelled words in DESCRIPTION is incorrect - these are spelled correctly.
+There were no ERRORs or WARNINGs. The NOTE about UTF-8 strings relates to references to papers containing authors with non-ASCII characters. 
 
-As per request, references have now been added in the DESCRIPTION file (and also in the vignette), and package names are now written in single quotes.
+

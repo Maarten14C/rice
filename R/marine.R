@@ -1,4 +1,40 @@
 
+# internal function to look for map data
+ocean.map <- function(S, W, N, E, scale=c(), ocean.col="aliceblue", land.col=rgb(0, 0.5, 0, 0.6)) {
+  # for large maps, rnaturalearth calls rnaturalearthhires, but since the latter is not a CRAN package, it'll have to be downloaded from github
+  if(length(scale) == 0)
+    if("rnaturalearthhires" %in% installed.packages())
+      world <- rnaturalearth::ne_countries(scale="large", returnclass="sf") else {
+        message("using a medium-scale map. If you prefer a higher-resolution map, please download rnaturalearthhires using the command\nremotes::install_github('ropensci/rnaturalearthhires')")
+        world <- rnaturalearthdata::countries50
+      } else
+    if(scale == "small")
+      world <- rnaturalearth::ne_countries(scale="small", returnclass="sf") else
+      if(scale == "medium")
+        world <- rnaturalearthdata::countries50 else
+        if(scale == "large")
+          if(!"rnaturalearthhires" %in% installed.packages()) {
+            message("using a medium-scale map. If you prefer a higher-resolution map, please download rnaturalearthhires using the command\nremotes::install_github('ropensci/rnaturalearthhires')")
+            world <- rnaturalearthdata::countries50
+          } else
+              world <- rnaturalearth::ne_countries(scale="large", returnclass="sf")
+
+  # ggOceanMaps works well locally but checks cause problems
+  # p <- basemap( limits=c(W, E, S, N), crs=4326, bathymetry=TRUE, bathy.alpha=0.5, legends=FALSE) +
+  #   coord_sf(xlim = c(W, E), ylim = c(S, N), crs = sf::st_crs(4326))
+
+  p <- ggplot(data = world) +
+    geom_sf(fill= land.col) +
+    coord_sf(xlim = c(W, E), ylim = c(S, N), expand = TRUE) +
+    theme(panel.grid.major = element_line(color = rgb(0,0,0,.5), linetype = 2, size = 0.1),
+      panel.background = element_rect(fill = ocean.col),
+      legend.background = element_rect(fill = "transparent"),
+      legend.key = element_rect(fill = "transparent")  # Set legend key background to transparent
+  )
+  return(p)
+}
+
+
 #' @name find.shells
 #' @title Find nearby shell-derived dR values
 #' @description Find the shells closest to a chosen coordinate, and plot the dR values and feeding ecology. Uses the marine database downloaded (30 Aug 2024) from calib.org/marine. See Reimer PJ, Reimer RW, 2001. A marine reservoir correction database and on-line interface. Radiocarbon 43:461-3.
@@ -14,12 +50,13 @@
 #' @param maxcol Colour for maximum values.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'.
 #' @param symbol.legend Whether or not to plot the legend for the symbols.
-#' @param land.col Colour for the land. Defaults to green.
+#' @param ocean.col Colour for the oceans. Defaults to \code{ocean.col="aliceblue"}.
+#' @param land.col Colour for the land. Defaults to semi-transparent darkgreen: \code{land.col=rgb(0, 0.5, 0, 0.6)}.
 #' @examples
 #'   N_UK <- map.shells(60, 2, 53, -11, scale="medium")
 #'   mean(N_UK$dR)
 #' @export
-find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FALSE, size=2, scale=c(), mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, land.col="grey60") {
+find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FALSE, size=2, scale=c(), mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6)) {
   lon <- lat <- NULL # to get rid of subsequent ggplot2-related warnings
   if(length(c(longitude,latitude)) != 2)
     stop("we need 1 entry for longitude, 1 for latitude")
@@ -48,8 +85,8 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
   nearshells <- cbind(shells[o,], distances)
 
   S <- min(nearshells$lat)
-  N <- max(nearshells$lat)
   W <- min(nearshells$lon)
+  N <- max(nearshells$lat)
   E <- max(nearshells$lon)
 
   xl <- abs(W-E)/20
@@ -57,56 +94,31 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
   xmid <- longitude
   ymid <- latitude
 
-  # for large maps, rnaturalearth calls rnaturalearthhires, but since the latter is not a CRAN package, it'll have to be downloaded from github
-  if(length(scale) == 0)
-    if("rnaturalearthhires" %in% installed.packages())
-      world <- rnaturalearth::ne_countries(scale="large", returnclass="sf") else {
-        message("using a medium-scale map. If you prefer a higher-resolution map, please download rnaturalearthhires using the command\nremotes::install_github('ropensci/rnaturalearthhires')")
-        world <- rnaturalearthdata::countries50
-      } else
-    if(scale == "small")
-      world <- rnaturalearth::ne_countries(scale="small", returnclass="sf") else
-      if(scale == "medium")
-        world <- rnaturalearthdata::countries50 else
-        if(scale == "large")
-          if(!"rnaturalearthhires" %in% installed.packages()) {
-            message("using a medium-scale map. If you prefer a higher-resolution map, please download rnaturalearthhires using the command\nremotes::install_github('ropensci/rnaturalearthhires')")
-            world <- rnaturalearthdata::countries50
-          } else
-              world <- rnaturalearth::ne_countries(scale="large", returnclass="sf")
-
-    p <- ggplot(data = world) +
-    geom_sf(fill= rgb(0,.5,0,.6)) +
-    coord_sf(xlim = c(W, E), ylim = c(S, N), expand = TRUE) +
-    theme(panel.grid.major = element_line(color = rgb(0,0,0,.5),
-      linetype = 2, size = 0.1), panel.background = element_rect(fill = "aliceblue"),
-      legend.background = element_rect(fill = "transparent"),
-      legend.key = element_rect(fill = "transparent")  # Set legend key background to transparent
-   )
+  p <- ocean.map(S, W, N, E, scale, ocean.col, land.col)
 
   if(symbol.legend)
     p <- p +
-      geom_point(data=nearshells, aes(x=lon, y=lat, color=!!sym(colour), shape=!!sym(symbol)), size=size) else
+      geom_point(data=nearshells, aes(x=lon, y=lat, color=!!sym(colour), shape=!!sym(symbol)), size=size, alpha=.8) else
         p <- p +
-          geom_point(data=nearshells, aes(x=lon, y=lat, color=!!sym(colour)), size=size)
+          geom_point(data=nearshells, aes(x=lon, y=lat, color=!!sym(colour)), size=size, alpha=.8)
 
   if(rainbow)
     p <- p + scale_color_gradientn(colors = rainbow(7)) + labs(shape="feeding") else
       p <- p + scale_color_gradient(low=mincol, high=maxcol) + labs(shape="feeding")
-  print(p)
 
+  print(p)
   return(nearshells)
 }
 
 
 #' @name map.shells
 #' @title Plot regional shell-derived dR values
-#' @description Find the shells that fit within a rectangular region (bounded by N, E, S and W), and plot the dR values and feeding ecology. Uses the marine database downloaded (30 Aug 2024) from calib.org/marine. See Reimer PJ, Reimer RW, 2001. A marine reservoir correction database and on-line interface. Radiocarbon 43:461-3.
+#' @description Find the shells that fit within a rectangular region (bounded by N, E, S and W), and plot the dR values and feeding ecology. Uses the marine database downloaded (30 Aug 2024) from calib.org/marine. See Reimer PJ, Reimer RW, 2001. A marine reservoir correction database and on-line interface. Radiocarbon 43:461-3. Expects the coordinates for the map to be provided (starting south, then clockwise as with R axes).
 #' @return A plot and the relevant dR values.
-#' @param N The northern limit of the rectangular region.
-#' @param E The eastern limit of the rectangular region.
 #' @param S The southern limit of the rectangular region.
 #' @param W The western limit of the rectangular region.
+#' @param N The northern limit of the rectangular region.
+#' @param E The eastern limit of the rectangular region.
 #' @param colour The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.
 #' @param rainbow Whether or not to use a rainbow scale to plot the variable.
 #' @param size Size of the symbols. Defaults to 2.
@@ -115,55 +127,31 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
 #' @param maxcol Colour for maximum values.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'. 
 #' @param symbol.legend Whether or not to plot the legend for the symbols.
-#' @param land.col Colour for the land. Defaults to green.
+#' @param ocean.col Colour for the oceans. Defaults to \code{ocean.col="aliceblue"}.
+#' @param land.col Colour for the land. Defaults to semi-transparent darkgreen: \code{land.col=rgb(0, 0.5, 0, 0.6)}.
 #' @examples
 #'  N_UK <- map.shells(60, 2, 53, -11, scale="medium")
 #'  mean(N_UK$dR)
 #' @export
-map.shells <- function(N=62, E=5, S=48, W=-15, colour='dR', rainbow=FALSE, size=2, scale=c(), mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, land.col="grey60") {
+map.shells <- function(S=48,W=-15, N=62, E=5, colour='dR', rainbow=FALSE, size=2, scale=c(), mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6)) {
   lon <- lat <- NULL # to get rid of subsequent ggplot2-related warnings
   shells <- get("shells", envir = .GlobalEnv)
   shells[[symbol]] <- as.factor(shells[[symbol]])
   sel <- shells[shells$lon>=W & shells$lon<=E & shells$lat>=S & shells$lat <= N,]
 
-  # for large maps, rnaturalearth calls rnaturalearthhires, but since the latter is not a CRAN package, it'll have to be downloaded from github
-  if(length(scale) == 0)
-    if("rnaturalearthhires" %in% installed.packages())
-      world <- rnaturalearth::ne_countries(scale="large", returnclass="sf") else {
-        message("using a medium-scale map. If you prefer a higher-resolution map, please download rnaturalearthhires using the command\nremotes::install_github('ropensci/rnaturalearthhires')")
-        world <- rnaturalearthdata::countries50
-      } else
-    if(scale == "small")
-      world <- rnaturalearth::ne_countries(scale="small", returnclass="sf") else
-      if(scale == "medium")
-        world <- rnaturalearthdata::countries50 else
-        if(scale == "large")
-          if(!"rnaturalearthhires" %in% installed.packages()) {
-            message("using a medium-scale map. If you prefer a higher-resolution map, please download rnaturalearthhires using the command\nremotes::install_github('ropensci/rnaturalearthhires')")
-            world <- rnaturalearthdata::countries50
-          } else
-              world <- rnaturalearth::ne_countries(scale="large", returnclass="sf")
+  p <- ocean.map(S, W, N, E, scale, ocean.col, land.col)
 
-  p <- ggplot(data = world) +
-    geom_sf(fill= rgb(0,.5,0,.6)) +
-    coord_sf(xlim = c(W, E), ylim = c(S, N), expand = FALSE) +
-    theme(panel.grid.major = element_line(color = rgb(0,0,0,.5),
-      linetype = 2, size = 0.1), panel.background = element_rect(fill = "aliceblue"),
-      legend.background = element_rect(fill = "transparent"),
-      legend.key = element_rect(fill = "transparent")  # Set legend key background to transparent
-   )
-  
   if(symbol.legend) 
     p <- p +
-      geom_point(data=sel, aes(x=lon, y=lat, color=!!sym(colour), shape=!!sym(symbol)), size=size) else
+      geom_point(data=sel, aes(x=lon, y=lat, color=!!sym(colour), shape=!!sym(symbol)), size=size, alpha=.8) else
         p <- p +
-          geom_point(data=sel, aes(x=lon, y=lat, color=!!sym(colour)), size=size)
+          geom_point(data=sel, aes(x=lon, y=lat, color=!!sym(colour)), size=size, alpha=.8)
 
   if(rainbow)
     p <- p + scale_color_gradientn(colors = rainbow(7)) + labs(shape="feeding") else
       p <- p + scale_color_gradient(low=mincol, high=maxcol) + labs(shape="feeding")
+
   print(p)
-  
   return(sel)
 }  
 

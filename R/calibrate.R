@@ -1,6 +1,5 @@
 # functions copied and adapted from the rintcal R package (by the same author and he agreed)
 
-
 #' @name caldist
 #' @title Calculate calibrated distribution
 #' @description Calculate the calibrated distribution of a radiocarbon date.
@@ -9,7 +8,7 @@
 #' @param error Lab error of the radiocarbon age
 #' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
-#' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to FALSE. 
+#' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to FALSE.
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespanes.
 #' @param dist.res As an alternative to yrsteps, provide the amount of 'bins' in the distribution
@@ -27,7 +26,7 @@
 #' postbomb <- caldist(-3030, 20, postbomb=1, BCAD=TRUE)
 #' @export
 caldist <- function(age, error, cc=1, postbomb=FALSE, thiscurve=c(), yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL) {
-	
+
   if(length(thiscurve) == 0) {
     if(cc == 0) { # no ccurve needed
       xseq <- seq(age-8*error, age+8*error, length=2e3) # hard-coded values, hmmm
@@ -42,12 +41,12 @@ caldist <- function(age, error, cc=1, postbomb=FALSE, thiscurve=c(), yrsteps=FAL
           cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample)
     } else
       cc <- thiscurve
-  
+
   # calibrate; find how far age (measurement) is from cc[,2] of calibration curve
   if(normal)
     cal <- cbind(cc[,1], dnorm(cc[,2], age, sqrt(error^2+cc[,3]^2))) else
       cal <- cbind(cc[,1], (t.b + ((age-cc[,2])^2) / (2*(cc[,3]^2 + error^2))) ^ (-1*(t.a+0.5)))
-  
+
   # interpolate and normalise calibrated distribution to 1
   if(postbomb)
     if(!yrsteps)
@@ -58,7 +57,7 @@ caldist <- function(age, error, cc=1, postbomb=FALSE, thiscurve=c(), yrsteps=FAL
  #     yrsteps <- seq(min(cal[,1]), max(cal[,1]), length=dist.res)
   cal <- approx(cal[,1], cal[,2], yrsteps, rule=rule)
   # cal <- cbind(cal$x, cal$y/sum(cal$y)) # normalise
-  cal <- cbind(cal$x, cal$y) 
+  cal <- cbind(cal$x, cal$y)
 
   if(normalise)
     cal[,2] <- cal[,2]/sum(cal[,2])
@@ -151,7 +150,7 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, rounded=1) {
   BCAD <- ifelse(min(diff(calib[,1])) < 0, TRUE, FALSE) # christ...
   o <- order(summed[,1], decreasing=BCAD) # put ages ascending again
   calib <- cbind(calib, summed[o,2]) # add a column indicating ages within ranges
-  
+
   # find the outer ages of the calibrated ranges. The 0 should help with truncated ages
   to <- calib[which( diff(c(0, calib[,3])) == 1), 1]
   from <- calib[which( diff(c(calib[,3], 0)) == -1), 1]
@@ -175,7 +174,7 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, rounded=1) {
 #' @name calBP.14C
 #' @title Find the 14C age and error belonging to a cal BP age.
 #' @description Given a calendar age, the calibration curve (default cc=1) is interpolated and the corresponding 14C age and error are returned.
-#' @details Interpolation is used, and values outside the calibration curve are given as NA. For negative cal BP ages, a postbomb curve will have to be provided. 
+#' @details Interpolation is used, and values outside the calibration curve are given as NA. For negative cal BP ages, a postbomb curve will have to be provided.
 #' @return The calibration-curve 14C year belonging to the entered cal BP age
 #' @param yr The cal BP year.
 #' @param cc calibration curve for C14 (see \code{caldist()}).
@@ -199,8 +198,8 @@ calBP.14C <- function(yr, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL) {
 
 #  find the calibrated probability of a calendar age for a 14C date
 #' @name l.calib
-#' @title Find the calibrated probability of a calendar age for a 14C date. 
-#' @description Find the calibrated probability of a cal BP age for a radiocarbon date. Can handle either multiple calendar ages for a single radiocarbon date, or a single calendar age for multiple radiocarbon dates. 
+#' @title Find the calibrated probability of a calendar age for a 14C date.
+#' @description Find the calibrated probability of a cal BP age for a radiocarbon date. Can handle either multiple calendar ages for a single radiocarbon date, or a single calendar age for multiple radiocarbon dates.
 #' @details The function cannot deal with multiple calibration curves if multiple calendar years or radiocarbon dates are entered.
 #' @return The calibrated probability of a calendar age for a 14C age
 #' @param yr The cal BP year.
