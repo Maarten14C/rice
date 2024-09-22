@@ -53,7 +53,7 @@ ocean.map <- function(S, W, N, E, scale=c(), ocean.col="aliceblue", land.col=rgb
 #' @param ocean.col Colour for the oceans. Defaults to \code{ocean.col="aliceblue"}.
 #' @param land.col Colour for the land. Defaults to semi-transparent darkgreen: \code{land.col=rgb(0, 0.5, 0, 0.6)}.
 #' @examples
-#'   N_UK <- map.shells(60, 2, 53, -11, scale="medium")
+#'   N_UK <- map.shells(53, -11, 60, 2, scale="medium")
 #'   mean(N_UK$dR)
 #' @export
 find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FALSE, size=2, scale=c(), mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6)) {
@@ -130,7 +130,7 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
 #' @param ocean.col Colour for the oceans. Defaults to \code{ocean.col="aliceblue"}.
 #' @param land.col Colour for the land. Defaults to semi-transparent darkgreen: \code{land.col=rgb(0, 0.5, 0, 0.6)}.
 #' @examples
-#'  N_UK <- map.shells(60, 2, 53, -11, scale="medium")
+#'  N_UK <- map.shells(53, -11, 60, 2, scale="medium")
 #'  mean(N_UK$dR)
 #' @export
 map.shells <- function(S=48,W=-15, N=62, E=5, colour='dR', rainbow=FALSE, size=2, scale=c(), mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6)) {
@@ -166,7 +166,7 @@ map.shells <- function(S=48,W=-15, N=62, E=5, colour='dR', rainbow=FALSE, size=2
 #' @param round Rounding to be applied (defaults to 1 decimal).
 #' @param talk Report details of the found values.
 #' @examples
-#'   N_UK <- map.shells(60, 2, 53, -11, scale="medium")
+#'   N_UK <- map.shells(53, -11, 60, 2, scale="medium")
 #'   weighted_means(N_UK$dR, N_UK$dSTD)
 #' @export
 weighted_means <- function(y, er, round=1, talk=TRUE) {
@@ -206,7 +206,7 @@ weighted_means <- function(y, er, round=1, talk=TRUE) {
 #' @param lty.mn Line type for the weighted mean. Defaults to dashed, \code{lty.mn=2}.
 #' @param col.sd Colour of the rectangle of the error. Defaults to transparent grey, \code{col.sd=rgb(0,0,0,.1)}.
 #' @examples
-#'  N_UK <- map.shells(60, 2, 53, -11, scale="medium")
+#'  N_UK <- map.shells(53, -11, 60, 2, scale="medium")
 #'  shells.mean(N_UK)
 #'  nearby <- find.shells(0,56,20) # somewhere in Scotland
 #'  shells.mean(nearby, distance=TRUE) # distance matters

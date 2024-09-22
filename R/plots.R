@@ -9,6 +9,7 @@
 #' @param cc1.postbomb Use \code{postbomb=TRUE} to get a postbomb calibration curve for cc1 (default \code{cc1.postbomb=FALSE}).
 #' @param cc2.postbomb Use \code{postbomb=TRUE} to get a postbomb calibration curve for cc2 (default \code{cc2.postbomb=FALSE}).
 #' @param BCAD The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
+#' @param realm Which 'realm' of radiocarbon to use. Defaults to \code{realm="C14"} but can also be set to \code{realm="F14C"}, \code{realm="pMC"} or \code{realm="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents).
 #' @param cal.lab The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}), or to \code{age.lab="kcal BP"} etc. if ka=TRUE.
 #' @param cal.rev Reverse the calendar axis. 
 #' @param c14.lab Label for the C-14 axis. Defaults to 14C BP (or 14C kBP if ka=TRUE).
@@ -31,14 +32,14 @@
 #' draw.ccurve(1800, 2020, BCAD=TRUE, cc2="nh1", cc2.postbomb=TRUE)
 #' draw.ccurve(1800, 2010, BCAD=TRUE, cc2="nh1", add.yaxis=TRUE)
 #' @export
-draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb=FALSE, cc2.postbomb=FALSE, BCAD=FALSE, cal.lab=NA, cal.rev=FALSE, c14.lab=NA, c14.lim=NA, c14.rev=FALSE, ka=FALSE, add.yaxis=FALSE, cc1.col=rgb(0,0,1,.5), cc1.fill=rgb(0,0,1,.2), cc2.col=rgb(0,.5,0,.5), cc2.fill=rgb(0,.5,0,.2), add=FALSE, bty="l", cc.dir=NULL, legend="topleft", ...) {
+draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb=FALSE, cc2.postbomb=FALSE, BCAD=FALSE, realm="C14", cal.lab=NA, cal.rev=FALSE, c14.lab=NA, c14.lim=NA, c14.rev=FALSE, ka=FALSE, add.yaxis=FALSE, cc1.col=rgb(0,0,1,.5), cc1.fill=rgb(0,0,1,.2), cc2.col=rgb(0,.5,0,.5), cc2.fill=rgb(0,.5,0,.2), add=FALSE, bty="l", cc.dir=NULL, legend="topleft", ...) {
 
   # read and narrow down the calibration curve(s)
   cc.1 <- rintcal::ccurve(cc1, cc1.postbomb, cc.dir)
-  cc.cal <- 1 # which column to use for calendar ages
+  cc.cal <- 1 # which column to use for calendar ages
   if(BCAD) {
     cc.1[,4] <- 1950 - cc.1[,1] # add a column...
-    cc.cal <- 4 # ... and use it
+    cc.cal <- 4 # ... and use it
   }
   if(length(cal1) == 0)
     cal1 <- cc.1[1,cc.cal]
@@ -50,6 +51,22 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
   cc.1 <- cc.1[which(mindat * maxdat == 1),]
   if(ka)
     cc.1 <- cc.1/1e3
+  
+  if("f" %in% tolower(realm)) {
+    F <- age.F14C(cc.1[,2], cc.1[,3])
+    cc.1[,2:3] <- F
+  }
+  if("p" %in% tolower(realm)) {
+    p <- age.pMC(cc.1[,2], cc.1[,3])
+    cc.1[,2:3] <- p
+  }
+  if("d" %in% tolower(realm)) {
+    F <- age.F14C(cc.1[,2], cc.1[,3])
+    Dmax <- F14C.D14C(F[,1]+F[,2], cc.1[,1])
+    D <- F14C.D14C(F[,1], cc.1[,1])
+    cc.1[,2:3] <- cbind(D, Dmax-D)
+  }
+ 
   cc1.pol <- cbind(c(cc.1[,cc.cal], rev(cc.1[,cc.cal])), c(cc.1[,2]-cc.1[,3], rev(cc.1[,2]+cc.1[,3])))
   
   if(!is.na(cc2)) {
@@ -58,6 +75,22 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
       cc.2[,4] <- 1950 - cc.2[,1] 
     mindat <- cc.2[,cc.cal] >= min(cal1, cal2)
     maxdat <- cc.2[,cc.cal] <= max(cal1, cal2)
+	
+    if("f" %in% tolower(realm)) {
+      F <- age.F14C(cc.2[,2], cc.2[,3])
+      cc.2[,2:3] <- F
+    }
+    if("p" %in% tolower(realm)) {
+      p <- age.pMC(cc.2[,2], cc.2[,3])
+      cc.2[,2:3] <- p
+    }
+    if("d" %in% tolower(realm)) {
+      F <- age.F14C(cc.2[,2], cc.2[,3])
+      Dmax <- F14C.D14C(F[,1]+F[,2], cc.2[,1])
+      D <- F14C.D14C(F[,1], cc.2[,1])
+      cc.2[,2:3] <- cbind(D, Dmax-D)
+    }
+	
     cc.2 <- cc.2[which(mindat * maxdat == 1),]
     if(ka)
       cc.2 <- cc.2/1e3
@@ -77,8 +110,14 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
     if(is.na(c14.lab))
       if(ka)
         c14.lab <- expression(""^14*C~kBP) else
-          c14.lab <- expression(""^14*C~BP)
-
+          if("p" %in% tolower(realm))
+            c14.lab <- "pMC" else
+              if("f" %in% tolower(realm))
+                c14.lab <- expression(F^14*C) else
+                  if("d" %in% tolower(realm))
+                    c14.lab <- expression(delta^14*C) else
+                      c14.lab <- expression(""^14*C~BP)
+	     
     cal.lim <- c(cal1, cal2)
     if(cal.rev)
       cal.lim <- rev(cal.lim)
@@ -660,22 +699,23 @@ draw.dates <- function(age, error, depth, cc=1, postbomb=FALSE, reservoir=c(), n
 #'   draw.D14C(cc=rintcal::ccurve("NH1_monthly"), BCAD=TRUE)
 #' @export
 draw.D14C <- function(cal1=c(), cal2=c(), cc=rintcal::ccurve(), BCAD=FALSE, mar=c(4,4,1,4), mgp=c(2.5,1,0), xaxs="r", yaxs="r", bty="u", ka=FALSE, cal.lab=c(), cal.rev=FALSE, C14.lab=c(), C14.lim=c(), cc.col=rgb(0,.5,0,.5), cc.border=rgb(0,.5,0,.5), D14C.lab=c(), D14C.lim=c(), D14C.col=rgb(0,0,1,.5), D14C.border=rgb(0,0,1,.5)) {
+  cc.cal <- 1	
   if(BCAD) {
     cc[,4] <- 1950 - cc[,1] # add a column
     cc.cal <- 4
   if(length(cal1) == 0)
-    cal1 <- min(cc[,1]) else
-      cal1 <- cc[min(1, which(cc[,4] >= cal1)),1] # find the cal BP values
+    cal1 <- min(cc[,cc.cal]) else
+      cal1 <- cc[min(1, which(cc[,cc.cal] >= cal1)),1] # find the cal BP values
   if(length(cal2) == 0)
-    cal2 <- max(cc[,1]) else
-      cal2 <- cc[max(nrow(cc), which(cc[,4 <= cal1])),1]
-  } else {
-      cc.cal <- 1
+    cal2 <- min(cc[,cc.cal]) else
+      cal2 <- cc[min(nrow(cc), which(cc[,cc.cal] <= cal1)),1]
+  } else { 
       if(length(cal1) == 0)
-        cal1 <- min(cc[,1])
+        cal1 <- min(cc[,cc.cal])
       if(length(cal2) == 0)
-        cal2 <- max(cc[,1])
+        cal2 <- max(cc[,cc.cal])
     }
+	cat(cal1, cal2, "\n")
   yrmin <- max(1, which(cc[,1] <= min(cal1, cal2)))
   yrmax <- min(nrow(cc), which(cc[,1] >= max(cal1, cal2)))
   cc <- cc[yrmin:yrmax,]

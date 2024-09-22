@@ -14,7 +14,6 @@
 #' @importFrom grDevices rgb extendrange grey rainbow
 #' @importFrom graphics axis par legend lines points polygon segments text mtext abline image rect
 #' @importFrom rlang sym
-#' @import rintcal 
 #' @importFrom rnaturalearth ne_countries
 #' @importFrom ggplot2 ggplot geom_sf coord_sf geom_point aes scale_color_gradient scale_color_gradientn labs theme element_line element_rect
 #' @name rice
@@ -22,3 +21,5 @@
 ## usethis namespace: start
 ## usethis namespace: end
 NULL
+
+require(rintcal)

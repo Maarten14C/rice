@@ -39,7 +39,7 @@ A plot of the dR values, as well as the weighted mean (vertical line) and (weigh
 After selecting a relevant range of shell values, plot them and calculate the weighted mean and variance.
 }
 \examples{
- N_UK <- map.shells(60, 2, 53, -11, scale="medium")
+ N_UK <- map.shells(53, -11, 60, 2, scale="medium")
  shells.mean(N_UK)
  nearby <- find.shells(0,56,20) # somewhere in Scotland
  shells.mean(nearby, distance=TRUE) # distance matters

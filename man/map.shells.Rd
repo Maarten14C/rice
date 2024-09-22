@@ -5,10 +5,10 @@
 \title{Plot regional shell-derived dR values}
 \usage{
 map.shells(
-  N = 62,
-  E = 5,
   S = 48,
   W = -15,
+  N = 62,
+  E = 5,
   colour = "dR",
   rainbow = FALSE,
   size = 2,
@@ -17,17 +17,18 @@ map.shells(
   maxcol = "red",
   symbol = "feeding",
   symbol.legend = TRUE,
-  land.col = "grey60"
+  ocean.col = "aliceblue",
+  land.col = rgb(0, 0.5, 0, 0.6)
 )
 }
 \arguments{
-\item{N}{The northern limit of the rectangular region.}
-
-\item{E}{The eastern limit of the rectangular region.}
-
 \item{S}{The southern limit of the rectangular region.}
 
 \item{W}{The western limit of the rectangular region.}
+
+\item{N}{The northern limit of the rectangular region.}
+
+\item{E}{The eastern limit of the rectangular region.}
 
 \item{colour}{The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.}
 
@@ -45,15 +46,17 @@ map.shells(
 
 \item{symbol.legend}{Whether or not to plot the legend for the symbols.}
 
-\item{land.col}{Colour for the land. Defaults to green.}
+\item{ocean.col}{Colour for the oceans. Defaults to \code{ocean.col="aliceblue"}.}
+
+\item{land.col}{Colour for the land. Defaults to semi-transparent darkgreen: \code{land.col=rgb(0, 0.5, 0, 0.6)}.}
 }
 \value{
 A plot and the relevant dR values.
 }
 \description{
-Find the shells that fit within a rectangular region (bounded by N, E, S and W), and plot the dR values and feeding ecology. Uses the marine database downloaded (30 Aug 2024) from calib.org/marine. See Reimer PJ, Reimer RW, 2001. A marine reservoir correction database and on-line interface. Radiocarbon 43:461-3.
+Find the shells that fit within a rectangular region (bounded by N, E, S and W), and plot the dR values and feeding ecology. Uses the marine database downloaded (30 Aug 2024) from calib.org/marine. See Reimer PJ, Reimer RW, 2001. A marine reservoir correction database and on-line interface. Radiocarbon 43:461-3. Expects the coordinates for the map to be provided (starting south, then clockwise as with R axes).
 }
 \examples{
- N_UK <- map.shells(60, 2, 53, -11, scale="medium")
+ N_UK <- map.shells(53, -11, 60, 2, scale="medium")
  mean(N_UK$dR)
 }

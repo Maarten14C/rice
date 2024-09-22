@@ -16,7 +16,8 @@ find.shells(
   maxcol = "red",
   symbol = "feeding",
   symbol.legend = TRUE,
-  land.col = "grey60"
+  ocean.col = "aliceblue",
+  land.col = rgb(0, 0.5, 0, 0.6)
 )
 }
 \arguments{
@@ -42,7 +43,9 @@ find.shells(
 
 \item{symbol.legend}{Whether or not to plot the legend for the symbols.}
 
-\item{land.col}{Colour for the land. Defaults to green.}
+\item{ocean.col}{Colour for the oceans. Defaults to \code{ocean.col="aliceblue"}.}
+
+\item{land.col}{Colour for the land. Defaults to semi-transparent darkgreen: \code{land.col=rgb(0, 0.5, 0, 0.6)}.}
 }
 \value{
 A dataset with the n nearest dR values, and a plot of their coordinates.
@@ -51,6 +54,6 @@ A dataset with the n nearest dR values, and a plot of their coordinates.
 Find the shells closest to a chosen coordinate, and plot the dR values and feeding ecology. Uses the marine database downloaded (30 Aug 2024) from calib.org/marine. See Reimer PJ, Reimer RW, 2001. A marine reservoir correction database and on-line interface. Radiocarbon 43:461-3.
 }
 \examples{
-  N_UK <- map.shells(60, 2, 53, -11, scale="medium")
+  N_UK <- map.shells(53, -11, 60, 2, scale="medium")
   mean(N_UK$dR)
 }

@@ -29,7 +29,7 @@ The companion data package 'rintcal' which has the radiocarbon calibration curve
 update.packages()
 ``` 
 
-To obtain access to the calibration curves and radiocarbon functions, first the package has to be loaded:
+To obtain access to the calibration curves, first the package has to be loaded:
 
 ```{r}
 library(rice)
@@ -69,15 +69,9 @@ The postbomb curve dwarfs the IntCal20 curve, so we could also plot both on sepa
 draw.ccurve(1600, 2020, BCAD=TRUE, cc2='nh1', add.yaxis=TRUE)
 ```
 
-To find the IntCal20 radiocarbon year belonging to a certain calendar year, e.g., 900 cal BP:
-
-```{r}
-calBP.14C(900)
-```
-
 # Calculations
 
-This package also provides functions related to radiocarbon 'realms'. First there are two functions to calculate radiocarbon ages from pMC values (in this case of a postbomb date):
+This package also provides functions related to radiocarbon calibration. First there are two functions to calculate radiocarbon ages from pMC values (in this case of a postbomb date):
 
 ```{r}
 pMC.age(150, 1)
@@ -101,7 +95,7 @@ and the other way round:
 age.F14C(-2300, 40)
 ```
 
-To transfer $\Delta^{14}C$ (a proxy for atmospheric ^14^C concentration at *t* cal BP) to F^14^C, and the other way around:
+To transfer $\Delta^{14}C$ (a proxy for atmospheric ^14^C concentration at t cal BP) to F^14^C, and the other way around:
 
 ```{r}
 F14C.D14C(0.71, t=4000)
@@ -156,19 +150,13 @@ If that is too much code for you, try this function instead:
 draw.contamination()
 ```
 
-## Calibration
+## Calibration details
 
-Now on to calibration of radiocarbon dates. We can obtain the calibrated probability distributions from radiocarbon dates, e.g., one of 130 &pm; 10 C14 BP:
+Now on to calibration. We can obtain the calibrated probability distributions from radiocarbon dates, e.g., one of 130 +- 10 C14 BP:
 
 ```{r, fig.width=4, fig.asp=.8}
 calib.130 <- caldist(130, 10, BCAD=TRUE)
 plot(calib.130, type="l")
-```
-
-It is also possible to find the likelihood of a single calendar year for our radiocarbon age, e.g., 145 cal BP:
-
-```{r}
-l.calib(145, 130, 10)
 ```
 
 For reporting purposes, calibrated dates are often reduced to their 95% highest posterior density (hpd) ranges (please report all, not just your favourite one!):
@@ -192,42 +180,6 @@ Want a plot of the radiocarbon and calibrated distributions, together with their
 calibrate(130,10)
 ```
 
-Calibrating 'young' radiocarbon dates (close to 0 C14 BP) can cause an error, because a bomb curve might be required to capture the youngest ages. Do not worry, there is an option to avoid that error:
-
-```{r, fig.width=5, fig.asp=1}
-try(calibrate(130,30))
-calibrate(130, 30, bombalert=FALSE)
-```
-
-It is also possible to analyse the calibrated probability distributions, e.g. what is the probability (between 0 and 1) that the date stems from material that is of the age of 150 cal BP or younger? Or that it is older than that age?
-
-```{r}
-younger(150, 130, 10)
-older(150, 130, 10)
-```
-
-
-## Marine offsets
-
-Dates on marine material will often have to be calibrated with the Marine20 calibration curve[^5], and many coastal locations will have an additional regional reservoir offset (deltaR) (Reimer and Reimer 2006)[^6]. The on-line database at <http://calib.org/marine/> is very useful for this; it features the radiocarbon ages and deltaR of many shells of known collection date. The data from this database were downloaded (in August 2024) and can be queried. For example, a map can be drawn with all shell data within certain coordinates:
-
-```{r, fig.width=5, fig.asp=1}
-myshells <- map.shells(S=54, W=-8, N=61, E=0) # the northern part of the UK
-```
-
-The output can also be queried:
-
-```{r, fig.width=5, fig.asp=1}
-head(myshells)
-shells.mean(myshells)
-```
-
-You can also extract say the 20 shells closest to a coordinate, e.g., 120 East and 10 North:
-```{r, fig.width=5, fig.asp=1}
-myshells <- find.shells(120, 10, 20)
-shells.mean(myshells, distance=TRUE)
-```
-
 ## Multiple calibrations
 
 You can also draw one or more calibrated distributions:
@@ -244,11 +196,11 @@ draw.dates(dates, errors, depths, BCAD=TRUE, labels=my.labels, age.lim=c(0, 1800
 or add them to an existing plot:
 
 ```{r, fig.width=4, fig.asp=1}
-plot(300*1:5, 5:1, xlim=c(0, 1800), ylim=c(5,0), xlab="AD", ylab="dates")
+plot(300*1:5, 1:5, xlim=c(0, 1800), ylim=c(5,0), xlab="AD", ylab="dates")
 draw.dates(dates, errors, depths, BCAD=TRUE, add=TRUE, labels=my.labels, mirror=FALSE)
 ```
 
-or get creative (inspired by Jocelyn Bell Burnell[^7], Joy Division[^8] and the Hallstatt Plateau[^9]):
+or get creative (inspired by Jocelyn Bell Burnell[^5], Joy Division[^6] and the Hallstatt Plateau[^7]):
 
 ```{r, fig.width=4, fig.asp=1}
 par(bg="black", mar=rep(1, 4))
@@ -259,21 +211,17 @@ draw.dates(rnorm(n, 2450, 30), rep(25, n), n:1,
 ```
 
 [^1]: Stuiver, R., Polach, H.A., 1977. Discussion: reporting of 14C data.
-*Radiocarbon* 19, 355-363 <http://dx.doi.org/10.1017/S0033822200003672>
+Radiocarbon 19, 355-363. doi:10.1017/S0033822200003672
 
 [^2]: Reimer, P.J., Brown, T.A., Reimer, R.W., 2004. Discussion: reporting
-and calibration of post-bomb 14C Data. *Radiocarbon* 46, 1299-1304 <http://dx.doi.org/10.1017/S0033822200033154>
+and calibration of post-bomb 14C Data. *Radiocarbon* 46, 1299-1304. doi:10.1017/S0033822200033154
 
-[^3]: Millard, R., 2014. Conventions for reporting radiocarbon determinations. *Radiocarbon* 56, 555-559 <http://dx.doi.org/10.2458/56.17455>
+[^3]: Millard, R., 2014. Conventions for reporting radiocarbon determinations. Radiocarbon 56, 555-559. doi:10.2458/56.17455
 
-[^4]: Reimer, P.J., et al., 2020. The IntCal20 Northern Hemisphere radiocarbon age calibration curve (0-55 cal kBP). *Radiocarbon* 62, 725-757 <http://dx.doi.org/10.1017/S0033822200032999>
+[^4]: Reimer, P.J., et al., 2020. The IntCal20 Northern Hemisphere radiocarbon age calibration curve (0-55 cal kBP). *Radiocarbon* 62, 725-757
 
-[^5]: Heaton, T.J., et al., 2020. Marine20-the marine radiocarbon age calibration curve (0-55,000 cal BP). *Radiocarbon* 62, 779-820 <http://dx.doi.org/10.1017/RDC.2020.68>
+[^5]: https://www.cam.ac.uk/stories/journeysofdiscovery-pulsars
 
-[^6]: Reimer, P.J., Reimer, R.W., 2006. A marine reservoir correction database and on-line interface. *Radiocarbon* 43, 461-463. <http://dx.doi.org/10.1017/S0033822200038339>
+[^6]: https://www.radiox.co.uk/artists/joy-division/cover-joy-division-unknown-pleasures-meaning/
 
-[^7]: https://www.cam.ac.uk/stories/journeysofdiscovery-pulsars
-
-[^8]: https://www.radiox.co.uk/artists/joy-division/cover-joy-division-unknown-pleasures-meaning/
-
-[^9]: https://en.wikipedia.org/wiki/Hallstatt_plateau
+[^7]: https://en.wikipedia.org/wiki/Hallstatt_plateau

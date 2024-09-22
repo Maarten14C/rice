@@ -1,0 +1,21 @@
+Package: rice
+Type: Package
+Title: Radiocarbon Calibration Equations
+Version: 0.1.1
+Date: 2024-08-27
+Author: Maarten Blaauw [aut, cre] (<https://orcid.org/0000-0002-5680-1515>)
+Authors@R: c(
+  person("Maarten", "Blaauw", email = "maarten.blaauw@qub.ac.uk", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-5680-1515")))
+Maintainer: Maarten Blaauw <maarten.blaauw@qub.ac.uk>
+Description: Provides functions for the calibration of radiocarbon dates, as well as options to calculate different radiocarbon realms (C14 age, F14C, pMC, D14C) and estimating the effects of contamination. The methods follow long-established recommendations such as Stuiver and Polach (1977) <doi:10.1017/S0033822200003672> and Reimer et al. (2004) <doi:10.1017/S0033822200033154>. This package accompanies the data package 'rintcal'.
+License: GPL (>= 2)
+Encoding: UTF-8
+RoxygenNote: 7.3.2
+Imports: rintcal (>= 0.6.4), data.table, jsonlite
+Suggests: knitr, rmarkdown, utf8
+VignetteBuilder: knitr
+NeedsCompilation: no
+Packaged: 2024-08-27 17:23:08 UTC; maarten
+Repository: CRAN
+Date/Publication: 2024-09-02 12:30:02 UTC
+Built: R 4.4.1; ; 2024-09-02 15:06:00 UTC; unix

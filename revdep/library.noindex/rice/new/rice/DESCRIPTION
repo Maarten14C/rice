@@ -1,0 +1,24 @@
+Package: rice
+Type: Package
+Title: Radiocarbon Equations
+Version: 0.1.2
+Date: 2024-09-03
+Author: Maarten Blaauw [aut, cre] (<https://orcid.org/0000-0002-5680-1515>)
+Authors@R: c(
+  person("Maarten", "Blaauw", email = "maarten.blaauw@qub.ac.uk", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-5680-1515")))
+Maintainer: Maarten Blaauw <maarten.blaauw@qub.ac.uk>
+Description: Provides functions for the calibration of radiocarbon dates, as well as options to calculate different radiocarbon realms (C14 age, F14C, pMC, D14C) and estimating the effects of contamination or local reservoir offsets (Reimer and Reimer 2001 <doi:10.1017/S0033822200038339>). The methods follow long-established recommendations such as Stuiver and Polach (1977) <doi:10.1017/S0033822200003672> and Reimer et al. (2004) <doi:10.1017/S0033822200033154>. This package accompanies the data package 'rintcal'.
+License: GPL (>= 2)
+Encoding: UTF-8
+RoxygenNote: 7.3.2
+Imports: rintcal (>= 1.0.0), rlang, ggplot2, rnaturalearth,
+        rnaturalearthdata
+Suggests: knitr, rmarkdown, utf8, remotes
+Depends: R (>= 3.5.0)
+VignetteBuilder: knitr
+NeedsCompilation: no
+LazyData: true
+RemoteType: local
+RemoteUrl: /Users/maarten/Dropbox/devsoftware/rice
+Packaged: 2024-09-12 16:41:03 UTC; maarten
+Built: R 4.4.1; ; 2024-09-12 16:41:03 UTC; unix
