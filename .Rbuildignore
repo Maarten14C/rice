@@ -1,10 +1,10 @@
 ^cran-comments\.md$
 ^CRAN-RELEASE$
-^doc$
-^Meta$
 ^README.Md
 ^CRAN-SUBMISSION$
-^data-raw$
 
-^revdep$
-^.github$
+/doc/
+/Meta/
+/data-raw/
+/revdep/
+/.github/
