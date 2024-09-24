@@ -4,8 +4,7 @@
 ^CRAN-SUBMISSION$
 
 /Meta/
-/data-raw/
+^/data-raw$
 /revdep/
-/.github/
-^doc$
+^\.github$
 ^Meta$
