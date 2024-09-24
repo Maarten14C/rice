@@ -4,6 +4,4 @@
 * win-builder (devel and release)
 
 ## R CMD check results
-There were no ERRORs or WARNINGs. The NOTE about UTF-8 strings relates to references to papers containing authors with non-ASCII characters. 
-
-
+There were no ERRORs, NOTEs or WARNINGs.
