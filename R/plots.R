@@ -75,7 +75,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
       cc.2[,4] <- 1950 - cc.2[,1] 
     mindat <- cc.2[,cc.cal] >= min(cal1, cal2)
     maxdat <- cc.2[,cc.cal] <= max(cal1, cal2)
-	
+
     if("f" %in% tolower(realm)) {
       F <- age.F14C(cc.2[,2], cc.2[,3])
       cc.2[,2:3] <- F
@@ -259,6 +259,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 #' @param yaxs Whether or not to extend the limits of the vertical axis. Defaults to \code{yaxs="i"} which does not extend the limits.
 #' @param bty Draw a box around the graph ("n" for none, and "l", "7", "c", "u", "]" or "o" for correspondingly shaped boxes).
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
+#' @param cc.er The error of the calibration curve. Only used for plotting the uncalibrated C14 distribution, which by default only shows the date's uncertainty (the calibration curve uncertainty is indeed taken into account during calibration). If known, the calibration curve's error can be added.
 #' @param ... Other plotting parameters.
 #' @return A graph of the raw and calibrated C-14 date, the calibrated ranges and, invisibly, the calibrated distribution and hpd ranges.
 #' @examples
@@ -270,7 +271,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 #' calibrate(age=130, error=10, BCAD=TRUE)
 #' calibrate(4450, 40, reservoir=c(100, 50))
 #' @export
-calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.2), dist.fill=rgb(0,0,0,0.2), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=FALSE, yr.steps=FALSE, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, ...) {
+calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.2), dist.fill=rgb(0,0,0,0.2), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=FALSE, yr.steps=FALSE, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, cc.er=0, ...) {
   # read the data
   age <- age-reservoir[1]
   if(length(reservoir) > 1)
@@ -311,7 +312,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
   }
 
   # calculate the raw and calibrated distributions
-  C14.dist <- caldist(age, error, cc=0, BCAD=FALSE, postbomb=FALSE) # just to draw a normal dist
+  C14.dist <- caldist(age, sqrt(error^2 + cc.er^2), cc=0, BCAD=FALSE, postbomb=FALSE) # just to draw a normal dist
   C14.hpd <- hpd(C14.dist, return.raw=TRUE)[[1]]
   C14.hpd <- C14.hpd[which(C14.hpd[,3] == 1),1:2] # extract only the values within the hpd
   C14.hpd <- rbind(c(C14.hpd[1,1],0), C14.hpd, c(C14.hpd[nrow(C14.hpd),1],0))

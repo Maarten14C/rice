@@ -44,6 +44,7 @@ calibrate(
   yaxs = "i",
   bty = "l",
   cc.dir = NULL,
+  cc.er = 0,
   ...
 )
 }
@@ -125,6 +126,8 @@ calibrate(
 \item{bty}{Draw a box around the graph ("n" for none, and "l", "7", "c", "u", "]" or "o" for correspondingly shaped boxes).}
 
 \item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.}
+
+\item{cc.er}{The error of the calibration curve. Only used for plotting the uncalibrated C14 distribution, which by default only shows the date's uncertainty (the calibration curve uncertainty is indeed taken into account during calibration). If known, the calibration curve's error can be added.}
 
 \item{...}{Other plotting parameters.}
 }

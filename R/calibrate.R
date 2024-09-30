@@ -285,3 +285,49 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, normal=TRUE, t.a=3, t.b=4, B
 older <- function(x, y, er, cc=1, postbomb=FALSE, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
   return(1 - younger(x, y, er, cc, postbomb=postbomb, normal, t.a, t.b, BCAD, threshold=threshold))
 }
+
+
+
+#' @name calib.t
+#' @title Comparison dates calibrated using both the t distribution (Christen and Perez 2009) and the normal distribution.
+#' @description Visualise how a date calibrates using the t distribution and the normal distribution.
+#' @details Radiocarbon and other dates are usually modelled using the normal distribution (red curve). The t approach (grey distribution) however allows for wider tails and thus tends to better accommodate outlying dates. This distribution requires two parameters, called 'a' and 'b'.
+#' @param y The reported mean of the date.
+#' @param error The reported error of the date.
+#' @param t.a Value for the t parameter \code{a}.
+#' @param t.b Value for the t parameter \code{b}.
+#' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
+#' @param postbomb Which postbomb curve to use for negative 14C dates
+#' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param cc.dir Directory where the calibration curves for C14 dates \code{cc} are allocated. By default \code{cc.dir=c()}.
+#' Use \code{cc.dir="."} to choose current working directory. Use \code{cc.dir="Curves/"} to choose sub-folder \code{Curves/}.
+#' @param normal.col Colour of the normal curve
+#' @param normal.lwd Line width of the normal curve
+#' @param t.col Colour of the t histogram
+#' @param t.border Colour of the border of the t histogram
+#' @param xlim x axis limits
+#' @param ylim y axis limits
+#' @author Maarten Blaauw
+#' @examples
+#' calib.t()
+#'
+#' @export
+calib.t <- function(y=2450, error=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, BCAD=FALSE, cc.dir=c(), normal.col="red", normal.lwd=1.5, t.col=rgb(0,0,0,0.25), t.border=rgb(0,0,0,0,0.25), xlim=c(), ylim=c()) {
+  normalcal <- caldist(y, error, cc, postbomb, BCAD=BCAD, cc.dir=cc.dir, normal=TRUE)
+  tcal <- caldist(y, error, cc, postbomb, BCAD=BCAD, t.a=t.a, t.b=t.b, cc.dir=cc.dir, normal=FALSE)
+  tpol <- cbind(c(tcal[1,1], tcal[,1], tcal[nrow(tcal),1]), c(0, tcal[,2], 0))
+
+  xlab <- ifelse(BCAD, "BC/AD", "cal BP")
+  if(length(xlim) == 0)
+    xlim <- range(c(tpol[,1], normalcal[, 1]))
+  if(!BCAD)
+    xlim <- rev(xlim)
+  if(length(ylim) == 0)
+    ylim <- c(0, max(tcal[,2], normalcal[, 2]))
+  plot(normalcal, type="l", xlab=xlab, xlim=xlim, ylab="", ylim=ylim, col=normal.col, lwd=normal.lwd)
+  polygon(tpol, col=t.col, border=t.border)
+  legend("topleft", "Gaussian", text.col=normal.col, bty="n")
+  legend("topright", paste("t (a=", t.a, ", b=", t.b, ")", sep=""), bty="n", text.col=t.col)
+}
+
+
