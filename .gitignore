@@ -2,3 +2,5 @@
 /doc/
 .DS_Store
 /.github/
+.RData
+.Rhistory
