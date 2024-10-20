@@ -11,6 +11,7 @@ calib.t(
   t.b = 4,
   cc = 1,
   postbomb = FALSE,
+  as.F = FALSE,
   BCAD = FALSE,
   cc.dir = c(),
   normal.col = "red",
@@ -32,7 +33,9 @@ calib.t(
 
 \item{cc}{calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).}
 
-\item{postbomb}{Which postbomb curve to use for negative 14C dates}
+\item{postbomb}{Which postbomb curve to use for negative 14C dates.}
+
+\item{as.F}{Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.}
 
 \item{BCAD}{Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.}
 

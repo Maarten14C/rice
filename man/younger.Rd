@@ -11,6 +11,7 @@ younger(
   cc = 1,
   postbomb = FALSE,
   normal = TRUE,
+  as.F = FALSE,
   t.a = 3,
   t.b = 4,
   BCAD = FALSE,
@@ -29,6 +30,8 @@ younger(
 \item{postbomb}{Whether or not to use a postbomb curve (see \code{caldist()}).}
 
 \item{normal}{Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).}
+
+\item{as.F}{Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.}
 
 \item{t.a}{Value a of the t distribution (defaults to 3).}
 

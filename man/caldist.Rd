@@ -9,7 +9,9 @@ caldist(
   error,
   cc = 1,
   postbomb = FALSE,
-  thiscurve = c(),
+  is.F = FALSE,
+  as.F = FALSE,
+  thiscurve = NULL,
   yrsteps = FALSE,
   cc.resample = FALSE,
   dist.res = 200,
@@ -32,7 +34,11 @@ caldist(
 
 \item{postbomb}{Whether or not to use a postbomb curve. Required for negative radiocarbon ages.}
 
-\item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to FALSE.}
+\item{is.F}{Set this to TRUE if the provided age and error are in the F14C realm.}
+
+\item{as.F}{Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.}
+
+\item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).}
 
 \item{yrsteps}{Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve}
 
@@ -46,7 +52,7 @@ caldist(
 
 \item{t.a}{Value a of the t distribution (defaults to 3).}
 
-\item{t.b}{Value a of the t distribution (defaults to 4).}
+\item{t.b}{Value b of the t distribution (defaults to 4).}
 
 \item{normalise}{Sum the entire calibrated distribution to 1. Defaults to \code{normalise=TRUE}.}
 

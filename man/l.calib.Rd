@@ -10,6 +10,7 @@ l.calib(
   er,
   cc = rintcal::ccurve(1, FALSE),
   normal = TRUE,
+  as.F = FALSE,
   t.a = 3,
   t.b = 4
 )
@@ -25,6 +26,8 @@ l.calib(
 
 \item{normal}{Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).}
 
+\item{as.F}{Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.}
+
 \item{t.a}{Value a of the t distribution (defaults to 3).}
 
 \item{t.b}{Value b of the t distribution (defaults to 4).}
@@ -39,9 +42,9 @@ Find the calibrated probability of a cal BP age for a radiocarbon date. Can hand
 The function cannot deal with multiple calibration curves if multiple calendar years or radiocarbon dates are entered.
 }
 \examples{
-l.calib(100, 130, 20)
-l.calib(100:110, 130, 20) # multiple calendar ages of a single date
-l.calib(100, c(130,150), c(15,20)) # multiple radiocarbon ages and a single calendar age
+  l.calib(100, 130, 20)
+  l.calib(100:110, 130, 20) # multiple calendar ages of a single date
+  l.calib(100, c(130,150), c(15,20)) # multiple radiocarbon ages and a single calendar age
 }
 \author{
 Maarten Blaauw

@@ -11,7 +11,8 @@ point.estimates(
   mode = TRUE,
   midpoint = TRUE,
   prob = 0.95,
-  rounded = 1
+  rounded = 1,
+  every = 1
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ point.estimates(
 \item{prob}{probability range for the hpd range(s)}
 
 \item{rounded}{Rounding for reported probabilities. Defaults to 1 decimal.}
+
+\item{every}{Yearly precision (defaults to \code{every=1}).}
 }
 \value{
 The chosen point estimates

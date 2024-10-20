@@ -1,149 +1,54 @@
-
-#' @name pMC.age
-#' @title Calculate C14 ages from pMC values.
-#' @description Calculate C14 ages from pMC values of radiocarbon dates.
-#' @details Post-bomb dates are often reported as pMC or percent modern carbon. Since Bacon expects radiocarbon ages,
-#'  this function can be used to calculate radiocarbon ages from pMC values. The reverse function is \link{age.pMC}.
-#' @param mn Reported mean of the pMC.
-#' @param sdev Reported error of the pMC.
-#' @param ratio Most modern-date values are reported against \code{100}. If it is against \code{1} instead, use \code{1} here.
-#' @param decimals Amount of decimals required for the radiocarbon age.
-#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
-#' @return Radiocarbon ages from pMC values. If pMC values are above 100\%, the resulting radiocarbon ages will be negative.
+#' @name fractions
+#' @title Estimate a missing radiocarbon age from fractions
+#' @description Estimate a missing radiocarbon age from a sample which has C14 dates on both the bulk and on fractions, but where 1 sample was too small to be dated. This can be used in for example soils separated into size fractions, where one of the samples turns out to be too small to be dated. Requires to have the bulk age, the ages of the dated fractions, and the carbon contents and weights of all fractions.
+#' @param bulk_age The age of the bulk/entire sample
+#' @param bulk_er The error of the age of the bulk/entire sample
+#' @param fractions_percC The \%carbon contents of the fractions. If unknown, enter estimates (e.g., rep(1,4))
+#' @param fractions_weights The weights of the fractions. The units are not important here as the weights are used to calculate the relative contributions of carbon within individual fractions to the entire sample.
+#' @param fractions_ages The radiocarbon ages of the individual fractions. The fraction without a date should be entered as NA.
+#' @param fractions_errors The errors of the radiocarbon ages of the individual fractions. The fraction without a date should be entered as NA.
+#' @param roundby Rounding of the reported age
 #' @examples
-#'   pMC.age(110, 0.5) # a postbomb date, so with a negative 14C age
-#'   pMC.age(80, 0.5) # prebomb dates can also be calculated
-#'   pMC.age(.8, 0.005, ratio=1) # throws a warning, use F14C.age instead
+#' Cs <- c(.02, .05, .03, .04) # carbon contents of each fraction
+#' wghts <- c(5, 4, 2, .5) # weights for all fractions, e.g., in mg
+#' ages <- c(130, 130, 130, NA) # ages of all fractions. The unmeasured one is NA
+#' errors <- c(10, 12, 10, NA) # errors, unmeasured is NA
+#' fractions(150, 20, Cs, wghts, ages, errors) # assuming a bulk age of 150 +- 20 C14 BP
 #' @export
-pMC.age <- function(mn, sdev=c(), ratio=100, decimals=0, lambda=8033) {
-  if(ratio !=100)
-    warning("pMC.age expects a ratio of 100. For ratio=1, use F14C.age")
-  y <- -lambda * log(mn/ratio)
-  if(length(sdev) == 0)
-    signif(y, decimals) else {
-    sdev <- y - -lambda * log((mn+sdev)/ratio)
-    round(c(y, sdev), decimals)
-  }
+fractions <- function(bulk_age, bulk_er, fractions_percC, fractions_weights, fractions_ages, fractions_errors, roundby=1) {
+
+  if(length(which(is.na(fractions_ages))) > 1 || length(which(is.na(fractions_errors))) > 1)
+	stop("Cannot deal with multiple missing fraction ages/errors")  
+
+  unknown_age <- which(is.na(fractions_ages))
+  totC <- fractions_percC * fractions_weights # how much C in total
+  totC <- totC / sum(totC) # normalise to 1
+
+  # Bulk F14C value and its error
+  bulk_F <- C14toF14C(bulk_age, bulk_er)
+
+  # F14C values for the known fractions (ignoring the unknown one)
+  fractions_F <- C14toF14C(fractions_ages[-unknown_age], fractions_errors[-unknown_age])
+
+  # Carbon contribution * F14C value for each known fraction
+  fractions_cF <- totC[-unknown_age] * fractions_F[,1] # carbon contribution * C14 ages
+
+  # Propagate the uncertainty for the known fractions, weighted by their %C and errors
+  total_known_error <- sum((totC[-unknown_age]^2) / (fractions_F[,2]^2))
+  overall_uncertainty <- sqrt(total_known_error + bulk_F[2]^2)
+
+  # Calculate the remaining fraction's F14C value and age
+  unknown_F <- bulk_F[1] - sum(fractions_cF)
+  unknown_age_estimated <- F14CtoC14(unknown_F / totC[unknown_age])
+
+  unknown_age <- round(c(unknown_age_estimated[1], overall_uncertainty), roundby)
+
+  message(paste0("estimated C14 age of fraction ", which(is.na(fractions_ages)), ": ", unknown_age[1], " +- ", unknown_age[2]))
+  invisible(unknown_age)
 }
 
 
 
-#' @name age.pMC
-#' @title Calculate pMC values from C14 ages
-#' @description Calculate pMC values from radiocarbon ages
-#' @details Post-bomb dates are often reported as pMC or percent modern carbon. Since Bacon expects radiocarbon ages,
-#' this function can be used to calculate pMC values from radiocarbon ages. The reverse function of \link{pMC.age}.
-#' @param mn Reported mean of the 14C age.
-#' @param sdev Reported error of the 14C age.
-#' @param ratio Most modern-date values are reported against \code{100}. If it is against \code{1} instead, a warning is provided; use \code{age.F14C}.
-#' @param decimals Amount of decimals required for the pMC value. Defaults to 5.
-#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
-#' @return pMC values from C14 ages.
-#' @examples
-#'   age.pMC(-2000, 20)
-#'   age.pMC(-2000, 20, 1)
-#' @export
-age.pMC <- function(mn, sdev=c(), ratio=100, decimals=5, lambda=8033) {
-  if(ratio !=100)
-    warning("age.pMC expects a ratio of 100. For ratio=1, use age.F14C")
-  y <- exp(-mn / lambda)
-  if(length(sdev) == 0)
-    signif(ratio*y, decimals) else {
-    sdev <- y - exp(-(mn + sdev) / lambda)
-    signif(ratio*cbind(y, sdev), decimals)
-  }
-}
-
-
-
-#' @name F14C.age
-#' @title Calculate C14 ages from F14C values.
-#' @description Calculate C14 ages from F14C values of radiocarbon dates.
-#' @details Post-bomb dates are often reported as F14C or fraction modern carbon. Since Bacon expects radiocarbon ages,
-#'  this function can be used to calculate radiocarbon ages from F14C values. The reverse function is \link{age.F14C}.
-#' @param mn Reported mean of the F14C
-#' @param sdev Reported error of the F14C. Returns just the mean if left empty.
-#' @param decimals Amount of decimals required for the radiocarbon age. Quite sensitive, defaults to 5.
-#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
-#' @return Radiocarbon ages from F14C values. If F14C values are above 100\%, the resulting radiocarbon ages will be negative.
-#' @examples
-#'   F14C.age(1.10, 0.5) # a postbomb date, so with a negative 14C age
-#'   F14C.age(.80, 0.5) # prebomb dates can also be calculated
-#' @export
-F14C.age <- function(mn, sdev=c(), decimals=5, lambda=8033) {
-  y <- -lambda * log(mn)
-  if(length(sdev) == 0)
-    signif(y, decimals) else {
-    sdev <- y - -lambda * log((mn+sdev))
-    signif(cbind(y, sdev), decimals)
-  }
-}
-
-
-
-#' @name age.F14C
-#' @title Calculate F14C values from C14 ages
-#' @description Calculate F14C values from radiocarbon ages
-#' @details Post-bomb dates are often reported as F14C or fraction modern carbon. Since Bacon expects radiocarbon ages,
-#' this function can be used to calculate F14C values from radiocarbon ages. The reverse function of \link{F14C.age}.
-#' @param mn Reported mean of the 14C age.
-#' @param sdev Reported error of the 14C age. If left empty, will translate mn to F14C.
-#' @param decimals Amount of decimals required for the F14C value. Defaults to 5.
-#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
-#' @return F14C values from C14 ages.
-#' @examples
-#'   age.F14C(-2000, 20)
-#' @export
-age.F14C <- function(mn, sdev=c(), decimals=5, lambda=8033) {
-  y <- exp(-mn / lambda)
-  if(length(sdev) == 0)
-    signif(y, decimals) else {
-      sdev <- y - exp(-(mn + sdev) / lambda)
-      signif(cbind(y, sdev), decimals)
-    }
-}
-
-
-
-#' @name D14C.F14C
-#' @title Transform D14C into F14C
-#' @details As explained by Heaton et al. 2020 (Radiocarbon), 14C measurements are commonly expressed in
-#' three domains: Delta14C, F14C and the radiocarbon age. This function translates Delta14C, the historical level of Delta14C in the year t cal BP, to F14C values. Note that per convention, this function uses the Cambridge half-life, not the Libby half-life.
-#' @param D14C The Delta14C value to translate
-#' @param t the cal BP age
-#' @return The corresponding F14C value
-#' @examples
-#' D14C.F14C(-10, 238)
-#' @export
-D14C.F14C <- function(D14C, t)
-  return( ((D14C/1000)+1) * exp(-t/8267))
-
-
-
-#' @name F14C.D14C
-#' @title Transform F14C into D14C
-#' @details As explained by Heaton et al. 2020 (Radiocarbon), 14C measurements are commonly expressed in
-#' three domains: Delta14C, F14C and the radiocarbon age. This function translates F14C values into Delta14C, the historical level of Delta14C in the year t cal BP. Note that per convention, this function uses the Cambridge half-life, not the Libby half-life.
-#' @param F14C The F14C value to translate
-#' @param t the cal BP age
-#' @return The corresponding D14C value
-#' @examples
-#' F14C.D14C(0.985, 222)
-#' cc <- rintcal::ccurve()
-#' # plot IntCal20 as D14C:
-#' cc.Fmin <- age.F14C(cc[,2]+cc[,3])
-#' cc.Fmax <- age.F14C(cc[,2]-cc[,3])
-#' cc.D14Cmin <- F14C.D14C(cc.Fmin, cc[,1])
-#' cc.D14Cmax <- F14C.D14C(cc.Fmax, cc[,1])
-#' plot(cc[,1]/1e3, cc.D14Cmax, type="l", xlab="kcal BP", ylab=expression(paste(Delta, ""^{14}, "C")))
-#' lines(cc[,1]/1e3, cc.D14Cmin)
-#' @export
-F14C.D14C <- function(F14C, t)
-  return( 1000 * ((F14C / exp(-t/8267)) - 1))
-
-
-
-# calculate the impacts of contamination
 #' @name contaminate
 #' @title Simulate the impact of contamination on a radiocarbon age
 #' @description Given a certain radiocarbon age, calculate the observed impact of contamination with a ratio of material with a different 14C content (for example, 1% contamination with modern carbon)
@@ -170,11 +75,48 @@ F14C.D14C <- function(F14C, t)
 #' text(52e3, contaminate(50e3, c(), contam.legend, 1), labels=contam.legend, col=contam.col, cex=.7)
 #' @export
 contaminate <- function(y, sdev=c(), fraction, F14C, F14C.er=0, decimals=5) {
-  y.F <- as.data.frame(age.F14C(y, sdev, decimals))
+  y.F <- as.data.frame(C14toF14C(y, sdev, decimals))
   mn <- ((1-fraction)*y.F[,1]) + (fraction*F14C)
   if(length(sdev) == 0)
-    return(F14C.age(mn, c(), decimals)) else {
+    return(F14CtoC14(mn, c(), decimals)) else {
       er <- sqrt(y.F[,2]^2 + F14C.er^2)
-      return(F14C.age(mn, er, decimals))
+      return(F14CtoC14(mn, er, decimals))
     }
 }
+
+
+
+#' @name pool
+#' @title Test if a set of radiocarbon dates can be combined 
+#' @description Calculate the (chi-square) probability that a set of radiocarbon dates is consistent, i.e. that it can be assumed that they all pertain to the same true radiocarbon age (and thus to the same calendar age - note though that sometimes multiple calendar ages obtain the same C14 age). The function calculates the differences (chi2 value) and finds the corresponding p-value. If the chi2 values is sufficiently small, then the p-value is sufficiently large (above the threshold), and the pooled mean is calculated and returned. If the scatter is too large, no pooled mean is calculated. 
+#' @details This follows the calculations of Ward and Wilson (1978; Archaeometry 20: 19-31 <doi:10.1111/j.1475-4754.1978.tb00208.x>) and should only be used for multiple dates that stem from the same sample (e.g., multiple measurements on a single bone). It cannot be used to test if multiple dates from multiple samples pertain to the same event. Since the assumption is that all measurements stem from the same event, we can assume that they all share the same C14 age (since any calBP age will have an associated IntCal C14 age).
+#' @return The pooled mean and error if the p-value is above the threshold - a warning if it is not.
+#' @param y The set of radiocarbon dates to be tested
+#' @param er The lab errors of the radiocarbon dates
+#' @param threshold Probability threshold above which chisquare values are considered acceptable (between 0 and 1; default \code{threshold=0.05}).
+#' @param roundby Rounding of the reported mean, chisquare and and p-value. Defaults to \code{roundby=1}.
+#' @author Maarten Blaauw
+#' @examples
+#'   y <- c(280, 346, 359, 387)
+#'   y2 <- c(100, 346, 359, 387)
+#'   er <- c(15, 13, 16, 18)
+#'   pool(y,er)
+#'   pool(y2,er)
+#' @export
+pool <- function(y, er, threshold=.05, roundby=1) {
+  pooled.y <- (sum(y/er^2)) / (sum(1/er^2))
+  pooled.er <- sqrt(1/sum(1/er^2))
+  T <- sum((y-pooled.y)^2 / er^2)
+  p <- pchisq(T, length(y)-1, lower.tail=FALSE)
+  
+  if(p < threshold) {
+    message("! Scatter too large to calculate the pooled mean\nChisq value: ", 
+      round(T, roundby+2), ", p-value ", round(p, roundby+2), " < ", threshold, sep="") 
+  } else { 
+      message("pooled mean: ", round(pooled.y, roundby), " +- ", round(pooled.er, roundby), 
+		"\nChi2: ", T, ", p-value ", round(p, roundby+2), " (>", threshold, ", OK)", sep="")
+	    return(c(pooled.y, pooled.er))
+	  }  
+}
+
+

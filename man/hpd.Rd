@@ -4,7 +4,7 @@
 \alias{hpd}
 \title{Calculate highest posterior density}
 \usage{
-hpd(calib, prob = 0.95, return.raw = FALSE, rounded = 1)
+hpd(calib, prob = 0.95, return.raw = FALSE, rounded = 1, every = 1)
 }
 \arguments{
 \item{calib}{The calibrated distribution, as returned from caldist()}
@@ -14,6 +14,8 @@ hpd(calib, prob = 0.95, return.raw = FALSE, rounded = 1)
 \item{return.raw}{The raw data to calculate hpds can be returned, e.g. to draw polygons of the calibrated distributions. Defaults to \code{return.raw=FALSE}.}
 
 \item{rounded}{Rounding for reported probabilities. Defaults to 1 decimal.}
+
+\item{every}{Yearly precision (defaults to \code{every=1}).}
 }
 \value{
 The highest posterior density ranges, as three columns: from age, to age, and the corresponding percentage(s) of the range(s)

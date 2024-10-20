@@ -7,3 +7,4 @@
 ^CRAN-SUBMISSION$
 ^revdep$
 ^.github$
+^R/\.RData$

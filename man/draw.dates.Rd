@@ -10,6 +10,8 @@ draw.dates(
   depth,
   cc = 1,
   postbomb = FALSE,
+  thiscurve = c(),
+  oncurve = FALSE,
   reservoir = c(),
   normal = TRUE,
   t.a = 3,
@@ -21,6 +23,8 @@ draw.dates(
   hpd.lwd = 2,
   hpd.col = rgb(0, 0, 1, 0.7),
   cal.hpd.col = rgb(0, 0.5, 0.5, 0.35),
+  rounded = 0.1,
+  every = 1,
   mirror = TRUE,
   up = FALSE,
   draw.base = TRUE,
@@ -64,13 +68,17 @@ draw.dates(
 
 \item{postbomb}{Whether or not this is a postbomb age. Defaults to FALSE.}
 
+\item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().}
+
+\item{oncurve}{Whether or not to plot the calibration curve and then plot the dates onto this curve. Defaults to FALSE.}
+
 \item{reservoir}{Reservoir age, or reservoir age and age offset.}
 
 \item{normal}{Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2009).}
 
 \item{t.a}{Value a of the t distribution (defaults to 3).}
 
-\item{t.b}{Value a of the t distribution (defaults to 4).}
+\item{t.b}{Value b of the t distribution (defaults to 4).}
 
 \item{prob}{Probability confidence intervals (between 0 and 1).}
 
@@ -85,6 +93,10 @@ draw.dates(
 \item{hpd.col}{Colour of the hpd rectangle for all dates or radiocarbon dates}
 
 \item{cal.hpd.col}{Colour of the hpd rectangle for cal BP dates}
+
+\item{rounded}{Rounding for probabilities of reported hpd ranges. Defaults to 1 decimal.}
+
+\item{every}{Yearly precision of hpds (defaults to \code{every=1}).}
 
 \item{mirror}{Plot distributions mirrored, a bit like a swan. Confuses some people but looks nice to the author so is the default.}
 
