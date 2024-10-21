@@ -15,7 +15,7 @@ F14CtopMC(mn, sdev = NULL)
 The pMC values from the F14C values. Basically the original values multiplied by 100.
 }
 \description{
-Calculate pMC vlaues from F14C values of radiocarbon dates.
+Calculate pMC values from F14C values of radiocarbon dates.
 }
 \details{
 Post-bomb dates are often reported as F14C (between 0 at c. 55 kcal BP and 1 at c. AD 1950). Since software such as Bacon expects radiocarbon ages,

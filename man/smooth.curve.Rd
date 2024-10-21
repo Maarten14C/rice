@@ -18,17 +18,17 @@ smooth.ccurve(
 )
 }
 \arguments{
-\item{smooth}{The window width of the smoothing. Defaults to \code{smooth=30},.}
+\item{smooth}{The window width of the smoothing. Defaults to \code{smooth=30}.}
 
-\item{cc}{The calibration curve to smooth. Calibration curve for 14C dates: ‘cc=1’ for IntCal20 (northern hemisphere terrestrial), ‘cc=2’ for Marine20 (marine), ‘cc=3’ for SHCal20 (southern hemisphere terrestrial). Alternatively, one can also write, e.g., "IntCal20", "Marine13". One can also make a custom-built calibration curve, e.g. using ‘mix.ccurves()’, and load this using ‘cc=4’. In this case, it is recommended to place the custom calibration curve in its own directory, using ‘cc.dir’ (see below).}
+\item{cc}{The calibration curve to smooth. Calibration curve for 14C dates: 'cc=1' for IntCal20 (northern hemisphere terrestrial), 'cc=2' for Marine20 (marine), 'cc=3' for SHCal20 (southern hemisphere terrestrial). Alternatively, one can also write, e.g., "IntCal20", "Marine13". One can also make a custom-built calibration curve, e.g. using 'mix.ccurves()', and load this using 'cc=4'. In this case, it is recommended to place the custom calibration curve in its own directory, using 'cc.dir' (see below).}
 
-\item{postbomb}{Use ‘postbomb=TRUE’ to get a postbomb calibration curve (default ‘postbomb=FALSE’). For monthly data, type e.g. ‘ccurve("sh1-2_monthly")’}
+\item{postbomb}{Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'ccurve("sh1-2_monthly")'}
 
-\item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., ‘cc.dir="ccurves"’.}
+\item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., 'cc.dir="ccurves"'.}
 
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().}
 
-\item{resample}{The IntCal curves come at a range of 'bin sizes'; every year from 0 to 5 kcal BP, then every 5 yr until 15 kcal BP, then every 10 yr until 25 kcal BP, and every 20 year thereafter. The curves can be resampled to constant bin sizes, e.g. ‘resample=5’. Defaults to FALSE.}
+\item{resample}{The IntCal curves come at a range of 'bin sizes'; every year from 0 to 5 kcal BP, then every 5 yr until 15 kcal BP, then every 10 yr until 25 kcal BP, and every 20 year thereafter. The curves can be resampled to constant bin sizes, e.g. 'resample=5'. Defaults to FALSE.}
 
 \item{name}{The filename of the curve, if it is being saved. Defaults to \code{name="smoothed.csv"}.}
 

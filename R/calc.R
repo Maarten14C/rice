@@ -18,7 +18,7 @@
 fractions <- function(bulk_age, bulk_er, fractions_percC, fractions_weights, fractions_ages, fractions_errors, roundby=1) {
 
   if(length(which(is.na(fractions_ages))) > 1 || length(which(is.na(fractions_errors))) > 1)
-	stop("Cannot deal with multiple missing fraction ages/errors")  
+    stop("Cannot deal with multiple missing fraction ages/errors")
 
   unknown_age <- which(is.na(fractions_ages))
   totC <- fractions_percC * fractions_weights # how much C in total
@@ -74,14 +74,56 @@ fractions <- function(bulk_age, bulk_er, fractions_percC, fractions_weights, fra
 #' contam.col <- rainbow(length(contam.legend))
 #' text(52e3, contaminate(50e3, c(), contam.legend, 1), labels=contam.legend, col=contam.col, cex=.7)
 #' @export
-contaminate <- function(y, sdev=c(), fraction, F14C, F14C.er=0, decimals=5) {
+contaminate <- function(y, sdev=NULL, fraction, F14C, F14C.er=0, decimals=5) {
   y.F <- as.data.frame(C14toF14C(y, sdev, decimals))
   mn <- ((1-fraction)*y.F[,1]) + (fraction*F14C)
-  if(length(sdev) == 0)
+  if(is.null(sdev))
     return(F14CtoC14(mn, c(), decimals)) else {
       er <- sqrt(y.F[,2]^2 + F14C.er^2)
       return(F14CtoC14(mn, er, decimals))
     }
+}
+
+
+
+#' @name decontaminate
+#' @title Calculate the amount of contamination to explain an observed C14 age
+#' @description Given an observed and a 'true' radiocarbon age, calculate the amount of contamination required to explain the observed age.
+#' @return The required contamination (as percentage), as well as a plot
+#' @param y.obs the observed radiocarbon age
+#' @param y.real the 'true' radiocarbon age
+#' @param F14C the F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.
+#' @param decimals Rounding of the output. Since details matter here, the default is to provide 5 decimals.
+#' @param visualise By default, a plot is made to visualise the real and observed F14C values, together with the inferred contamination.
+#' @author Maarten Blaauw
+#' @examples
+#'   decontaminate(600, 2000, 1)
+#' @export
+decontaminate <- function(y.obs, y.real, F14C=1, decimals=2, visualise=TRUE) {
+  obsF <- C14toF14C(y.obs)
+  realF <- C14toF14C(y.real)
+
+  # note: uncertainties are not included in these calculations
+  fraction <- (obsF - realF) / (F14C - realF)
+
+  if(visualise) {
+    plot(0, type="n", xlim=c(0, 100), ylim=sort(extendrange(c(obsF, realF, F14C))),
+      xlab="contamination (%)", ylab="F14C", bty="l")
+    legend("right", pch=c(19,16,17), col=c(1,4,2), legend=c("real", "observed", "contamination"), bg=rgb(1,1,1,.5), box.lty=0, cex=.7)
+    segments(-100, realF, 0, realF, lty=2)
+	segments(-100, obsF, 100*fraction, lty=2, col=4)
+	segments(-100, F14C, 100, F14C, lty=2, col=2)
+	segments(0, realF, 100, F14C, lty=2, col=grey(0.5))
+    segments(100*fraction, obsF, 100*fraction, -1000, lty=2, col=4)
+	
+    points(0, realF, pch=19)
+	points(100*fraction, obsF, col=4, pch=16)
+    points(100, F14C, pch=17, col=2)
+#    abline(realF, (obsF-realF)/(100*fraction), lty=2)
+  }
+
+  message("To observe an age of ", y.obs, " C14 BP, a sample with a true age of ", y.real, " C14 BP would have to be contaminated with ", round(100*fraction, decimals), "% of carbon with F14C=", F14C)
+  invisible(fraction)
 }
 
 
@@ -97,11 +139,10 @@ contaminate <- function(y, sdev=c(), fraction, F14C, F14C.er=0, decimals=5) {
 #' @param roundby Rounding of the reported mean, chisquare and and p-value. Defaults to \code{roundby=1}.
 #' @author Maarten Blaauw
 #' @examples
-#'   y <- c(280, 346, 359, 387)
-#'   y2 <- c(100, 346, 359, 387)
-#'   er <- c(15, 13, 16, 18)
-#'   pool(y,er)
-#'   pool(y2,er)
+#'   data(shroud)
+#'   pool(shroud$y,shroud$er)
+#'   Zu <- grep("ETH", shroud$ID) # Zurich lab only
+#'   pool(shroud$y[Zu],shroud$er[Zu])
 #' @export
 pool <- function(y, er, threshold=.05, roundby=1) {
   pooled.y <- (sum(y/er^2)) / (sum(1/er^2))

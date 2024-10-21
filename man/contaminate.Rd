@@ -4,7 +4,7 @@
 \alias{contaminate}
 \title{Simulate the impact of contamination on a radiocarbon age}
 \usage{
-contaminate(y, sdev = c(), fraction, F14C, F14C.er = 0, decimals = 5)
+contaminate(y, sdev = NULL, fraction, F14C, F14C.er = 0, decimals = 5)
 }
 \arguments{
 \item{y}{the true radiocarbon age}

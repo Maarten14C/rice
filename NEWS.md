@@ -9,6 +9,8 @@
 * new function `smooth.ccurve` to smooth a calibration curve using a moving window of a specified width. This can be useful to calibrate material that is known to have accumulated, say, over two decades
 * new function `pool` which calculates the chi2 and accompanying p-value for a set of multiple measurements on the same sample. If the scatter between the values is low enough for the p-value to be below a threshold, then the pooled mean and uncertainty are returned
 * the function draw.dates now has an option `oncurve` to draw the dates onto the calibration curve.
+* added dataset `shroud`, which contains replicate radiocarbon measurements on the Shroud of Turin, from three labs.
+* new function `decontaminate` to estimate the percentage of contamination needed to explain the difference between a 'real' and an 'observed' radiocarbon age.
 
 # rice 0.2.0
 * added an option `bombalert` to the calibrate function. If set to false, plots ages close to 0 C14 BP without warnings.

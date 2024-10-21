@@ -14,6 +14,7 @@ RoxygenNote: 7.3.2
 Imports: rintcal (>= 1.0.0), rlang, ggplot2, rnaturalearth, rnaturalearthdata
 Suggests: knitr, rmarkdown, utf8, remotes
 Depends: R (>= 3.5.0)
+Language: en-GB
 VignetteBuilder: knitr
 NeedsCompilation: no
 LazyData: true

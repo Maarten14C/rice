@@ -345,7 +345,7 @@ F14CtoC14 <- function(mn, sdev=NULL, decimals=5, lambda=8033) {
 
 #' @name F14CtopMC
 #' @title Calculate pMC ages from F14C values.
-#' @description Calculate pMC vlaues from F14C values of radiocarbon dates.
+#' @description Calculate pMC values from F14C values of radiocarbon dates.
 #' @details Post-bomb dates are often reported as F14C (between 0 at c. 55 kcal BP and 1 at c. AD 1950). Since software such as Bacon expects radiocarbon ages,
 #'  this function can be used to calculate radiocarbon ages from F14C values. The reverse function is \link{age.F14C}.
 #' @param mn Reported mean of the F14C
@@ -412,7 +412,7 @@ pMCtoC14 <- function(mn, sdev=NULL, ratio=100, decimals=0, lambda=8033) {
 
 #' @name pMCtoF14C
 #' @title Calculate pMC ages from F14C values.
-#' @description Calculate pMC vlaues from F14C values of radiocarbon dates.
+#' @description Calculate pMC values from F14C values of radiocarbon dates.
 #' @details Post-bomb dates are often reported as F14C (between 0 at c. 55 kcal BP and 1 at c. AD 1950). Since software such as Bacon expects radiocarbon ages,
 #'  this function can be used to calculate radiocarbon ages from F14C values. The reverse function is \link{age.F14C}.
 #' @param mn Reported mean of the F14C

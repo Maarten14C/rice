@@ -341,12 +341,12 @@ calib.t <- function(y=2450, error=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, as.F=F
 #' @title Smooth a calibration curve
 #' @description Smooth a calibration curve over a time window of a specified width. This to accommodate material that has accumulated over a certain assumed time, e.g. a cm of peat over say 30 years.
 #' @details The smoothing is done by calculating the mean C14 age and error of a moving window (moving along with the cal BP steps of the calibration curve). Something similar is done in the online calibration software CALIB.
-#' @param smooth The window width of the smoothing. Defaults to \code{smooth=30},.
-#' @param cc The calibration curve to smooth. Calibration curve for 14C dates: ‘cc=1’ for IntCal20 (northern hemisphere terrestrial), ‘cc=2’ for Marine20 (marine), ‘cc=3’ for SHCal20 (southern hemisphere terrestrial). Alternatively, one can also write, e.g., "IntCal20", "Marine13". One can also make a custom-built calibration curve, e.g. using ‘mix.ccurves()’, and load this using ‘cc=4’. In this case, it is recommended to place the custom calibration curve in its own directory, using ‘cc.dir’ (see below).
-#' @param postbomb Use ‘postbomb=TRUE’ to get a postbomb calibration curve (default ‘postbomb=FALSE’). For monthly data, type e.g. ‘ccurve("sh1-2_monthly")’
-#' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., ‘cc.dir="ccurves"’.
+#' @param smooth The window width of the smoothing. Defaults to \code{smooth=30}.
+#' @param cc The calibration curve to smooth. Calibration curve for 14C dates: 'cc=1' for IntCal20 (northern hemisphere terrestrial), 'cc=2' for Marine20 (marine), 'cc=3' for SHCal20 (southern hemisphere terrestrial). Alternatively, one can also write, e.g., "IntCal20", "Marine13". One can also make a custom-built calibration curve, e.g. using 'mix.ccurves()', and load this using 'cc=4'. In this case, it is recommended to place the custom calibration curve in its own directory, using 'cc.dir' (see below).
+#' @param postbomb Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'ccurve("sh1-2_monthly")'
+#' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., 'cc.dir="ccurves"'.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
-#' @param resample The IntCal curves come at a range of 'bin sizes'; every year from 0 to 5 kcal BP, then every 5 yr until 15 kcal BP, then every 10 yr until 25 kcal BP, and every 20 year thereafter. The curves can be resampled to constant bin sizes, e.g. ‘resample=5’. Defaults to FALSE.
+#' @param resample The IntCal curves come at a range of 'bin sizes'; every year from 0 to 5 kcal BP, then every 5 yr until 15 kcal BP, then every 10 yr until 25 kcal BP, and every 20 year thereafter. The curves can be resampled to constant bin sizes, e.g. 'resample=5'. Defaults to FALSE.
 #' @param name The filename of the curve, if it is being saved. Defaults to \code{name="smoothed.csv"}.
 #' @param save Whether or not to save the curve to cc.dir. Defaults to \code{save=FALSE}.
 #' @param sep Separator between fields if the file is saved (tab by default, \code{sep="\t"}).

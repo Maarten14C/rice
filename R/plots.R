@@ -49,21 +49,25 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
   mindat <- cc.1[,cc.cal] >= min(cal1, cal2)
   maxdat <- cc.1[,cc.cal] <= max(cal1, cal2)
   cc.1 <- cc.1[which(mindat * maxdat == 1),]
-  if(ka)
-    cc.1 <- cc.1/1e3
-  
-  if("f" %in% tolower(realm)) {
+
+  if(ka) {
+    cc.1[,1] <- cc.1[,1]/1e3
+    if(grepl("c", tolower(realm)))  # ka doesn't make sense for F14C, pMC, or D14C
+      cc.1[,2:3] <- cc.1[,2:3]/1e3
+  }
+
+  if(grepl("f", tolower(realm))) {
     F <- C14toF14C(cc.1[,2], cc.1[,3])
     cc.1[,2:3] <- F
   }
-  if("p" %in% tolower(realm)) {
+  if(grepl("p", tolower(realm))) {
     p <- C14topMC(cc.1[,2], cc.1[,3])
     cc.1[,2:3] <- p
   }
-  if("d" %in% tolower(realm)) {
+  if(grepl("d", tolower(realm))) {
     F <- C14toF14C(cc.1[,2], cc.1[,3])
-    Dmax <- F14CtoD14C(F[,1]+F[,2], cc.1[,1])
-    D <- F14CtoD14C(F[,1], cc.1[,1])
+    Dmax <- F14CtoD14C(F[,1]+F[,2], t=cc.1[,1])
+    D <- F14CtoD14C(F[,1], t=cc.1[,1])
     cc.1[,2:3] <- cbind(D, Dmax-D)
   }
  
@@ -76,24 +80,30 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
     mindat <- cc.2[,cc.cal] >= min(cal1, cal2)
     maxdat <- cc.2[,cc.cal] <= max(cal1, cal2)
 
-    if("f" %in% tolower(realm)) {
-      F <- C14toF14C(cc.2[,2], cc.2[,3])
-      cc.2[,2:3] <- F
+    if(ka) {
+      cc.2[,1] <- cc.2[,1]/1e3
+      if(grepl("c", tolower(realm)))  # ka doesn't make sense for F14C, pMC, or D14C
+        cc.2[,2:3] <- cc.2[,2:3]/1e3
     }
-    if("p" %in% tolower(realm)) {
+    if(grepl("f", tolower(realm))) {
+        F <- C14toF14C(cc.2[,2], cc.2[,3])
+        cc.2[,2:3] <- F
+      }
+    if(grepl("p", tolower(realm))) {
       p <- C14topMC(cc.2[,2], cc.2[,3])
       cc.2[,2:3] <- p
     }
-    if("d" %in% tolower(realm)) {
+    if(grepl("d", tolower(realm))) {
       F <- C14toF14C(cc.2[,2], cc.2[,3])
-      Dmax <- F14CtoD14C(F[,1]+F[,2], cc.2[,1])
-      D <- F14CtoD14C(F[,1], cc.2[,1])
+      Dmax <- F14CtoD14C(F[,1]+F[,2], t=cc.2[,1])
+      D <- F14CtoD14C(F[,1], t=cc.2[,1])
       cc.2[,2:3] <- cbind(D, Dmax-D)
     }
-	
+
     cc.2 <- cc.2[which(mindat * maxdat == 1),]
     if(ka)
-      cc.2 <- cc.2/1e3
+      if(grepl("c", tolower(realm)))
+        cc.2 <- cc.2/1e3
     cc2.pol <- cbind(c(cc.2[,cc.cal], rev(cc.2[,cc.cal])), c(cc.2[,2]-cc.2[,3], rev(cc.2[,2]+cc.2[,3])))
   }
 
@@ -108,16 +118,16 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
           cal.lab <- "BC/AD" else
             cal.lab <- "cal. yr BP"
     if(is.na(c14.lab))
-      if(ka)
-        c14.lab <- expression(""^14*C~kBP) else
-          if("p" %in% tolower(realm))
-            c14.lab <- "pMC" else
-              if("f" %in% tolower(realm))
-                c14.lab <- expression(F^14*C) else
-                  if("d" %in% tolower(realm))
-                    c14.lab <- expression(delta^14*C) else
+      if(grepl("p", tolower(realm)))
+        c14.lab <- "pMC" else
+          if(grepl("f", tolower(realm)))
+            c14.lab <- expression(F^14*C) else
+              if(grepl("d", tolower(realm)))
+                c14.lab <- expression(Delta^14*C) else
+                  if(ka)
+                    c14.lab <- expression(""^14*C~kBP) else
                       c14.lab <- expression(""^14*C~BP)
-	     
+
     cal.lim <- c(cal1, cal2)
     if(cal.rev)
       cal.lim <- rev(cal.lim)
