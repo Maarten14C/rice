@@ -4,12 +4,12 @@
 \alias{D14CtoC14}
 \title{Transform D14C into C14 age}
 \usage{
-D14CtoC14(D14C, sdev = NULL, t)
+D14CtoC14(D14C, er = NULL, t)
 }
 \arguments{
 \item{D14C}{The Delta14C value to translate}
 
-\item{sdev}{Reported error of the D14C. Returns just the mean if left empty.}
+\item{er}{Reported error of the D14C. Returns just the mean if left empty.}
 
 \item{t}{the cal BP age}
 }

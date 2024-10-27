@@ -7,11 +7,12 @@
 draw.dates(
   age,
   error,
-  depth,
+  depth = c(),
   cc = 1,
   postbomb = FALSE,
   thiscurve = c(),
   oncurve = FALSE,
+  realm = "C",
   reservoir = c(),
   normal = TRUE,
   t.a = 3,
@@ -62,7 +63,7 @@ draw.dates(
 
 \item{error}{Error of the uncalibrated C-14 age (or ages).}
 
-\item{depth}{Depth(s) of the date(s). Can also be their relative positions if no depths are available.}
+\item{depth}{Depth(s) of the date(s). Defaults to their relative positions if no depths are provided.}
 
 \item{cc}{Calibration curve for C-14 dates (1, 2, 3, or 4, or, e.g., "IntCal20", "Marine20", "SHCal20", "nh1", "sh3", or "mixed"). If there are multiple dates but all use the same calibration curve, one value can be provided.}
 
@@ -71,6 +72,8 @@ draw.dates(
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().}
 
 \item{oncurve}{Whether or not to plot the calibration curve and then plot the dates onto this curve. Defaults to FALSE.}
+
+\item{realm}{If oncurve is used, by default the calibration curve is plotted in the C14 age realm. Alternatively, it can be provided as \code{realm="F14C"} or \code{realm="pMC"}}
 
 \item{reservoir}{Reservoir age, or reservoir age and age offset.}
 

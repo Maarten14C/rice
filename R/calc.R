@@ -49,115 +49,174 @@ fractions <- function(bulk_age, bulk_er, fractions_percC, fractions_weights, fra
 
 
 
+# internal plotting function
+plot_contamination <- function(trueF, obsF, percentage, contamF, ylim=c(), xlab="contamination (%)", true.col="black", observed.col="blue", contamination.col="red", true.pch=20, observed.pch=18, contamination.pch=17, true.name="target", ylab="F14C", bty="l") {
+  if(length(ylim) == 0)
+    ylim <- sort(extendrange(c(obsF, trueF, contamF)))
+  plot(0, type="n", xlim=c(0, 100), ylim=ylim, xlab=xlab, ylab=ylab, bty=bty)
+  segments(-100, trueF, 0, trueF, lty=3, col=true.col) # horizontal to target
+  segments(0, trueF, 0, -9999, lty=3, col=true.col) # vertical to target
+  segments(-100, obsF, percentage, lty=3, col=observed.col) # horizontal from observed
+  segments(percentage, obsF, percentage, -9999, lty=3, col=observed.col) # vertical from observed
+  segments(-100, contamF, 100, contamF, lty=3, col=2) # horizontal from contamination
+  segments(100, contamF, 100, -9999, lty=3, col=2) # vertical from contamination
+  segments(0, trueF, 100, contamF, lty=3, col=grey(0.5)) # the connecting line
+  points(0, trueF, col=true.col, pch=true.pch)
+  points(percentage, obsF, col=observed.col, pch=observed.pch)
+  points(100, contamF, col=contamination.col, pch=contamination.pch)
+
+  legend("right", pch=c(true.pch, observed.pch, contamination.pch), col=c(true.col, observed.col, contamination.col), legend=c(true.name, "observed", "contamination"), bg=rgb(1,1,1,0.8), box.lty=0, cex=.7, xjust=0, yjust=0)
+}
+
+
+
 #' @name contaminate
 #' @title Simulate the impact of contamination on a radiocarbon age
-#' @description Given a certain radiocarbon age, calculate the observed impact of contamination with a ratio of material with a different 14C content (for example, 1% contamination with modern carbon)
+#' @description Given a true/target radiocarbon age, calculate the impact of contamination (for example, 1\% contamination with modern carbon) on the observed age
 #' @return The observed radiocarbon age and error
 #' @param y the true radiocarbon age
-#' @param sdev the error of the true radiocarbon age
-#' @param fraction Relative amount of contamination. Must be between 0 and 1
-#' @param F14C the F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.
-#' @param F14C.er error of the contamination. Defaults to 0.
+#' @param er the error of the true radiocarbon age
+#' @param percentage Relative amount of contamination. Must be between 0 and 1
+#' @param F.contam the F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.
+#' @param contam.er error of the contamination. Defaults to 0.
 #' @param decimals Rounding of the output. Since details matter here, the default is to provide 5 decimals.
+#' @param visualise By default, a plot is made to visualise the target and observed F14C values, together with the inferred contamination.
+#' @param talk Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.
+#' @param true.col Colour for the target/true values. Defaults to black.
+#' @param observed.col Colour for the observed values. Defaults to blue.
+#' @param contamination.col Colour for the contamination values. Defaults to red.
+#' @param true.pch Icon for the true/target date. Defaults to a filled circle.
+#' @param observed.pch Icon for the observed. Defaults to a diamond.
+#' @param contamination.pch Icon for the contamination. Defaults to a triangle.
+#' @param true.name Name of the label of the true/target date
+#' @param xlab Name of the x-axis. Defaults to 'contamination (\%)'.
+#' @param ylab Name of the y-axis. Defaults to 'F14C'.
+#' @param ylim Limits of the y-axis. Calculated automatically by default.
+#' @param bty Draw a box around a box of a certain shape. Defaults to \code{bty="l"}.
 #' @author Maarten Blaauw
 #' @examples
-#' contaminate(5000, 20, .01, 1) # 1% contamination with modern carbon
-#' # Impacts of different amounts of contamination with modern carbon:
-#' real.14C <- seq(0, 50e3, length=200)
-#' contam <- seq(0, .1, length=101) # 0 to 10% contamination
-#' contam.col <- rainbow(length(contam))
-#' plot(0, type="n", xlim=c(0, 55e3), 
-#'   xlab="real", ylim=range(real.14C), ylab="observed")
-#' for(i in 1:length(contam))
-#'   lines(real.14C, contaminate(real.14C, c(), contam[i], 1, decimals=5), col=contam.col[i])
-#' contam.legend <- seq(0, .1, length=6)
-#' contam.col <- rainbow(length(contam.legend))
-#' text(52e3, contaminate(50e3, c(), contam.legend, 1), labels=contam.legend, col=contam.col, cex=.7)
+#' contaminate(5000, 20, 1, 1) # 1% contamination with modern carbon
+#' contaminate(66e6, 1e6, 1, 1) # dino bone, shouldn't be dated as way beyond the dating limit
 #' @export
-contaminate <- function(y, sdev=NULL, fraction, F14C, F14C.er=0, decimals=5) {
-  y.F <- as.data.frame(C14toF14C(y, sdev, decimals))
-  mn <- ((1-fraction)*y.F[,1]) + (fraction*F14C)
-  if(is.null(sdev))
-    return(F14CtoC14(mn, c(), decimals)) else {
-      er <- sqrt(y.F[,2]^2 + F14C.er^2)
-      return(F14CtoC14(mn, er, decimals))
+contaminate <- function(y, er=0, percentage, F.contam=1, contam.er=0, decimals=5, visualise=TRUE, talk=TRUE, true.col="black", observed.col="blue", contamination.col="red", true.pch=20, observed.pch=18, contamination.pch=17, true.name="true", xlab="contamination (%)", ylab="F14C", ylim=c(), bty="l") {
+  fraction <- percentage/100
+  true.F <- as.data.frame(C14toF14C(y, er, decimals))
+  obs.F <- ((1-fraction)*true.F[,1]) + (fraction*F.contam)
+  er <- sqrt(true.F[,2]^2 + contam.er^2)
+  obs.C14 <- F14CtoC14(obs.F, er, decimals)
+
+  if(visualise)
+    if(length(y) == 1)
+      plot_contamination(true.F[,1], obs.F, percentage, F.contam, ylim=ylim, xlab=xlab, true.col=true.col, observed.col=observed.col, contamination.col=contamination.col, true.pch=true.pch, true.name=true.name, observed.pch=observed.pch, contamination.pch=contamination.pch, ylab=ylab, bty=bty)
+  
+  if(talk)
+    if(length(y) == 1) { # only report if one value presented
+      message("True age as F14C: ", round(true.F[,1], decimals), " +- ", round(true.F[,2], decimals))
+      message("Observed F14C: (", 1-fraction, "*", round(true.F[,1],decimals), ") + (", fraction, "*", round(F.contam, decimals), ") = ", round(obs.F, decimals), " +- ", round(er, decimals))
+      message("Observed C14 age: ", obs.C14[1], " +- ", obs.C14[2])
     }
+  invisible(cbind(obs.C14)) 
 }
 
 
 
-#' @name decontaminate
-#' @title Calculate the amount of contamination to explain an observed C14 age
-#' @description Given an observed and a 'true' radiocarbon age, calculate the amount of contamination required to explain the observed age.
+#' @name clean
+#' @title Simulate removing contamination from a radiocarbon age
+#' @description Given an observed radiocarbon age, remove the impact of contamination (for example, 1\% contamination with modern carbon) to estimate the true/target age
+#' @return The true/target radiocarbon age and error
+#' @param y the observed radiocarbon age
+#' @param er the error of the observed radiocarbon age
+#' @param percentage Relative amount of contamination. Must be between 0 and 100 (\%)
+#' @param F.contam the F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.
+#' @param contam.er error of the contamination. Defaults to 0.
+#' @param decimals Rounding of the output. Since details matter here, the default is to provide 5 decimals.
+#' @param visualise By default, a plot is made to visualise the target and observed F14C values, together with the inferred contamination.
+#' @param talk Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.
+#' @param true.col Colour for the true/target values. Defaults to black.
+#' @param observed.col Colour for the observed values. Defaults to blue.
+#' @param contamination.col Colour for the contamination values. Defaults to red.
+#' @param true.pch Icon for the true/target date. Defaults to a filled circle.
+#' @param observed.pch Icon for the observed. Defaults to a diamond
+#' @param contamination.pch Icon for the contamination. Defaults to a triangle.
+#' @param true.name Name of the label of the true/target date
+#' @param xlab Name of the x-axis. Defaults to 'contamination (\%)'.
+#' @param ylab Name of the y-axis. Defaults to 'F14C'.
+#' @param ylim Limits of the y-axis. Calculated automatically by default.
+#' @param bty Draw a box around a box of a certain shape. Defaults to \code{bty="l"}.
+#' @author Maarten Blaauw
+#' @examples
+#' clean(5000, 20, 1, 1) # 1% contamination with modern carbon
+#' @export
+clean <- function(y, er=0, percentage, F.contam=1, contam.er=0, decimals=5, visualise=TRUE, talk=TRUE, true.col="black", observed.col="blue", contamination.col="red", true.pch=20, observed.pch=18, contamination.pch=17, true.name="true", xlab="contamination (%)", ylab="F14C", ylim=c(), bty="l") {
+  if(length(y)>1)
+    stop("cannot deal with more than one value at a time")
+  fraction <- percentage/100
+  obs.F <- as.data.frame(C14toF14C(y, er, decimals))
+  true.F <- (obs.F[,1] - fraction * F.contam) / (1 - fraction)
+  er <- sqrt(obs.F[,2]^2 + contam.er^2)
+  true.C14 <- F14CtoC14(true.F, er, decimals)
+
+  if(visualise)
+    if(length(y) == 1) # not if multiple entries
+      plot_contamination(true.F, obs.F[,1], percentage, F.contam, ylim=ylim, xlab=xlab, true.col=true.col, observed.col=observed.col, contamination.col=contamination.col, true.pch=true.pch, true.name=true.name, observed.pch=observed.pch, contamination.pch=contamination.pch, ylab=ylab, bty=bty)
+  
+  if(talk)
+    if(length(y) == 1) {
+      message("Observed age as F14C: ", round(obs.F[1], decimals), " +- ", round(obs.F[2], decimals))
+      message("True F14C: (", 1-fraction, "*", round(obs.F[1],decimals), ") - (", fraction, "*", round(F.contam, decimals), ") = ", round(true.F, decimals), " +- ", round(er, decimals))
+      message("True C14 age: ", true.C14[1], " +- ", true.C14[2])
+    }
+  invisible(cbind(true.C14)) 
+}
+
+
+
+#' @name muck
+#' @title Calculate the amount of muck/contamination to explain an observed C14 age
+#' @description Given an observed and a target radiocarbon age, calculate the amount of contamination required to explain the observed age.
 #' @return The required contamination (as percentage), as well as a plot
 #' @param y.obs the observed radiocarbon age
-#' @param y.real the 'true' radiocarbon age
-#' @param F14C the F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.
+#' @param y.target the target radiocarbon age
+#' @param F.contam the F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.
 #' @param decimals Rounding of the output. Since details matter here, the default is to provide 5 decimals.
-#' @param visualise By default, a plot is made to visualise the real and observed F14C values, together with the inferred contamination.
+#' @param talk Whether or not to report the calculations made
+#' @param visualise By default, a plot is made to visualise the target and observed F14C values, together with the inferred contamination.
+#' @param talk Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.
+#' @param target.col Colour for the target values. Defaults to black.
+#' @param observed.col Colour for the observed values. Defaults to blue.
+#' @param contamination.col Colour for the contamination values. Defaults to red.
+#' @param target.pch Icon for the target. Defaults to a filled circle.
+#' @param observed.pch Icon for the observed. Defaults to a diamond
+#' @param contamination.pch Icon for the contamination. Defaults to a triangle.
+#' @param true.name Name of the label of the true/target date
+#' @param xlab Name of the x-axis. Defaults to 'contamination (\%)'.
+#' @param ylab Name of the y-axis. Defaults to 'F14C'.
+#' @param ylim Limits of the y-axis. Calculated automatically by default.
+#' @param bty Draw a box around a box of a certain shape. Defaults to \code{bty="l"}.
 #' @author Maarten Blaauw
 #' @examples
-#'   decontaminate(600, 2000, 1)
+#'   muck(600, 2000, 1)
 #' @export
-decontaminate <- function(y.obs, y.real, F14C=1, decimals=2, visualise=TRUE) {
+muck <- function(y.obs, y.target, F.contam=1, decimals=3, visualise=TRUE, talk=TRUE, target.col="black", observed.col="blue", contamination.col="red", target.pch=20, observed.pch=18, contamination.pch=17, true.name="target", xlab="contamination (%)", ylab="F14C", ylim=c(), bty="l") {
   obsF <- C14toF14C(y.obs)
-  realF <- C14toF14C(y.real)
+  targetF <- C14toF14C(y.target)
 
-  # note: uncertainties are not included in these calculations
-  fraction <- (obsF - realF) / (F14C - realF)
+  # note: these calculations do NOT take into account uncertainties
+  frac <- ((obsF - targetF) / (F.contam - targetF))
+  perc <- 100*frac
 
-  if(visualise) {
-    plot(0, type="n", xlim=c(0, 100), ylim=sort(extendrange(c(obsF, realF, F14C))),
-      xlab="contamination (%)", ylab="F14C", bty="l")
-    legend("right", pch=c(19,16,17), col=c(1,4,2), legend=c("real", "observed", "contamination"), bg=rgb(1,1,1,.5), box.lty=0, cex=.7)
-    segments(-100, realF, 0, realF, lty=2)
-	segments(-100, obsF, 100*fraction, lty=2, col=4)
-	segments(-100, F14C, 100, F14C, lty=2, col=2)
-	segments(0, realF, 100, F14C, lty=2, col=grey(0.5))
-    segments(100*fraction, obsF, 100*fraction, -1000, lty=2, col=4)
-	
-    points(0, realF, pch=19)
-	points(100*fraction, obsF, col=4, pch=16)
-    points(100, F14C, pch=17, col=2)
-#    abline(realF, (obsF-realF)/(100*fraction), lty=2)
-  }
+  if(visualise)
+    if(length(y.obs) == 1)
+      plot_contamination(targetF, obsF, perc, F.contam, ylim=ylim, xlab=xlab, true.col=target.col, observed.col=observed.col, contamination.col=contamination.col, true.pch=target.pch, true.name=true.name, observed.pch=observed.pch, contamination.pch=contamination.pch, ylab=ylab, bty=bty)
+ 
+  obsF <- round(obsF, decimals); targetF <- round(targetF, decimals); perc <- round(perc,decimals)
 
-  message("To observe an age of ", y.obs, " C14 BP, a sample with a true age of ", y.real, " C14 BP would have to be contaminated with ", round(100*fraction, decimals), "% of carbon with F14C=", F14C)
-  invisible(fraction)
+  if(talk)
+    if(length(y.obs) == 1) {
+      message("Observed age: ", y.obs, " C14 BP (", obsF, " F14C)")
+      message("Target age: ", y.target, " C14 BP (", targetF, " F14C)")
+      message("Calculation: (", obsF, "-", targetF, ")/(", F.contam, " - ",  targetF, ") = ", round(frac, decimals+2))
+      message("Contamination required: ", perc, "%" )
+    }
+  invisible(frac)
 }
-
-
-
-#' @name pool
-#' @title Test if a set of radiocarbon dates can be combined 
-#' @description Calculate the (chi-square) probability that a set of radiocarbon dates is consistent, i.e. that it can be assumed that they all pertain to the same true radiocarbon age (and thus to the same calendar age - note though that sometimes multiple calendar ages obtain the same C14 age). The function calculates the differences (chi2 value) and finds the corresponding p-value. If the chi2 values is sufficiently small, then the p-value is sufficiently large (above the threshold), and the pooled mean is calculated and returned. If the scatter is too large, no pooled mean is calculated. 
-#' @details This follows the calculations of Ward and Wilson (1978; Archaeometry 20: 19-31 <doi:10.1111/j.1475-4754.1978.tb00208.x>) and should only be used for multiple dates that stem from the same sample (e.g., multiple measurements on a single bone). It cannot be used to test if multiple dates from multiple samples pertain to the same event. Since the assumption is that all measurements stem from the same event, we can assume that they all share the same C14 age (since any calBP age will have an associated IntCal C14 age).
-#' @return The pooled mean and error if the p-value is above the threshold - a warning if it is not.
-#' @param y The set of radiocarbon dates to be tested
-#' @param er The lab errors of the radiocarbon dates
-#' @param threshold Probability threshold above which chisquare values are considered acceptable (between 0 and 1; default \code{threshold=0.05}).
-#' @param roundby Rounding of the reported mean, chisquare and and p-value. Defaults to \code{roundby=1}.
-#' @author Maarten Blaauw
-#' @examples
-#'   data(shroud)
-#'   pool(shroud$y,shroud$er)
-#'   Zu <- grep("ETH", shroud$ID) # Zurich lab only
-#'   pool(shroud$y[Zu],shroud$er[Zu])
-#' @export
-pool <- function(y, er, threshold=.05, roundby=1) {
-  pooled.y <- (sum(y/er^2)) / (sum(1/er^2))
-  pooled.er <- sqrt(1/sum(1/er^2))
-  T <- sum((y-pooled.y)^2 / er^2)
-  p <- pchisq(T, length(y)-1, lower.tail=FALSE)
-  
-  if(p < threshold) {
-    message("! Scatter too large to calculate the pooled mean\nChisq value: ", 
-      round(T, roundby+2), ", p-value ", round(p, roundby+2), " < ", threshold, sep="") 
-  } else { 
-      message("pooled mean: ", round(pooled.y, roundby), " +- ", round(pooled.er, roundby), 
-		"\nChi2: ", T, ", p-value ", round(p, roundby+2), " (>", threshold, ", OK)", sep="")
-	    return(c(pooled.y, pooled.er))
-	  }  
-}
-
-

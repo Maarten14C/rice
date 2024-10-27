@@ -4,12 +4,12 @@
 \alias{F14CtoD14C}
 \title{Transform F14C into D14C}
 \usage{
-F14CtoD14C(F14C, sdev = NULL, t)
+F14CtoD14C(F14C, er = NULL, t)
 }
 \arguments{
 \item{F14C}{The F14C value to translate}
 
-\item{sdev}{Reported error of the F14C. Returns just the mean if left empty.}
+\item{er}{Reported error of the F14C. Returns just the mean if left empty.}
 
 \item{t}{the cal BP age}
 }

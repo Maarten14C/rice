@@ -4,12 +4,12 @@
 \alias{F14CtopMC}
 \title{Calculate pMC ages from F14C values.}
 \usage{
-F14CtopMC(mn, sdev = NULL)
+F14CtopMC(F14C, er = NULL)
 }
 \arguments{
-\item{mn}{Reported mean of the F14C}
+\item{F14C}{Reported mean of the F14C}
 
-\item{sdev}{Reported error of the F14C. Returns just the mean if left empty.}
+\item{er}{Reported error of the F14C. Returns just the mean if left empty.}
 }
 \value{
 The pMC values from the F14C values. Basically the original values multiplied by 100.

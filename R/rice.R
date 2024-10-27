@@ -1,11 +1,14 @@
 # to do: 
 
-# write a decontaminate function (e.g. to find the contamination required to explain away a Shroud date)
+# add a window approach to as.one - as.bin?
 
-# 'combine' to combine multiple distributions into 1 multiplied distribution
+# add data from historical UBA standards/backgrounds?
 
 # soil F14C simulation from Vegard
 
 # terr-marine contribution calculation
 
 # AMS background and fractionation corrections
+
+# add 'realm' to calibrate function? Perhaps better not, since then the date would also have to be on that realm
+

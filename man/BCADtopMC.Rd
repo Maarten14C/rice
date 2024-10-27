@@ -5,7 +5,7 @@
 \title{Find the pMC and error belonging to a BC/AD age.}
 \usage{
 BCADtopMC(
-  yr,
+  x,
   cc = 1,
   postbomb = FALSE,
   zero = TRUE,
@@ -15,7 +15,7 @@ BCADtopMC(
 )
 }
 \arguments{
-\item{yr}{The BC/AD year.}
+\item{x}{The BC/AD year.}
 
 \item{cc}{calibration curve for C14 (see \code{caldist()}).}
 

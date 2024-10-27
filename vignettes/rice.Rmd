@@ -75,17 +75,16 @@ draw.ccurve(50000, 35000, realm="D")
 
 # Realms
 
-This package also provides functions to translate values between the radiocarbon-relevant 'realms' of cal BP (calendar years before AD 1950), BC/AD, C14, F14C, pMC and D14C. The following Table lists the available functions:
+This package provides functions to translate values between the radiocarbon-relevant 'realms' of cal BP (calendar years before AD 1950), BC/AD, C14, F14C, pMC and D14C. The following Table lists the available functions:
 
 | from\\to  | calBP         | BCAD          | C14          | F14C         | pMC         | D14C         |
 |-----------|---------------|---------------|--------------|--------------|-------------|--------------|
 | **calBP** | -             | `calBPtoBCAD` | `calBPtoC14` | `calBPtoF14C`| `calBPtopMC`| `calBPtoD14C`|
 | **BCAD**  | `BCADtocalBP` | -             | `BCADtoC14`  | `BCADtoF14C` | `BCADtopMC` | `BCADtoD14C` |
-| **C14**   | NA            | NA            | -            | `C14toF14C`  | `C14topMC`  | `C14toD14C`  |
+| **C14**   | `C14tocalBP`  | `C14toBCAD`   | -            | `C14toF14C`  | `C14topMC`  | `C14toD14C`  |
 | **F14C**  | NA            | NA            | `F14CtoC14`  | -            | `F14CtopMC` | `F14CtoD14C` |
 | **pMC**   | NA            | NA            | `pMCtoC14`   | `pMCtoF14C`  |  -          | `pMCtoD14C`  |
 | **D14C**  | NA            | NA            | `D14CtoC14`  | `D14CtoF14C` | `D14CtopMC` |  -           |
-
 
 As an example of the above functions, the IntCal20 C14 age and error belonging to one or more cal BP or BCAD ages can be found (interpolating linearly where necessary):  
 
@@ -94,7 +93,7 @@ calBPtoC14(10.5)
 BCADtoC14(1940:1950)
 ```
 
-To translate between BC/AD and cal BP ages, we can use (the last example avoids 0 BC/AD):
+To translate between BC/AD and cal BP ages, we can use (the last example avoids 0 BC/AD, since some calendars do not include zero):
 
 ```{r}
 BCADtocalBP(2024)
@@ -153,29 +152,52 @@ pool(shroud$y[Zu],shroud$er[Zu])
 
 To calculate the effect of contamination on radiocarbon ages, e.g. what age would be observed if material with a "true" radiocarbon age of 5000 +- 20 ^14^C BP would be contaminated with 1% of modern carbon (F^14^C=1)?
 
-```{r}
-contaminate(5000, 20, .01, 1)
+```{r, fig.width=5, fig.asp=.8}
+contaminate(5000, 20, 1, 1)
 ```
 
 Or imagine that you measured a dinosaur bone, dating to far beyond the limit of radiocarbon dating, and the sample is very clean as it contains only 0.5% modern contamination:
 
-```{r}
-contaminate(66e6, 1e6, .005, 1, F14C.er=0.01)
+```{r, fig.width=5, fig.asp=.8}
+contaminate(66e6, 1e6, 0.5)
 ```
+
+The other way round, e.g., estimating what would happen to an observed age if the contamination had been cleaned away:
+
+```{r, fig.width=5, fig.asp=.8}
+clean(9000, 100, percentage=1)
+```
+
+We can also calculate the amount of contamination, or muck, required to 'explain away' certain ages. For example, one of the measurements of the Shroud of Turin dates to 591 &pm; 30 C14 BP. How much modern contamination would have to be inferred for the material to really date to, say, AD 40?
+
+```{r, fig.width=5, fig.asp=.8}
+muck(591, BCADtoC14(40)[1], 1)
+```
+
+So we'd require the sample to have been contaminated by 67% modern carbon to still date to around AD 40. But what if the sample had been repaired in, say, AD 1400, thus adding material of an not-entirely-modern F14C value (i.e., taking into account both the atmospheric C14 concentrations in AD 1400 and the fact that some of the C14 will have decayed since then)?
+
+```{r, fig.width=5, fig.asp=.8}
+muck(591, BCADtoC14(40)[1], BCADtoF14C(1400)[1])
+```
+
+This means that the dated sample would have to consist almost entirely of Medieval age material - which is exactly what was found by Damon et al. (1989)[^6].
+
 
 The effect of different levels of contamination can be visualised:
 
 ```{r, fig.width=6, fig.asp=.8}
 real.14C <- seq(0, 50e3, length=200)
-contam <- seq(0, .1, length=101) # 0 to 10% contamination
+contam <- seq(0, 10, length=101) # 0 to 10% contamination
 contam.col <- rainbow(length(contam))
 plot(0, type="n", xlim=c(0, 55e3), xlab="real 14C age", ylim=range(real.14C), ylab="observed 14C age")
-for(i in 1:length(contam))
-  lines(real.14C, contaminate(real.14C, c(), contam[i], 1, decimals=5), col=contam.col[i])
-contam.legend <- seq(0, .1, length=6)
+for (i in 1:length(contam)) {
+  observed <- contaminate(real.14C, 0, contam[i], 1, decimals=5, talk=FALSE)
+  lines(real.14C, observed[,1], col = contam.col[i])
+}
+contam.legend <- seq(0, 10, length=6)
 contam.col <- rainbow(length(contam.legend)-1)
-text(50e3, contaminate(50e3, c(), contam.legend, 1), 
-  labels=contam.legend, col=contam.col, cex=.7, offset=0, adj=c(0,.8))
+text(50e3, contaminate(50e3, 0, contam.legend, 1, visualise=FALSE, talk=FALSE)[,1],
+  labels=contam.legend, cex=.7, offset=0, adj=c(0,.8))
 ```
 
 If that is too much code for you, try this function instead:
@@ -184,23 +206,9 @@ If that is too much code for you, try this function instead:
 draw.contamination()
 ```
 
-We can also calculate the amount of contamination required to 'explain away' certain ages. For example, one of the measurements of the Shroud of Turin dates to 591 &pm; 30 C14 BP. How much contamination would have to be inferred for the material to really date to, say, AD 40?
-
-```{r, fig.width=6, fig.asp=.8}
-decontaminate(591, BCADtoC14(40)[1], 1)
-```
-
-So we'd require the sample to have been contaminated by 35% modern carbon to still date to around AD 40. But what if the sample had been repaired (or burned, somehow 'adding carbon') in, say, AD 1400, thus adding material of an not-entirely-modern F14C value (i.e., taking into account both the atmospheric C14 concentrations in AD 1400 and the fact that some of the C14 will have decayed since then)?
-
-```{r, fig.width=6, fig.asp=.8}
-decontaminate(591, BCADtoC14(40)[1], BCADtoF14C(1400)[1])
-```
-
-This means that the dated sample would have to consist almost entirely of Medieval age material - which is exactly what was found by Damon et al. (1989)[^6].
-
 # Fractions
 
-Sometimes, one needs to estimate a missing radiocarbon age from a sample which has C14 dates on both the entire sample and on fractions, but where one of the samples was too small to be dated. This can be used in for example soils separated into size fractions, where one of the samples turns out to be too small to be dated. Requires to have the bulk age, the ages of the dated fractions, and the carbon contents and weights of all fractions.
+Sometimes, one needs to estimate a missing radiocarbon age from a sample which has C14 dates on both the entire sample and on fractions, but where one of the samples was too small to be dated. This can be used in for example soils separated into size fractions, or samples dated using both bulk and humic/humin fractions, where one of the samples turns out to be too small to be dated. This equation requires the bulk age, the ages of the dated fractions, and the carbon contents and weights of all fractions.
 
 ```{r}
 Cs <- c(.02, .05, .03, .04) # carbon contents of each fraction

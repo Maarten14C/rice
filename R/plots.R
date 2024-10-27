@@ -491,11 +491,12 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
 #' @return A plot of the (calibrated) dates
 #' @param age Mean of the uncalibrated C-14 age (or multiple ages).
 #' @param error Error of the uncalibrated C-14 age (or ages).
-#' @param depth Depth(s) of the date(s). Can also be their relative positions if no depths are available.
+#' @param depth Depth(s) of the date(s). Defaults to their relative positions if no depths are provided.
 #' @param cc Calibration curve for C-14 dates (1, 2, 3, or 4, or, e.g., "IntCal20", "Marine20", "SHCal20", "nh1", "sh3", or "mixed"). If there are multiple dates but all use the same calibration curve, one value can be provided. 
 #' @param postbomb Whether or not this is a postbomb age. Defaults to FALSE. 
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
 #' @param oncurve Whether or not to plot the calibration curve and then plot the dates onto this curve. Defaults to FALSE.
+#' @param realm If oncurve is used, by default the calibration curve is plotted in the C14 age realm. Alternatively, it can be provided as \code{realm="F14C"} or \code{realm="pMC"}  
 #' @param reservoir Reservoir age, or reservoir age and age offset.
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2009).
 #' @param t.a Value a of the t distribution (defaults to 3).
@@ -551,12 +552,14 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
 #'   draw.dates(y, er, y, d.lab="Radiocarbon age (BP)")
 #'   draw.ccurve(add=TRUE, cc1.col=rgb(0,.5,0,.5))
 #' @export
-draw.dates <- function(age, error, depth, cc=1, postbomb=FALSE, thiscurve=c(), oncurve=FALSE, reservoir=c(), normal=TRUE, t.a=3, t.b=4, prob=0.95, threshold=.001, BCAD=FALSE, draw.hpd=TRUE, hpd.lwd=2, hpd.col=rgb(0,0,1,.7), cal.hpd.col=rgb(0, 0.5, 0.5, 0.35), rounded=0.1, every=1, mirror=TRUE, up=FALSE, draw.base=TRUE, col=rgb(0,0,1,.3), border=rgb(0,0,1,.5), cal.col=rgb(0, 0.5, 0.5, 0.35), cal.border=rgb(0, 0.5, 0.5, 0.35), add=FALSE, ka=FALSE, rotate.axes=FALSE, ex=1, normalise=TRUE, cc.resample=5, age.lab=c(), age.lim=c(), age.rev=FALSE, d.lab=c(), d.lim=c(), d.rev=TRUE, labels=c(), label.x=1, label.y=c(), label.cex=0.8, label.col=border, label.offset=c(0,0), label.adj=c(1,0), label.rot=0, cc.dir=NULL, dist.res=100, ...) {
+draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, thiscurve=c(), oncurve=FALSE, realm="C", reservoir=c(), normal=TRUE, t.a=3, t.b=4, prob=0.95, threshold=.001, BCAD=FALSE, draw.hpd=TRUE, hpd.lwd=2, hpd.col=rgb(0,0,1,.7), cal.hpd.col=rgb(0, 0.5, 0.5, 0.35), rounded=0.1, every=1, mirror=TRUE, up=FALSE, draw.base=TRUE, col=rgb(0,0,1,.3), border=rgb(0,0,1,.5), cal.col=rgb(0, 0.5, 0.5, 0.35), cal.border=rgb(0, 0.5, 0.5, 0.35), add=FALSE, ka=FALSE, rotate.axes=FALSE, ex=1, normalise=TRUE, cc.resample=5, age.lab=c(), age.lim=c(), age.rev=FALSE, d.lab=c(), d.lim=c(), d.rev=TRUE, labels=c(), label.x=1, label.y=c(), label.cex=0.8, label.col=border, label.offset=c(0,0), label.adj=c(1,0), label.rot=0, cc.dir=NULL, dist.res=100, ...) {
   if(length(reservoir) > 0) {
     age <- age - reservoir[1]
     if(length(reservoir) > 1)
       error <- sqrt(error^2 + reservoir[2]^2)
   }
+  if(length(depth) == 0)
+    depth <- 1:length(age)    
 
   # deal with multiple dates
   if(length(age) > 1) {
@@ -605,8 +608,15 @@ draw.dates <- function(age, error, depth, cc=1, postbomb=FALSE, thiscurve=c(), o
 
   ages <- cbind(ages)
   probs <- cbind(probs)
-  if(oncurve)
-	depth <- age  
+  if(oncurve) {
+    if(ka)
+      depth <- age/1e3 else
+        depth <- age  
+    if(grepl("p", tolower(realm)))
+      depth <- C14topMC(depth)
+    if(grepl("f", tolower(realm)))
+      depth <- C14toF14C(depth)
+  }		
 
   if(!add) {
     if(length(age.lab) == 0)
@@ -616,9 +626,17 @@ draw.dates <- function(age, error, depth, cc=1, postbomb=FALSE, thiscurve=c(), o
         age.lab <- ifelse(BCAD, "BC/AD", "cal BP")
 
     if(length(d.lab) == 0)
-      if(oncurve)
-        d.lab <- "C14 BP" else	
+      if(oncurve) {
+        if(grepl("p", tolower(realm)))
+          d.lab <- "pMC" else 
+         if(grepl("f", tolower(realm)))
+           d.lab <- "F14C" else
+           if(ka)
+             d.lab <- "C14 kBP" else
+               d.lab <- "C14 BP" 
+      }	else	
           d.lab <- "depth"
+
     if(length(age.lim) == 0)
       age.lim <- extendrange(ages)
     if(!BCAD)
@@ -629,6 +647,8 @@ draw.dates <- function(age, error, depth, cc=1, postbomb=FALSE, thiscurve=c(), o
       d.lim <- rev(d.lim)
     if(age.rev)
       age.lim <- rev(age.lim)
+    if(oncurve)
+      age.lim <- rev(age.lim)
     if(rotate.axes)
       plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=d.lim, xlab=d.lab, ...) else
         plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=d.lim, ylab=d.lab, ...)
@@ -636,6 +656,14 @@ draw.dates <- function(age, error, depth, cc=1, postbomb=FALSE, thiscurve=c(), o
 		if(length(thiscurve) > 0)
           cc <- thiscurve else
             cc <- rintcal::ccurve(cc=cc[1], postbomb=postbomb[1])
+        if(BCAD)
+          cc[,1] <- calBPtoBCAD(cc[,1])
+        if(grepl("p", tolower(realm)))
+          cc[,2:3] <- C14topMC(cc[,2], cc[,3])
+        if(grepl("f", tolower(realm)))
+          cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
+        if(ka)
+          cc <- cc/1e3			
 		ccpol <- cbind(c(cc[,1], rev(cc[,1])), c(cc[,2]-cc[,3], rev(cc[,2]+cc[,3])))
 		polygon(ccpol, col=rgb(0,.5,0,.5), border=rgb(0,.5, 0, .5))
 	}		
@@ -836,7 +864,7 @@ draw.D14C <- function(cal1=c(), cal2=c(), cc=rintcal::ccurve(), BCAD=FALSE, mar=
 #'   draw.contamination()
 #'   draw.contamination(40e3, 50e3, ka=FALSE)
 #' @export
-draw.contamination <- function(from=0, to=50e3, ka=TRUE, age.res=500, xlim=c(), ylim=c(),  colours=rainbow(age.res), max.contam=0.1, contam.F14C=1, contam.legend=max.contam*c(1/100, (1:5)/50, (1:4)/5, 1), legend.pos=.07, legend.cex=0.6, grid=TRUE, xaxs="i", yaxs="i") {
+draw.contamination <- function(from=0, to=50e3, ka=TRUE, age.res=500, xlim=c(), ylim=c(), colours=rainbow(age.res), max.contam=.1, contam.F14C=1, contam.legend=max.contam*c(1/100, (1:5)/50, (1:4)/5, 1), legend.pos=.07, legend.cex=0.6, grid=TRUE, xaxs="i", yaxs="i") {
   real.14C <- seq(from, to, length=age.res)
   observed.14C <- seq(0, to, by=diff(real.14C)[1])
 
@@ -876,7 +904,7 @@ draw.contamination <- function(from=0, to=50e3, ka=TRUE, age.res=500, xlim=c(), 
   abline(0, 1, lty=2)
 
   for(i in contam.legend) {
-    contam <- contaminate(real.14C,, i, contam.F14C)
+    contam <- contaminate(real.14C, 0, 100*i, contam.F14C)[,1]
     lines(real.14C/ka, contam/ka, lty=3, col=grey(.7))
     text((to+(legend.pos*(to-from)))/ka, max(contam)/ka, labels=paste0(100*i, "%"), cex=legend.cex, adj=c(1,.5))
   }

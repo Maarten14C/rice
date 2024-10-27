@@ -4,12 +4,12 @@
 \alias{D14CtopMC}
 \title{Transform D14C into pMC}
 \usage{
-D14CtopMC(D14C, sdev = NULL, t)
+D14CtopMC(D14C, er = NULL, t)
 }
 \arguments{
 \item{D14C}{The Delta14C value to translate}
 
-\item{sdev}{Reported error of the D14C. Returns just the mean if left empty.}
+\item{er}{Reported error of the D14C. Returns just the mean if left empty.}
 
 \item{t}{the cal BP age}
 }

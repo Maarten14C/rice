@@ -5,7 +5,7 @@
 \title{Find the pMC and error belonging to a cal BP age.}
 \usage{
 calBPtopMC(
-  yr,
+  x,
   cc = 1,
   postbomb = FALSE,
   rule = 1,
@@ -14,7 +14,7 @@ calBPtopMC(
 )
 }
 \arguments{
-\item{yr}{The cal BP year.}
+\item{x}{The cal BP year.}
 
 \item{cc}{calibration curve for C14 (see \code{caldist()}).}
 

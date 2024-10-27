@@ -5,7 +5,7 @@
 \title{Find the pMC and error belonging to a cal BP age.}
 \usage{
 BCADtoD14C(
-  yr,
+  x,
   zero = TRUE,
   cc = 1,
   postbomb = FALSE,
@@ -15,7 +15,7 @@ BCADtoD14C(
 )
 }
 \arguments{
-\item{yr}{The cal BP year.}
+\item{x}{The cal BP year.}
 
 \item{zero}{Whether or not to include 0 in BC/AD years. Defaults to TRUE.}
 

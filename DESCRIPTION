@@ -1,7 +1,7 @@
 Package: rice
 Type: Package
 Title: Radiocarbon Equations
-Version: 0.3.0
+Version: 0.4.0
 Date: 2024-10-21
 Author: Maarten Blaauw [aut, cre] (<https://orcid.org/0000-0002-5680-1515>)
 Authors@R: c(

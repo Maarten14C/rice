@@ -34,7 +34,7 @@ caldist <- function(age, error, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, th
     } else
 	if(is.F)
 	  cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample) else
-        if(age < 3*error) { # was age - error < 0
+        if(min(age) < max(3*error)) { # was age - error < 0
           if(!postbomb)
             if(!(cc %in% c("nh1", "nh2", "nh3", "sh1-2", "sh3")))
               stop("This appears to be a postbomb age or close to being so. Please provide a postbomb curve")
@@ -195,10 +195,13 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, rounded=1, every=1) {
 #' @description Find the calibrated probability of a cal BP age for a radiocarbon date. Can handle either multiple calendar ages for a single radiocarbon date, or a single calendar age for multiple radiocarbon dates.
 #' @details The function cannot deal with multiple calibration curves if multiple calendar years or radiocarbon dates are entered.
 #' @return The calibrated probability of a calendar age for a 14C age
-#' @param yr The cal BP year.
+#' @param x The cal BP year.
 #' @param y The radiocarbon date's mean.
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
+#' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
+#' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
+#' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
 #' @param t.a Value a of the t distribution (defaults to 3).
@@ -208,23 +211,68 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, rounded=1, every=1) {
 #'   l.calib(100, 130, 20)
 #'   l.calib(100:110, 130, 20) # multiple calendar ages of a single date
 #'   l.calib(100, c(130,150), c(15,20)) # multiple radiocarbon ages and a single calendar age
+#'   plot(0:300, l.calib(0:300, 130, 20), type='l')
 #' @export
-l.calib <- function(yr, y, er, cc=rintcal::ccurve(1,FALSE), normal=TRUE, as.F=FALSE, t.a=3, t.b=4) {
-  cc.y <- approx(cc[,1], cc[,2], yr)$y
-  cc.er <- approx(cc[,1], cc[,3], yr)$y
-  
+l.calib <- function(x, y, er, cc=1, postbomb=FALSE, thiscurve=c(), cc.dir=c(), normal=TRUE, as.F=FALSE, t.a=3, t.b=4) {
+  if(length(x) == 1) {
+    if(length(y) != length(er))
+      stop("check that y has as many entries as er") 		  
+  } else
+    if(length(y) > 1 || length(er)>1)
+      stop("cannot deal with multiple entries for both x and y+er") 
+
   if(as.F) {
-    muF <- age.F14C(cc.y, cc.er)
-    cc.y <- muF[1]; cc.er <- muF[2]
-    asF <- age.F14C(y, er)
-    y <- asF[1]; er <- asF[2]
-  }
+	  mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
+	  tmp <- C14toF14C(y, er)
+	  y <- tmp[,1]; er <- tmp[,2]
+  } else
+    mu <- calBPtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
   
   if(normal)
-    prob <- dnorm(y, cc.y, sqrt(cc.er^2 + er^2)) else
-      prob <- (t.b + ((y-cc.y)^2) / (2*(sqrt(er^2+cc.er^2)^2))) ^ (-1*(t.a+0.5))
+    prob <- dnorm(y, mu[,1], sqrt(mu[,2]^2 + er^2)) else
+      prob <- (t.b + ((y-mu[,1])^2) / (2*(sqrt(er^2+mu[,2]^2)^2))) ^ (-1*(t.a+0.5))
   prob[is.na(prob)] <- 0
   return(prob)
+}
+
+
+
+#' @name r.calib
+#' @title return a random calendar age from a calibrated distribution
+#' @description Calculate the cumulative calibrated distribution, then sample n random uniform values between 0 and 1 and find the corresponding calendar ages through interpolation. Calendar ages with higher calibrated probabilities will be proportionally more likely to be sampled.
+#' @return n randomly sampled calendar ages
+#' @param n The number of calendar ages to sample
+#' @param y Uncalibrated radiocarbon age
+#' @param er Lab error of the radiocarbon age
+#' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
+#' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
+#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
+#' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
+#' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespans.
+#' @param dist.res As an alternative to yrsteps, provide the amount of 'bins' in the distribution
+#' @param threshold Report only values above a threshold. Defaults to \code{threshold=0}.
+#' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
+#' @param t.a Value a of the t distribution (defaults to 3).
+#' @param t.b Value b of the t distribution (defaults to 4).
+#' @param normalise Sum the entire calibrated distribution to 1. Defaults to \code{normalise=TRUE}.
+#' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param rule Which extrapolation rule to use. Defaults to \code{rule=1} which returns NAs.
+#' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
+#' @author Maarten Blaauw
+#' @examples
+#'   r.calib(10,130,20) # 10 random cal BP ages
+#'   plot(density(r.calib(1e6, 2450, 20)))
+#' @export
+r.calib <- function(n, y, er, cc=1, postbomb=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL) {
+  if(length(n) == 0 || n<1)
+    stop("n needs to be a value >0")
+  if(!length(y) == 1 || !length(er) == 1)
+	 stop("I can only handle one date at a time") 
+  	
+  calib <- caldist(y, er, cc=cc, postbomb=postbomb, as.F=as.F, thiscurve=thiscurve, yrsteps=yrsteps, normalise=normalise, BCAD=BCAD, rule=rule, cc.dir=cc.dir)
+  rx <- approx(cumsum(calib[,2])/sum(calib[,2]), calib[,1], runif(n), rule=2)$y
+  return(rx)	
 }
 
 
@@ -288,6 +336,37 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, normal=TRUE, as.F=FALSE, t.a
 #' @export
 older <- function(x, y, er, cc=1, postbomb=FALSE, normal=TRUE, as.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
   return(1 - younger(x, y, er, cc, postbomb=postbomb, normal, as.F=as.F, t.a, t.b, BCAD, threshold=threshold))
+}
+
+
+
+#' @name p.range
+#' @title Probability of a date lying within a cal BP range
+#' @description Find the probability of a calibrated date lying within an age range
+#' @details The function can only deal with one date at a time.
+#' @return The probability of a date lying within a certain calendar age range.
+#' @param x1 The start the range of interest.
+#' @param x2 The end of the range of interest.
+#' @param y The radiocarbon date's mean.
+#' @param er The radiocarbon date's lab error.
+#' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
+#' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
+#' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
+#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param t.a Value a of the t distribution (defaults to 3).
+#' @param t.b Value b of the t distribution (defaults to 4).
+#' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param threshold Report only values above a threshold. Defaults to \code{threshold=0}.
+#' @author Maarten Blaauw
+#' @examples
+#' p.range(2800, 2400, 2450, 20)
+#' @export
+p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, normal=TRUE, as.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+  if(length(y)>1 || length(er) >1)
+    stop("I can only deal with one date at a time")
+  cal <- caldist(y, er, cc, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, BCAD=BCAD, threshold=threshold)
+  prob <- approx(cal[,1], cumsum(cal[,2])/sum(cal[,2]), sort(c(x1, x2)), rule=2)$y 
+  return(max(prob)-min(prob))
 }
 
 

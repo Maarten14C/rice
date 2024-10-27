@@ -5,7 +5,7 @@
 \title{Find the F14C and error belonging to a BC/AD age.}
 \usage{
 BCADtoF14C(
-  yr,
+  x,
   cc = 1,
   postbomb = FALSE,
   zero = TRUE,
@@ -15,7 +15,7 @@ BCADtoF14C(
 )
 }
 \arguments{
-\item{yr}{The BC/AD year.}
+\item{x}{The BC/AD year.}
 
 \item{cc}{calibration curve for C14 (see \code{caldist()}).}
 

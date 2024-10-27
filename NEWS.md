@@ -1,6 +1,18 @@
+# rice 0.4.0
+* the `contaminate` function now also produces a plot, and more details of the calculations.
+* the `decontaminate` function has been renamed to `clean` and has been updated with clearer messages; it now removes contamination to calculate the true/target age. A plot is made, and calculation details are provided.
+* new function `muck` to calculate how much contamination has to be inferred to go from an observed age to a true/target age. A plot is made, and calculation details are provided.
+* new functions `C14tocalBP` and `C14toBCAD`. Since these rely on the outdated 'intercept calibration' method, these functions are provided for illustrative purposes only.
+* draw.dates can now also plot the dates on the calibration curve, using the `oncurve` option. If so, then the curve and dates can also be plotted in the `F14C` or `pMC` realms.
+* New function `r.calib` that samples random calendar ages from a calibrated distribution.
+* new function `p.range` to calculate a calibrated age's probability of lying between a range of BC/AD or cal BP ages.
+* new function `as.one` to calculate the product of multiple calibrated ages, assuming that they all stem from (exactly) the same calendar age. Not that this is dangerous, and care should be taken to make sure that the assumptions are met.
+* new function `as.bin` to calculate how many of a set of calibrated radiocarbon dates fall into bins of a specified width. The bin moves along the range of calibrated ages, to visualise how many dates fit bins over time. This would be safer than using the function `as.one`. 
+* new function `spread` shows the spread (in calendar years) of a set of dates. Accompanies the functions `pool` and `as.one`.
+
 # rice 0.3.0
 * hpd ranges are now calculated at a specified precision (defaults to yearly)
-* new function `BCADto14C` to calculate 14C age belonging to a BC/AD age (this calls the function `calBPto14C`)
+* new function `BCADto14C` to calculate the 14C age belonging to a BC/AD age (this calls the function `calBPto14C`)
 * new option `as.F` to calibrate in the F14C realm (the default remains to calibrate in the C14 realm)
 * warnings are printed on calibrate() plots if dates are truncated and edge=TRUE (with the default edge=FALSE, dates that are truncated are not calibrated). The printed warning can be removed by setting `print.truncate.warning=FALSE`
 * renaming `age.F14C`, `F14C.age`, `age.pMC` and `pMC.age` to, respectively, `C14toF14C`, `F14CtoC14`, `C14topMC` and `pMCtoC14`. This because `age` is an ambivalent term in this context

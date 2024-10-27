@@ -21,7 +21,7 @@ pMC.age(mn, sdev = c(), ratio = 100, decimals = 0, lambda = 8033)
 Radiocarbon ages from pMC values. If pMC values are above 100\%, the resulting radiocarbon ages will be negative.
 }
 \description{
-Will soon be deprecated. Use pMCtoC14 instead.
+Will be deprecated. Use pMCtoC14 instead.
 }
 \details{
 Post-bomb dates are often reported as pMC or percent modern carbon. Since Bacon expects radiocarbon ages,

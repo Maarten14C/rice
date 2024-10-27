@@ -4,12 +4,12 @@
 \alias{F14CtoC14}
 \title{Calculate C14 ages from F14C values.}
 \usage{
-F14CtoC14(mn, sdev = NULL, decimals = 5, lambda = 8033)
+F14CtoC14(F14C, er = NULL, decimals = 5, lambda = 8033)
 }
 \arguments{
-\item{mn}{Reported mean of the F14C}
+\item{F14C}{Reported mean of the F14C}
 
-\item{sdev}{Reported error of the F14C. Returns just the mean if left empty.}
+\item{er}{Reported error of the F14C. Returns just the mean if left empty.}
 
 \item{decimals}{Amount of decimals required for the radiocarbon age. Quite sensitive, defaults to 5.}
 

@@ -5,10 +5,13 @@
 \title{Find the calibrated probability of a calendar age for a 14C date.}
 \usage{
 l.calib(
-  yr,
+  x,
   y,
   er,
-  cc = rintcal::ccurve(1, FALSE),
+  cc = 1,
+  postbomb = FALSE,
+  thiscurve = c(),
+  cc.dir = c(),
   normal = TRUE,
   as.F = FALSE,
   t.a = 3,
@@ -16,13 +19,19 @@ l.calib(
 )
 }
 \arguments{
-\item{yr}{The cal BP year.}
+\item{x}{The cal BP year.}
 
 \item{y}{The radiocarbon date's mean.}
 
 \item{er}{The radiocarbon date's lab error.}
 
 \item{cc}{calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).}
+
+\item{postbomb}{Whether or not to use a postbomb curve. Required for negative radiocarbon ages.}
+
+\item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).}
+
+\item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.}
 
 \item{normal}{Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).}
 
@@ -45,6 +54,7 @@ The function cannot deal with multiple calibration curves if multiple calendar y
   l.calib(100, 130, 20)
   l.calib(100:110, 130, 20) # multiple calendar ages of a single date
   l.calib(100, c(130,150), c(15,20)) # multiple radiocarbon ages and a single calendar age
+  plot(0:300, l.calib(0:300, 130, 20), type='l')
 }
 \author{
 Maarten Blaauw

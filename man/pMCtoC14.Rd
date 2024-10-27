@@ -4,12 +4,12 @@
 \alias{pMCtoC14}
 \title{Calculate C14 ages from pMC values.}
 \usage{
-pMCtoC14(mn, sdev = NULL, ratio = 100, decimals = 0, lambda = 8033)
+pMCtoC14(pMC, er = NULL, ratio = 100, decimals = 0, lambda = 8033)
 }
 \arguments{
-\item{mn}{Reported mean of the pMC.}
+\item{pMC}{Reported mean of the pMC.}
 
-\item{sdev}{Reported error of the pMC.}
+\item{er}{Reported error of the pMC.}
 
 \item{ratio}{Most modern-date values are reported against \code{100}. If it is against \code{1} instead, use \code{1} here.}
 

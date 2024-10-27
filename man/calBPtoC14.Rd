@@ -5,7 +5,7 @@
 \title{Find the 14C age and error belonging to a cal BP age.}
 \usage{
 calBPtoC14(
-  yr,
+  x,
   cc = 1,
   postbomb = FALSE,
   rule = 1,
@@ -14,7 +14,7 @@ calBPtoC14(
 )
 }
 \arguments{
-\item{yr}{The cal BP year.}
+\item{x}{The cal BP year.}
 
 \item{cc}{calibration curve for C14 (see \code{caldist()}).}
 
