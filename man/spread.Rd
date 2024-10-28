@@ -13,6 +13,7 @@ spread(
   as.F = FALSE,
   thiscurve = NULL,
   yrsteps = 1,
+  cc.resample = FALSE,
   threshold = 0.001,
   normal = TRUE,
   t.a = 3,
@@ -42,6 +43,8 @@ spread(
 
 \item{yrsteps}{Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve}
 
+\item{cc.resample}{The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., cc.resample=5 for 5-yr timespans.}
+
 \item{threshold}{Report only values above a threshold. Defaults to \code{threshold=1e-6}.}
 
 \item{normal}{Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).}
@@ -61,16 +64,6 @@ spread(
 \item{roundby}{Number of decimals to report}
 
 \item{bty}{Draw a box around a box of a certain shape. Defaults to \code{bty="l"}.}
-
-\item{age.lim}{Limits of the age axis. Calculated automatically by default.}
-
-\item{age.lab}{Label of the age axis. Defaults to cal BP or BC/AD.}
-
-\item{calib.col}{The colour of the individual calibrated ages. Defaults to semi-transparent grey.}
-
-\item{one.col}{The colour of the combined}
-
-\item{one.height}{The height of the combined distribution}
 }
 \value{
 The spread of all calibrated probabilities.

@@ -146,6 +146,24 @@ Zu <- grep("ETH", shroud$ID) # Zurich lab only
 pool(shroud$y[Zu],shroud$er[Zu])
 ```
 
+If it can indeed be safely assumed that all dates stem from the same (unknown) calendar year, then the age distribution of that single year can be plotted together with the individual calibrated ages:
+
+```{r, fig.width=5, fig.asp=.8}
+as.one(shroud$y,shroud$er)
+```
+ 
+It would however often be much safer to assume that the multiple dates were deposited over not just one calendar year but rather over a period, e.g., over 50 years. To do so, a moving bin is made, and for each bin placement it is checked how much of the calibrated distribution of each date fits within that bin. Here is an example, using a bin width of 50 years, moving at 10 year steps (the top value indicates that around 660 cal BP, a total of around 4-5 dates fit within the 50-year bin):
+
+```{r, fig.width=5, fig.asp=.8}
+as.bin(shroud$y,shroud$er, 50, 10)
+```
+
+The spread of multiple calibrated dates can be visualised and summarised:
+
+```{r, fig.width=5, fig.asp=.8}
+spread(shroud$y,shroud$er)
+```
+
 
 
 # Contamination

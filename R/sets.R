@@ -141,11 +141,12 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
   inbin <- rowSums(tmp)
   pol <- cbind(c(min(xseq), xseq, max(xseq)), length(y)-c(0, one.height*inbin, 0))
   polygon(pol, col=one.col, border=one.col)
-  axis(4, length(y)-pretty(inbin), labels=pretty(inbin), col=4, col.axis=4, cex=.8, mgp=c(1.7, .5, 0))
-  
+  axis(4, length(y)-pretty(inbin), labels=pretty(inbin), col=one.col, col.axis=one.col, cex=.8, mgp=c(1.7, .5, 0))
   maxbin <- xseq[which(inbin == max(inbin))[1]]
+  abline(v=maxbin+c(-1*width/2, width/2), col=one.col)  
+  
   if(talk)
-	message("Most likely bin: ", maxbin, "(", maxbin+(width/2), "-", maxbin-(width/2), " cal BP)")   
+	message("Most likely bin: ", maxbin, " (", maxbin+(width/2), "-", maxbin-(width/2), " cal BP), fitting a sum of ", round(max(inbin),1), " dates")   
 	
   invisible(cbind(xseq, inbin))
 }	
@@ -164,16 +165,12 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
+#' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., cc.resample=5 for 5-yr timespans.
 #' @param threshold Report only values above a threshold. Defaults to \code{threshold=1e-6}.
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
-#' @param age.lim Limits of the age axis. Calculated automatically by default.
-#' @param age.lab Label of the age axis. Defaults to cal BP or BC/AD.
-#' @param calib.col The colour of the individual calibrated ages. Defaults to semi-transparent grey.
-#' @param one.col The colour of the combined
-#' @param one.height The height of the combined distribution
 #' @param visualise Whether or not to plot the spread
 #' @param talk Whether or not to report a summary of the spread 
 #' @param prob Probability range to report. Defaults to \code{prob=0.95}.
@@ -186,13 +183,13 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #'   Zu <- grep("ETH", shroud$ID) # Zurich lab only
 #'   spread(shroud$y[Zu],shroud$er[Zu])
 #' @export
-spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, visualise=TRUE, talk=TRUE, prob=0.95, roundby=1, bty="l") {
+spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, cc.resample=FALSE, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, visualise=TRUE, talk=TRUE, prob=0.95, roundby=1, bty="l") {
   xs <- array(NA, dim=c(n, length(y)))
   ns <- sample(1:length(y), n, replace=TRUE)
   diffs <- array(NA, dim=c(n, length(y)-1))
   
   for(i in 1:length(y))
-    xs[,i] <- r.calib(n, y[i], er[i], cc=cc, postbomb=postbomb, as.F=as.F, thiscurve=thiscurve, yrsteps=yrsteps, cc.resample=cc.resample, dist.res=dis.res, threshold=threshold, normal=normal, t.a=t.a, t.b=t.b, cc.dir=cc.dir)
+    xs[,i] <- r.calib(n, y[i], er[i], cc=cc, postbomb=postbomb, as.F=as.F, thiscurve=thiscurve, yrsteps=yrsteps, cc.resample=cc.resample, threshold=threshold, normal=normal, t.a=t.a, t.b=t.b, cc.dir=cc.dir)
   for(i in 1:n)
     diffs[i,] <- abs(xs[i,ns[i]] - xs[i,-ns[i]])
   

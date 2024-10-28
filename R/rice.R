@@ -1,6 +1,6 @@
 # to do: 
 
-# add a window approach to as.one - as.bin?
+# add summary stats to as.one and as.bin
 
 # add data from historical UBA standards/backgrounds?
 

@@ -10,7 +10,7 @@
 #' @description Provides equations for the handling of radiocarbon dates, for example to calculate different radiocarbon realms (C14 age, F14C, pMC, D14C), for their calibration, and estimating the effects of contamination. This package accompanies the data package rintcal.
 
 #' @importFrom utils read.table write.table packageName data installed.packages
-#' @importFrom stats approx dnorm median weighted.mean runif pchisq
+#' @importFrom stats approx dnorm median weighted.mean runif pchisq density quantile
 #' @importFrom grDevices rgb extendrange grey rainbow
 #' @importFrom graphics axis par legend lines points polygon segments text mtext abline image rect
 #' @importFrom rlang sym
