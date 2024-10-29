@@ -1,7 +1,5 @@
 # to do: 
 
-# add summary stats to as.one and as.bin
-
 # add data from historical UBA standards/backgrounds?
 
 # soil F14C simulation from Vegard
