@@ -28,6 +28,8 @@ as.bin(
   one.col = rgb(0, 0, 1, 0.5),
   one.height = 1,
   talk = TRUE,
+  prob = 0.95,
+  roundby = 0,
   bty = "n"
 )
 }
@@ -78,6 +80,10 @@ as.bin(
 
 \item{talk}{Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.}
 
+\item{prob}{Probability range for highest posterior density (hpd) values. Defaults to \code{prob=0.95}.}
+
+\item{roundby}{Rounding of reported years. Defaults to 0 decimals}
+
 \item{bty}{Draw a box around a box of a certain shape. Defaults to \code{bty="n"}.}
 }
 \value{
@@ -90,8 +96,11 @@ Combine all calibrated dates by calculating their product for a range of calenda
 This calculates the amount of calibrated dates that fall within a specific bin, and calculates these bins as moving windows over the range of calendar ages to which the radiocarbon ages calibrate.
 }
 \examples{
+\donttest{
   data(shroud)
-  shroudbin <- as.bin(shroud$y, shroud$er, 50, 10) # bins of 50 yr, moving by 10 yr
+  shroudbin <- as.bin(shroud$y, shroud$er, 50, 10) 
+  # bins of 50 yr, moving by 10 yr, slow
+}
 }
 \author{
 Maarten Blaauw

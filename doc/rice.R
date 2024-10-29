@@ -75,13 +75,13 @@ as.bin(shroud$y,shroud$er, 50, 10)
 spread(shroud$y,shroud$er)
 
 ## ----fig.width=5, fig.asp=.8--------------------------------------------------
-contaminate(5000, 20, 1, 1)
+contaminate(5000, 20, 10, 1)
 
 ## ----fig.width=5, fig.asp=.8--------------------------------------------------
 contaminate(66e6, 1e6, 0.5)
 
 ## ----fig.width=5, fig.asp=.8--------------------------------------------------
-clean(9000, 100, percentage=1)
+clean(9000, 100, percentage=10)
 
 ## ----fig.width=5, fig.asp=.8--------------------------------------------------
 muck(591, BCADtoC14(40)[1], 1)

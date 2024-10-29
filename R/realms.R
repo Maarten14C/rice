@@ -322,6 +322,7 @@ C14toBCAD <- function(y, cc=1, postbomb=FALSE, rule=1, zero=TRUE, cc.dir=NULL, t
 }
 
 
+
 #' @name C14toF14C
 #' @title Calculate F14C values from C14 ages
 #' @description Calculate F14C values from radiocarbon ages
@@ -336,11 +337,14 @@ C14toBCAD <- function(y, cc=1, postbomb=FALSE, rule=1, zero=TRUE, cc.dir=NULL, t
 #'   C14toF14C(-2000, 20)
 #' @export
 C14toF14C <- function(y, er=NULL, decimals=5, lambda=8033) {
-  y <- exp(-y / lambda)
+  fy <- exp(-y / lambda)
+  
   if(is.null(er))
-    return(signif(y, decimals)) else {
-      sdev <- y - exp(-(y + er) / lambda)
-      return(signif(cbind(y, sdev, deparse.level=0), decimals))
+    return(signif(fy, decimals)) else {
+      er1 <- exp(-(y - er) / lambda)
+      er2 <- exp(-(y + er) / lambda)
+      sdev <- abs(er1 - er2) / 2
+      return(signif(cbind(fy, sdev, deparse.level=0), decimals))
     }
 }
 

@@ -58,6 +58,9 @@ pool <- function(y, er, threshold=.05, roundby=1) {
 #' @param calib.col The colour of the individual calibrated ages. Defaults to semi-transparent grey.
 #' @param one.col The colour of the combined
 #' @param one.height The height of the combined distribution
+#' @param prob Probability range for highest posterior density (hpd) values. Defaults to \code{prob=0.95}.
+#' @param talk Whether or not to provide an analysis of the results
+#' @param roundby Rounding of reported years. Defaults to 0 decimals
 #' @param bty Draw a box around a box of a certain shape. Defaults to \code{bty="n"}.
 #' @author Maarten Blaauw
 #' @examples
@@ -66,7 +69,7 @@ pool <- function(y, er, threshold=.05, roundby=1) {
 #'   Zu <- grep("ETH", shroud$ID) # Zurich lab only
 #'   as.one(shroud$y[Zu],shroud$er[Zu], BCAD=TRUE)
 #' @export
-as.one <- function(y, er, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=4, bty="n") {
+as.one <- function(y, er, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=4, prob=0.95, talk=TRUE, roundby=0, bty="n") {
 
   calib <- draw.dates(y, er, d.lim=c(0, length(y)+1), BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, col=calib.col, mirror=FALSE, hpd.col=NA, border=NA, yaxt="n", d.lab="", bty=bty)  
   
@@ -85,8 +88,23 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, thiscurv
 
   xpol <- cbind(c(xmin, xseq, xmax), length(y)+1 - c(0, one.height*product/max(product), 0))
   polygon(xpol, col=one.col, border=one.col)
+  as.dist <- cbind(xseq, product/max(product))
+  as.hpd <- hpd(as.dist, prob, rounded=roundby)
+  for(i in 1:nrow(as.hpd))
+    segments(as.hpd[i,1], length(y)+1, as.hpd[i,2], length(y)+1, lwd=3, col=rgb(0,0,0,0.5), lend=2)
   
-  invisible(cbind(xseq, product))
+  if(talk) {
+    as.points <- suppressWarnings(point.estimates(as.dist, rounded=roundby))
+    message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " BC/AD", " cal BP"))
+
+	hpds <- paste0(100 * prob, "% hpd ranges: ", as.hpd[1, 1], "-", as.hpd[1, 2], " (", as.hpd[1, 3], "%)")
+	if(nrow(as.hpd) > 1) 
+	  for(i in 2:nrow(as.hpd)) 
+	    hpds <- paste0(hpds, ", ", as.hpd[i, 1], "-", as.hpd[i, 2], " (", as.hpd[i, 3], "%)")
+	message(hpds)
+  }
+  
+  invisible(as.dist)
 }
 
 
@@ -118,13 +136,18 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, thiscurv
 #' @param one.col The colour of the combined
 #' @param one.height The height of the combined distribution
 #' @param talk Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.
+#' @param prob Probability range for highest posterior density (hpd) values. Defaults to \code{prob=0.95}.
+#' @param roundby Rounding of reported years. Defaults to 0 decimals
 #' @param bty Draw a box around a box of a certain shape. Defaults to \code{bty="n"}.
 #' @author Maarten Blaauw
 #' @examples
+#' \donttest{
 #'   data(shroud)
-#'   shroudbin <- as.bin(shroud$y, shroud$er, 50, 10) # bins of 50 yr, moving by 10 yr
+#'   shroudbin <- as.bin(shroud$y, shroud$er, 50, 10) 
+#'   # bins of 50 yr, moving by 10 yr, slow
+#' }
 #' @export
-as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=1, talk=TRUE, bty="n") {
+as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=1, talk=TRUE, prob=0.95, roundby=0, bty="n") {
 	
   calib <- draw.dates(y, er, d.lim=c(0, length(y)+1), BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, col=calib.col, mirror=FALSE, hpd.col=NA, border=NA, yaxt="n", d.lab="", bty=bty)
   if(length(move.by) == 0)
@@ -139,14 +162,28 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
   })
 	
   inbin <- rowSums(tmp)
-  pol <- cbind(c(min(xseq), xseq, max(xseq)), length(y)-c(0, one.height*inbin, 0))
+  pol <- cbind(c(min(xseq), xseq, max(xseq)), length(y)+1-c(0, one.height*inbin, 0))
   polygon(pol, col=one.col, border=one.col)
-  axis(4, length(y)-pretty(inbin), labels=pretty(inbin), col=one.col, col.axis=one.col, cex=.8, mgp=c(1.7, .5, 0))
+  axis(2, length(y)+1-pretty(inbin), labels=pretty(inbin), col=one.col, col.axis=one.col, cex=.8, mgp=c(1.7, .5, 0))
   maxbin <- xseq[which(inbin == max(inbin))[1]]
   abline(v=maxbin+c(-1*width/2, width/2), col=one.col)  
+
+  as.dist <- cbind(xseq, inbin/max(inbin))
+  as.hpd <- hpd(as.dist, prob, rounded=roundby)
+  for(i in 1:nrow(as.hpd))
+    segments(as.hpd[i,1], length(y)+1, as.hpd[i,2], length(y)+1, lwd=3, col=rgb(0,0,0,0.5), lend=2)
   
-  if(talk)
-	message("Most likely bin: ", maxbin, " (", maxbin+(width/2), "-", maxbin-(width/2), " cal BP), fitting a sum of ", round(max(inbin),1), " dates")   
+  if(talk) {
+    as.points <- suppressWarnings(point.estimates(as.dist, rounded=roundby))
+	message("Most likely bin: ", round(maxbin, roundby), " (", round(maxbin+(width/2), roundby), "-", round(maxbin-(width/2), roundby), " cal BP), fitting a sum of ", round(max(inbin),1), " dates")   
+	message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " BC/AD", " cal BP"))
+
+	hpds <- paste0(100 * prob, "% hpd ranges: ", as.hpd[1, 1], "-", as.hpd[1, 2], " (", as.hpd[1, 3], "%)")
+	if(nrow(as.hpd) > 1) 
+	  for(i in 2:nrow(as.hpd)) 
+	    hpds <- paste0(hpds, ", ", as.hpd[i, 1], "-", as.hpd[i, 2], " (", as.hpd[i, 3], "%)")
+	message(hpds)
+  }
 	
   invisible(cbind(xseq, inbin))
 }	
@@ -193,11 +230,14 @@ spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, as.F=FALSE, thiscurve=NUL
   for(i in 1:n)
     diffs[i,] <- abs(xs[i,ns[i]] - xs[i,-ns[i]])
   
+  as.dens <- density(diffs)
+  as.hpd <- hpd(diffs)
+  aspoints <- round(point.estimates(cbind(as.dens$x, as.dens$y)), roundby)
   oneprob <- (1-prob)/2
   minmax <- round(quantile(diffs, probs=c(oneprob, .5, 1-oneprob)), roundby)
   if(talk) 
-	message("average spread: ", round(mean(diffs), roundby), " calendar years (",
-      "median ", minmax[2], ")\n95% range: ", minmax[1], " to ", minmax[3])
+	message("average spread: ", aspoints[1], " calendar years (",
+      "median ", aspoints[2], ")\n95% range: ", minmax[1], " to ", minmax[3])
   
   if(visualise) {
     plot(density(diffs, from=0), xlab="spread (calendar years)", main="", bty=bty)

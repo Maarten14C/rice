@@ -168,10 +168,10 @@ spread(shroud$y,shroud$er)
 
 # Contamination
 
-To calculate the effect of contamination on radiocarbon ages, e.g. what age would be observed if material with a "true" radiocarbon age of 5000 +- 20 ^14^C BP would be contaminated with 1% of modern carbon (F^14^C=1)?
+To calculate the effect of contamination on radiocarbon ages, e.g. what age would be observed if material with a "true" radiocarbon age of 5000 +- 20 ^14^C BP would be contaminated with 10% of modern carbon (F^14^C=1)?
 
 ```{r, fig.width=5, fig.asp=.8}
-contaminate(5000, 20, 1, 1)
+contaminate(5000, 20, 10, 1)
 ```
 
 Or imagine that you measured a dinosaur bone, dating to far beyond the limit of radiocarbon dating, and the sample is very clean as it contains only 0.5% modern contamination:
@@ -180,10 +180,10 @@ Or imagine that you measured a dinosaur bone, dating to far beyond the limit of 
 contaminate(66e6, 1e6, 0.5)
 ```
 
-The other way round, e.g., estimating what would happen to an observed age if the contamination had been cleaned away:
+The other way round, e.g., inferring what would happen to an observed age if its assumed 10% modern contamination were to be removed:
 
 ```{r, fig.width=5, fig.asp=.8}
-clean(9000, 100, percentage=1)
+clean(9000, 100, percentage=10)
 ```
 
 We can also calculate the amount of contamination, or muck, required to 'explain away' certain ages. For example, one of the measurements of the Shroud of Turin dates to 591 &pm; 30 C14 BP. How much modern contamination would have to be inferred for the material to really date to, say, AD 40?

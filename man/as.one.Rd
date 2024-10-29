@@ -24,6 +24,9 @@ as.one(
   calib.col = rgb(0, 0, 0, 0.2),
   one.col = rgb(0, 0, 1, 0.5),
   one.height = 4,
+  prob = 0.95,
+  talk = TRUE,
+  roundby = 0,
   bty = "n"
 )
 }
@@ -65,6 +68,12 @@ as.one(
 \item{one.col}{The colour of the combined}
 
 \item{one.height}{The height of the combined distribution}
+
+\item{prob}{Probability range for highest posterior density (hpd) values. Defaults to \code{prob=0.95}.}
+
+\item{talk}{Whether or not to provide an analysis of the results}
+
+\item{roundby}{Rounding of reported years. Defaults to 0 decimals}
 
 \item{bty}{Draw a box around a box of a certain shape. Defaults to \code{bty="n"}.}
 }

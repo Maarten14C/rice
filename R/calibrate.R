@@ -110,6 +110,7 @@ caldist <- function(age, error, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, th
 point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=TRUE, prob=.95, rounded=1, every=1) {
   to.report <- c()
   name <- c()
+  calib[,2] <- calib[,2] / sum(calib[,2])
 
   if(wmean) {
     wmean <- weighted.mean(calib[,1], calib[,2])
@@ -117,7 +118,7 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
     name <- c(name, "weighted mean")
   }
   if(median) {
-    median <- approx(cumsum(calib[,2]), calib[,1], 0.5)$y
+    median <- approx(cumsum(calib[,2]), calib[,1], 0.5, rule=2)$y
     to.report <- c(to.report, median)
     name <- c(name, "median")
   }
@@ -155,7 +156,7 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 #' @export
 hpd <- function(calib, prob=0.95, return.raw=FALSE, rounded=1, every=1) {
   # re-interpolate to desired precision
-  calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), by=every))
+  calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), by=every), rule=2)
   calib <- cbind(calib$x, calib$y)
 
   # rank the calibrated ages according to their probabilities (normalised to be sure)
