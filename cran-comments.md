@@ -5,8 +5,5 @@
 * rhub (R-devel): macos-arm64, macos, windows, linux, gcc14
 
 ## R CMD check results
-There were no ERRORs or WARNINGs.
+There were no NOTEs, ERRORs or WARNINGs.
 
-The NOTE about UTF-8 strings relates to a .csv file with URF-8 encoding for international names and places. 
-
-The NOTE about non-standard things in the check directory (‘rnaturalearthhires’) has been resolved by adding ^rnaturalearthhires$ to the .Rbuildignore file.
