@@ -75,7 +75,7 @@ draw.ccurve(50000, 35000, realm="D")
 
 # Realms
 
-This package provides functions to translate values between the radiocarbon-relevant 'realms' of cal BP (calendar years before AD 1950), BC/AD, C14, F14C, pMC and D14C. The following Table lists the available functions:
+This package provides functions to translate values between the radiocarbon-relevant 'realms' of cal BP (calendar years before AD 1950), BC/AD (here we mean cal BC/AD, but shorten this to BC/AD), C14, F14C, pMC and D14C. The following Table lists the available functions:
 
 | from\\to  | calBP         | BCAD          | C14          | F14C         | pMC         | D14C         |
 |-----------|---------------|---------------|--------------|--------------|-------------|--------------|
@@ -86,14 +86,14 @@ This package provides functions to translate values between the radiocarbon-rele
 | **pMC**   | NA            | NA            | `pMCtoC14`   | `pMCtoF14C`  |  -          | `pMCtoD14C`  |
 | **D14C**  | NA            | NA            | `D14CtoC14`  | `D14CtoF14C` | `D14CtopMC` |  -           |
 
-As an example of the above functions, the IntCal20 C14 age and error belonging to one or more cal BP or BCAD ages can be found (interpolating linearly where necessary):  
+As an example of the above functions, the IntCal20 C14 age and error belonging to one or more cal BP or cal BCAD ages can be found (interpolating linearly where necessary):  
 
 ```{r}
 calBPtoC14(10.5)
 BCADtoC14(1940:1950)
 ```
 
-To translate between BC/AD and cal BP ages, we can use (the last example avoids 0 BC/AD, since some calendars do not include zero):
+To translate between cal BC/AD and cal BP ages, we can use (the last example avoids 0 BC/AD, since some calendars do not include zero):
 
 ```{r}
 BCADtocalBP(2024)

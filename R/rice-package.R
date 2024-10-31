@@ -23,3 +23,12 @@
 NULL
 
 require(rintcal)
+
+# trying to deal with reported NOTE:
+#   "Found the following files/directories: ‘rnaturalearthhires’"
+.onLoad <- function(libname, pkgname) {
+  if (is.null(Sys.getenv("R_RNATURAL_EARTH_CACHE", unset = NA))) {
+    Sys.setenv("R_RNATURAL_EARTH_CACHE" = tempdir())
+  }
+}
+

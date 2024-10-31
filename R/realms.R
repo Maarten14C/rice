@@ -368,11 +368,11 @@ C14toF14C <- function(y, er=NULL, decimals=5, lambda=8033) {
 C14topMC <- function(y, er=NULL, ratio=100, decimals=5, lambda=8033) {
   if(ratio !=100)
     warning("C14topMC expects a ratio of 100. For ratio=1, use C14toF14C")
-  y <- exp(-y / lambda)
+  py <- exp(-y / lambda)
   if(is.null(er))
     return(signif(ratio*y, decimals)) else {
-      sdev <- y - exp(-(y + er) / lambda)
-      return(signif(ratio*cbind(y, sdev, deparse.level=0), decimals))
+      sdev <- py - exp(-(y + er) / lambda)
+      return(signif(ratio*cbind(py, sdev, deparse.level=0), decimals))
   }
 }
 
