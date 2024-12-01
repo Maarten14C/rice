@@ -20,14 +20,14 @@ ocean.map <- function(S, W, N, E, scale = c(), ocean.col = "aliceblue", land.col
     }
 
     p <- ggplot(data = world) +
-      geom_sf(fill = land.col) +
-      coord_sf(xlim = c(W, E), ylim = c(S, N), expand = TRUE) +
-      theme(
-        panel.grid.major = element_line(color = rgb(0, 0, 0, 0.5), linetype = 2, size = 0.1),
-        panel.background = element_rect(fill = ocean.col),
-        legend.background = element_rect(fill = "transparent"),
-        legend.key = element_rect(fill = "transparent")
-      )
+           geom_sf(fill = land.col) +
+           coord_sf(xlim = c(W, E), ylim = c(S, N), expand = TRUE) +
+           theme(
+             panel.grid.major = element_line(color = rgb(0, 0, 0, 0.5), linetype = 2, size = 0.1),
+             panel.background = element_rect(fill = ocean.col),
+             legend.background = element_rect(fill = "transparent"),
+             legend.key = element_rect(fill = "transparent")
+           )
   } else {
       message("rnaturalearth is not installed - plotting a basic map.")
 	  message("Please issue the command install.packages('rnaturalearth'), then try finding/mapping shells again")
