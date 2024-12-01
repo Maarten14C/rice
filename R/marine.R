@@ -1,38 +1,41 @@
-
-# internal function to look for map data
-ocean.map <- function(S, W, N, E, scale=c(), ocean.col="aliceblue", land.col=rgb(0, 0.5, 0, 0.6)) {
-  # for large maps, rnaturalearth calls rnaturalearthhires, but since the latter is not a CRAN package, it'll have to be downloaded from github
-  if(length(scale) == 0)
-    if("rnaturalearthhires" %in% installed.packages())
-      world <- rnaturalearth::ne_countries(scale="large", returnclass="sf") else {
-        message("using a medium-scale map. If you prefer a higher-resolution map, please download rnaturalearthhires using the command\nremotes::install_github('ropensci/rnaturalearthhires')")
+ocean.map <- function(S, W, N, E, scale = c(), ocean.col = "aliceblue", land.col = rgb(0, 0.5, 0, 0.6)) {
+  # Check if required libraries are installed
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop("ggplot2 package is required")
+  }
+  
+  if ("rnaturalearth" %in% installed.packages()) {
+    # Handle different scales and package availability
+    if (length(scale) == 0 || scale == "medium") {
+      world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+    } else if (scale == "small") {
+      world <- rnaturalearth::ne_countries(scale = "small", returnclass = "sf")
+    } else if (scale == "large") {
+      if (!"rnaturalearthhires" %in% installed.packages()) {
+        message("Using a medium-scale map. For higher resolution, install rnaturalearthhires.")
         world <- rnaturalearthdata::countries50
-      } else
-    if(scale == "small")
-      world <- rnaturalearth::ne_countries(scale="small", returnclass="sf") else
-      if(scale == "medium")
-        world <- rnaturalearthdata::countries50 else
-        if(scale == "large")
-          if(!"rnaturalearthhires" %in% installed.packages()) {
-            message("using a medium-scale map. If you prefer a higher-resolution map, please download rnaturalearthhires using the command\nremotes::install_github('ropensci/rnaturalearthhires')")
-            world <- rnaturalearthdata::countries50
-          } else
-              world <- rnaturalearth::ne_countries(scale="large", returnclass="sf")
+      } else {
+        world <- rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
+      }
+    }
 
-  # ggOceanMaps works well locally but checks cause problems
-  # p <- basemap( limits=c(W, E, S, N), crs=4326, bathymetry=TRUE, bathy.alpha=0.5, legends=FALSE) +
-  #   coord_sf(xlim = c(W, E), ylim = c(S, N), crs = sf::st_crs(4326))
-
-  p <- ggplot(data = world) +
-    geom_sf(fill= land.col) +
-    coord_sf(xlim = c(W, E), ylim = c(S, N), expand = TRUE) +
-    theme(panel.grid.major = element_line(color = rgb(0,0,0,.5), linetype = 2, size = 0.1),
-      panel.background = element_rect(fill = ocean.col),
-      legend.background = element_rect(fill = "transparent"),
-      legend.key = element_rect(fill = "transparent")  # Set legend key background to transparent
-  )
-  return(p)
+    p <- ggplot(data = world) +
+      geom_sf(fill = land.col) +
+      coord_sf(xlim = c(W, E), ylim = c(S, N), expand = TRUE) +
+      theme(
+        panel.grid.major = element_line(color = rgb(0, 0, 0, 0.5), linetype = 2, size = 0.1),
+        panel.background = element_rect(fill = ocean.col),
+        legend.background = element_rect(fill = "transparent"),
+        legend.key = element_rect(fill = "transparent")
+      )
+  } else {
+      message("rnaturalearth is not installed - plotting a basic map.")
+	  message("Please issue the command install.packages('rnaturalearth'), then try finding/mapping shells again")
+	  p <- c()
+    }
+  return(p)	
 }
+
 
 
 #' @name find.shells
@@ -95,20 +98,31 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
   ymid <- latitude
 
   p <- ocean.map(S, W, N, E, scale, ocean.col, land.col)
+  
+  if(length(p) == 0) { # then rnaturalearth is not installed, so we plot a basic map instead
+	padding <- 1 
+  	maps::map(xlim=c(W-padding, E+padding), ylim=c(S-padding, N+padding), fill = TRUE, col = land.col, bg = ocean.col)
+	color_scale <- colorRampPalette(c("yellow", "red"))(100)
+	cols <- color_scale[as.numeric(cut(nearshells[,5], breaks = 100))]
+	points(nearshells[,1], nearshells[,2], col=cols, pch=20)
+  } else {
 
-  if(symbol.legend)
-    p <- p +
-      geom_point(data=nearshells, aes(x=lon, y=lat, color=!!sym(colour), shape=!!sym(symbol)), size=size, alpha=.8) else
-        p <- p +
-          geom_point(data=nearshells, aes(x=lon, y=lat, color=!!sym(colour)), size=size, alpha=.8)
+    if(symbol.legend)
+      p <- p +
+        geom_point(data=nearshells, aes(x=lon, y=lat, color=!!sym(colour), shape=!!sym(symbol)), size=size, alpha=.8) else
+          p <- p +
+            geom_point(data=nearshells, aes(x=lon, y=lat, color=!!sym(colour)), size=size, alpha=.8)
 
-  if(rainbow)
-    p <- p + scale_color_gradientn(colors = rainbow(7)) + labs(shape="feeding") else
-      p <- p + scale_color_gradient(low=mincol, high=maxcol) + labs(shape="feeding")
+    if(rainbow)
+      p <- p + scale_color_gradientn(colors = rainbow(7)) + labs(shape="feeding") else
+        p <- p + scale_color_gradient(low=mincol, high=maxcol) + labs(shape="feeding")
 
-  print(p)
+    print(p)
+  }
+
   return(nearshells)
 }
+
 
 
 #' @name map.shells
@@ -141,6 +155,14 @@ map.shells <- function(S=48,W=-15, N=62, E=5, colour='dR', rainbow=FALSE, size=2
 
   p <- ocean.map(S, W, N, E, scale, ocean.col, land.col)
 
+  if(length(p) == 0) { # then rnaturalearth is not installed, so we plot a basic map instead
+	padding <- 1 
+  	maps::map(xlim=c(W-padding, E+padding), ylim=c(S-padding, N+padding), fill = TRUE, col = land.col, bg = ocean.col)
+	color_scale <- colorRampPalette(c("yellow", "red"))(100)
+	cols <- color_scale[as.numeric(cut(sel[,5], breaks = 100))]  # Assign colors based on the value
+	points(sel[,1], sel[,2], col=cols, pch=20)
+  } else {
+
   if(symbol.legend) 
     p <- p +
       geom_point(data=sel, aes(x=lon, y=lat, color=!!sym(colour), shape=!!sym(symbol)), size=size, alpha=.8) else
@@ -151,7 +173,9 @@ map.shells <- function(S=48,W=-15, N=62, E=5, colour='dR', rainbow=FALSE, size=2
     p <- p + scale_color_gradientn(colors = rainbow(7)) + labs(shape="feeding") else
       p <- p + scale_color_gradient(low=mincol, high=maxcol) + labs(shape="feeding")
 
-  print(p)
+    print(p)
+  } 
+  
   return(sel)
 }  
 

@@ -1,5 +1,11 @@
 # to do: 
 
+# make mapping packages optional, e.g. only when using the shells plot
+
+# load only the most relevant rice functions into rbacon, rplum
+
+# add F.cc curve to work in F
+
 # check how only relevant functions from the rintcal package can be loaded. This also because rice will be loaded by clam, rbacon, rplum, coffee
 
 # add data from historical UBA standards/backgrounds?

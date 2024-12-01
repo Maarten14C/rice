@@ -13,7 +13,7 @@
 #' @importFrom grDevices rgb extendrange grey rainbow
 #' @importFrom graphics axis par legend lines points polygon segments text mtext abline image rect curve arrows
 #' @importFrom rlang sym
-#' @importFrom rnaturalearth ne_countries
+## #' @importFrom rnaturalearth ne_countries
 #' @importFrom ggplot2 ggplot geom_sf coord_sf geom_point aes scale_color_gradient scale_color_gradientn labs theme element_line element_rect
 #' @importFrom rintcal ccurve intcal.data new.ccdir list.ccurves glue.ccurves mix.ccurves
 #' @name rice
