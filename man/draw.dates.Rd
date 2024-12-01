@@ -10,6 +10,8 @@ draw.dates(
   depth = c(),
   cc = 1,
   postbomb = FALSE,
+  deltaR = 0,
+  deltaSTD = 0,
   thiscurve = c(),
   oncurve = FALSE,
   realm = "C",
@@ -36,7 +38,7 @@ draw.dates(
   add = FALSE,
   ka = FALSE,
   rotate.axes = FALSE,
-  ex = 1,
+  ex = 0.8,
   normalise = TRUE,
   cc.resample = 5,
   age.lab = c(),
@@ -68,6 +70,10 @@ draw.dates(
 \item{cc}{Calibration curve for C-14 dates (1, 2, 3, or 4, or, e.g., "IntCal20", "Marine20", "SHCal20", "nh1", "sh3", or "mixed"). If there are multiple dates but all use the same calibration curve, one value can be provided.}
 
 \item{postbomb}{Whether or not this is a postbomb age. Defaults to FALSE.}
+
+\item{deltaR}{Age offset (e.g. for marine samples). Can also be provided as option 'reservoir'.}
+
+\item{deltaSTD}{Uncertainty of the age offset (1 standard deviation). Can also be provided within option 'reservoir'.}
 
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().}
 
@@ -175,6 +181,7 @@ Add individual or multiple calibrated dates to a plot.
   y <- approx(cc[,1], cc[,2], x)$y # find the IntCal 14C ages
   er <- .01 * y
   draw.dates(y, er, 1:length(x))
+  # or draw on the calibration curve
   draw.dates(y, er, y, d.lab="Radiocarbon age (BP)")
   draw.ccurve(add=TRUE, cc1.col=rgb(0,.5,0,.5))
 }

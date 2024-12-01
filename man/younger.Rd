@@ -10,6 +10,8 @@ younger(
   er,
   cc = 1,
   postbomb = FALSE,
+  deltaR = 0,
+  deltaSTD = 0,
   normal = TRUE,
   as.F = FALSE,
   t.a = 3,
@@ -28,6 +30,10 @@ younger(
 \item{cc}{calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).}
 
 \item{postbomb}{Whether or not to use a postbomb curve (see \code{caldist()}).}
+
+\item{deltaR}{Age offset (e.g. for marine samples).}
+
+\item{deltaSTD}{Uncertainty of the age offset (1 standard deviation).}
 
 \item{normal}{Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).}
 

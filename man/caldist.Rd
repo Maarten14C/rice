@@ -5,10 +5,12 @@
 \title{Calculate calibrated distribution}
 \usage{
 caldist(
-  age,
-  error,
+  y,
+  er,
   cc = 1,
   postbomb = FALSE,
+  deltaR = 0,
+  deltaSTD = 0,
   is.F = FALSE,
   as.F = FALSE,
   thiscurve = NULL,
@@ -26,13 +28,17 @@ caldist(
 )
 }
 \arguments{
-\item{age}{Uncalibrated radiocarbon age}
+\item{y}{Uncalibrated radiocarbon age}
 
-\item{error}{Lab error of the radiocarbon age}
+\item{er}{Lab error of the radiocarbon age}
 
 \item{cc}{Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).}
 
 \item{postbomb}{Whether or not to use a postbomb curve. Required for negative radiocarbon ages.}
+
+\item{deltaR}{Age offset (e.g. for marine samples).}
+
+\item{deltaSTD}{Uncertainty of the age offset (1 standard deviation).}
 
 \item{is.F}{Set this to TRUE if the provided age and error are in the F14C realm.}
 

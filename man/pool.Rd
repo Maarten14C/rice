@@ -4,12 +4,16 @@
 \alias{pool}
 \title{Test if a set of radiocarbon dates can be combined}
 \usage{
-pool(y, er, threshold = 0.05, roundby = 1)
+pool(y, er, deltaR = 0, deltaSTD = 0, threshold = 0.05, roundby = 1)
 }
 \arguments{
 \item{y}{The set of radiocarbon dates to be tested}
 
 \item{er}{The lab errors of the radiocarbon dates}
+
+\item{deltaR}{Age offset (e.g. for marine samples).}
+
+\item{deltaSTD}{Uncertainty of the age offset (1 standard deviation).}
 
 \item{threshold}{Probability threshold above which chisquare values are considered acceptable (between 0 and 1; default \code{threshold=0.05}).}
 

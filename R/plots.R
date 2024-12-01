@@ -234,10 +234,12 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 #' @param error Error of the uncalibrated C-14 age.
 #' @param cc Calibration curve for C-14 dates (1, 2, 3, or 4, or, e.g., "IntCal20", "Marine20", "SHCal20", "nh1", "sh3", or "mixed").
 #' @param postbomb Whether or not this is a postbomb age. Defaults to FALSE. 
+#' @param deltaR Age offset (e.g. for marine samples). Can also be provided as option 'reservoir'.
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation). Can also be provided within option 'reservoir'.
 #' @param bombalert Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
-#' @param reservoir Reservoir age, or reservoir age and age offset.
+#' @param reservoir Reservoir age, or reservoir age and age offset as two values (e.g., \code{reservoir=c(100,10)}).
 #' @param prob Probability confidence intervals (between 0 and 1).
 #' @param BCAD Use BC/AD or cal BP scale (default cal BP).
 #' @param ka Use thousands of years instead of years in the plots and hpd ranges. Defaults to FALSE. 
@@ -288,7 +290,11 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 #' calibrate(age=130, error=10, BCAD=TRUE)
 #' calibrate(4450, 40, reservoir=c(100, 50))
 #' @export
-calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, thiscurve=c(), as.F=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, draw=TRUE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.2), dist.fill=rgb(0,0,0,0.2), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=FALSE, yr.steps=FALSE, cc.resample=5, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, every=1, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", print.truncate.warning=TRUE, mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, cc.er=0, ...) {
+calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, bombalert=TRUE, thiscurve=c(), as.F=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, draw=TRUE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.2), dist.fill=rgb(0,0,0,0.2), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=FALSE, yr.steps=FALSE, cc.resample=5, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, every=1, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", print.truncate.warning=TRUE, mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, cc.er=0, ...) {
+  
+  age <- age - deltaR
+  error <- sqrt(error^2 + deltaSTD^2)
+  
   # read the data
   age <- age-reservoir[1]
   if(length(reservoir) > 1)
@@ -317,8 +323,15 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
     Cc <- thiscurve
 
   # warn/stop if the date lies (partly) beyond the calibration curve
+  asF <- C14toF14C(age, error)
+  if(asF[1] < (2*asF[2])) { # according to background conventions
+    msg <- "age < (2*er) in F14C space; this date is at background and should NOT be calibrated!"
+    if(edge)
+      stop(msg) else
+        message(msg)
+  }
   truncate.warning <- FALSE
-#  if(edge) {
+  #  if(edge) {
     border <- 0
     Age <- age; Error <- error
     if(Age-2*Error < min(Cc[,2]-2*Cc[,3]))
@@ -332,8 +345,8 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
       if(edge)
         message("Date falls partly beyond calibration curve and will be truncated!")
     if(border == 2)
-      if(edge)	
-        stop("Cannot calibrate dates beyond calibration curve!")
+      if(edge)
+        stop("Cannot calibrate dates beyond the calibration curve!")
     if(border > 0)
       truncate.warning <- TRUE
 
@@ -494,6 +507,8 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
 #' @param depth Depth(s) of the date(s). Defaults to their relative positions if no depths are provided.
 #' @param cc Calibration curve for C-14 dates (1, 2, 3, or 4, or, e.g., "IntCal20", "Marine20", "SHCal20", "nh1", "sh3", or "mixed"). If there are multiple dates but all use the same calibration curve, one value can be provided. 
 #' @param postbomb Whether or not this is a postbomb age. Defaults to FALSE. 
+#' @param deltaR Age offset (e.g. for marine samples). Can also be provided as option 'reservoir'.
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation). Can also be provided within option 'reservoir'.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
 #' @param oncurve Whether or not to plot the calibration curve and then plot the dates onto this curve. Defaults to FALSE.
 #' @param realm If oncurve is used, by default the calibration curve is plotted in the C14 age realm. Alternatively, it can be provided as \code{realm="F14C"} or \code{realm="pMC"}  
@@ -548,11 +563,15 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
 #'   y <- approx(cc[,1], cc[,2], x)$y # find the IntCal 14C ages
 #'   er <- .01 * y
 #'   draw.dates(y, er, 1:length(x))
-#    # or draw on the calibration curve
+#'   # or draw on the calibration curve
 #'   draw.dates(y, er, y, d.lab="Radiocarbon age (BP)")
 #'   draw.ccurve(add=TRUE, cc1.col=rgb(0,.5,0,.5))
 #' @export
-draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, thiscurve=c(), oncurve=FALSE, realm="C", reservoir=c(), normal=TRUE, t.a=3, t.b=4, prob=0.95, threshold=.001, BCAD=FALSE, draw.hpd=TRUE, hpd.lwd=2, hpd.col=rgb(0,0,1,.7), cal.hpd.col=rgb(0, 0.5, 0.5, 0.35), rounded=0.1, every=1, mirror=TRUE, up=FALSE, draw.base=TRUE, col=rgb(0,0,1,.3), border=rgb(0,0,1,.5), cal.col=rgb(0, 0.5, 0.5, 0.35), cal.border=rgb(0, 0.5, 0.5, 0.35), add=FALSE, ka=FALSE, rotate.axes=FALSE, ex=1, normalise=TRUE, cc.resample=5, age.lab=c(), age.lim=c(), age.rev=FALSE, d.lab=c(), d.lim=c(), d.rev=TRUE, labels=c(), label.x=1, label.y=c(), label.cex=0.8, label.col=border, label.offset=c(0,0), label.adj=c(1,0), label.rot=0, cc.dir=NULL, dist.res=100, ...) {
+draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=c(), oncurve=FALSE, realm="C", reservoir=c(), normal=TRUE, t.a=3, t.b=4, prob=0.95, threshold=.001, BCAD=FALSE, draw.hpd=TRUE, hpd.lwd=2, hpd.col=rgb(0,0,1,.7), cal.hpd.col=rgb(0, 0.5, 0.5, 0.35), rounded=0.1, every=1, mirror=TRUE, up=FALSE, draw.base=TRUE, col=rgb(0,0,1,.3), border=rgb(0,0,1,.5), cal.col=rgb(0, 0.5, 0.5, 0.35), cal.border=rgb(0, 0.5, 0.5, 0.35), add=FALSE, ka=FALSE, rotate.axes=FALSE, ex=.8, normalise=TRUE, cc.resample=5, age.lab=c(), age.lim=c(), age.rev=FALSE, d.lab=c(), d.lim=c(), d.rev=TRUE, labels=c(), label.x=1, label.y=c(), label.cex=0.8, label.col=border, label.offset=c(0,0), label.adj=c(1,0), label.rot=0, cc.dir=NULL, dist.res=100, ...) {
+	
+  age <- age - deltaR
+  error <- sqrt(error^2 + deltaSTD^2) 	
+	
   if(length(reservoir) > 0) {
     age <- age - reservoir[1]
     if(length(reservoir) > 1)
@@ -593,15 +612,16 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, thiscurve=c(
 
     tmp <- approx(tmp[,1], tmp[,2], seq(min(tmp[,1]), max(tmp[,1]), length=dist.res))
     if(normalise)
-      tmp <- cbind(tmp$x, tmp$y) else
+      tmp <- cbind(tmp$x, tmp$y/sum(tmp$y)) else
         tmp <- cbind(tmp$x, tmp$y/max(tmp$y))
 
     mx[i] <- max(tmp[,2])
     ages[,i] <- tmp[,1]
     probs[,i] <- tmp[,2]
   }
+
   if(normalise)
-    probs <- probs/median(mx)
+    probs <- probs/max(probs) # otherwise they are very low
 
   if(ka)
     ages <- ages/1e3
@@ -616,7 +636,7 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, thiscurve=c(
       depth <- C14topMC(depth)
     if(grepl("f", tolower(realm)))
       depth <- C14toF14C(depth)
-  }		
+  }
 
   if(!add) {
     if(length(age.lab) == 0)
@@ -634,7 +654,7 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, thiscurve=c(
            if(ka)
              d.lab <- "C14 kBP" else
                d.lab <- "C14 BP" 
-      }	else	
+      } else
           d.lab <- "depth"
 
     if(length(age.lim) == 0)
@@ -652,10 +672,10 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, thiscurve=c(
     if(rotate.axes)
       plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=d.lim, xlab=d.lab, ...) else
         plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=d.lim, ylab=d.lab, ...)
-	if(oncurve) {
-		if(length(thiscurve) > 0)
-          cc <- thiscurve else
-            cc <- rintcal::ccurve(cc=cc[1], postbomb=postbomb[1])
+    if(oncurve) {
+      if(length(thiscurve) > 0)
+        cc <- thiscurve else
+          cc <- rintcal::ccurve(cc=cc[1], postbomb=postbomb[1])
         if(BCAD)
           cc[,1] <- calBPtoBCAD(cc[,1])
         if(grepl("p", tolower(realm)))
@@ -663,34 +683,43 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, thiscurve=c(
         if(grepl("f", tolower(realm)))
           cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
         if(ka)
-          cc <- cc/1e3			
-		ccpol <- cbind(c(cc[,1], rev(cc[,1])), c(cc[,2]-cc[,3], rev(cc[,2]+cc[,3])))
-		polygon(ccpol, col=rgb(0,.5,0,.5), border=rgb(0,.5, 0, .5))
-	}		
+          cc <- cc/1e3
+      ccpol <- cbind(c(cc[,1], rev(cc[,1])), c(cc[,2]-cc[,3], rev(cc[,2]+cc[,3])))
+      polygon(ccpol, col=rgb(0,.5,0,.5), border=rgb(0,.5, 0, .5))
+    }
   } else {
       ax.lm <- par("usr")
-        if(rotate.axes)
-          d.lim <- ax.lm[1:2] else
-            d.lim <- ax.lm[3:4]
+      if(rotate.axes)
+        d.lim <- ax.lm[1:2] else
+          d.lim <- ax.lm[3:4]
   }
 
-  # the heights of the distributions scale with the depth axis limits
-  if(length(age) > 1)
-    ex <- ex * (max(d.lim) - min(d.lim)) / 10
-  if(mirror)
-    ex <- ex/2
-  
+  scaling <- c()
+  if(length(age) > 1) {
+	  alldepths <- sort(c(d.lim, depth))
+    if(mirror)
+      for(i in 2:(length(alldepths)-1)) {
+        available <- min(abs(diff(alldepths[(i-1):(i+1)])))
+        scaling <- c(scaling, ex * available / mx[i])
+      } else
+          for(i in 2:length(alldepths)) {
+            available <- min(abs(diff(alldepths[(i-1):(i)])))
+            scaling <- c(scaling, ex * available / mx[i])
+          }
+  } else
+    scaling <- 1
+
   if(length(age) == 1) {
     if(mirror) {
       agepol <- ages[c(1:length(ages), length(ages):1)]
-      probpol <- ex * c(probs, -probs[length(probs):1])
+      probpol <- max(scaling) * c(probs, -probs[length(probs):1])
     } else
       if(draw.base) {
         agepol <- ages[c(1, 1:length(ages), length(ages))]
-        probpol <- ex * c(0, probs, 0)
+        probpol <- max(scaling) * c(0, probs, 0)
       } else {
         agepol <- ages
-        probpol <- ex * probs # else
+        probpol <- max(scaling) * probs # else
       }
       if(rotate.axes)
         polygon(depth+probpol, agepol, col=col, border=border) else

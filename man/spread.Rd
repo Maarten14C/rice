@@ -10,6 +10,8 @@ spread(
   n = 1e+05,
   cc = 1,
   postbomb = FALSE,
+  deltaR = 0,
+  deltaSTD = 0,
   as.F = FALSE,
   thiscurve = NULL,
   yrsteps = 1,
@@ -36,6 +38,10 @@ spread(
 \item{cc}{Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).}
 
 \item{postbomb}{Whether or not to use a postbomb curve. Required for negative radiocarbon ages.}
+
+\item{deltaR}{Age offset (e.g. for marine samples).}
+
+\item{deltaSTD}{Uncertainty of the age offset (1 standard deviation).}
 
 \item{as.F}{Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.}
 
@@ -76,7 +82,4 @@ Calculates the spread among multiple calibrated radiocarbon dates. It does this 
   spread(shroud$y,shroud$er)
   Zu <- grep("ETH", shroud$ID) # Zurich lab only
   spread(shroud$y[Zu],shroud$er[Zu])
-}
-\author{
-Maarten Blaauw
 }

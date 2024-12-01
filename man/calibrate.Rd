@@ -9,6 +9,8 @@ calibrate(
   error = 50,
   cc = 1,
   postbomb = FALSE,
+  deltaR = 0,
+  deltaSTD = 0,
   bombalert = TRUE,
   thiscurve = c(),
   as.F = FALSE,
@@ -63,13 +65,17 @@ calibrate(
 
 \item{postbomb}{Whether or not this is a postbomb age. Defaults to FALSE.}
 
+\item{deltaR}{Age offset (e.g. for marine samples). Can also be provided as option 'reservoir'.}
+
+\item{deltaSTD}{Uncertainty of the age offset (1 standard deviation). Can also be provided within option 'reservoir'.}
+
 \item{bombalert}{Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.}
 
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().}
 
 \item{as.F}{Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.}
 
-\item{reservoir}{Reservoir age, or reservoir age and age offset.}
+\item{reservoir}{Reservoir age, or reservoir age and age offset as two values (e.g., \code{reservoir=c(100,10)}).}
 
 \item{prob}{Probability confidence intervals (between 0 and 1).}
 

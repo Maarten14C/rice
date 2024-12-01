@@ -220,3 +220,184 @@ muck <- function(y.obs, y.target, F.contam=1, decimals=3, visualise=TRUE, talk=T
     }
   invisible(frac)
 }
+
+
+
+#' @name push.normal
+#' @title Add a normal distribution to a calibrated date
+#' @description Push a date to younger or older ages by adding (or subtracting) a normal distribution (e.g. if a bone is assumed to have a lag or in-built age)
+#' @details n random values will be sampled from the calibrated distribution, and a similar amount will be sampled from the normal distribution. The sampled values will then be added to or subtracted from each other to push the date to younger or older ages.
+#' @return The resulting calibrated distribution and its hpd ranges, together with a plot of the pushed date with the normal distribution (and whether it is added or subtracted) as inset
+#' @param y The radiocarbon age.
+#' @param er The error of the radiocarbon age.
+#' @param mean The mean of the normal or gamma distribution.
+#' @param sdev The standard deviation of the normal distribution.
+#' @param add The distribution can be added or subtracted. Adding results in ages being pushed to younger age distributions, and subtracting to older ones.
+#' @param n The amount of random values to sample (from both the calibrated distribution and the gamma/normal distribution) to calculate the push. Defaults to \code{n=1e6}.
+#' @param prob The probability for the hpd ranges. Defaults to \code{prob=0.95}.
+#' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
+#' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages. Defaults to \code{postbomb=FALSE}.
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
+#' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
+#' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
+#' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
+#' @param t.a Value a of the t distribution (defaults to 3).
+#' @param t.b Value b of the t distribution (defaults to 4).
+#' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param cal.lim Calendar axis limits. Calculated automatically by default.
+#' @param calib.col Colour of the calibrated distribution (defaults to semi-transparent light grey).
+#' @param pushed.col Colour of the pushed distribution (defaults to semi-transparent blue).
+#' @param inset Whether or not to plot an inset graph showing the shape of the normal/gamma distribution.
+#' @param inset.col Colour of the normal/gamma distribution.
+#' @param inset.loc Location of the inset graph.
+#' @param inset.mar Margins of the inset graph.
+#' @param inset.mgp Margin lines for the inset graph.
+#' @examples
+#'   push.normal(250, 25, 50, 10)
+#' @export
+push.normal <- function(y, er, mean, sdev, add=TRUE, n=1e6, prob=0.95, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, cc.dir=NULL, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cal.lim=c(), calib.col=rgb(0,0,0,.25), pushed.col=rgb(0,0,1,.4), inset=TRUE, inset.col="darkgreen", inset.loc=c(0.6, 0.97, 0.6, 0.97), inset.mar=c(3, 0.5, 0.5, 0.5), inset.mgp=c(2,1,0)) {
+  if(length(y) != 1 || length(er) != 1)
+    stop("Please provide one value for both y and er")
+  if(length(mean) != 1 || length(sdev) != 1)
+    stop("Please provide one value for both mean and par2 (sdev or shape)")
+
+  y <- y - deltaR
+  er <- sqrt(er^2 + deltaSTD^2)
+  
+  shift <- rnorm(n, mean, sdev) 
+  calib <- caldist(y, er, cc=cc, postbomb=postbomb, thiscurve=thiscurve, normalise=TRUE, BCAD=BCAD, cc.dir=cc.dir)
+  rcalib <- r.calib(n, y, er, cc=cc, postbomb=postbomb, thiscurve=thiscurve, normal=normal, t.a=t.a, t.b=t.b, normalise=TRUE, BCAD=BCAD, rule=2, cc.dir=cc.dir)
+
+  if(add) { # the date becomes younger
+    shifted <- if(BCAD) rcalib + shift else rcalib - shift
+   } else { # the date becomes older
+       shifted <- if(BCAD) rcalib - shift else rcalib + shift
+   }
+  shifted <- density(shifted)
+   
+  calpol <- cbind(c(calib[,1], rev(calib[,1])), c(calib[,2]/max(calib[,2]), rep(0, nrow(calib))))
+  shiftpol <- cbind(c(min(shifted$x), shifted$x, max(shifted$x)), c(0, shifted$y/max(shifted$y), 0))
+
+  if(length(cal.lim) == 0) {
+    cal.lim <- range(calib[,1], shifted$x)
+    if(!BCAD) cal.lim <- rev(cal.lim)
+  }
+  
+  plot(0, type="n", xlim=cal.lim, ylim=c(0, 1.5), bty="l", ylab="", yaxt="n", xlab=ifelse(BCAD, "BCAD", "cal BP"))
+  polygon(calpol, col=calib.col, border=calib.col)
+  polygon(shiftpol, col=pushed.col, border=pushed.col)
+
+  hpds <- rbind(hpd(cbind(shifted$x, shifted$y), prob=prob))
+  for(i in 1:nrow(hpds)) {
+    hpdpol <- (shiftpol[,1]) <= hpds[i,1] * (shiftpol[,1] >= hpds[i,2])
+    hpdpol <- shiftpol[which(hpdpol>0),]
+    hpdpol <- rbind(c(hpdpol[1,1],0), hpdpol, c(hpdpol[nrow(hpdpol),1],0))
+    polygon(hpdpol, col=pushed.col, border=NA)
+  }
+
+  # inset graph
+  if(inset) {
+    op <- par(fig=inset.loc, new=TRUE, mar=inset.mar, mgp=inset.mgp, bty="n")
+    xseq <- seq(mean-(3*sdev), mean+(3*sdev), length=200)
+    if(add) xlim <- range(xseq) else xlim <- rev(range(xseq))
+    plot(xseq, dnorm(xseq, mean, sdev), type="l", xlim=xlim, col=inset.col, xlab="", ylab="", yaxt="n", yaxs="r")
+    end <- mean+sdev
+    arrows(mean, 0, end, 0, col=inset.col, lwd=2, length=.05)
+    op <- par(fig=c(0,1,0,1), mar=c(5,4,4,2), mgp=c(3,1,0))
+  }
+  print(hpds)
+  invisible(list(shifted=shifted, hpds=hpds))
+}
+
+
+
+#' @name push.gamma
+#' @title Add a gamma distribution to a calibrated date
+#' @description Push a date to younger or older ages by adding (or subtracting) a gamma distribution (e.g. if a bone is assumed to have a lag or in-built age)
+#' @details n random values will be sampled from the calibrated distribution, and a similar amount will be sampled from the gamma distribution. The sampled values will then be added to or subtracted from each other to push the date to younger or older ages.
+#' @return The resulting calibrated distribution and its hpd ranges, together with a plot of the pushed date with the gamma distribution (and whether it is added or subtracted) as inset
+#' @param y The radiocarbon age
+#' @param er The error of the radiocarbon age
+#' @param mean The mean of the gamma distribution
+#' @param shape The shape of the gamma distribution. If setting this to shape=1, it becomes an exponential distribution.
+#' @param add The distribution can be added or subtracted. Adding results in ages being pushed to younger age distributions, and subtracting to older ones.
+#' @param n The amount of random values to sample (from both the calibrated distribution and the gamma distribution) to calculate the push. Defaults to \code{n=1e6}.
+#' @param prob The probability for the hpd ranges. Defaults to \code{prob=0.95}.
+#' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
+#' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages. Defaults to \code{postbomb=FALSE}.
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
+#' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
+#' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
+#' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
+#' @param t.a Value a of the t distribution (defaults to 3).
+#' @param t.b Value b of the t distribution (defaults to 4).
+#' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param cal.lim Calendar axis limits. Calculated automatically by default.
+#' @param calib.col Colour of the calibrated distribution (defaults to semi-transparent light grey).
+#' @param pushed.col Colour of the pushed distribution (defaults to semi-transparent blue).
+#' @param inset Whether or not to plot an inset graph showing the shape of the normal/gamma distribution.
+#' @param inset.col Colour of the normal/gamma distribution.
+#' @param inset.loc Location of the inset graph.
+#' @param inset.mar Margins of the inset graph.
+#' @param inset.mgp Margin lines for the inset graph.
+#' @examples
+#'   push(250, 25, 50, 10, "normal") # add a normal distribution
+#'   push(250, 25, 50, 2, "gamma", add=FALSE) # subtract a gamma distribution
+#' @export
+push.gamma <- function(y, er, mean, shape, add=TRUE, n=1e6, prob=0.95, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, cc.dir=NULL, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cal.lim=c(), calib.col=rgb(0,0,0,.25), pushed.col=rgb(0,0,1,.4), inset=TRUE, inset.col="darkgreen", inset.loc=c(0.6, 0.97, 0.6, 0.97), inset.mar=c(3, 0.5, 0.5, 0.5), inset.mgp=c(2,1,0)) {
+  if(length(y) != 1 || length(er) != 1)
+    stop("Please provide one value for both y and er")
+  if(length(mean) != 1 || length(shape) != 1)
+    stop("Please provide one value for both mean and par2 (sdev or shape)")
+
+  y <- y - deltaR
+  er <- sqrt(er^2 + deltaSTD^2)
+  
+  shift <- rgamma(n, shape, shape/mean)
+  calib <- caldist(y, er, cc=cc, postbomb=postbomb, thiscurve=thiscurve, normalise=TRUE, BCAD=BCAD, cc.dir=cc.dir)
+  rcalib <- r.calib(n, y, er, cc=cc, postbomb=postbomb, thiscurve=thiscurve, normal=normal, t.a=t.a, t.b=t.b, normalise=TRUE, BCAD=BCAD, rule=2, cc.dir=cc.dir)
+
+  if(add) { # the date becomes younger
+    shifted <- if(BCAD) rcalib + shift else rcalib - shift
+   } else { # the date becomes older
+       shifted <- if(BCAD) rcalib - shift else rcalib + shift
+   }
+  shifted <- density(shifted)
+   
+  calpol <- cbind(c(calib[,1], rev(calib[,1])), c(calib[,2]/max(calib[,2]), rep(0, nrow(calib))))
+  shiftpol <- cbind(c(min(shifted$x), shifted$x, max(shifted$x)), c(0, shifted$y/max(shifted$y), 0))
+
+  if(length(cal.lim) == 0) {
+    cal.lim <- range(calib[,1], shifted$x)
+    if(!BCAD) cal.lim <- rev(cal.lim)
+  }
+  
+  plot(0, type="n", xlim=cal.lim, ylim=c(0, 1.5), bty="l", ylab="", yaxt="n", xlab=ifelse(BCAD, "BCAD", "cal BP"))
+  polygon(calpol, col=calib.col, border=calib.col)
+  polygon(shiftpol, col=pushed.col, border=pushed.col)
+
+  hpds <- rbind(hpd(cbind(shifted$x, shifted$y), prob=prob))
+  for(i in 1:nrow(hpds)) {
+    hpdpol <- (shiftpol[,1]) <= hpds[i,1] * (shiftpol[,1] >= hpds[i,2])
+    hpdpol <- shiftpol[which(hpdpol>0),]
+    hpdpol <- rbind(c(hpdpol[1,1],0), hpdpol, c(hpdpol[nrow(hpdpol),1],0))
+    polygon(hpdpol, col=pushed.col, border=NA)
+  }
+
+  # inset graph
+  if(inset) {
+    op <- par(fig=inset.loc, new=TRUE, mar=inset.mar, mgp=inset.mgp, bty="n")
+    xseq <- seq(0, mean*(1+4/sqrt(shape)), length=200)
+    if(add) xlim <- range(xseq) else xlim <- rev(range(xseq))
+    plot(xseq, dgamma(xseq, shape, shape/mean), type="l", xlim=xlim, col=inset.col, xlab="", ylab="", yaxt="n", yaxs="r")
+    end <- mean+(mean/3)
+    arrows(mean, 0, end, 0, col=inset.col, lwd=2, length=.05)
+    op <- par(fig=c(0,1,0,1), mar=c(5,4,4,2), mgp=c(3,1,0))
+  }
+  print(hpds)
+  invisible(list(shifted=shifted, hpds=hpds))
+}
+
+

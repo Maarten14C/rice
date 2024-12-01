@@ -6,11 +6,13 @@
 \usage{
 calib.t(
   y = 2450,
-  error = 50,
+  er = 50,
   t.a = 3,
   t.b = 4,
   cc = 1,
   postbomb = FALSE,
+  deltaR = 0,
+  deltaSTD = 0,
   as.F = FALSE,
   BCAD = FALSE,
   cc.dir = c(),
@@ -25,7 +27,7 @@ calib.t(
 \arguments{
 \item{y}{The reported mean of the date.}
 
-\item{error}{The reported error of the date.}
+\item{er}{The reported error of the date.}
 
 \item{t.a}{Value for the t parameter \code{a}.}
 
@@ -34,6 +36,10 @@ calib.t(
 \item{cc}{calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).}
 
 \item{postbomb}{Which postbomb curve to use for negative 14C dates.}
+
+\item{deltaR}{Age offset (e.g. for marine samples).}
+
+\item{deltaSTD}{Uncertainty of the age offset (1 standard deviation).}
 
 \item{as.F}{Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.}
 

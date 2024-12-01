@@ -2,10 +2,12 @@
 #' @title Calculate calibrated distribution
 #' @description Calculate the calibrated distribution of a radiocarbon date.
 #' @return The probability distribution(s) as two columns: cal BP ages and their associated probabilities
-#' @param age Uncalibrated radiocarbon age
-#' @param error Lab error of the radiocarbon age
+#' @param y Uncalibrated radiocarbon age
+#' @param er Lab error of the radiocarbon age
 #' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param is.F Set this to TRUE if the provided age and error are in the F14C realm.
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
@@ -25,16 +27,19 @@
 #' plot(calib, type="l")
 #' postbomb <- caldist(-3030, 20, postbomb=1, BCAD=TRUE)
 #' @export
-caldist <- function(age, error, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL) {
+caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL) {
+
+  y <- y - deltaR
+  er <- sqrt(er^2 + deltaSTD^2)
 
   if(length(thiscurve) == 0) {
     if(cc == 0) { # no ccurve needed
-      xseq <- seq(age-8*error, age+8*error, length=2e3) # hard-coded values, hmmm
+      xseq <- seq(y-8*er, y+8*er, length=2e3) # hard-coded values, hmmm
       cc <- cbind(xseq, xseq, rep(0, length(xseq)))
     } else
-	if(is.F)
-	  cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample) else
-        if(min(age) < max(3*error)) { # was age - error < 0
+    if(is.F)
+      cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample) else
+        if(min(y) < max(3*er) || postbomb) { # was y - er < 0
           if(!postbomb)
             if(!(cc %in% c("nh1", "nh2", "nh3", "sh1-2", "sh3")))
               stop("This appears to be a postbomb age or close to being so. Please provide a postbomb curve")
@@ -46,18 +51,18 @@ caldist <- function(age, error, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, th
 
   # in F realm?
   if(is.F) { # then put cc in F; y and er are assumed to be in F already 
-  	cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
+    cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
   } else
     if(as.F) { # y, er and cc are in C14 realm, but need to be in F
       cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
-      asF <- C14toF14C(age, error)
-      age <- asF[1]; error <- asF[2]
+      asF <- C14toF14C(y, er)
+      y <- asF[1]; er <- asF[2]
     }
 
   # calibrate; find how far age (measurement) is from cc[,2] of calibration curve
   if(normal)
-    cal <- cbind(cc[,1], dnorm(cc[,2], age, sqrt(error^2+cc[,3]^2))) else
-      cal <- cbind(cc[,1], (t.b + ((age-cc[,2])^2) / (2*(cc[,3]^2 + error^2))) ^ (-1*(t.a+0.5)))
+    cal <- cbind(cc[,1], dnorm(cc[,2], y, sqrt(er^2+cc[,3]^2))) else
+      cal <- cbind(cc[,1], (t.b + ((y-cc[,2])^2) / (2*(cc[,3]^2 + er^2))) ^ (-1*(t.a+0.5)))
 
   # interpolate and normalise calibrated distribution to 1
   if(postbomb)
@@ -201,6 +206,8 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, rounded=1, every=1) {
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
@@ -214,7 +221,11 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, rounded=1, every=1) {
 #'   l.calib(100, c(130,150), c(15,20)) # multiple radiocarbon ages and a single calendar age
 #'   plot(0:300, l.calib(0:300, 130, 20), type='l')
 #' @export
-l.calib <- function(x, y, er, cc=1, postbomb=FALSE, thiscurve=c(), cc.dir=c(), normal=TRUE, as.F=FALSE, t.a=3, t.b=4) {
+l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=c(), cc.dir=c(), normal=TRUE, as.F=FALSE, t.a=3, t.b=4) {
+  
+  y <- y - deltaR
+  er <- sqrt(er^2 + deltaSTD^2)
+	
   if(length(x) == 1) {
     if(length(y) != length(er))
       stop("check that y has as many entries as er") 		  
@@ -223,9 +234,9 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, thiscurve=c(), cc.dir=c(), n
       stop("cannot deal with multiple entries for both x and y+er") 
 
   if(as.F) {
-	  mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
-	  tmp <- C14toF14C(y, er)
-	  y <- tmp[,1]; er <- tmp[,2]
+    mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
+    tmp <- C14toF14C(y, er)
+    y <- tmp[,1]; er <- tmp[,2]
   } else
     mu <- calBPtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
   
@@ -247,6 +258,8 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, thiscurve=c(), cc.dir=c(), n
 #' @param er Lab error of the radiocarbon age
 #' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
@@ -265,15 +278,15 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, thiscurve=c(), cc.dir=c(), n
 #'   r.calib(10,130,20) # 10 random cal BP ages
 #'   plot(density(r.calib(1e6, 2450, 20)))
 #' @export
-r.calib <- function(n, y, er, cc=1, postbomb=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL) {
+r.calib <- function(n, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=2, cc.dir=NULL) {
   if(length(n) == 0 || n<1)
     stop("n needs to be a value >0")
   if(!length(y) == 1 || !length(er) == 1)
-	 stop("I can only handle one date at a time") 
-  	
-  calib <- caldist(y, er, cc=cc, postbomb=postbomb, as.F=as.F, thiscurve=thiscurve, yrsteps=yrsteps, normalise=normalise, BCAD=BCAD, rule=rule, cc.dir=cc.dir)
+    stop("I can only handle one date at a time")
+  
+  calib <- caldist(y, er, cc=cc, postbomb=postbomb, deltaR=deltaR, deltaSTD=deltaSTD, as.F=as.F, thiscurve=thiscurve, yrsteps=yrsteps, normalise=normalise, BCAD=BCAD, rule=rule, cc.dir=cc.dir)
   rx <- approx(cumsum(calib[,2])/sum(calib[,2]), calib[,1], runif(n), rule=2)$y
-  return(rx)	
+  return(rx)
 }
 
 
@@ -288,6 +301,8 @@ r.calib <- function(n, y, er, cc=1, postbomb=FALSE, as.F=FALSE, thiscurve=NULL, 
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
 #' @param t.a Value a of the t distribution (defaults to 3).
@@ -301,10 +316,11 @@ r.calib <- function(n, y, er, cc=1, postbomb=FALSE, as.F=FALSE, thiscurve=NULL, 
 #' calibrate(160, 20, BCAD=TRUE)
 #' younger(1750, 160, 20, BCAD=TRUE)
 #' @export
-younger <- function(x, y, er, cc=1, postbomb=FALSE, normal=TRUE, as.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+younger <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
   if(length(y)>1 || length(er) >1)
     stop("I can only deal with one date at a time")
-  cal <- caldist(y, er, cc, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, BCAD=BCAD, threshold=threshold)
+  
+  cal <- caldist(y, er, cc, postbomb=postbomb, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, BCAD=BCAD, threshold=threshold)
   prob <- approx(cal[,1], cumsum(cal[,2])/sum(cal[,2]), x, rule=2)$y # cumulative prob
   return(prob)
 }
@@ -322,6 +338,8 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, normal=TRUE, as.F=FALSE, t.a
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
 #' @param t.a Value a of the t distribution (defaults to 3).
@@ -335,8 +353,8 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, normal=TRUE, as.F=FALSE, t.a
 #' calibrate(160, 20, BCAD=TRUE)
 #' older(1750, 160, 20, BCAD=TRUE)
 #' @export
-older <- function(x, y, er, cc=1, postbomb=FALSE, normal=TRUE, as.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
-  return(1 - younger(x, y, er, cc, postbomb=postbomb, normal, as.F=as.F, t.a, t.b, BCAD, threshold=threshold))
+older <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+  return(1 - younger(x, y, er, cc, postbomb=postbomb, deltaR, deltaSTD, normal, as.F=as.F, t.a, t.b, BCAD, threshold=threshold))
 }
 
 
@@ -352,6 +370,8 @@ older <- function(x, y, er, cc=1, postbomb=FALSE, normal=TRUE, as.F=FALSE, t.a=3
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
 #' @param t.a Value a of the t distribution (defaults to 3).
@@ -362,10 +382,10 @@ older <- function(x, y, er, cc=1, postbomb=FALSE, normal=TRUE, as.F=FALSE, t.a=3
 #' @examples
 #' p.range(2800, 2400, 2450, 20)
 #' @export
-p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, normal=TRUE, as.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
   if(length(y)>1 || length(er) >1)
     stop("I can only deal with one date at a time")
-  cal <- caldist(y, er, cc, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, BCAD=BCAD, threshold=threshold)
+  cal <- caldist(y, er, cc, postbomb=postbomb, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, BCAD=BCAD, threshold=threshold)
   prob <- approx(cal[,1], cumsum(cal[,2])/sum(cal[,2]), sort(c(x1, x2)), rule=2)$y 
   return(max(prob)-min(prob))
 }
@@ -377,11 +397,13 @@ p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, normal=TRUE, as.F=FALSE
 #' @description Visualise how a date calibrates using the t distribution and the normal distribution.
 #' @details Radiocarbon and other dates are usually modelled using the normal distribution (red curve). The t approach (grey distribution) however allows for wider tails and thus tends to better accommodate outlying dates. This distribution requires two parameters, called 'a' and 'b'.
 #' @param y The reported mean of the date.
-#' @param error The reported error of the date.
+#' @param er The reported error of the date.
 #' @param t.a Value for the t parameter \code{a}.
 #' @param t.b Value for the t parameter \code{b}.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Which postbomb curve to use for negative 14C dates.
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
 #' @param cc.dir Directory where the calibration curves for C14 dates \code{cc} are allocated. By default \code{cc.dir=c()}.
@@ -397,9 +419,13 @@ p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, normal=TRUE, as.F=FALSE
 #' calib.t()
 #'
 #' @export
-calib.t <- function(y=2450, error=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, as.F=FALSE, BCAD=FALSE, cc.dir=c(), normal.col="red", normal.lwd=1.5, t.col=rgb(0,0,0,0.25), t.border=rgb(0,0,0,0,0.25), xlim=c(), ylim=c()) {
-  normalcal <- caldist(y, error, cc, postbomb, BCAD=BCAD, cc.dir=cc.dir, as.F=as.F, normal=TRUE)
-  tcal <- caldist(y, error, cc, postbomb, BCAD=BCAD, as.F=as.F, t.a=t.a, t.b=t.b, cc.dir=cc.dir, normal=FALSE)
+calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, BCAD=FALSE, cc.dir=c(), normal.col="red", normal.lwd=1.5, t.col=rgb(0,0,0,0.25), t.border=rgb(0,0,0,0,0.25), xlim=c(), ylim=c()) {
+	
+  y <- y - deltaR
+  er <- sqrt(er^2 + deltaSTD^2)
+ 	
+  normalcal <- caldist(y, er, cc, postbomb, BCAD=BCAD, cc.dir=cc.dir, as.F=as.F, normal=TRUE)
+  tcal <- caldist(y, er, cc, postbomb, BCAD=BCAD, as.F=as.F, t.a=t.a, t.b=t.b, cc.dir=cc.dir, normal=FALSE)
   tpol <- cbind(c(tcal[1,1], tcal[,1], tcal[nrow(tcal),1]), c(0, tcal[,2], 0))
 
   xlab <- ifelse(BCAD, "BC/AD", "cal BP")

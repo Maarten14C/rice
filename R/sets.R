@@ -7,6 +7,8 @@
 #' @return The pooled mean and error if the p-value is above the threshold - a warning if it is not.
 #' @param y The set of radiocarbon dates to be tested
 #' @param er The lab errors of the radiocarbon dates
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param threshold Probability threshold above which chisquare values are considered acceptable (between 0 and 1; default \code{threshold=0.05}).
 #' @param roundby Rounding of the reported mean, chisquare and and p-value. Defaults to \code{roundby=1}.
 #' @author Maarten Blaauw
@@ -16,7 +18,11 @@
 #'   Zu <- grep("ETH", shroud$ID) # Zurich lab only
 #'   pool(shroud$y[Zu],shroud$er[Zu])
 #' @export
-pool <- function(y, er, threshold=.05, roundby=1) {
+pool <- function(y, er, deltaR=0, deltaSTD=0, threshold=.05, roundby=1) {
+
+  y <- y - deltaR
+  er <- sqrt(er^2 + deltaSTD^2)
+
   pooled.y <- (sum(y/er^2)) / (sum(1/er^2))
   pooled.er <- sqrt(1/sum(1/er^2))
   T <- sum((y-pooled.y)^2 / er^2)
@@ -27,9 +33,9 @@ pool <- function(y, er, threshold=.05, roundby=1) {
       round(T, roundby+2), ", p-value ", round(p, roundby+2), " < ", threshold, sep="") 
   } else { 
       message("pooled mean: ", round(pooled.y, roundby), " +- ", round(pooled.er, roundby), 
-		"\nChi2: ", T, ", p-value ", round(p, roundby+2), " (>", threshold, ", OK)", sep="")
-	    return(c(pooled.y, pooled.er))
-	  }  
+       "\nChi2: ", round(T, roundby+2), ", p-value ", round(p, roundby+2), " (>", threshold, ", OK)", sep="")
+      return(c(pooled.y, pooled.er))
+    }
 }
 
 
@@ -43,6 +49,8 @@ pool <- function(y, er, threshold=.05, roundby=1) {
 #' @param er The lab errors of the radiocarbon dates
 #' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param is.F Set this to TRUE if the provided age and error are in the F14C realm.
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
@@ -69,15 +77,18 @@ pool <- function(y, er, threshold=.05, roundby=1) {
 #'   Zu <- grep("ETH", shroud$ID) # Zurich lab only
 #'   as.one(shroud$y[Zu],shroud$er[Zu], BCAD=TRUE)
 #' @export
-as.one <- function(y, er, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=4, prob=0.95, talk=TRUE, roundby=0, bty="n") {
+as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=4, prob=0.95, talk=TRUE, roundby=0, bty="n") {
+
+  y <- y - deltaR
+  er <- sqrt(er^2 + deltaSTD^2)
 
   calib <- draw.dates(y, er, d.lim=c(0, length(y)+1), BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, col=calib.col, mirror=FALSE, hpd.col=NA, border=NA, yaxt="n", d.lab="", bty=bty)  
   
   xmin <- c(); xmax <- c()
   for(i in 1:length(y))	{
     yr <- calib$ages[,i] 
-	xmin <- min(xmin, yr)
-	xmax <- max(xmax, yr)
+    xmin <- min(xmin, yr)
+    xmax <- max(xmax, yr)
   }
 
   xseq <- seq(xmin, xmax, by=yrsteps)
@@ -97,15 +108,16 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, thiscurv
     as.points <- suppressWarnings(point.estimates(as.dist, rounded=roundby))
     message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " BC/AD", " cal BP"))
 
-	hpds <- paste0(100 * prob, "% hpd ranges: ", as.hpd[1, 1], "-", as.hpd[1, 2], " (", as.hpd[1, 3], "%)")
-	if(nrow(as.hpd) > 1) 
-	  for(i in 2:nrow(as.hpd)) 
-	    hpds <- paste0(hpds, ", ", as.hpd[i, 1], "-", as.hpd[i, 2], " (", as.hpd[i, 3], "%)")
-	message(hpds)
+    hpds <- paste0(100 * prob, "% hpd ranges: ", as.hpd[1, 1], "-", as.hpd[1, 2], " (", as.hpd[1, 3], "%)")
+    if(nrow(as.hpd) > 1)
+      for(i in 2:nrow(as.hpd))
+        hpds <- paste0(hpds, ", ", as.hpd[i, 1], "-", as.hpd[i, 2], " (", as.hpd[i, 3], "%)")
+    message(hpds)
   }
   
   invisible(as.dist)
 }
+
 
 
 #' @name as.bin
@@ -120,6 +132,8 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, thiscurv
 #' @param move.res The amount of steps taken to make the histogram. Defaults to \code{move.res=100} - a compromise between detail obtained and calculation speed. 
 #' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param is.F Set this to TRUE if the provided age and error are in the F14C realm.
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
@@ -147,7 +161,10 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, thiscurv
 #'   # bins of 50 yr, moving by 10 yr, slow
 #' }
 #' @export
-as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=FALSE, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=1, talk=TRUE, prob=0.95, roundby=0, bty="n") {
+as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=1, talk=TRUE, prob=0.95, roundby=0, bty="n") {
+
+  y <- y - deltaR
+  er <- sqrt(er^2 + deltaSTD^2)
 	
   calib <- draw.dates(y, er, d.lim=c(0, length(y)+1), BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, col=calib.col, mirror=FALSE, hpd.col=NA, border=NA, yaxt="n", d.lab="", bty=bty)
   if(length(move.by) == 0)
@@ -160,7 +177,7 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
       p.range(xmin[j], xmax[j], y[i], er[i], cc=cc, postbomb=postbomb, normal=normal, as.F=as.F, t.a=t.a, t.b=t.b, BCAD=BCAD, threshold=threshold)
     })
   })
-	
+
   inbin <- rowSums(tmp)
   pol <- cbind(c(min(xseq), xseq, max(xseq)), length(y)+1-c(0, one.height*inbin, 0))
   polygon(pol, col=one.col, border=one.col)
@@ -175,18 +192,105 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
   
   if(talk) {
     as.points <- suppressWarnings(point.estimates(as.dist, rounded=roundby))
-	message("Most likely bin: ", round(maxbin, roundby), " (", round(maxbin+(width/2), roundby), "-", round(maxbin-(width/2), roundby), " cal BP), fitting a sum of ", round(max(inbin),1), " dates")   
-	message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " BC/AD", " cal BP"))
+    message("Most likely bin: ", round(maxbin, roundby), " (", round(maxbin+(width/2), roundby), "-", round(maxbin-(width/2), roundby), " cal BP), fitting a sum of ", round(max(inbin),1), " dates")
+    message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " BC/AD", " cal BP"))
 
-	hpds <- paste0(100 * prob, "% hpd ranges: ", as.hpd[1, 1], "-", as.hpd[1, 2], " (", as.hpd[1, 3], "%)")
-	if(nrow(as.hpd) > 1) 
-	  for(i in 2:nrow(as.hpd)) 
-	    hpds <- paste0(hpds, ", ", as.hpd[i, 1], "-", as.hpd[i, 2], " (", as.hpd[i, 3], "%)")
-	message(hpds)
+    hpds <- paste0(100 * prob, "% hpd ranges: ", as.hpd[1, 1], "-", as.hpd[1, 2], " (", as.hpd[1, 3], "%)")
+    if(nrow(as.hpd) > 1)
+      for(i in 2:nrow(as.hpd))
+        hpds <- paste0(hpds, ", ", as.hpd[i, 1], "-", as.hpd[i, 2], " (", as.hpd[i, 3], "%)")
+    message(hpds)
   }
-	
+
   invisible(cbind(xseq, inbin))
-}	
+}
+
+
+
+#' @name overlap
+#' @title The overlap between calibrated dates
+#' @description Calculates the amount of overlap (as percentage) between two or more calibrated radiocarbon dates. It does this by taking a sequence of calendar dates 'x' and for each calendar date find the calibrated distribution with the minimum height - this minimum height is taken as the overlap between the dates for that age. This is repeated for all 'x'. The sum of these heights is the overlap, which can reach values from 0 to 100\%. 
+#' @return The overlap between all calibrated probabilities as percentage, and a plot. 
+#' @param y The set of radiocarbon dates
+#' @param er The lab errors of the radiocarbon dates
+#' @param res The resolution to base the calculations on. Defaults to 1000 steps between the minimum and maximum cal BP (these are calculated from the total calendar age range of all calibrated distributions).
+#' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
+#' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
+#' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
+#' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
+#' @param t.a Value a of the t distribution (defaults to 3).
+#' @param t.b Value b of the t distribution (defaults to 4).
+#' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
+#' @param threshold Report only values above a threshold. Defaults to \code{threshold=1e-6}.
+#' @param age.lim Calendar age limits of the calculations. Calculated automatically by default.  
+#' @param age.lab Label of the calendar age, defaults to BCAD or cal BP.
+#' @param calib.col The colour of the individual calibrated ages. Defaults to semi-transparent grey.
+#' @param overlap.col The colour of the overlap distribution
+#' @param overlap.height The height of the overlap distribution
+#' @param talk Whether or not to report a summary of the spread 
+#' @param prob Probability range to report. Defaults to \code{prob=0.95}.
+#' @param roundby Number of decimals to report
+#' @param bty Draw a box around a box of a certain shape. Defaults to \code{bty="n"}.
+#' @examples
+#'   y <- c(3820, 4430) # the C14 ages of a twig and a marine shell from a single layer
+#'   er <- c(40, 40) # their lab errors
+#'   overlap(y, er, cc=1:2) 
+#' @export
+overlap <- function(y, er, res=1e3, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, BCAD=FALSE, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, threshold=0.001, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), overlap.col=rgb(0,0,1,.4), overlap.border=NA, overlap.height=0.9, talk=TRUE, prob=0.95, roundby=1, bty="n") {
+ 
+  y <- y - deltaR
+  er <- sqrt(er^2 + deltaSTD^2)	
+
+  if(length(cc) == 1)
+    cc <- rep(cc,length(y))
+  calib <- draw.dates(y, er, d.lim=c(0, length(y)+1), cc=cc, cc.dir=cc.dir, thiscurve=thiscurve, BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, threshold=threshold, col=calib.col, mirror=FALSE, hpd.col=NA, border=NA, yaxt="n", d.lab="", bty=bty)
+  locs <- par('usr') # limits of axes (x1, x2, y1, y2)
+  xseq <- seq(locs[1], locs[2], length=res)
+  abline(h=locs[3], lwd=2)
+
+  probs <- sapply(1:length(y), function(i) {
+    l.calib(xseq, y[i], er[i], cc=cc[i], postbomb=postbomb, thiscurve=thiscurve, cc.dir=cc.dir, normal=normal, t.a=t.a, t.b=t.b)})
+  min_values <- apply(probs, 1, min, na.rm = TRUE)
+
+  perc_overlap <- sum(min_values)
+  message("Overlap: ", round(100*perc_overlap, roundby), "%")
+  hpds <- hpd.polygons(cbind(xseq, min_values), prob, dist.col=overlap.col, hpd.col=overlap.col, dist.border=overlap.border, hpd.border=overlap.border, base=length(y)+1, ex=-1*overlap.height, talk=TRUE)
+
+  invisible(list(overlap=cbind(xseq, min_values), hpds=hpds))
+}
+
+
+
+# internal function to draw hpd polygons
+hpd.polygons <- function(dist, prob, rounded=1, dist.col=rgb(0,0,1,0.3), dist.border=NA, hpd.col=rgb(0,0,1,0.3), hpd.border=NA, base=0, ex=1, talk=TRUE, roundby=1) {
+  
+  pol <- cbind(c(min(dist[,1]), dist[,1], max(dist[,1])),
+    base+ex*c(0, dist[,2]/max(dist[,2]), 0))
+  polygon(pol, col=dist.col, border=dist.border)
+  hpds <- rbind(hpd(dist, prob, rounded=rounded))
+  
+  for(i in 1:nrow(hpds)) {
+    inside <- (pol[,1] <= hpds[i,1]) * (pol[,1] >= hpds[i,2])
+    hpd.pol <- pol[which(inside==1),]
+    hpd.pol <- rbind(c(hpd.pol[1,1], base), hpd.pol, c(hpd.pol[nrow(hpd.pol), 1], base))
+    polygon(hpd.pol, col=hpd.col, border=hpd.border)
+  }
+  
+  if(talk) {
+    txt.hpds <- paste0(100 * prob, "% hpd ranges: ", hpds[1, 1], "-", hpds[1, 2],
+	  " (", round(hpds[1, 3], roundby), "%)")
+    if(nrow(hpds) > 1)
+      for(i in 2:nrow(hpds))
+        txt.hpds <- paste0(txt.hpds, ", ", hpds[i, 1], "-", hpds[i, 2], 
+	      " (", round(hpds[i, 3],roundby), "%)")
+    message(txt.hpds)
+  }
+  
+  return(hpds)
+}
 
 
 
@@ -199,6 +303,8 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #' @param n The number of iterations to base the calculations on. Defaults to 100,000.
 #' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
+#' @param deltaR Age offset (e.g. for marine samples).
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
@@ -213,14 +319,17 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #' @param prob Probability range to report. Defaults to \code{prob=0.95}.
 #' @param roundby Number of decimals to report
 #' @param bty Draw a box around a box of a certain shape. Defaults to \code{bty="l"}.
-#' @author Maarten Blaauw
 #' @examples
 #'   data(shroud)
 #'   spread(shroud$y,shroud$er)
 #'   Zu <- grep("ETH", shroud$ID) # Zurich lab only
 #'   spread(shroud$y[Zu],shroud$er[Zu])
 #' @export
-spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, cc.resample=FALSE, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, visualise=TRUE, talk=TRUE, prob=0.95, roundby=1, bty="l") {
+spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, thiscurve=NULL, yrsteps=1, cc.resample=FALSE, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, visualise=TRUE, talk=TRUE, prob=0.95, roundby=1, bty="l") {
+
+  y <- y - deltaR
+  er <- sqrt(er^2 + deltaSTD^2)
+	
   xs <- array(NA, dim=c(n, length(y)))
   ns <- sample(1:length(y), n, replace=TRUE)
   diffs <- array(NA, dim=c(n, length(y)-1))
