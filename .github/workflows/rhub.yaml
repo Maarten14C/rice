@@ -28,4 +28,4 @@ jobs:
 
     - name: Run rhub check
       run: |
-        R -e 'rhub::check()'
+        R -e 'rhub::check(platform = c("ubuntu", "macos", "windows"))'
