@@ -93,6 +93,5 @@ Push a date to younger or older ages by adding (or subtracting) a gamma distribu
 n random values will be sampled from the calibrated distribution, and a similar amount will be sampled from the gamma distribution. The sampled values will then be added to or subtracted from each other to push the date to younger or older ages.
 }
 \examples{
-  push(250, 25, 50, 10, "normal") # add a normal distribution
-  push(250, 25, 50, 2, "gamma", add=FALSE) # subtract a gamma distribution
+  push.gamma(250, 25, 50, 2, add=FALSE) # subtract a gamma distribution
 }

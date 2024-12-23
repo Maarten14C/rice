@@ -4,7 +4,8 @@ ocean.map <- function(S, W, N, E, scale = c(), ocean.col = "aliceblue", land.col
     stop("ggplot2 package is required")
   }
   
-  if ("rnaturalearth" %in% installed.packages()) {
+  ihave <- installed.packages()
+  if(("rnaturalearth" %in% ihave) && ("sf" %in% ihave)) {
     # Handle different scales and package availability
     if (length(scale) == 0 || scale == "medium") {
       world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
@@ -12,7 +13,7 @@ ocean.map <- function(S, W, N, E, scale = c(), ocean.col = "aliceblue", land.col
       world <- rnaturalearth::ne_countries(scale = "small", returnclass = "sf")
     } else if (scale == "large") {
       if (!"rnaturalearthhires" %in% installed.packages()) {
-        message("Using a medium-scale map. For higher resolution, install rnaturalearthhires.")
+        message("Using a medium-scale map. For higher resolution, install rnaturalearthhires (devtools::install_github(\"ropensci/rnaturalearthhires\")).")
         world <- rnaturalearthdata::countries50
       } else {
         world <- rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
@@ -48,7 +49,7 @@ ocean.map <- function(S, W, N, E, scale = c(), ocean.col = "aliceblue", land.col
 #' @param colour The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.
 #' @param rainbow Whether or not to use a rainbow scale to plot the variable.
 #' @param size Size of the symbols. Defaults to 2.
-#' @param scale Resolution of the map. Can be "small", "medium" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is not on CRAN, you will have to download it yourself. Defaults to 'medium' if 'rnaturalearthhires' is not installed, and to 'high' if it is installed.
+#' @param scale Resolution of the map. Can be "small", "medium" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to 'medium' if 'rnaturalearthhires' is not installed, and to 'high' if it is installed.
 #' @param mincol Colour for minimum values.
 #' @param maxcol Colour for maximum values.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'.
@@ -56,8 +57,9 @@ ocean.map <- function(S, W, N, E, scale = c(), ocean.col = "aliceblue", land.col
 #' @param ocean.col Colour for the oceans. Defaults to \code{ocean.col="aliceblue"}.
 #' @param land.col Colour for the land. Defaults to semi-transparent darkgreen: \code{land.col=rgb(0, 0.5, 0, 0.6)}.
 #' @examples
-#'   N_UK <- map.shells(53, -11, 60, 2, scale="medium")
-#'   mean(N_UK$dR)
+#'   UK <- find.shells(0, 55, scale="medium")
+#'   mean(UK$dR)
+#'   Caribbean <- find.shells(-70, 20, 30, scale="medium")
 #' @export
 find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FALSE, size=2, scale=c(), mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6)) {
   lon <- lat <- NULL # to get rid of subsequent ggplot2-related warnings
@@ -102,7 +104,7 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
   if(length(p) == 0) { # then rnaturalearth is not installed, so we plot a basic map instead
 	padding <- 1 
   	maps::map(xlim=c(W-padding, E+padding), ylim=c(S-padding, N+padding), fill = TRUE, col = land.col, bg = ocean.col)
-	color_scale <- colorRampPalette(c("yellow", "red"))(100)
+	color_scale <- grDevices::colorRampPalette(c("yellow", "red"))(100)
 	cols <- color_scale[as.numeric(cut(nearshells[,5], breaks = 100))]
 	points(nearshells[,1], nearshells[,2], col=cols, pch=20)
   } else {
@@ -136,7 +138,7 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
 #' @param colour The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.
 #' @param rainbow Whether or not to use a rainbow scale to plot the variable.
 #' @param size Size of the symbols. Defaults to 2.
-#' @param scale Resolution of the map. Can be "small", "medium" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is not on CRAN, you will have to download it yourself. Defaults to 'medium' if 'rnaturalearthhires' is not installed, and to 'high' if it is installed.
+#' @param scale Resolution of the map. Can be "small", "medium" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to 'medium' if 'rnaturalearthhires' is not installed, and to 'high' if it is installed.
 #' @param mincol Colour for minimum values.
 #' @param maxcol Colour for maximum values.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'. 
@@ -158,7 +160,7 @@ map.shells <- function(S=48,W=-15, N=62, E=5, colour='dR', rainbow=FALSE, size=2
   if(length(p) == 0) { # then rnaturalearth is not installed, so we plot a basic map instead
 	padding <- 1 
   	maps::map(xlim=c(W-padding, E+padding), ylim=c(S-padding, N+padding), fill = TRUE, col = land.col, bg = ocean.col)
-	color_scale <- colorRampPalette(c("yellow", "red"))(100)
+	color_scale <- grDevices::colorRampPalette(c("yellow", "red"))(100)
 	cols <- color_scale[as.numeric(cut(sel[,5], breaks = 100))]  # Assign colors based on the value
 	points(sel[,1], sel[,2], col=cols, pch=20)
   } else {

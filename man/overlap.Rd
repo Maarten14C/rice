@@ -2,7 +2,7 @@
 % Please edit documentation in R/sets.R
 \name{overlap}
 \alias{overlap}
-\title{The overlap between calibrated dates}
+\title{The overlap between calibrated C14 dates}
 \usage{
 overlap(
   y,
@@ -24,7 +24,7 @@ overlap(
   calib.col = rgb(0, 0, 0, 0.2),
   overlap.col = rgb(0, 0, 1, 0.4),
   overlap.border = NA,
-  overlap.height = 0.9,
+  overlap.height = 1,
   talk = TRUE,
   prob = 0.95,
   roundby = 1,
@@ -67,6 +67,8 @@ overlap(
 \item{calib.col}{The colour of the individual calibrated ages. Defaults to semi-transparent grey.}
 
 \item{overlap.col}{The colour of the overlap distribution}
+
+\item{overlap.border}{The colour of the border of the overlap distribution}
 
 \item{overlap.height}{The height of the overlap distribution}
 

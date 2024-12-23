@@ -36,7 +36,7 @@ map.shells(
 
 \item{size}{Size of the symbols. Defaults to 2.}
 
-\item{scale}{Resolution of the map. Can be "small", "medium" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is not on CRAN, you will have to download it yourself. Defaults to 'medium' if 'rnaturalearthhires' is not installed, and to 'high' if it is installed.}
+\item{scale}{Resolution of the map. Can be "small", "medium" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to 'medium' if 'rnaturalearthhires' is not installed, and to 'high' if it is installed.}
 
 \item{mincol}{Colour for minimum values.}
 

@@ -26,9 +26,10 @@ as.bin(
   cc.dir = NULL,
   age.lim = c(),
   age.lab = c(),
+  d.lim = c(),
   calib.col = rgb(0, 0, 0, 0.2),
-  one.col = rgb(0, 0, 1, 0.5),
-  one.height = 1,
+  bin.col = rgb(0, 0, 1, 0.5),
+  bin.height = 4,
   talk = TRUE,
   prob = 0.95,
   roundby = 0,
@@ -78,11 +79,13 @@ as.bin(
 
 \item{age.lab}{Label of the age axis. Defaults to cal BP or BC/AD.}
 
+\item{d.lim}{Limits of the depth/vertical axis. Calculated automatically by default.}
+
 \item{calib.col}{The colour of the individual calibrated ages. Defaults to semi-transparent grey.}
 
-\item{one.col}{The colour of the combined}
+\item{bin.col}{The colour of the combined}
 
-\item{one.height}{The height of the combined distribution}
+\item{bin.height}{The height of the combined distribution}
 
 \item{talk}{Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.}
 

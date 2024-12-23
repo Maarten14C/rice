@@ -341,9 +341,9 @@ C14toF14C <- function(y, er=NULL, decimals=5, lambda=8033) {
   
   if(is.null(er))
     return(signif(fy, decimals)) else {
-      er1 <- exp(-(y - er) / lambda)
-      er2 <- exp(-(y + er) / lambda)
-      sdev <- abs(er1 - er2) / 2
+      er1 <- abs(fy - exp(-(y - er) / lambda))
+      er2 <- abs(fy - exp(-(y + er) / lambda))
+      sdev <- max(er1, er2) # was the average of er1 and er2
       return(signif(cbind(fy, sdev, deparse.level=0), decimals))
     }
 }
@@ -371,7 +371,9 @@ C14topMC <- function(y, er=NULL, ratio=100, decimals=5, lambda=8033) {
   py <- exp(-y / lambda)
   if(is.null(er))
     return(signif(ratio*y, decimals)) else {
-      sdev <- py - exp(-(y + er) / lambda)
+      er1 <- exp(-(y - er) / lambda)
+      er2 <- exp(-(y + er) / lambda)
+      sdev <- max(er1, er2)
       return(signif(ratio*cbind(py, sdev, deparse.level=0), decimals))
   }
 }
@@ -390,14 +392,35 @@ C14topMC <- function(y, er=NULL, ratio=100, decimals=5, lambda=8033) {
 #'   C14toD14C(0.985, 20, 222)
 #' @export
 C14toD14C <- function(y, er=NULL, t) {
-  asF <- cbind(C14toF14C(y, er))
-  Dmn <- 1000 * ((asF[,1] / exp(-t/8267)) - 1)
-  if(is.null(er))
-    return(Dmn) else {
-	  Fup <- asF[,1] + asF[,2]	
-	  Dup <- 1000 * ((Fup / exp(-t/8267)) - 1)
-	  return(cbind(Dmn, Dup-Dmn, deparse.level=0))
-    }     
+  if(length(y) > 1 || length(er) > 1 || length(t) > 1) {
+    # If there are multiple entries, apply the function row-wise across vectors
+    results <- mapply(function(yy, ee, tt) {
+      asF <- cbind(C14toF14C(yy, ee))
+      Dmn <- 1000 * ((asF[,1] / exp(-tt/8267)) - 1)
+      if(is.null(ee)) 
+        return(Dmn) else {
+          Fup <- asF[,1] + asF[,2]
+          Fdown <- asF[,1] - asF[,2]
+          Dup <- 1000 * ((Fup / exp(-tt / 8267)) - 1)
+          Ddown <- 1000 * ((Fdown / exp(-tt / 8267)) - 1)
+          sdev <- pmax(abs(Dup - Dmn), abs(Ddown - Dmn))
+          return(c(Dmn, sdev))
+        }
+    }, y, er, t)
+   	return(t(results))  # transpose to get columns for Dmn and sdev
+  } else { # only one entry
+	  asF <- cbind(C14toF14C(y, er))
+	  Dmn <- 1000 * ((asF[,1] / exp(-t/8267)) - 1)
+	  if(is.null(er))
+	    return(Dmn) else {
+	      Fup <- asF[,1] + asF[,2]
+	      Fdown <- asF[,1] - asF[,2]
+	      Dup <- 1000 * ((Fup / exp(-t / 8267)) - 1)
+	      Ddown <- 1000 * ((Fdown / exp(-t / 8267)) - 1)
+	      sdev <- pmax(abs(Dup - Dmn), abs(Ddown - Dmn))
+	      return(cbind(Dmn, sdev))
+	    }
+	}
 }
 
 
@@ -455,11 +478,15 @@ F14CtopMC <- function(F14C, er=NULL)
 #'   F14CtoD14C(0.89, .001, 900)
 #' @export
 F14CtoD14C <- function(F14C, er=NULL, t) {
-  Dmn <- 1000 * ((F14C / exp(-t/8267)) - 1)
-  if(is.null(er))
+  # If er is NULL, just calculate the Dmn for F14C and t
+  Dmn <- 1000 * ((F14C / exp(-t / 8267)) - 1)
+  if(is.null(er)) 
     return(Dmn) else {
-      Dup <- 1000 * (((F14C+er) / exp(-t/8267)) - 1)
-	  return(cbind(Dmn, Dup-Dmn, deparse.level=0))
+      # Calculate Dup using F14C + er
+      Dup <- 1000 * (((F14C + er) / exp(-t / 8267)) - 1)
+    
+      # Return Dmn and the difference between Dup and Dmn
+      return(cbind(Dmn, Dup - Dmn))
     }
 }
 
@@ -560,7 +587,7 @@ D14CtoF14C <- function(D14C, er=NULL, t) {
   if(is.null(er))
     return(asF) else {
       Fup <- (((D14C+er)/1000)+1) * exp(-t/8267)
-	  return(cbind(asF, Fup-asF, deparse.level=0))
+      return(cbind(asF, Fup-asF, deparse.level=0))
     }
 }
 

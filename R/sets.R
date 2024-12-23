@@ -63,6 +63,7 @@ pool <- function(y, er, deltaR=0, deltaSTD=0, threshold=.05, roundby=1) {
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param age.lim Limits of the age axis. Calculated automatically by default.
 #' @param age.lab Label of the age axis. Defaults to cal BP or BC/AD.
+#' @param d.lim Limits of the depth/vertical axis. Calculated automatically by default.
 #' @param calib.col The colour of the individual calibrated ages. Defaults to semi-transparent grey.
 #' @param one.col The colour of the combined
 #' @param one.height The height of the combined distribution
@@ -77,12 +78,14 @@ pool <- function(y, er, deltaR=0, deltaSTD=0, threshold=.05, roundby=1) {
 #'   Zu <- grep("ETH", shroud$ID) # Zurich lab only
 #'   as.one(shroud$y[Zu],shroud$er[Zu], BCAD=TRUE)
 #' @export
-as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=4, prob=0.95, talk=TRUE, roundby=0, bty="n") {
+as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), d.lim=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=4, prob=0.95, talk=TRUE, roundby=0, bty="n") {
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
 
-  calib <- draw.dates(y, er, d.lim=c(0, length(y)+1), BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, col=calib.col, mirror=FALSE, hpd.col=NA, border=NA, yaxt="n", d.lab="", bty=bty)  
+  if(length(d.lim) == 0)
+    d.lim <- c(0, length(y)+1)   
+  calib <- draw.dates(y, er, d.lim=d.lim, BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, col=calib.col, mirror=FALSE, up=TRUE, hpd.col=calib.col, border=NA, yaxt="n", d.lab="", bty=bty, prob=prob)  
   
   xmin <- c(); xmax <- c()
   for(i in 1:length(y))	{
@@ -97,22 +100,16 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE
     probs[i,] <- approx(calib$ages[,i], calib$probs[,i], xseq, rule=2)$y 
   product <- apply(probs, 2, prod)
 
-  xpol <- cbind(c(xmin, xseq, xmax), length(y)+1 - c(0, one.height*product/max(product), 0))
-  polygon(xpol, col=one.col, border=one.col)
   as.dist <- cbind(xseq, product/max(product))
-  as.hpd <- hpd(as.dist, prob, rounded=roundby)
-  for(i in 1:nrow(as.hpd))
-    segments(as.hpd[i,1], length(y)+1, as.hpd[i,2], length(y)+1, lwd=3, col=rgb(0,0,0,0.5), lend=2)
-  
+  hpds <- draw.dist(as.dist, y.pos=max(d.lim), prob=prob, dist.col=one.col, ex=one.height)
   if(talk) {
     as.points <- suppressWarnings(point.estimates(as.dist, rounded=roundby))
     message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " BC/AD", " cal BP"))
-
-    hpds <- paste0(100 * prob, "% hpd ranges: ", as.hpd[1, 1], "-", as.hpd[1, 2], " (", as.hpd[1, 3], "%)")
-    if(nrow(as.hpd) > 1)
-      for(i in 2:nrow(as.hpd))
-        hpds <- paste0(hpds, ", ", as.hpd[i, 1], "-", as.hpd[i, 2], " (", as.hpd[i, 3], "%)")
-    message(hpds)
+    myhpds <- paste0(100 * prob, "% hpd ranges: ", hpds[1, 1], "-", hpds[1, 2], " (", hpds[1, 3], "%)")
+    if(nrow(hpds) > 1)
+      for(i in 2:nrow(hpds))
+        myhpds <- paste0(myhpds, ", ", hpds[i, 1], "-", hpds[i, 2], " (", hpds[i, 3], "%)")
+    message(myhpds)
   }
   
   invisible(as.dist)
@@ -146,9 +143,10 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param age.lim Limits of the age axis. Calculated automatically by default.
 #' @param age.lab Label of the age axis. Defaults to cal BP or BC/AD.
+#' @param d.lim Limits of the depth/vertical axis. Calculated automatically by default.
 #' @param calib.col The colour of the individual calibrated ages. Defaults to semi-transparent grey.
-#' @param one.col The colour of the combined
-#' @param one.height The height of the combined distribution
+#' @param bin.col The colour of the combined
+#' @param bin.height The height of the combined distribution
 #' @param talk Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.
 #' @param prob Probability range for highest posterior density (hpd) values. Defaults to \code{prob=0.95}.
 #' @param roundby Rounding of reported years. Defaults to 0 decimals
@@ -161,12 +159,15 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE
 #'   # bins of 50 yr, moving by 10 yr, slow
 #' }
 #' @export
-as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=1, talk=TRUE, prob=0.95, roundby=0, bty="n") {
+as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), d.lim=c(), calib.col=rgb(0,0,0,.2), bin.col=rgb(0,0,1,.5), bin.height=4, talk=TRUE, prob=0.95, roundby=0, bty="n") {
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
-	
-  calib <- draw.dates(y, er, d.lim=c(0, length(y)+1), BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, col=calib.col, mirror=FALSE, hpd.col=NA, border=NA, yaxt="n", d.lab="", bty=bty)
+
+  if(length(d.lim) == 0)
+    d.lim <- c(0, length(y)+1)   
+  calib <- draw.dates(y, er, d.lim=d.lim, BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, col=calib.col, mirror=FALSE, up=TRUE, hpd.col=calib.col, border=NA, yaxt="n", d.lab="", bty=bty, prob=prob)  
+  
   if(length(move.by) == 0)
     xseq <- seq(min(calib$ages)-width, max(calib$ages)+width, length=move.res) else
       xseq <- seq(min(calib$ages)-width, max(calib$ages)+width, by=move.by) 
@@ -179,36 +180,26 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
   })
 
   inbin <- rowSums(tmp)
-  pol <- cbind(c(min(xseq), xseq, max(xseq)), length(y)+1-c(0, one.height*inbin, 0))
-  polygon(pol, col=one.col, border=one.col)
-  axis(2, length(y)+1-pretty(inbin), labels=pretty(inbin), col=one.col, col.axis=one.col, cex=.8, mgp=c(1.7, .5, 0))
-  maxbin <- xseq[which(inbin == max(inbin))[1]]
-  abline(v=maxbin+c(-1*width/2, width/2), col=one.col)  
-
   as.dist <- cbind(xseq, inbin/max(inbin))
-  as.hpd <- hpd(as.dist, prob, rounded=roundby)
-  for(i in 1:nrow(as.hpd))
-    segments(as.hpd[i,1], length(y)+1, as.hpd[i,2], length(y)+1, lwd=3, col=rgb(0,0,0,0.5), lend=2)
+  hpds <- draw.dist(as.dist, y.pos=max(d.lim), prob=prob, dist.col=bin.col, ex=bin.height)
   
   if(talk) {
     as.points <- suppressWarnings(point.estimates(as.dist, rounded=roundby))
-    message("Most likely bin: ", round(maxbin, roundby), " (", round(maxbin+(width/2), roundby), "-", round(maxbin-(width/2), roundby), " cal BP), fitting a sum of ", round(max(inbin),1), " dates")
     message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " BC/AD", " cal BP"))
-
-    hpds <- paste0(100 * prob, "% hpd ranges: ", as.hpd[1, 1], "-", as.hpd[1, 2], " (", as.hpd[1, 3], "%)")
-    if(nrow(as.hpd) > 1)
-      for(i in 2:nrow(as.hpd))
-        hpds <- paste0(hpds, ", ", as.hpd[i, 1], "-", as.hpd[i, 2], " (", as.hpd[i, 3], "%)")
-    message(hpds)
+    myhpds <- paste0(100 * prob, "% hpd ranges: ", hpds[1, 1], "-", hpds[1, 2], " (", hpds[1, 3], "%)")
+    if(nrow(hpds) > 1)
+      for(i in 2:nrow(hpds))
+        myhpds <- paste0(myhpds, ", ", hpds[i, 1], "-", hpds[i, 2], " (", hpds[i, 3], "%)")
+    message(myhpds)
   }
 
-  invisible(cbind(xseq, inbin))
+  invisible(as.dist)
 }
 
 
 
 #' @name overlap
-#' @title The overlap between calibrated dates
+#' @title The overlap between calibrated C14 dates
 #' @description Calculates the amount of overlap (as percentage) between two or more calibrated radiocarbon dates. It does this by taking a sequence of calendar dates 'x' and for each calendar date find the calibrated distribution with the minimum height - this minimum height is taken as the overlap between the dates for that age. This is repeated for all 'x'. The sum of these heights is the overlap, which can reach values from 0 to 100\%. 
 #' @return The overlap between all calibrated probabilities as percentage, and a plot. 
 #' @param y The set of radiocarbon dates
@@ -229,6 +220,7 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #' @param age.lab Label of the calendar age, defaults to BCAD or cal BP.
 #' @param calib.col The colour of the individual calibrated ages. Defaults to semi-transparent grey.
 #' @param overlap.col The colour of the overlap distribution
+#' @param overlap.border The colour of the border of the overlap distribution
 #' @param overlap.height The height of the overlap distribution
 #' @param talk Whether or not to report a summary of the spread 
 #' @param prob Probability range to report. Defaults to \code{prob=0.95}.
@@ -239,14 +231,14 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #'   er <- c(40, 40) # their lab errors
 #'   overlap(y, er, cc=1:2) 
 #' @export
-overlap <- function(y, er, res=1e3, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, BCAD=FALSE, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, threshold=0.001, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), overlap.col=rgb(0,0,1,.4), overlap.border=NA, overlap.height=0.9, talk=TRUE, prob=0.95, roundby=1, bty="n") {
+overlap <- function(y, er, res=1e3, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, BCAD=FALSE, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, threshold=0.001, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), overlap.col=rgb(0,0,1,.4), overlap.border=NA, overlap.height=1, talk=TRUE, prob=0.95, roundby=1, bty="n") {
  
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)	
 
   if(length(cc) == 1)
     cc <- rep(cc,length(y))
-  calib <- draw.dates(y, er, d.lim=c(0, length(y)+1), cc=cc, cc.dir=cc.dir, thiscurve=thiscurve, BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, threshold=threshold, col=calib.col, mirror=FALSE, hpd.col=NA, border=NA, yaxt="n", d.lab="", bty=bty)
+  calib <- draw.dates(y, er, d.lim=c(0, length(y)+1), cc=cc, cc.dir=cc.dir, thiscurve=thiscurve, BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, threshold=threshold, col=calib.col, mirror=FALSE, up=TRUE, hpd.col=NA, border=NA, yaxt="n", d.lab="", bty=bty)
   locs <- par('usr') # limits of axes (x1, x2, y1, y2)
   xseq <- seq(locs[1], locs[2], length=res)
   abline(h=locs[3], lwd=2)
@@ -255,41 +247,48 @@ overlap <- function(y, er, res=1e3, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, 
     l.calib(xseq, y[i], er[i], cc=cc[i], postbomb=postbomb, thiscurve=thiscurve, cc.dir=cc.dir, normal=normal, t.a=t.a, t.b=t.b)})
   min_values <- apply(probs, 1, min, na.rm = TRUE)
 
-  perc_overlap <- sum(min_values)
+  perc_overlap <- min(1, sum(min_values))
+  as.dist <- cbind(xseq, min_values)
   message("Overlap: ", round(100*perc_overlap, roundby), "%")
-  hpds <- hpd.polygons(cbind(xseq, min_values), prob, dist.col=overlap.col, hpd.col=overlap.col, dist.border=overlap.border, hpd.border=overlap.border, base=length(y)+1, ex=-1*overlap.height, talk=TRUE)
+  hpds <- draw.dist(as.dist, prob=prob, dist.col=overlap.col, hpd.col=overlap.col, dist.border=overlap.border, hpd.border=overlap.border, y.pos=length(y)+1, ex=overlap.height)
 
-  invisible(list(overlap=cbind(xseq, min_values), hpds=hpds))
+  invisible(list(overlap=as.dist, hpds=hpds))
 }
 
 
 
-# internal function to draw hpd polygons
-hpd.polygons <- function(dist, prob, rounded=1, dist.col=rgb(0,0,1,0.3), dist.border=NA, hpd.col=rgb(0,0,1,0.3), hpd.border=NA, base=0, ex=1, talk=TRUE, roundby=1) {
+# this is not working as expected yet...
+dist.overlap <- function(dist1, dist2, by=1, visualise=TRUE, prob=0.95, BCAD=FALSE, 
+  dist1.col=rgb(0,.5, 0, .2), dist2.col=rgb(1,0,0,.2), overlap.col=rgb(0,0,0,.2), xlim=c(), xlab=c(), bty="l", yaxt="n") {
+  xseq <- seq(min(dist1[,1], dist2[,1]), max(dist1[,1], dist2[,1]), by=by)
+  prob1 <- approx(dist1[,1], dist1[,2], xseq, rule=2)$y
+  prob2 <- approx(dist2[,1], dist2[,2], xseq, rule=2)$y
   
-  pol <- cbind(c(min(dist[,1]), dist[,1], max(dist[,1])),
-    base+ex*c(0, dist[,2]/max(dist[,2]), 0))
-  polygon(pol, col=dist.col, border=dist.border)
-  hpds <- rbind(hpd(dist, prob, rounded=rounded))
+  prob1 <- prob1 / sum(prob1)
+  prob2 <- prob2 / sum(prob2)
+  overlap <- pmin(prob1, prob2)
   
-  for(i in 1:nrow(hpds)) {
-    inside <- (pol[,1] <= hpds[i,1]) * (pol[,1] >= hpds[i,2])
-    hpd.pol <- pol[which(inside==1),]
-    hpd.pol <- rbind(c(hpd.pol[1,1], base), hpd.pol, c(hpd.pol[nrow(hpd.pol), 1], base))
-    polygon(hpd.pol, col=hpd.col, border=hpd.border)
+  total_overlap <- sum(overlap)
+  smaller_area <- min(sum(prob1), sum(prob2))
+  overlap_percentage <- (total_overlap / smaller_area) * 100  # Normalized overlap percentage
+  
+  if(visualise) {
+    if(length(xlim) == 0)  
+      if(BCAD)
+        xrng <- range(xseq) else
+          xrng <- rev(range(xseq))
+    if(length(xlab) == 0)
+      if(BCAD)
+        xlab <- "BC/AD" else
+          xlab <- "cal BP"
+	  
+    plot(0, type="n", xlim=xrng, xlab=xlab, ylim=c(0, -3.3), ylab="", bty=bty, yaxt=yaxt)	
+    draw.dist(cbind(xseq, prob1), dist.col=dist1.col, dist.border=dist1.col, prob=prob, mirror=FALSE, y.pos=-2.2, peak=T)
+    draw.dist(cbind(xseq, prob2), dist.col=dist2.col, dist.border=dist2.col, prob=prob, y.pos=-1.1, peak=T)
+    draw.dist(cbind(xseq, overlap), dist.col=overlap.col, dist.border=overlap.col, prob=prob, y.pos=0, peak=T)
   }
   
-  if(talk) {
-    txt.hpds <- paste0(100 * prob, "% hpd ranges: ", hpds[1, 1], "-", hpds[1, 2],
-	  " (", round(hpds[1, 3], roundby), "%)")
-    if(nrow(hpds) > 1)
-      for(i in 2:nrow(hpds))
-        txt.hpds <- paste0(txt.hpds, ", ", hpds[i, 1], "-", hpds[i, 2], 
-	      " (", round(hpds[i, 3],roundby), "%)")
-    message(txt.hpds)
-  }
-  
-  return(hpds)
+  return(overlap_percentage)
 }
 
 
@@ -329,7 +328,7 @@ spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
-	
+
   xs <- array(NA, dim=c(n, length(y)))
   ns <- sample(1:length(y), n, replace=TRUE)
   diffs <- array(NA, dim=c(n, length(y)-1))
@@ -345,15 +344,15 @@ spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.
   oneprob <- (1-prob)/2
   minmax <- round(quantile(diffs, probs=c(oneprob, .5, 1-oneprob)), roundby)
   if(talk) 
-	message("average spread: ", aspoints[1], " calendar years (",
+    message("average spread: ", aspoints[1], " calendar years (",
       "median ", aspoints[2], ")\n95% range: ", minmax[1], " to ", minmax[3])
   
   if(visualise) {
     plot(density(diffs, from=0), xlab="spread (calendar years)", main="", bty=bty)
     segments(minmax[1], 0, minmax[3], 0, lwd=4, col=rgb(0,0,0,.5), lend=1)
-	abline(v=c(mean(diffs), minmax[2]), col=c(2,4), lty=2)	
-	legend("topright", legend=c("spread", "range", "median", "mean"), 
-	  text.col=c(1,grey(.5), 4, 2), bty="n", cex=.7)
+    abline(v=c(mean(diffs), minmax[2]), col=c(2,4), lty=2)
+    legend("topright", legend=c("spread", "range", "median", "mean"),
+      text.col=c(1,grey(.5), 4, 2), bty="n", cex=.7)
   }
   
   invisible(diffs)

@@ -6,6 +6,10 @@
 #
 # It is unlikely that you need to modify this file manually.
 
+- name: Clear R package cache
+  run: |
+    rm -rf ~/.cache/R
+
 name: R-hub
 run-name: "${{ github.event.inputs.id }}: ${{ github.event.inputs.name || format('Manually run by {0}', github.triggering_actor) }}"
 

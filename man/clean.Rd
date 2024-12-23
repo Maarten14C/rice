@@ -8,8 +8,12 @@ clean(
   y,
   er = 0,
   percentage,
+  percentage.error = 0,
   F.contam = 1,
-  contam.er = 0,
+  F.contam.er = 0,
+  MC = TRUE,
+  its = 10000,
+  roundby = 1,
   decimals = 5,
   visualise = TRUE,
   talk = TRUE,
@@ -27,15 +31,23 @@ clean(
 )
 }
 \arguments{
-\item{y}{the observed radiocarbon age}
+\item{y}{The observed radiocarbon age}
 
-\item{er}{the error of the observed radiocarbon age}
+\item{er}{The error of the observed radiocarbon age}
 
 \item{percentage}{Relative amount of contamination. Must be between 0 and 100 (\%)}
 
-\item{F.contam}{the F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.}
+\item{percentage.error}{Uncertainty of the contamination. Assumed to be normally distributed (which fails close to 0\% or 100\% contamination levels). Defaults to 0\%.}
 
-\item{contam.er}{error of the contamination. Defaults to 0.}
+\item{F.contam}{The F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.}
+
+\item{F.contam.er}{The error of the contamination. Defaults to 0.}
+
+\item{MC}{Whether or not to use Monte Carlo iterations to estimate the values. Defaults to TRUE, because it treats uncertainties better than if set to FALSE.}
+
+\item{its}{Amount of iterations to use if MC=TRUE. Defaults to 10,000.}
+
+\item{roundby}{Rounding of the output for C14 ages. Defaults to 1 decimal.}
 
 \item{decimals}{Rounding of the output. Since details matter here, the default is to provide 5 decimals.}
 
@@ -72,7 +84,10 @@ The true/target radiocarbon age and error
 Given an observed radiocarbon age, remove the impact of contamination (for example, 1\% contamination with modern carbon) to estimate the true/target age
 }
 \examples{
-clean(5000, 20, 1, 1) # 1\% contamination with modern carbon
+# 1\% contamination with modern carbon (no uncertainties in contamination's percentage or F)
+clean(5000, 20, 1, 0, 1, 0)
+# now with errors:
+clean(5000, 20, 1, 0.1, 1, 0.1)
 }
 \author{
 Maarten Blaauw

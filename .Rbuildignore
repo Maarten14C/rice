@@ -3,7 +3,6 @@
 ^doc$
 ^Meta$
 ^data-raw$
-^README.Md
 ^CRAN-SUBMISSION$
 ^revdep$
 ^.github$

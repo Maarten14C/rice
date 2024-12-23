@@ -8,9 +8,13 @@ contaminate(
   y,
   er = 0,
   percentage,
+  percentage.error = 0,
   F.contam = 1,
-  contam.er = 0,
+  F.contam.er = 0,
+  MC = TRUE,
+  its = 10000,
   decimals = 5,
+  roundby = 1,
   visualise = TRUE,
   talk = TRUE,
   true.col = "black",
@@ -27,17 +31,25 @@ contaminate(
 )
 }
 \arguments{
-\item{y}{the true radiocarbon age}
+\item{y}{The 'true' radiocarbon age}
 
-\item{er}{the error of the true radiocarbon age}
+\item{er}{The error of the 'true' radiocarbon age}
 
 \item{percentage}{Relative amount of contamination. Must be between 0 and 1}
 
+\item{percentage.error}{Uncertainty of the contamination. Assumed to be normally distributed (which fails close to 0\% or 100\% contamination levels). Defaults to 0\%.}
+
 \item{F.contam}{the F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.}
 
-\item{contam.er}{error of the contamination. Defaults to 0.}
+\item{F.contam.er}{error of the contamination. Defaults to 0.}
 
-\item{decimals}{Rounding of the output. Since details matter here, the default is to provide 5 decimals.}
+\item{MC}{Whether or not to use Monte Carlo iterations to estimate the values. Defaults to TRUE, because it treats uncertainties better than if set to FALSE.}
+
+\item{its}{Amount of iterations to use if MC=TRUE. Defaults to 10,000.}
+
+\item{decimals}{Rounding of the output for F values. Since details matter here, the default is to provide 5 decimals.}
+
+\item{roundby}{Rounding of the output for C14 ages. Defaults to 1 decimal.}
 
 \item{visualise}{By default, a plot is made to visualise the target and observed F14C values, together with the inferred contamination.}
 
@@ -69,11 +81,11 @@ contaminate(
 The observed radiocarbon age and error
 }
 \description{
-Given a true/target radiocarbon age, calculate the impact of contamination (for example, 1\% contamination with modern carbon) on the observed age
+Given a true/target radiocarbon age, calculate the impact of contamination (for example, 1\% contamination with modern carbon) on the observed age. Can optionally include contamination uncertainties, but then Monte Carlo iterations should be used (option MC=TRUE).
 }
 \examples{
-contaminate(5000, 20, 1, 1) # 1\% contamination with modern carbon
-contaminate(66e6, 1e6, 1, 1) # dino bone, shouldn't be dated as way beyond the dating limit
+contaminate(5000, 20, 1, 0, 1) # 1\% contamination with modern carbon
+contaminate(66e6, 1e6, 1, 0, 1) # dino bone, shouldn't be dated as way beyond the dating limit
 }
 \author{
 Maarten Blaauw

@@ -133,7 +133,7 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
     name <- c(name, "mode")
   }
   if(midpoint) {
-    midpoint <- range(hpd(calib, prob, rounded=rounded, every=every)[,1:2])
+    midpoint <- range(hpd(calib, prob, prob.round=rounded, every=every)[,1:2])
     midpoint <- midpoint[1] + (midpoint[2]-midpoint[1])/2
     to.report <- c(to.report, midpoint)
     name <- c(name, "midpoint")
@@ -152,45 +152,55 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 #' @param calib The calibrated distribution, as returned from caldist()
 #' @param prob Probability range which should be calculated. Default \code{prob=0.95}.
 #' @param return.raw The raw data to calculate hpds can be returned, e.g. to draw polygons of the calibrated distributions. Defaults to \code{return.raw=FALSE}.
-#' @param rounded Rounding for reported probabilities. Defaults to 1 decimal.
+#' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param age.round Rounding for ages. Defaults to 0 decimals.
+#' @param prob.round Rounding for reported probabilities. Defaults to 1 decimal.
 #' @param every Yearly precision (defaults to \code{every=1}).
 #' @examples
 #' hpd(caldist(130,20))
 #' plot(tmp <- caldist(2450,50), type='l')
 #' abline(v=hpd(tmp)[,1:2], col=4)
 #' @export
-hpd <- function(calib, prob=0.95, return.raw=FALSE, rounded=1, every=1) {
+hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, age.round=0, prob.round=1, every=1) {
+
   # re-interpolate to desired precision
-  calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), by=every), rule=2)
-  calib <- cbind(calib$x, calib$y)
+  calib <- calib[order(calib[,1]),] # ensure calendar ages are in increasing order
+  if((max(calib[,1])-min(calib[,1])) >= 20*every) # is there sufficient cal space to calculate hpds?
+    calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), by=every), rule=2) else
+      calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), length=100), rule=2)
+  calib <- cbind(calib$x, calib$y/sum(calib$y)) # normalise probs to 1
 
-  # rank the calibrated ages according to their probabilities (normalised to be sure)
-  calib[,2] <- calib[,2] / sum(calib[,2]) # does not necessarily sum to 1
-  o <- order(calib[,2], decreasing=TRUE)
-  summed <- cbind(calib[o,1], cumsum(calib[o,2])/sum(calib[,2]))
+  # rank the calibrated ages according to their probabilities
+  o <- order(calib[,2], decreasing=TRUE) # decreasing probs
+  calib <- cbind(calib[o,], cumsum(calib[o,2]) /  sum(calib[,2]))
+  calib <- cbind(calib, calib[,3] <= prob) # yr, probs, cumprobs, within/outside ranges (T/F)
+  calib <- calib[order(calib[,1], decreasing=TRUE),] # put ages in order again
 
-  # find the ages that fall within the hpd range
-  summed <- cbind(summed[,1], summed[,2] <= prob)
-  BCAD <- ifelse(min(diff(calib[,1])) < 0, TRUE, FALSE) # christ...
-  o <- order(summed[,1], decreasing=BCAD) # put ages ascending again
-  calib <- cbind(calib, summed[o,2]) # add a column indicating ages within ranges
+  # find the outer ages of the calibrated ranges
+  if(BCAD) {
+    from <- sort(calib[which( diff(c(calib[,4], 0)) == -1),1])
+    to <- sort(calib[which( diff(c(0, calib[,4])) == 1),1])
+  } else {
+      from <- sort(calib[which( diff(c(0, calib[,4])) == 1),1])
+      to <- sort(calib[which( diff(c(calib[,4], 0)) == -1),1])
+    }
 
-  # find the outer ages of the calibrated ranges. The 0 should help with truncated ages
-  to <- calib[which( diff(c(0, calib[,3])) == 1), 1]
-  from <- calib[which( diff(c(calib[,3], 0)) == -1), 1]
-  to <- sort(to, ifelse(BCAD, FALSE, TRUE)) # sort from oldest to youngest
-  from <- sort(from, ifelse(BCAD, FALSE, TRUE))
-
-  # find the probability 'area' within each range (as %)
+  # find the year and probability within each range (as %)
   perc <- 0
-  for(i in 1:length(from)) {
-    fromto <- which(calib[,1] == from[i]) : which(calib[,1] == to[i])
-    perc[i] <- round(100*sum(calib[fromto,2]), rounded)
-  }
+  for(i in 1:length(from))
+    if(from[i] == to[i])
+      perc[i] <- calib[which(calib[,1] == from[i]),2] else {
+        fromto <- calib[which(calib[,1] == from[i])[1] : which(calib[,1]== to[i])[1],1:2]
+        perc[i] <- round(100*sum(fromto[,2]), prob.round)
+      }
+
+  hpds <- cbind(round(from, age.round), round(to, age.round), perc)
+  hpds <- rbind(hpds) # make as rows, even if only 1
+  colnames(hpds) <- c("from", "to", "perc")
 
   if(return.raw)
-    return(list(calib, cbind(from, to, perc))) else
-      return(cbind(from, to, perc))
+    return(list(calib=calib[,-3], hpds=hpds)) else
+      return(hpds)
 }
 
 
@@ -225,7 +235,7 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
   
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
-	
+
   if(length(x) == 1) {
     if(length(y) != length(er))
       stop("check that y has as many entries as er") 		  
@@ -420,10 +430,10 @@ p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, n
 #'
 #' @export
 calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, BCAD=FALSE, cc.dir=c(), normal.col="red", normal.lwd=1.5, t.col=rgb(0,0,0,0.25), t.border=rgb(0,0,0,0,0.25), xlim=c(), ylim=c()) {
-	
+
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
- 	
+
   normalcal <- caldist(y, er, cc, postbomb, BCAD=BCAD, cc.dir=cc.dir, as.F=as.F, normal=TRUE)
   tcal <- caldist(y, er, cc, postbomb, BCAD=BCAD, as.F=as.F, t.a=t.a, t.b=t.b, cc.dir=cc.dir, normal=FALSE)
   tpol <- cbind(c(tcal[1,1], tcal[,1], tcal[nrow(tcal),1]), c(0, tcal[,2], 0))

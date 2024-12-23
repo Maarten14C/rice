@@ -6,8 +6,15 @@
 \usage{
 muck(
   y.obs,
+  y.obs.er = 0,
   y.target,
+  y.target.er = 0,
   F.contam = 1,
+  F.contam.er = 0,
+  MC = TRUE,
+  its = 10000,
+  filter = TRUE,
+  roundby = 1,
   decimals = 3,
   visualise = TRUE,
   talk = TRUE,
@@ -25,11 +32,25 @@ muck(
 )
 }
 \arguments{
-\item{y.obs}{the observed radiocarbon age}
+\item{y.obs}{The observed radiocarbon age}
+
+\item{y.obs.er}{The error of the observed radiocarbon age}
 
 \item{y.target}{the target radiocarbon age}
 
+\item{y.target.er}{The error of the target radiocarbon age. Not taken into account in the calculations.}
+
 \item{F.contam}{the F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.}
+
+\item{F.contam.er}{The error of the contamination. Defaults to 0.}
+
+\item{MC}{Whether or not to use Monte Carlo iterations to estimate the values. Defaults to TRUE, because it treats uncertainties better than if set to FALSE.}
+
+\item{its}{Amount of iterations to use if MC=TRUE. Defaults to 10,000.}
+
+\item{filter}{If set to true (default), iterations that result in fractions <0 or >1 are removed.}
+
+\item{roundby}{Rounding of the output for C14 ages. Defaults to 1 decimal.}
 
 \item{decimals}{Rounding of the output. Since details matter here, the default is to provide 5 decimals.}
 
@@ -66,7 +87,7 @@ The required contamination (as percentage), as well as a plot
 Given an observed and a target radiocarbon age, calculate the amount of contamination required to explain the observed age.
 }
 \examples{
-  muck(600, 2000, 1)
+  muck(600, 30, 2000, 0, 1, .01)
 }
 \author{
 Maarten Blaauw

@@ -23,6 +23,7 @@ as.one(
   cc.dir = NULL,
   age.lim = c(),
   age.lab = c(),
+  d.lim = c(),
   calib.col = rgb(0, 0, 0, 0.2),
   one.col = rgb(0, 0, 1, 0.5),
   one.height = 4,
@@ -68,6 +69,8 @@ as.one(
 \item{age.lim}{Limits of the age axis. Calculated automatically by default.}
 
 \item{age.lab}{Label of the age axis. Defaults to cal BP or BC/AD.}
+
+\item{d.lim}{Limits of the depth/vertical axis. Calculated automatically by default.}
 
 \item{calib.col}{The colour of the individual calibrated ages. Defaults to semi-transparent grey.}
 
