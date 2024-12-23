@@ -4,6 +4,10 @@ ocean.map <- function(S, W, N, E, scale = c(), ocean.col = "aliceblue", land.col
     stop("ggplot2 package is required")
   }
   
+  if(!requireNamespace("rnaturalearthhires", quietly = TRUE)) {
+    message("For high-resolution maps, install rnaturalearthhires from GitHub using: devtools::install_github('ropensci/rnaturalearthhires').")
+  }  
+  
   ihave <- installed.packages()
   if(("rnaturalearth" %in% ihave) && ("sf" %in% ihave)) {
     # Handle different scales and package availability
