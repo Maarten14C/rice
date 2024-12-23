@@ -6,6 +6,7 @@
 * added more warnings to `calibrate` for very old dates.
 * calibrated distributions are now plotted more consistently between functions.
 * added uncertainty estimates to the `clean`, `contaminate` and `muck` functions, using Monte Carlo-based sampling.
+* Some of the `realm` functions translating to D14C space didn't handle multiple entries well. This should work correctly now.
 
 # rice 0.4.0
 * the `contaminate` function now also produces a plot, and more details of the calculations.
