@@ -19,13 +19,13 @@ jobs:
 
     - name: Install dependencies
       run: |
-        install.packages('remotes')
-        remotes::install_deps(dependencies = TRUE)
+        R -e 'install.packages("remotes")'
+        R -e 'remotes::install_deps(dependencies = TRUE)'
 
     - name: Install rhub
       run: |
-        install.packages('rhub')
+        R -e 'install.packages("rhub")'
 
     - name: Run rhub check
       run: |
-        R -e "rhub::check()"
+        R -e 'rhub::check()'
