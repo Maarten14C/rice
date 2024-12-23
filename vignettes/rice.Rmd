@@ -136,7 +136,7 @@ axis(4, col=4, col.axis=4, col.ticks=4)
 
 # Pooling dates
 
-Sometimes, the same material is measured using multiple radiocarbon dates. If we can be sure that the dated material stems from one single age in time (e.g., multiple dates on the same single bone, or perhaps the cereal grains within one bowl which could be assumed to all stem from the same season), then we can check to which degree the dates agree using a Chi2-test (Ward & Wilson 1978)[^5]. If they do agree, then a pooled mean can be calculated. For example, take the Shroud of Turin, which was dated multiple times in three different labs:
+Sometimes, the same material is measured using multiple radiocarbon dates. If we can be sure that the dated material stems from one single age in time (e.g., multiple dates on the same single bone, or perhaps the cereal grains within one bowl which could be assumed to all stem from the same season), then we can check to which degree the dates agree using a Chi^2^-test (Ward & Wilson 1978)[^5]. If they do agree, then a pooled mean can be calculated. For example, take the Shroud of Turin, which was dated multiple times in three different labs:
 
 ```{r}
 data(shroud)
@@ -157,15 +157,6 @@ If it can indeed be safely assumed that all dates stem from the same (unknown) c
 ```{r, fig.width=5, fig.asp=.8}
 as.one(shroud$y,shroud$er)
 ```
-
-With multiple dates, we can assess the overlap between their calibrated distributions (as the minimum calibrated height for each calendar year in a range). For example, imagine two dates from the same archaeological layer, a twig (3820 +- 40, requiring calibration with IntCal20) and a marine shell (4430 +- 40, requiring Marine20, with a regional marine offset of 90 +- 25). To what degree do their calibrated distributions overlap?
-
-```{r, fig.width=5, fig.asp=.8}
-y <- c(3820, 4430-90) 
-er <- c(40, sqrt(40^2 + 25^2)) 
-cc <- c(1,2)
-overlap(y, er, cc=cc)
-```
  
 It would however often be much safer to assume that the multiple dates were deposited over not just one calendar year but rather over a period, e.g., over 50 years. To do so, a moving bin is made, and for each bin placement it is checked how much of the calibrated distribution of each date fits within that bin. Here is an example, using a bin width of 100 years, moving at 25 year steps (the top value indicates that around 660 cal BP, a total of around 4-5 dates fit within the 100-year bin):
 
@@ -179,15 +170,24 @@ The spread of multiple calibrated dates can be visualised and summarised:
 spread(shroud$y,shroud$er)
 ```
 
+We can assess the overlap between the calibrated distributions of multiple dates (as the minimum calibrated height for each calendar year in a range). For example, imagine two dates from the same archaeological layer, a twig (3820 &pm; 40 C-14 BP, requiring calibration with IntCal20) and a marine shell (4430 &pm; 40 C-14 BP, requiring Marine20, with a regional marine offset of 90 &pm; 25). To what degree do their calibrated distributions overlap?
+
+```{r, fig.width=5, fig.asp=.8}
+y <- c(3820, 4590-90) 
+er <- c(40, sqrt(40^2 + 25^2)) 
+cc <- c(1,2)
+overlap(y, er, cc=cc)
+```
+
 # Contamination
 
-To calculate the effect of contamination on radiocarbon ages, e.g. what age would be observed if material with a "true" radiocarbon age of 5000 +- 20 ^14^C BP would be contaminated with 10\% (+- 0\%) of modern carbon (F^14^C=1)?
+To calculate the effect of contamination on radiocarbon ages, e.g. what age would be observed if material with a "true" radiocarbon age of 5000 &pm; 20 ^14^C BP would be contaminated with 10\% (&pm; 0\%) of modern carbon (F^14^C=1)?
 
 ```{r, fig.width=5, fig.asp=.8}
 contaminate(5000, 20, 10, 0, 1)
 ```
 
-Or imagine that you measured a dinosaur bone, dating to far beyond the limit of radiocarbon dating, and the sample is very clean as it contains only 0.5\% +- 0.1\% modern contamination:
+Or imagine that you measured a dinosaur bone, dating to far beyond the limit of radiocarbon dating, and the sample is very clean as it contains only 0.5\% &pm; 0.1\% modern contamination:
 
 ```{r, fig.width=5, fig.asp=.8}
 contaminate(66e6, 1e6, 0.5, 0.1, 1)
@@ -205,7 +205,7 @@ We can also calculate the amount of contamination, or muck, required to 'explain
 muck(591, 30, BCADtoC14(40)[,1], 0, 1)
 ```
 
-So we'd require the sample to have been contaminated by 67% modern carbon to still date to around AD 40. But what if the sample had been repaired in, say, AD 1400, thus adding material of an not-entirely-modern F14C value (i.e., taking into account both the atmospheric C14 concentrations in AD 1400 and the fact that some of the C14 will have decayed since then)?
+So we'd require the sample to have been contaminated by 67% modern carbon to still date to around AD 40. But what if the sample had been repaired in, say, AD 1400, thus adding material of an not-entirely-modern F14C value (i.e., taking into account both the atmospheric C-14 concentrations in AD 1400 and the fact that some of the C14 will have decayed since then)?
 
 ```{r, fig.width=5, fig.asp=.8}
 perFaith <- BCADtoC14(40)
@@ -263,7 +263,7 @@ l.calib(145, 130, 10)
 
 To sample n=10 random values from a calibrated distribution (where the probability of a year being sampled is proportional to its calibrated height):
 
-```{r}
+```{r, fig.width=4, fig.asp=.8}
 dice <- r.calib(100, 130, 10)
 plot(density(dice))
 rug(dice)
@@ -373,7 +373,7 @@ par(bg="black", mar=rep(1, 4))
 n <- 50; set.seed(1)
 draw.dates(rnorm(n, 2450, 30), rep(25, n), 1:n,
   mirror=FALSE, draw.base=FALSE, draw.hpd=FALSE, col="white",
-  threshold=1e-28, age.lim=c(2250, 2800), up=FALSE, ex=-12)
+  threshold=1e-28, age.lim=c(2250, 2800), up=TRUE, ex=-20)
 ```
 
 
