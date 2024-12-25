@@ -261,25 +261,33 @@ BCADtoD14C <- function(x, zero=TRUE, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, 
 #'   abline(v=C14tocalBP(y))
 #' @export
 C14tocalBP <- function(y, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL) {
-  if(is.null(thiscurve))
-    cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else
+  if(is.null(thiscurve)) 
+    cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else 
       cc <- thiscurve
-  sel <- max(1, which(cc[,2] <= (y+2))) : min(nrow(cc), which(cc[,2] >= (y-2)))
-  cc <- cc[sel,] # only work with the relevant part of the calibration curve
+  
+  # select the relevant part of the calibration curve
+  sel_start <- max(1, which(cc[,2] <= (y + 5)))  # Look for the first value <= y+5
+  sel_end <- min(nrow(cc), which(cc[,2] >= (y - 5)))  # Look for the last value >= y-5
+  cc <- cc[sel_start:sel_end,]
 
-  interp <- function(i)
-    approx(cc[(i-1):i,2], cc[(i-1):i,1], y, rule=rule)$y
+  interp <- function(i) 
+    approx(cc[(i-1):i, 2], cc[(i-1):i, 1], y, rule=rule)$y
 
+  # deal with the first entry...
   x <- c()
-  for(i in 2:nrow(cc))
+  if(cc[1,2] <= y && cc[2,2] > y) 
+    x <- c(x, interp(2)) 
+  
+  # ... and with the rest
+  for(i in 2:nrow(cc)) {
     if(cc[i-1,2] <= y && cc[i,2] > y) # crosses up
-      x <- c(x,interp(i)) else
-        if(cc[i-1,2] > y && cc[i,2] <= y) # crosses down
-          x <- c(x,interp(i))
-
+      x <- c(x, interp(i)) else 
+	    if(cc[i-1,2] > y && cc[i,2] <= y) # crosses down
+          x <- c(x, interp(i))
+  }
+  
   return(x)
 }
-
 
 
 #' @name C14toBCAD
@@ -302,22 +310,7 @@ C14tocalBP <- function(y, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=N
 #'   abline(v=C14toBCAD(y))
 #' @export
 C14toBCAD <- function(y, cc=1, postbomb=FALSE, rule=1, zero=TRUE, cc.dir=NULL, thiscurve=NULL) {
-  if(is.null(thiscurve))
-    cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else
-      cc <- thiscurve
-  sel <- max(1, which(cc[,2] <= (y+2))) : min(nrow(cc), which(cc[,2] >= (y-2)))
-  cc <- cc[sel,] # only work with the relevant part of the calibration curve
-
-  interp <- function(i)
-    approx(cc[(i-1):i,2], cc[(i-1):i,1], y, rule=rule)$y
-
-  x <- c()
-  for(i in 2:nrow(cc))
-    if(cc[i-1,2] <= y && cc[i,2] > y) # crosses up
-      x <- c(x,interp(i)) else
-        if(cc[i-1,2] > y && cc[i,2] <= y) # crosses down
-          x <- c(x,interp(i))
-
+  x <- C14tocalBP(y)
   return(calBPtoBCAD(x, zero=zero))
 }
 
@@ -337,13 +330,17 @@ C14toBCAD <- function(y, cc=1, postbomb=FALSE, rule=1, zero=TRUE, cc.dir=NULL, t
 #'   C14toF14C(-2000, 20)
 #' @export
 C14toF14C <- function(y, er=NULL, decimals=5, lambda=8033) {
+  y <- as.matrix(y)
+  if (!is.null(er)) er <- as.matrix(er)
+  if(!is.null(er) && length(y) != length(er))
+    stop("y and er must have the same length.")	
   fy <- exp(-y / lambda)
   
   if(is.null(er))
     return(signif(fy, decimals)) else {
       er1 <- abs(fy - exp(-(y - er) / lambda))
       er2 <- abs(fy - exp(-(y + er) / lambda))
-      sdev <- max(er1, er2) # was the average of er1 and er2
+      sdev <- pmax(er1, er2)
       return(signif(cbind(fy, sdev, deparse.level=0), decimals))
     }
 }
@@ -357,7 +354,6 @@ C14toF14C <- function(y, er=NULL, decimals=5, lambda=8033) {
 #' this function can be used to calculate pMC values from radiocarbon ages. The reverse function of \link{pMCtoC14}.
 #' @param y Reported mean of the C14 age.
 #' @param er Reported error of the C14 age.
-#' @param ratio Most modern-date values are reported against \code{100}. If it is against \code{1} instead, a warning is provided; use \code{C14.F14C}.
 #' @param decimals Amount of decimals required for the pMC value. Defaults to 5.
 #' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
 #' @return pMC values from C14 ages.
@@ -365,16 +361,14 @@ C14toF14C <- function(y, er=NULL, decimals=5, lambda=8033) {
 #'   C14topMC(-2000, 20)
 #'   C14topMC(-2000, 20, 1)
 #' @export
-C14topMC <- function(y, er=NULL, ratio=100, decimals=5, lambda=8033) {
-  if(ratio !=100)
-    warning("C14topMC expects a ratio of 100. For ratio=1, use C14toF14C")
+C14topMC <- function(y, er=NULL, decimals=5, lambda=8033) {
   py <- exp(-y / lambda)
   if(is.null(er))
-    return(signif(ratio*y, decimals)) else {
+    return(signif(100*y, decimals)) else {
       er1 <- exp(-(y - er) / lambda)
       er2 <- exp(-(y + er) / lambda)
-      sdev <- max(er1, er2)
-      return(signif(ratio*cbind(py, sdev, deparse.level=0), decimals))
+      sdev <- pmax(er1, er2)
+      return(signif(100*cbind(py, sdev, deparse.level=0), decimals))
   }
 }
 
@@ -392,35 +386,19 @@ C14topMC <- function(y, er=NULL, ratio=100, decimals=5, lambda=8033) {
 #'   C14toD14C(0.985, 20, 222)
 #' @export
 C14toD14C <- function(y, er=NULL, t) {
-  if(length(y) > 1 || length(er) > 1 || length(t) > 1) {
-    # If there are multiple entries, apply the function row-wise across vectors
-    results <- mapply(function(yy, ee, tt) {
-      asF <- cbind(C14toF14C(yy, ee))
-      Dmn <- 1000 * ((asF[,1] / exp(-tt/8267)) - 1)
-      if(is.null(ee)) 
-        return(Dmn) else {
-          Fup <- asF[,1] + asF[,2]
-          Fdown <- asF[,1] - asF[,2]
-          Dup <- 1000 * ((Fup / exp(-tt / 8267)) - 1)
-          Ddown <- 1000 * ((Fdown / exp(-tt / 8267)) - 1)
-          sdev <- pmax(abs(Dup - Dmn), abs(Ddown - Dmn))
-          return(c(Dmn, sdev))
-        }
-    }, y, er, t)
-   	return(t(results))  # transpose to get columns for Dmn and sdev
-  } else { # only one entry
-	  asF <- cbind(C14toF14C(y, er))
-	  Dmn <- 1000 * ((asF[,1] / exp(-t/8267)) - 1)
-	  if(is.null(er))
-	    return(Dmn) else {
-	      Fup <- asF[,1] + asF[,2]
-	      Fdown <- asF[,1] - asF[,2]
-	      Dup <- 1000 * ((Fup / exp(-t / 8267)) - 1)
-	      Ddown <- 1000 * ((Fdown / exp(-t / 8267)) - 1)
-	      sdev <- pmax(abs(Dup - Dmn), abs(Ddown - Dmn))
-	      return(cbind(Dmn, sdev))
-	    }
-	}
+  if(!length(y) == length(t))
+    stop("inputs 'y' and 't' must have the same length")
+  asF <- cbind(C14toF14C(cbind(y), cbind(er)))
+  Dmn <- 1000 * ((asF[,1] / exp(cbind(-1*t)/8267)) - 1)
+  if(is.null(er))
+    return(Dmn) else {
+      Fup <- asF[,1] + asF[,2]
+      Fdown <- asF[,1] - asF[,2]
+      Dup <- 1000 * ((Fup / exp(-t / 8267)) - 1)
+      Ddown <- 1000 * ((Fdown / exp(-t / 8267)) - 1)
+      sdev <- pmax(abs(Dup - Dmn), abs(Ddown - Dmn))
+      return(cbind(Dmn, sdev))
+    }
 }
 
 
@@ -478,14 +456,11 @@ F14CtopMC <- function(F14C, er=NULL)
 #'   F14CtoD14C(0.89, .001, 900)
 #' @export
 F14CtoD14C <- function(F14C, er=NULL, t) {
-  # If er is NULL, just calculate the Dmn for F14C and t
+  # If er is NULL, return the Dmn for F14C and t
   Dmn <- 1000 * ((F14C / exp(-t / 8267)) - 1)
   if(is.null(er)) 
     return(Dmn) else {
-      # Calculate Dup using F14C + er
       Dup <- 1000 * (((F14C + er) / exp(-t / 8267)) - 1)
-    
-      # Return Dmn and the difference between Dup and Dmn
       return(cbind(Dmn, Dup - Dmn))
     }
 }
@@ -499,22 +474,19 @@ F14CtoD14C <- function(F14C, er=NULL, t) {
 #'  this function can be used to calculate radiocarbon ages from pMC values. The reverse function is C14.pMC.
 #' @param pMC Reported mean of the pMC.
 #' @param er Reported error of the pMC.
-#' @param ratio Most modern-date values are reported against \code{100}. If it is against \code{1} instead, use \code{1} here.
 #' @param decimals Amount of decimals required for the radiocarbon age.
 #' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
 #' @return Radiocarbon ages from pMC values. If pMC values are above 100\%, the resulting radiocarbon ages will be negative.
 #' @examples
 #'   pMCtoC14(110, 0.5) # a postbomb date, so with a negative 14C age
 #'   pMCtoC14(80, 0.5) # prebomb dates can also be calculated
-#'   pMCtoC14(.8, 0.005, ratio=1) # throws a warning, use F14C.age instead
+#'   pMCtoC14(.8, 0.005) # throws a warning, use F14C.age instead
 #' @export
-pMCtoC14 <- function(pMC, er=NULL, ratio=100, decimals=0, lambda=8033) { 
-  if(ratio !=100)
-    warning("pMCtoC14 expects a ratio of 100. For ratio=1, use F14CtoC14")
-  y <- -lambda * log(pMC/ratio)
+pMCtoC14 <- function(pMC, er=NULL, decimals=0, lambda=8033) { 
+  y <- -lambda * log(pMC/100)
   if(is.null(er))
     signif(y, decimals) else {
-    sdev <- y - -lambda * log((pMC+er)/ratio)
+    sdev <- y - -lambda * log((pMC+er)/100)
     round(cbind(y, sdev, deparse.level=0), decimals)
   }
 }
@@ -565,9 +537,8 @@ pMCtoD14C <- function(pMC, er=NULL, t) {
 #' @examples
 #'   D14CtoC14(-10, 1, 238)
 #' @export
-D14CtoC14 <- function(D14C, er=NULL, t) {
+D14CtoC14 <- function(D14C, er=NULL, t) 
   return( F14CtoC14( D14CtoF14C(D14C=D14C, er=er, t=t) ))
-}
 
 
 
@@ -625,7 +596,7 @@ D14CtopMC <- function(D14C, er=NULL, t)
 #' @export
 pMC.age <- function(mn, sdev=c(), ratio=100, decimals=0, lambda=8033) {
   message("pMC.age will be deprecated. Use pMCtoC14 instead") 
-  pMCtoC14(mn, sdev, ratio, decimals, lambda)
+  pMCtoC14(mn, sdev, decimals, lambda)
 }
 
 
@@ -644,7 +615,7 @@ pMC.age <- function(mn, sdev=c(), ratio=100, decimals=0, lambda=8033) {
 #' @export
 age.pMC <- function(mn, sdev=c(), ratio=100, decimals=5, lambda=8033) {
   message("age.pMC will be deprecated. Use C14topMC instead") 	
-  C14topMC(mn, sdev, ratio, decimals, lambda)
+  C14topMC(mn, sdev, decimals, lambda)
 }
 
 

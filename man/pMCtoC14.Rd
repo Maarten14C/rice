@@ -4,14 +4,12 @@
 \alias{pMCtoC14}
 \title{Calculate C14 ages from pMC values.}
 \usage{
-pMCtoC14(pMC, er = NULL, ratio = 100, decimals = 0, lambda = 8033)
+pMCtoC14(pMC, er = NULL, decimals = 0, lambda = 8033)
 }
 \arguments{
 \item{pMC}{Reported mean of the pMC.}
 
 \item{er}{Reported error of the pMC.}
-
-\item{ratio}{Most modern-date values are reported against \code{100}. If it is against \code{1} instead, use \code{1} here.}
 
 \item{decimals}{Amount of decimals required for the radiocarbon age.}
 
@@ -30,5 +28,5 @@ Post-bomb dates are often reported as pMC or percent modern carbon. Since Bacon 
 \examples{
   pMCtoC14(110, 0.5) # a postbomb date, so with a negative 14C age
   pMCtoC14(80, 0.5) # prebomb dates can also be calculated
-  pMCtoC14(.8, 0.005, ratio=1) # throws a warning, use F14C.age instead
+  pMCtoC14(.8, 0.005) # throws a warning, use F14C.age instead
 }

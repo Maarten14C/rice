@@ -37,7 +37,7 @@ library(rice)
 
 # Calibration curves
 
-Calibration curves can be plotted:
+The calibration curves can be plotted:
 
 ```{r, fig.width=4, fig.asp=.8}
 draw.ccurve()
@@ -55,7 +55,23 @@ Or zooming in to between AD 1600 and 2000:
 draw.ccurve(1600, 1950, BCAD=TRUE)
 ```
 
-Interesting things happened after 1950, as can be seen by adding a postbomb curve:
+Note the wiggles, or recurring C-14 ages? Calibration curves such as IntCal20 come with 3 columns: cal BP ($\theta$), the corresponding C-14 ages ($\mu$), and their errors ($\sigma$). Whereas each cal BP or BC/AD year has a single $\mu$ and $\sigma$, owing to wiggles in the calibration curves, any single $\mu$ will often have multiple $\theta$'s:
+
+```{r}
+BCADtoC14(1694) 
+C14toBCAD(129)
+```
+
+Let's add these values to the previous plot:
+
+```{r, fig.width=4, fig.asp=.8}
+draw.ccurve(1600, 1950, BCAD=TRUE)
+abline(h=BCADtoC14(1694)[1], lty=3) 
+abline(v=C14toBCAD(129), lty=3)
+```
+
+
+Atmospheric nuclear tests around AD 1950-1964 caused a huge human-made C-14 peak (resulting in highly negative C-14 ages):
 
 ```{r, fig.width=4, fig.asp=.8}
 draw.ccurve(1600, 2020, BCAD=TRUE, cc2='nh1')
@@ -72,6 +88,7 @@ The calibration curves can also be plotted in the 'realms' of F14C, pMC or D14C 
 ```{r, fig.width=4, fig.asp=.8}
 draw.ccurve(50000, 35000, realm="D")
 ```
+
 
 # Realms
 

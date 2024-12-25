@@ -4,14 +4,12 @@
 \alias{C14topMC}
 \title{Calculate pMC values from C14 ages}
 \usage{
-C14topMC(y, er = NULL, ratio = 100, decimals = 5, lambda = 8033)
+C14topMC(y, er = NULL, decimals = 5, lambda = 8033)
 }
 \arguments{
 \item{y}{Reported mean of the C14 age.}
 
 \item{er}{Reported error of the C14 age.}
-
-\item{ratio}{Most modern-date values are reported against \code{100}. If it is against \code{1} instead, a warning is provided; use \code{C14.F14C}.}
 
 \item{decimals}{Amount of decimals required for the pMC value. Defaults to 5.}
 

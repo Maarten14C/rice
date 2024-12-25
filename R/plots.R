@@ -887,8 +887,8 @@ draw.contamination <- function(from=0, to=50e3, ka=TRUE, age.res=500, xlim=c(), 
   observed.14C <- seq(0, to, by=diff(real.14C)[1])
 
   fraction.contaminated <- function(real, observed, F14C=contam.F14C, decimals=5) {
-    real.F <- C14toF14C(real, 0, decimals=decimals)[,1]
-    observed.F <- C14toF14C(observed, 0, decimals=decimals)[,1]
+    real.F <- C14toF14C(real, rep(0,length(real)), decimals=decimals)[,1]
+    observed.F <- C14toF14C(observed, rep(0,length(real)), decimals=decimals)[,1]
     return((observed.F - real.F ) / (F14C - real.F))
   }
   fractions <- outer(real.14C, observed.14C, fraction.contaminated)

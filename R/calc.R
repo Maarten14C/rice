@@ -119,6 +119,9 @@ contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.c
     stop("F.contam cannot be smaller than 0", call.=FALSE) 
 
   fraction <- percentage/100
+  if(length(er) == 1)
+    if(er == 0)
+      er <- rep(0, length(y))
   F.true <- as.data.frame(C14toF14C(y, er, decimals))
 
   if(MC) {
@@ -207,6 +210,9 @@ clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.
     stop("F.contam cannot be smaller than 0", call.=FALSE) 
 
   fraction <- percentage/100
+  if(length(er) == 1)
+    if(er == 0)
+      er <- rep(0, length(y))
   F.obs <- as.data.frame(C14toF14C(y, er, decimals))
 
   if(MC) {
