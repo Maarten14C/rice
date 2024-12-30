@@ -53,6 +53,10 @@ A dataset with the n nearest dR values, and a plot of their coordinates.
 \description{
 Find the shells closest to a chosen coordinate, and plot the dR values and feeding ecology. Uses the marine database downloaded (30 Aug 2024) from calib.org/marine. See Reimer PJ, Reimer RW, 2001. A marine reservoir correction database and on-line interface. Radiocarbon 43:461-3.
 }
+\details{
+This function uses the `rnaturalearth` package for country maps. If the high-resolution maps are desired,
+the `rnaturalearthhires` package must be installed from GitHub.
+}
 \examples{
   UK <- find.shells(0, 55, scale="medium")
   mean(UK$dR)

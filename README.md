@@ -14,3 +14,12 @@ calibrate(2450,20)
 contaminate(55000, 100, .05, 1)
 draw.contamination()
 ```
+
+# Installation
+
+To use high-resolution maps, install the `rnaturalearthhires` package from GitHub (also install devtools if you haven't already):
+
+```{r}
+install.packages("devtools")
+devtools::install_github("ropensci/rnaturalearthhires")
+```

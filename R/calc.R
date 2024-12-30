@@ -119,9 +119,13 @@ contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.c
     stop("F.contam cannot be smaller than 0", call.=FALSE) 
 
   fraction <- percentage/100
-  if(length(er) == 1)
+  if(length(er) == 1) {
     if(er == 0)
       er <- rep(0, length(y))
+  } else
+    if(length(y) != length(er))
+	  stop("y and er need to be of the same length", call.=FALSE)
+
   F.true <- as.data.frame(C14toF14C(y, er, decimals))
 
   if(MC) {
@@ -129,18 +133,28 @@ contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.c
       stop("too few samples for robust analysis. Increase 'its'", call.=FALSE)
     alpha <- (fraction / (percentage.error / 100))^2
     beta <- ((1 - fraction) / (percentage.error / 100))^2
-    fraction.samples <- rbeta(its, shape1 = alpha, shape2 = beta) # samples between 0 and 1
-    fraction.samples <- fraction.samples * fraction / mean(fraction.samples) # normalise
-  #  fraction.samples <- rnorm(its, fraction, percentage.error / 100)
-  #  fraction.samples <- fraction.samples[fraction.samples > 0 & fraction.samples < 1]
-    F.true.samples <- rnorm(length(fraction.samples), F.true[,1], F.true[,2])
-    F.contam.samples <- rnorm(length(fraction.samples), F.contam, F.contam.er)
+    if(percentage.error == 0) # then waste no time sampling
+	  fraction.samples <- fraction else {
+	    fraction.samples <- rbeta(its, shape1 = alpha, shape2 = beta) # samples between 0 and 1
+        fraction.samples <- fraction.samples * fraction / mean(fraction.samples) # normalise
+      }
+    if(all(er == 0)) # then waste no time sampling
+      F.true.samples <- F.true[,1] else
+        F.true.samples <- rnorm(length(fraction.samples), F.true[,1], F.true[,2])
+    if(F.contam.er == 0) # then waste no time sampling
+      F.contam.samples <- F.contam else
+        F.contam.samples <- rnorm(length(fraction.samples), F.contam, F.contam.er)
 
-    F.obs.samples <- (1 - fraction.samples) * F.true.samples + fraction.samples * F.contam.samples
+    F.obs.samples <- (1 - fraction.samples) * F.true.samples + fraction.samples * F.contam.samples # calculate observed F's
     C14.obs.samples <- F14CtoC14(F.obs.samples, 0, decimals)[,1]
     F.obs <- mean(F.obs.samples)
     F.obs.er <- sd(F.obs.samples)
-    C14.obs <- cbind(mean(C14.obs.samples), sd(C14.obs.samples))
+    if(is.na(F.obs.er)) { # if errors are 0, then sd(0) gives NA
+      F.obs.er <- 0
+	  C14.obs.er <- 0	
+    } else
+	   C14.obs.er <- sd(C14.obs.samples)
+    C14.obs <- cbind(mean(C14.obs.samples), C14.obs.er)
 
   } else {
       F.obs <- ((1-fraction)*F.true[,1]) + (fraction*F.contam)
@@ -210,9 +224,13 @@ clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.
     stop("F.contam cannot be smaller than 0", call.=FALSE) 
 
   fraction <- percentage/100
-  if(length(er) == 1)
+  if(length(er) == 1) {
     if(er == 0)
       er <- rep(0, length(y))
+  } else
+    if(length(y) != length(er))
+      stop("y and er need to be of the same length", call.=FALSE)
+  
   F.obs <- as.data.frame(C14toF14C(y, er, decimals))
 
   if(MC) {
@@ -220,16 +238,28 @@ clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.
       stop("too few samples for robust analysis. Increase 'its'", call.=FALSE)
     alpha <- (fraction / (percentage.error / 100))^2
     beta <- ((1 - fraction) / (percentage.error / 100))^2
-    fraction.samples <- rbeta(its, shape1 = alpha, shape2 = beta)
-    fraction.samples <- fraction.samples * fraction / mean(fraction.samples)
-    F.obs.samples <- rnorm(length(fraction.samples), F.obs[,1], F.obs[,2])
-    F.contam.samples <- rnorm(length(fraction.samples), F.contam, F.contam.er)
+    if(percentage.error == 0) # then waste no time sampling
+	  fraction.samples <- fraction else {
+	    fraction.samples <- rbeta(its, shape1 = alpha, shape2 = beta) # samples between 0 and 1
+        fraction.samples <- fraction.samples * fraction / mean(fraction.samples) # normalise
+      }
+    if(all(er == 0)) # then waste no time sampling
+      F.obs.samples <- F.obs[,1] else	  
+	    F.obs.samples <- rnorm(length(fraction.samples), F.obs[,1], F.obs[,2])
+    if(F.contam.er == 0) # then waste no time sampling
+      F.contam.samples <- F.contam else
+        F.contam.samples <- rnorm(length(fraction.samples), F.contam, F.contam.er)
 
     F.true.samples <- (F.obs.samples - fraction.samples * F.contam.samples) / (1 - fraction.samples)
     C14.true.samples <- F14CtoC14(F.true.samples, 0, decimals)[,1]
     F.true <- mean(F.true.samples)
     F.true.er <- sd(F.true.samples)
-    C14.true <- cbind(mean(C14.true.samples), sd(C14.true.samples))
+    if(is.na(F.true.er)) { # if errors are 0, then sd(0) gives NA
+      F.true.er <- 0
+	  C14.true.er <- 0	
+    } else
+	   C14.true.er <- sd(C14.true.samples)
+       C14.true <- cbind(mean(C14.true.samples), C14.true.er)
   } else {
       F.true <- (F.obs[,1] - fraction * F.contam) / (1 - fraction)
       F.true.er <- sqrt(F.obs[,2]^2 + F.contam.er^2)
@@ -305,9 +335,15 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
   if(any(F.contam < 0))
     stop("F.contam cannot be smaller than 0", call.=FALSE)
   if(MC) {
-    F.observed.samples <- rnorm(its, F.obs[,1], F.obs[,2])
-    F.target.samples <- rnorm(its, F.target[,1], F.target[,2])
-    F.contam.samples <- rnorm(its, F.contam, F.contam.er)
+    if(all(y.obs.er == 0)) # then waste no time sampling
+	  F.observed.samples <- F.obs[1,1] else
+        F.observed.samples <- rnorm(its, F.obs[,1], F.obs[,2])
+    if(all(y.target.er == 0)) # then waste no time sampling
+      F.target.samples <- F.target[1,1] else
+        F.target.samples <- rnorm(its, F.target[,1], F.target[,2])
+    if(all(F.contam.er == 0)) # then waste no time sampling
+      F.contam.samples <- F.contam[1] else
+        F.contam.samples <- rnorm(its, F.contam, F.contam.er)
     frac <- ((F.observed.samples - F.target.samples) / (F.contam.samples - F.target.samples))
     if(filter) {
       inside <- frac >= 0 & frac <= 1 # nothing outside [0,1]
@@ -321,9 +357,13 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
       stop("too few valid samples after filtering. Increase 'its'", call.=FALSE)
     perc.sd <- round(sd(100*frac), roundby)
     perc <- round(mean(100*frac), roundby)
+    if(is.na(perc.sd)) # when all errors are 0, sd(0) becomes NA
+      perc.sd <- 0
 	
 	F.contam <- mean(F.contam.samples)
 	F.contam.er <- sd(F.contam.samples)
+    if(is.na(F.contam.er)) # when all errors are 0, sd(0) becomes NA
+      F.contam.er <- 0
 	
   } else {
       # note: these calculations do NOT take into account uncertainties

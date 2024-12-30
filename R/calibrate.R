@@ -155,13 +155,13 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
 #' @param age.round Rounding for ages. Defaults to 0 decimals.
 #' @param prob.round Rounding for reported probabilities. Defaults to 1 decimal.
-#' @param every Yearly precision (defaults to \code{every=1}).
+#' @param every Yearly precision (defaults to 0.1, as a compromise between speed and accuracy).
 #' @examples
 #' hpd(caldist(130,20))
 #' plot(tmp <- caldist(2450,50), type='l')
 #' abline(v=hpd(tmp)[,1:2], col=4)
 #' @export
-hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, age.round=0, prob.round=1, every=1) {
+hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, age.round=0, prob.round=1, every=0.1) {
 
   # re-interpolate to desired precision
   calib <- calib[order(calib[,1]),] # ensure calendar ages are in increasing order

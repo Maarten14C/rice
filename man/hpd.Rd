@@ -11,7 +11,7 @@ hpd(
   BCAD = FALSE,
   age.round = 0,
   prob.round = 1,
-  every = 1
+  every = 0.1
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ hpd(
 
 \item{prob.round}{Rounding for reported probabilities. Defaults to 1 decimal.}
 
-\item{every}{Yearly precision (defaults to \code{every=1}).}
+\item{every}{Yearly precision (defaults to 0.1, as a compromise between speed and accuracy).}
 }
 \value{
 The highest posterior density ranges, as three columns: from age, to age, and the corresponding percentage(s) of the range(s)

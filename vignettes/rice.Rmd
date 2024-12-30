@@ -334,6 +334,8 @@ Or if you wish to calculate the probability covered between two age points (e.g.
 p.range(300, 150, 130, 10)
 ```
 
+The probabilities reported by `p.range` should be similar to those reported by the `hpd` function mentioned earlier. Any discrepancies can be explained by rounding errors in the calculations (e.g., hpd's settings of `every`, `age.round` and `prob.round`).
+
 At times there could be a lag in the date, for example if material has accumulated over decades. We can calibrate a date and then add a lag, by adding or subtracting either a normal distribution or a gamma one:
 
 ```{r, fig.width=5, fig.asp=1}

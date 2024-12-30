@@ -15,7 +15,10 @@
 #' @importFrom rlang sym
 #' @importFrom ggplot2 ggplot geom_sf coord_sf geom_point aes scale_color_gradient scale_color_gradientn labs theme element_line element_rect
 #' @importFrom maps map
+#' @importFrom rnaturalearth ne_countries
 #' @importFrom rintcal ccurve intcal.data new.ccdir list.ccurves glue.ccurves mix.ccurves
+#' @importFrom ggplot2 geom_sf ggplot coord_sf theme element_line element_rect 
+#' @importFrom sf st_as_sf
 #' @name rice
 
 ## usethis namespace: start

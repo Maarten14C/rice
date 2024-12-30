@@ -1,26 +1,47 @@
 ocean.map <- function(S, W, N, E, scale = c(), ocean.col = "aliceblue", land.col = rgb(0, 0.5, 0, 0.6)) {
   # Check if required libraries are installed
-  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  if(!requireNamespace("ggplot2", quietly = TRUE)) 
     stop("ggplot2 package is required")
-  }
-  
-  if(!requireNamespace("rnaturalearthhires", quietly = TRUE)) {
-    message("For high-resolution maps, install rnaturalearthhires from GitHub using: devtools::install_github('ropensci/rnaturalearthhires').")
-  }  
-  
-  ihave <- installed.packages()
-  if(("rnaturalearth" %in% ihave) && ("sf" %in% ihave)) {
-    # Handle different scales and package availability
-    if (length(scale) == 0 || scale == "medium") {
+  if(!requireNamespace("sf", quietly = TRUE)) 
+    stop("sf package is required. Please install it using: install.packages('sf').")
+
+  if(requireNamespace("rnaturalearth", quietly = TRUE)) { 
+    if(!requireNamespace("rnaturalearthdata", quietly = TRUE)) 
+      stop("rnaturalearthdata package is required. Please install it using: install.packages('rnaturalearthdata').")
+    if(!"rnaturalearthhires" %in% installed.packages()) {
+      message("For high-resolution maps, install rnaturalearthhires from GitHub using these commands:\n",
+        "install.packages('devtools') # if this hasn't been installed already\n",
+        "devtools::install_github('ropensci/rnaturalearthhires')") 
+    }
+  } else 
+      message("rnaturalearth is not installed. Falling back to maps::map.")
+    
+  # Handle different scales and package availability
+  if(length(scale) == 0 || scale == "medium") {
+    if(requireNamespace("rnaturalearth", quietly = TRUE)) {
       world <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
-    } else if (scale == "small") {
-      world <- rnaturalearth::ne_countries(scale = "small", returnclass = "sf")
-    } else if (scale == "large") {
-      if (!"rnaturalearthhires" %in% installed.packages()) {
-        message("Using a medium-scale map. For higher resolution, install rnaturalearthhires (devtools::install_github(\"ropensci/rnaturalearthhires\")).")
-        world <- rnaturalearthdata::countries50
+    } else {
+        world <- maps::map("world", fill = TRUE, plot = FALSE)
+        world <- st_as_sf(world)
+      }
+  } else if (scale == "small") {
+      if(requireNamespace("rnaturalearth", quietly = TRUE)) {
+        world <- rnaturalearth::ne_countries(scale = "small", returnclass = "sf")
       } else {
+        world <- maps::map("world", fill = TRUE, plot = FALSE)
+        world <- st_as_sf(world)
+      }
+    } else if (scale == "large") {
+      if("rnaturalearthhires" %in% installed.packages()) { 
         world <- rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
+      } else {
+        message("Using a medium-scale map. For higher resolution, install rnaturalearthhires.")
+        if(requireNamespace("rnaturalearth", quietly = TRUE)) {
+          world <- rnaturalearthdata::countries50
+        } else {
+          world <- maps::map("world", fill = TRUE, plot = FALSE)
+          world <- sf::st_as_sf(world)
+        }
       }
     }
 
@@ -33,11 +54,7 @@ ocean.map <- function(S, W, N, E, scale = c(), ocean.col = "aliceblue", land.col
              legend.background = element_rect(fill = "transparent"),
              legend.key = element_rect(fill = "transparent")
            )
-  } else {
-      message("rnaturalearth is not installed - plotting a basic map.")
-	  message("Please issue the command install.packages('rnaturalearth'), then try finding/mapping shells again")
-	  p <- c()
-    }
+  
   return(p)	
 }
 
@@ -46,6 +63,9 @@ ocean.map <- function(S, W, N, E, scale = c(), ocean.col = "aliceblue", land.col
 #' @name find.shells
 #' @title Find nearby shell-derived dR values
 #' @description Find the shells closest to a chosen coordinate, and plot the dR values and feeding ecology. Uses the marine database downloaded (30 Aug 2024) from calib.org/marine. See Reimer PJ, Reimer RW, 2001. A marine reservoir correction database and on-line interface. Radiocarbon 43:461-3.
+#' @details
+#' This function uses the `rnaturalearth` package for country maps. If the high-resolution maps are desired,
+#' the `rnaturalearthhires` package must be installed from GitHub.
 #' @return A dataset with the n nearest dR values, and a plot of their coordinates.
 #' @param longitude Longitude of the point. Can only deal with one point at a time.
 #' @param latitude Latitude of the point. Can only deal with one point at a time.
@@ -134,6 +154,9 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
 #' @name map.shells
 #' @title Plot regional shell-derived dR values
 #' @description Find the shells that fit within a rectangular region (bounded by N, E, S and W), and plot the dR values and feeding ecology. Uses the marine database downloaded (30 Aug 2024) from calib.org/marine. See Reimer PJ, Reimer RW, 2001. A marine reservoir correction database and on-line interface. Radiocarbon 43:461-3. Expects the coordinates for the map to be provided (starting south, then clockwise as with R axes).
+#' @details
+#' This function uses the `rnaturalearth` package for country maps. If the high-resolution maps are desired,
+#' the `rnaturalearthhires` package must be installed from GitHub.
 #' @return A plot and the relevant dR values.
 #' @param S The southern limit of the rectangular region.
 #' @param W The western limit of the rectangular region.

@@ -56,6 +56,10 @@ A plot and the relevant dR values.
 \description{
 Find the shells that fit within a rectangular region (bounded by N, E, S and W), and plot the dR values and feeding ecology. Uses the marine database downloaded (30 Aug 2024) from calib.org/marine. See Reimer PJ, Reimer RW, 2001. A marine reservoir correction database and on-line interface. Radiocarbon 43:461-3. Expects the coordinates for the map to be provided (starting south, then clockwise as with R axes).
 }
+\details{
+This function uses the `rnaturalearth` package for country maps. If the high-resolution maps are desired,
+the `rnaturalearthhires` package must be installed from GitHub.
+}
 \examples{
  N_UK <- map.shells(53, -11, 60, 2, scale="medium")
  mean(N_UK$dR)
