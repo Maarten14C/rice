@@ -6,44 +6,6 @@
 #
 # It is unlikely that you need to modify this file manually.
 
-name: R-CMD-check
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-jobs:
-  R-CMD-check:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up R
-        uses: r-lib/actions/setup-r@v2
-
-      - name: Install R dependencies
-        run: |
-          Rscript -e 'install.packages(c("devtools", "pak"))'
-          Rscript ci/setup-ci.R
-
-      # Handle rnaturalearthhires dependency
-      - name: Handle rnaturalearthhires dependency
-        run: |
-          Rscript -e 'if (!"rnaturalearthhires" %in% rownames(installed.packages())) {
-            message("rnaturalearthhires is unavailable. You can skip its functionality.")
-          }'
-
-      - name: Run R CMD check
-        run: |
-          R CMD build .
-          R CMD check --as-cran *.tar.gz
-
 name: R-hub
 run-name: "${{ github.event.inputs.id }}: ${{ github.event.inputs.name || format('Manually run by {0}', github.triggering_actor) }}"
 
