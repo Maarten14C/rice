@@ -96,6 +96,9 @@ plot_contamination <- function(true.F, true.er, obs.F, obs.er, perc, perc.er, co
 #' @param roundby Rounding of the output for C14 ages. Defaults to 1 decimal.
 #' @param visualise By default, a plot is made to visualise the target and observed F14C values, together with the inferred contamination.
 #' @param talk Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.
+#' @param eq.x Leftmost location of the equation. Can be set to values outside of (0,100) to make the equation invisible.
+#' @param eq.y Vertical location of the equation. Defaults to the top of the graph.
+#' @param eq.size Size of the font of the equation.
 #' @param true.col Colour for the target/true values. Defaults to black.
 #' @param observed.col Colour for the observed values. Defaults to blue.
 #' @param contamination.col Colour for the contamination values. Defaults to red.
@@ -112,7 +115,7 @@ plot_contamination <- function(true.F, true.er, obs.F, obs.er, perc, perc.er, co
 #' contaminate(5000, 20, 1, 0, 1) # 1% contamination with modern carbon
 #' contaminate(66e6, 1e6, 1, 0, 1) # dino bone, shouldn't be dated as way beyond the dating limit
 #' @export
-contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.er=0, MC=TRUE, its=1e4, decimals=5, roundby=1, visualise=TRUE, talk=TRUE, true.col="black", observed.col="blue", contamination.col="red", true.pch=20, observed.pch=18, contamination.pch=17, true.name="true", xlab="contamination (%)", ylab="F14C", ylim=c(), bty="l") {
+contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.er=0, MC=TRUE, its=1e4, decimals=5, roundby=1, visualise=TRUE, talk=TRUE, eq.x=0, eq.y=c(), eq.size=0.7, true.col="black", observed.col="blue", contamination.col="red", true.pch=20, observed.pch=18, contamination.pch=17, true.name="true", xlab="contamination (%)", ylab="F14C", ylim=c(), bty="l") {
   if(percentage < 0 || percentage > 100)
     stop("percentage should be between 0 and 100%", call.=FALSE) 
   if(F.contam < 0)
@@ -163,8 +166,17 @@ contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.c
     }
 
   if(visualise)
-    if(length(y) == 1)
+    if(length(y) == 1) {
       plot_contamination(true.F=F.true[,1], true.er=F.true[,2], obs.F=F.obs, obs.er=F.obs.er, perc=percentage, perc.er=percentage.error, contam.F=F.contam, contam.er=F.contam.er, ylim=ylim, xlab=xlab, true.col=true.col, observed.col=observed.col, contamination.col=contamination.col, true.pch=true.pch, true.name=true.name, observed.pch=observed.pch, contamination.pch=contamination.pch, ylab=ylab, bty=bty)
+      txt <- c("F_obs = ", "(", 1-fraction, "*", round(F.true[,1], decimals), ")", " + ", 
+        "(", fraction, "*", round(F.contam, decimals), ")", " = ", round(F.obs, decimals))
+      colours <- c(observed.col, rep(true.col, 5), grey(0.5), rep(contamination.col, 5), rep(observed.col, 3))
+      xpos <- eq.x+(eq.size*cumsum(c(0, strwidth(txt[-length(txt)]))))
+      if(length(eq.y) == 0)
+        eq.y <- 1.01*max(c(F.obs, F.true[,1], F.contam))
+      for(i in seq_along(txt))
+        text(x = xpos[i], y = eq.y, labels = txt[i], col = colours[i], adj = c(0, 0), cex=eq.size)  
+    }	  
 
   C14.obs <- round(C14.obs, roundby)
 
@@ -197,6 +209,9 @@ contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.c
 #' @param roundby Rounding of the output for C14 ages. Defaults to 1 decimal.
 #' @param visualise By default, a plot is made to visualise the target and observed F14C values, together with the inferred contamination.
 #' @param talk Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.
+#' @param eq.x Leftmost location of the equation. Can be set to values outside of (0,100) to make the equation invisible.
+#' @param eq.y Vertical location of the equation. Defaults to the top of the graph.
+#' @param eq.size Size of the font of the equation.
 #' @param true.col Colour for the true/target values. Defaults to black.
 #' @param observed.col Colour for the observed values. Defaults to blue.
 #' @param contamination.col Colour for the contamination values. Defaults to red.
@@ -215,7 +230,7 @@ contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.c
 #' # now with errors:
 #' clean(5000, 20, 1, 0.1, 1, 0.1)
 #' @export
-clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.er=0, MC=TRUE, its=1e4, roundby=1, decimals=5, visualise=TRUE, talk=TRUE, true.col="black", observed.col="blue", contamination.col="red", true.pch=20, observed.pch=18, contamination.pch=17, true.name="true", xlab="contamination (%)", ylab="F14C", ylim=c(), bty="l") {
+clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.er=0, MC=TRUE, its=1e4, roundby=1, decimals=5, visualise=TRUE, talk=TRUE, eq.x=0, eq.y=c(), eq.size=0.7, true.col="black", observed.col="blue", contamination.col="red", true.pch=20, observed.pch=18, contamination.pch=17, true.name="true", xlab="contamination (%)", ylab="F14C", ylim=c(), bty="l") {
   if(length(y)>1)
     stop("cannot deal with more than one value at a time")
   if(percentage < 0 || percentage > 100)
@@ -269,8 +284,17 @@ clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.
   C14.true <- round(C14.true, roundby)
 
   if(visualise)
-    if(length(y) == 1) # not if multiple entries
+    if(length(y) == 1) { # not if multiple entries
       plot_contamination(true.F=F.true, true.er=F.true.er, obs.F=F.obs[,1], obs.er=F.obs[,2], perc=percentage, perc.er=percentage.error, contam.F=F.contam, contam.er=F.contam.er, ylim=ylim, xlab=xlab, true.col=true.col, observed.col=observed.col, contamination.col=contamination.col, true.pch=true.pch, true.name=true.name, observed.pch=observed.pch, contamination.pch=contamination.pch, ylab=ylab, bty=bty)
+      txt <- c("F_true = ", "(", 1-fraction, "*", round(F.obs[1], decimals), ")", " - ", 
+        "(", fraction, "*", round(F.contam, decimals), ")", " = ", round(F.true, decimals))
+      colours <- c(true.col, rep(observed.col, 5), grey(.5), rep(contamination.col, 5), rep(true.col, 3))
+      xpos <- eq.x+(eq.size*cumsum(c(0, strwidth(txt[-length(txt)]))))
+      if(length(eq.y) == 0)
+        eq.y <- 1.01*max(c(F.obs[,1], F.true, F.contam))
+      for(i in seq_along(txt))
+        text(x = xpos[i], y = eq.y, labels = txt[i], col = colours[i], adj = c(0, 0), cex=eq.size)
+    }
 
   if(talk)
     if(length(y) == 1) {
@@ -300,8 +324,11 @@ clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.
 #' @param filter If set to true (default), iterations that result in fractions <0 or >1 are removed.
 #' @param roundby Rounding of the output for C14 ages. Defaults to 1 decimal.
 #' @param decimals Rounding of the output. Since details matter here, the default is to provide 5 decimals.
-#' @param talk Whether or not to report the calculations made
 #' @param visualise By default, a plot is made to visualise the target and observed F14C values, together with the inferred contamination.
+#' @param talk Whether or not to report the calculations made
+#' @param eq.x Leftmost location of the equation. Can be set to values outside of (0,100) to make the equation invisible.
+#' @param eq.y Vertical location of the equation. Defaults to the top of the graph.
+#' @param eq.size Size of the font of the equation.
 #' @param talk Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.
 #' @param target.col Colour for the target values. Defaults to black.
 #' @param observed.col Colour for the observed values. Defaults to blue.
@@ -318,7 +345,7 @@ clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.
 #' @examples
 #'   muck(600, 30, 2000, 0, 1, .01)
 #' @export
-muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.contam.er=0, MC=TRUE, its=1e4, filter=TRUE, roundby=1, decimals=3, visualise=TRUE, talk=TRUE, target.col="black", observed.col="blue", contamination.col="red", target.pch=20, observed.pch=18, contamination.pch=17, true.name="target", xlab="contamination (%)", ylab="F14C", ylim=c(), bty="l") {
+muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.contam.er=0, MC=TRUE, its=1e4, filter=TRUE, roundby=1, decimals=3, visualise=TRUE, talk=TRUE, eq.x=0, eq.y=c(), eq.size=0.7, target.col="black", observed.col="blue", contamination.col="red", target.pch=20, observed.pch=18, contamination.pch=17, true.name="target", xlab="contamination (%)", ylab="F14C", ylim=c(), bty="l") {
   F.obs <- C14toF14C(y.obs, y.obs.er)
   F.target <- C14toF14C(y.target, y.target.er)
 
@@ -373,8 +400,17 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
     }
 
   if(visualise)
-    if(length(y.obs) == 1)
+    if(length(y.obs) == 1) {
       plot_contamination(true.F=F.target[,1], true.er=F.target[,2], obs.F=F.obs[,1], obs.er=F.obs[,2], perc=perc, perc.er=perc.sd, contam.F=F.contam, contam.er=F.contam.er, ylim=ylim, xlab=xlab, true.col=target.col, observed.col=observed.col, contamination.col=contamination.col, true.pch=target.pch, true.name=true.name, observed.pch=observed.pch, contamination.pch=contamination.pch, ylab=ylab, bty=bty)
+      txt <- c("contamination", " = (", round(F.obs[,1], decimals), "-", round(F.target[,1], decimals), ") / (", 
+        round(F.contam, decimals), "-",  round(F.target[,1], decimals), ") = ", round(mean(frac), decimals))
+      colours <- c(contamination.col, grey(.5), observed.col, grey(.5), target.col, grey(.5), contamination.col, grey(.5), target.col, grey(.5), contamination.col)
+      xpos <- eq.x+(eq.size*cumsum(c(0, strwidth(txt[-length(txt)]))))
+      if(length(eq.y) == 0)
+        eq.y <- 1.01*max(c(F.obs, F.target[,1], F.contam))
+      for(i in seq_along(txt))
+        text(x = xpos[i], y = eq.y, labels = txt[i], col = colours[i], adj = c(0, 0), cex=eq.size)
+	}  
  
   F.obs <- round(F.obs, decimals); F.target <- round(F.target, decimals); perc <- round(perc, decimals)
 

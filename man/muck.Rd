@@ -18,6 +18,9 @@ muck(
   decimals = 3,
   visualise = TRUE,
   talk = TRUE,
+  eq.x = 0,
+  eq.y = c(),
+  eq.size = 0.7,
   target.col = "black",
   observed.col = "blue",
   contamination.col = "red",
@@ -57,6 +60,12 @@ muck(
 \item{visualise}{By default, a plot is made to visualise the target and observed F14C values, together with the inferred contamination.}
 
 \item{talk}{Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.}
+
+\item{eq.x}{Leftmost location of the equation. Can be set to values outside of (0,100) to make the equation invisible.}
+
+\item{eq.y}{Vertical location of the equation. Defaults to the top of the graph.}
+
+\item{eq.size}{Size of the font of the equation.}
 
 \item{target.col}{Colour for the target values. Defaults to black.}
 

@@ -22,6 +22,6 @@ The weighted mean and error (the latter is the maximum of the weighted error and
 Calculating the weighted mean of multiple C14 ages, using their means and lab errors.
 }
 \examples{
-  N_UK <- map.shells(53, -11, 60, 2, scale="medium")
+  N_UK <- map.shells(53, -11, 60, 2, mapsize="medium")
   weighted_means(N_UK$dR, N_UK$dSTD)
 }
