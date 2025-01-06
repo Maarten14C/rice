@@ -13,15 +13,14 @@ muck(
   F.contam.er = 0,
   MC = TRUE,
   its = 10000,
-  filter = TRUE,
   roundby = 1,
   decimals = 3,
   visualise = TRUE,
   talk = TRUE,
-  eq.x = 0,
+  eq.x = 5,
   eq.y = c(),
-  eq.size = 0.7,
-  target.col = "black",
+  eq.size = 0.8,
+  target.col = "darkgreen",
   observed.col = "blue",
   contamination.col = "red",
   target.pch = 20,
@@ -51,8 +50,6 @@ muck(
 
 \item{its}{Amount of iterations to use if MC=TRUE. Defaults to 10,000.}
 
-\item{filter}{If set to true (default), iterations that result in fractions <0 or >1 are removed.}
-
 \item{roundby}{Rounding of the output for C14 ages. Defaults to 1 decimal.}
 
 \item{decimals}{Rounding of the output. Since details matter here, the default is to provide 5 decimals.}
@@ -61,13 +58,13 @@ muck(
 
 \item{talk}{Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.}
 
-\item{eq.x}{Leftmost location of the equation. Can be set to values outside of (0,100) to make the equation invisible.}
+\item{eq.x}{Leftmost location of the equation. Defaults to \code{eq.x=5}. Can be set to values outside of (0,100) to make the equation invisible.}
 
 \item{eq.y}{Vertical location of the equation. Defaults to the top of the graph.}
 
-\item{eq.size}{Size of the font of the equation.}
+\item{eq.size}{Size of the font of the equation. In case the equation gets jumbled up upon resizing of a graphical device, just issue the previous `clean` command again. Defaults to \code{eq.size=0.8}.}
 
-\item{target.col}{Colour for the target values. Defaults to black.}
+\item{target.col}{Colour for the target/true values. Defaults to darkgreen.}
 
 \item{observed.col}{Colour for the observed values. Defaults to blue.}
 
@@ -94,6 +91,9 @@ The required contamination (as percentage), as well as a plot
 }
 \description{
 Given an observed and a target radiocarbon age, calculate the amount of contamination required to explain the observed age.
+}
+\details{
+Whereas the function takes true/target and observed C14 ages as input and percentage contamination as output, internal calculations are done in the F14C realm and using contamination fractions (between 0 and 1). The central calculation is `frac = (F_obs - F_true) / (F_contam - F_true)`, where `frac` is the fraction of contamination to explain how we went from the observed to the true C14 age, `F_obs` is the observed C14 age in F14C, `F_true` is the true or target age in F14C, `F_contam` is the F value of the contamination. In some extreme cases (e.g., if dividing by zero), the calculation will spit out unexpected results. Messages will be provided in most of these cases.
 }
 \examples{
   muck(600, 30, 2000, 0, 1, .01)

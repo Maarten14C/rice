@@ -17,10 +17,10 @@ clean(
   decimals = 5,
   visualise = TRUE,
   talk = TRUE,
-  eq.x = 0,
+  eq.x = 5,
   eq.y = c(),
-  eq.size = 0.7,
-  true.col = "black",
+  eq.size = 0.75,
+  true.col = "darkgreen",
   observed.col = "blue",
   contamination.col = "red",
   true.pch = 20,
@@ -58,13 +58,13 @@ clean(
 
 \item{talk}{Whether or not to report the calculations made. Defaults to \code{talk=TRUE}.}
 
-\item{eq.x}{Leftmost location of the equation. Can be set to values outside of (0,100) to make the equation invisible.}
+\item{eq.x}{Leftmost location of the equation. Defaults to \code{eq.x=5}. Can be set to values outside of (0,100) to make the equation invisible.}
 
 \item{eq.y}{Vertical location of the equation. Defaults to the top of the graph.}
 
-\item{eq.size}{Size of the font of the equation.}
+\item{eq.size}{Size of the font of the equation. In case the equation gets jumbled up upon resizing of a graphical device, just issue the previous `clean` command again. Defaults to \code{eq.size=0.8}.}
 
-\item{true.col}{Colour for the true/target values. Defaults to black.}
+\item{true.col}{Colour for the target/true values. Defaults to "darkgreen".}
 
 \item{observed.col}{Colour for the observed values. Defaults to blue.}
 
@@ -91,6 +91,9 @@ The true/target radiocarbon age and error
 }
 \description{
 Given an observed radiocarbon age, remove the impact of contamination (for example, 1\% contamination with modern carbon) to estimate the true/target age
+}
+\details{
+Whereas the function takes C14 ages and percentage contamination as input, internal calculations are done in the F14C realm and using fractions (between 0 and 1). The central calculation is `F_true = ((1-frac)*F_obs) - (frac*F_contam)`, where `F_true` is the true or target age in F14C, `frac` is the fraction of contamination, `F_obs` is the F14C of the observed C14 age, and `F_contam` is the F activity of the contamination. In some extreme cases, the calculations will spit out unexpected results. Messages will be provided in most of these cases.
 }
 \examples{
 # 1\% contamination with modern carbon (no uncertainties in contamination's percentage or F)
