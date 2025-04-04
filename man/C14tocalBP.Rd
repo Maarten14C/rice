@@ -8,7 +8,7 @@ C14tocalBP(
   y,
   cc = 1,
   postbomb = FALSE,
-  rule = 1,
+  rule = 2,
   cc.dir = NULL,
   thiscurve = NULL
 )

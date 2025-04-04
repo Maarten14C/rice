@@ -113,7 +113,7 @@ BCADtoC14(1940:1950)
 To translate between cal BC/AD and cal BP ages, we can use (the last example avoids 0 BC/AD, since some calendars do not include zero):
 
 ```{r}
-BCADtocalBP(2024)
+BCADtocalBP(2025)
 BCADtocalBP(-1, zero=TRUE)
 BCADtocalBP(-1, zero=FALSE)
 ```
@@ -187,13 +187,19 @@ The spread of multiple calibrated dates can be visualised and summarised:
 spread(shroud$y,shroud$er)
 ```
 
-We can assess the overlap between the calibrated distributions of multiple dates (as the minimum calibrated height for each calendar year in a range). For example, imagine two dates from the same archaeological layer, a twig (3820 &pm; 40 C-14 BP, requiring calibration with IntCal20) and a marine shell (4430 &pm; 40 C-14 BP, requiring Marine20, with a regional marine offset of 90 &pm; 25). To what degree do their calibrated distributions overlap?
+The time-span between two dates can be calculated (by sampling *n* pairs of random ages from both calibrated distributions and plotting the time-span for each pair):
+
+```{r, fig.width=5, fig.asp=.8}
+span(700, 20, 750, 20)
+```
+
+We can assess to what degree two calibrated distributions are overlapping (as the minimum calibrated height for each calendar year in a range). For example, imagine two dates from the same archaeological layer, a twig (3820 &pm; 40 C-14 BP, requiring calibration with IntCal20) and a marine shell (4430 &pm; 40 C-14 BP, requiring Marine20, with a regional marine offset of 90 &pm; 25). To what degree are their calibrated distributions overlapping?
 
 ```{r, fig.width=5, fig.asp=.8}
 y <- c(3820, 4590-90) 
 er <- c(40, sqrt(40^2 + 25^2)) 
 cc <- c(1,2)
-overlap(y, er, cc=cc)
+overlapping(y, er, cc=cc)
 ```
 
 # Contamination

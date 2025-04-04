@@ -10,7 +10,8 @@ calBPtoF14C(
   postbomb = FALSE,
   rule = 1,
   cc.dir = NULL,
-  thiscurve = NULL
+  thiscurve = NULL,
+  decimals = 5
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ calBPtoF14C(
 \item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.}
 
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).}
+
+\item{decimals}{Amount of decimals required for the F14C value. Defaults to 5.}
 }
 \value{
 The calibration-curve 14C year belonging to the entered cal BP age

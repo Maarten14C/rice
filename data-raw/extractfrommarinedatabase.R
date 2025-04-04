@@ -1,8 +1,8 @@
 # R has to be within the working directory of this file
 
-# extracted from calib marine database on 30 Aug 2024:
-# http://calib.org/marine/query/query.php select * from details
-# 1968 records
+# extracted from calib marine database on 2 April 2025:
+# http://calib.org/marine/query select * from details
+# 1979 records
 marinedata <- read.csv("marinedatabase.csv") # 247 kB
 
 # references: downloaded results of 'select * from refs' and saved as .csv file

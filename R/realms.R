@@ -9,9 +9,182 @@
 
 
 
+# still working on this - function for a shiny app to translate between realms
+# right/D14C axis is wrong (same units as left/C14 axis)
+
+#' @name fromto
+#' @title translate between realms
+#' @details Upon entering a value and its realm, this function will find the corresponding values in the other realms. Note that uncertainties are *not* taken into account, and especially going from C14 BP to cal BP and BC/AD ignores many calibration-related uncertainties. D14C values are only reported for entered values on the cal BP or BC/AD scale.
+#' @param x The value to be translated into other realms
+#' @param from The realm of the entered value. Can be "calBP" for cal BP, "BCAD" for BC/AD, "C14" for C14 BP, "F14C" for F14C, "pMC" for pMC, and "D14C" for D14C.
+#' @param cc calibration curve for C14 (see \code{caldist()}).
+#' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
+#' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
+#' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
+#' @param zero Whether or not zero BC/AD should be included. Defaults to 0.
+#' @param width Width of the righthand plot. Calculated automatically by default (older ages get wider windows).
+#' @param digits Rounding of the reported values. Defaults to 0 digits.
+#' @param C14.col Colour of the 14C calibration curve. Defaults to semi-transparent blue, \code{C14.col=rgb(0,0,1,.5)}.
+#' @param D14C.col Colour of the D14C curve. Defaults to semi-transparent green, \code{D14C.col=rgb(0,.4,0,.4)}.
+#' @param ka Whether to use years or ka (thousands of years). Defaults to \code{ka=FALSE}.
+#' @return A plot and output showing the translations into the different realms.
+#' @examples
+#'   fromto(0, "BCAD")
+#'   fromto(2450, "C14")
+#' @export
+fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NULL, zero=TRUE, width=c(), digits=0, C14.col=rgb(0,0,1,.5), D14C.col=rgb(0,.4,0,.4), ka=FALSE) {
+  if(cc==2)
+    Cc <- rintcal::ccurve(cc, postbomb=FALSE, cc.dir=cc.dir) else
+      if(postbomb)
+        Cc <- rintcal::glue.ccurves(cc, postbomb, cc.dir=cc.dir) else
+          Cc <- rintcal::ccurve(cc, postbomb, cc.dir=cc.dir)   
+
+  if(grepl("bp", tolower(from))) { # cal BP
+    if(x < -69.5 || x > 55e3) # limits postbomb & prebomb
+      message("cal BP value lies beyond calibration curve")
+    if(x < 0 && postbomb==FALSE)
+      message("please provide a postbomb curve")
+    calbp <- x
+    bcad <- calBPtoBCAD(x, zero)
+    c14 <- calBPtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
+    f14c <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
+    pmc <- calBPtopMC(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
+    d14c <- calBPtoD14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
+    message(calbp, " cal BP equals ", round(bcad, digits), " BC/AD, ", round(c14, digits),
+      " 14C BP, ", round(f14c, digits+2), " F14C, ", round(pmc, digits+2),
+      " pMC, ", round(d14c, digits+2), " D14C (cc=", cc, ")\n")
+  } else
+  
+  if(grepl("bc", tolower(from))) { # BC/AD
+    if(x > 2019.5 || x < -53050)
+      message("BC/AD value lies beyond calibration curve")
+    if(x > 1950 && postbomb==FALSE)
+      message("please provide a postbomb curve")
+    bcad <- x
+    calbp <- BCADtocalBP(x, zero)
+    c14 <- BCADtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
+    f14c <- BCADtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
+    pmc <- BCADtopMC(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
+    d14c <- BCADtoD14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
+    message(bcad, " BC/AD equals ", round(calbp, digits), " cal BP, ", round(c14, digits), 
+      " 14C BP, ", round(f14c, digits+2), " F14C, ", round(pmc, digits+2),
+      " pMC, ", round(d14c, digits+2), " D14C (cc=", cc, ")\n")
+  } else
+  
+  if(grepl("c14", tolower(from))) { # C14
+    c14 <- x
+    calbp <- unique(C14tocalBP(x))
+    bcad <- calBPtoBCAD(calbp)
+    f14c <- C14toF14C(x)[1]
+    pmc <- C14topMC(x)[1]
+    d14c <- NA # do not calculate since no theta
+    message(c14, " 14C BP equals c. ", paste(round(calbp, digits), collapse="/"), " cal BP, c. ", 
+      paste(round(bcad, digits), collapse="/"), " BC/AD, ",
+      round(f14c, digits+2), " F14C, ", round(pmc, digits+2), " pMC\n")
+  } else
+  
+  if(grepl("f", tolower(from))) { # F14C
+    f14c <- x
+    c14 <- F14CtoC14(x)[1]
+    calbp <- unique(C14tocalBP(c14))
+    bcad <- calBPtoBCAD(calbp)
+    pmc <- 100*x
+    d14c <- NA # do not calculate since no theta
+    message(f14c, " F14C equals ", round(pmc, digits+2), " pMC, ",
+      round(c14, digits), " 14C BP, c. ",
+      paste(round(calbp, digits), collapse="/"), " cal BP, c. ",
+      paste(round(bcad, digits), collapse="/"), " BC/AD\n")
+  } else
+  
+  if(grepl("p", tolower(from))) { # pMC
+    pmc <- x
+    f14c <- pmc/100
+    c14 <- pMCtoC14(x)[1]
+    calbp <- unique(C14tocalBP(c14))
+    bcad <- calBPtoBCAD(calbp)
+    pmc <- 100*x
+    d14c <- NA # do not calculate since no theta
+    message(pmc, " pMC equals ", round(f14c, digits), " F14C, ",
+      round(c14, digits), " 14C BP, c. ",
+      paste(round(calbp, digits), collapse="/"), " cal BP, c. ",
+      paste(round(bcad, digits), collapse="/"), " BC/AD\n")
+  } else
+      stop("Please provide a correct entry for parameter 'from'")
+  
+  if(length(width) == 0) {
+    exp_interp <- function(x_query) {
+      b <- log(10e3 / 100) / 55000
+      return(100 * exp(b * x_query))
+    }
+    width <- max(exp_interp(calbp))
+  }
+
+  layout(matrix(1:2, nrow=1), widths=c(.5, .5))
+  c14lim <- c(c14-width, c14+width) # hmmm
+  c14lim <- range(Cc[,2])
+  flim <- c(0, min(1.2*f14c,2))
+  par(mar=c(4,3,3,1), mgp=c(2, .7, 0), yaxt="s")
+  plot(f14c, c14, xlim=flim, ylim=c14lim, 
+    xlab=expression("F"^14*"C"), ylab=expression(""^14*"C BP"),
+      bty="c", type="n", xaxs="i")
+  abline(h=c14, lty=2)
+  abline(v=f14c, lty=2)
+  curve(-8033*log(x), from=min(flim), n=1e3, to=1.05*max(flim), add=TRUE, col=C14.col, lwd=2)
+  pr <- pretty(seq(par("usr")[1], par("usr")[2], length=5))
+  axis(3, pr, 100*pr, line=0)
+  mtext("pMC", 3, 2)
+
+  values <- c(bcad, calbp, c14, f14c, pmc, d14c)
+  names(values) <- c("BC/AD", "cal BP", "C14", "F14C", "pMC", "D14C")
+
+  if(length(calbp) == 1)
+    string1 <- paste0(round(calbp, digits), " cal BP\n", round(bcad, digits), " BC/AD") else
+      string1 <- paste0(paste0(round(calbp, digits), collapse="/"), " cal BP\n",
+        paste0(round(bcad, digits), collapse="/"), " BC/AD")
+  string2 <- paste0(round(c14, digits), " 14C BP\n",
+    round(f14c, digits+2), " F14C\n", round(pmc, digits+1), " pMC")
+  string3 <- ifelse(is.na(d14c), "", paste0(round(d14c, digits+1), " D14C"))
+  legend("topleft", legend=c(string1, string2, string3),
+    text.col=c(1, C14.col, D14C.col), bty="n", cex=.8, xjust=0)
+
+  par(mar=c(4,3,3,3))
+  mincalbp <- min(calbp) - width
+  maxcalbp <- max(calbp) + width
+  D14C.coors <- draw.ccurve(mincalbp, maxcalbp, cc1=cc, cc2=cc, cc1.postbomb=TRUE, cc2.postbomb=TRUE, realm2="d", cc2.col=D14C.col, cc2.fill=D14C.col, add.yaxis=TRUE, cc.dir=cc.dir, ka=ka, bty="n", legend=NA, xaxs="i", yaxt="n", c14.lab="")
+
+  C14.coors <- par("usr")
+  if(!is.na(d14c))
+    f.y <- ((d14c-D14C.coors[3])/(D14C.coors[4] - D14C.coors[3])) * (C14.coors[4] - C14.coors[3]) + C14.coors[3]
+
+  pr <- pretty(seq(C14.coors[1], C14.coors[2], length=5))
+  if(ka) {
+    mtext("k BC/AD", 3, 2)
+    calbp <- calbp/1e3
+    c14 <- c14/1e3
+    axis(3, pr, calBPtoBCAD(1e3*pr)/1e3)
+  } else {
+      mtext("BC/AD", 3, 2)
+      axis(3, pr, calBPtoBCAD(pr))
+    }
+  segments(C14.coors[1], C14.coors[3], C14.coors[2], C14.coors[3])
+  axis(2, pretty(C14.coors[3:4]), col=C14.col, col.axis=C14.col)
+  mtext(expression(""^14*"C BP"), 2, 2, col=C14.col)
+  abline(v=C14.coors[2], col=D14C.col)
+  mtext(expression(Delta^14*C), 4, 2, col=D14C.col)
+
+  abline(v=calbp, lty=2)
+  segments(C14.coors[1]-1e3, c14, calbp, c14, lty=2, col=C14.col)
+  if(!is.na(d14c))
+    segments(calbp, f.y, C14.coors[2]+1e3, f.y, lty=2, col=D14C.col)
+
+  invisible(values)
+}
+
+
+
 #' @name calBPtoBCAD
 #' @title calculate BC/AD ages from cal BP ages
-#' @details Turn cal BP ages into BC/AD (or BCE/CE). Negative ages indicate BC, positive ages AD. Since the Gregorian and Julian calendars do not include 0 BCAD (i.e., 31 December of 1 BC is followed by 1 January of AD 1), zero can be omitted. The years then go from 1 (AD) to -1 (i.e., 1 BC). Other calendars, such as the astronomical one, do include zero. The often-used BCE/CE ages are equivalent to BC/AD.
+#' @details Turn cal BP ages into BC/AD (or BCE/CE). Negative ages indicate BC, positive ages AD. Since the Gregorian and Julian calendars do not include 0 BCAD (i.e., 31 December of 1 BC is followed by 1 January of AD 1), zero can be omitted. The years then go from -1 (i.e., 1 BC) to 1 AD. Other calendars, such as the astronomical one, do include zero. The often-used BCE/CE ages are equivalent to BC/AD.
 #' @param x The calBP age(s) to be translated into BC/AD ages. 
 #' @param zero Whether or not zero BC/AD should be included. Defaults to 0. 
 #' @return The BC/AD age(s). BC ages are negative, AD ages are positive.
@@ -49,9 +222,14 @@ calBPtoBCAD <- function(x, zero=TRUE) {
 #' calBPtoC14(100)
 #' @export
 calBPtoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL) {
-  if(is.null(thiscurve))
-    cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else
-      cc <- thiscurve
+  if(is.null(thiscurve)) {
+    if(cc == 2) # Marine20 has no postbomb counterpart
+      cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else
+        if(postbomb)
+          cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=postbomb, cc.dir=cc.dir) else
+            cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) 
+    } else
+        cc <- thiscurve
   mu <- approx(cc[,1], cc[,2], x, rule=rule)$y
   er <- approx(cc[,1], cc[,3], x, rule=rule)$y
   return(cbind(mu, er, deparse.level=0))
@@ -70,13 +248,14 @@ calBPtoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=N
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
+#' @param decimals Amount of decimals required for the F14C value. Defaults to 8.
 #' @author Maarten Blaauw
 #' @examples
 #'   calBPtoF14C(100)
 #' @export
-calBPtoF14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL) {
+calBPtoF14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, decimals=8) {
   y <- calBPtoC14(x, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve)
-  return(C14toF14C(y[,1], y[,2]))
+  return(C14toF14C(y[,1], y[,2], decimals=decimals))
 }
 
 
@@ -92,13 +271,14 @@ calBPtoF14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
+#' @param decimals Amount of decimals required for the F14C value. Defaults to 8.
 #' @author Maarten Blaauw
 #' @examples
 #'   calBPtopMC(100)
 #' @export
-calBPtopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL) {
+calBPtopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, decimals=8) {
   y <- calBPtoC14(x, cc, postbomb, rule, cc.dir, thiscurve)
-  return(C14topMC(y[,1], y[,2]))
+  return(C14topMC(y[,1], y[,2], decimals=decimals))
 }
 
 
@@ -114,12 +294,13 @@ calBPtopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=N
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
+#' @param decimals Amount of decimals required for the F14C value. Defaults to 8.
 #' @author Maarten Blaauw
 #' @examples
 #'   calBPtoD14C(100)
 #' @export
-calBPtoD14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL) {
-  F <- calBPtoF14C(x, cc, postbomb, rule, cc.dir, thiscurve)
+calBPtoD14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, decimals=8) {
+  F <- calBPtoF14C(x, cc, postbomb, rule, cc.dir, thiscurve, decimals=decimals)
   Dmn <- F14CtoD14C(F[,1], t=x)
   Dup <- F14CtoD14C(F[,1]+F[,2], t=x)
   return(cbind(Dmn, Dup-Dmn, deparse.level=0))
@@ -129,7 +310,7 @@ calBPtoD14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=
 
 #' @name BCADtocalBP
 #' @title calculate cal BP ages from BC/AD ages
-#' @details Turn BC/AD (or BCE/CE) ages into cal BP ages. Negative ages indicate BC, positive ages AD. Since the Gregorian and Julian calendars do not include 0 BC/AD (i.e., 31 December of 1 BC is followed by 1 January of AD 1), zero can be omitted. The years then go from 1 (AD) to -1 (i.e., 1 BC). Other calendars, such as the astronomical one, do include zero. The often-used BCE/CE ages are equivalent to BC/AD.
+#' @details Turn BC/AD (or BCE/CE) ages into cal BP ages. Negative ages indicate BC, positive ages AD. Since the Gregorian and Julian calendars do not include 0 BC/AD (i.e., 31 December of 1 BC is followed by 1 January of AD 1), zero can be omitted. The years then go from -1 (i.e., 1 BC) to 1 AD. Other calendars, such as the astronomical one, do include zero. The often-used BCE/CE ages are equivalent to BC/AD.
 #' @param x The BCAD age(s) to be translated into cal BP age(s). BC ages are negative, AD ages are positive.
 #' @param zero Whether or not zero BC/AD should be included. Defaults to 0. 
 #' @return The cal BP age(s).
@@ -162,13 +343,14 @@ BCADtocalBP <- function(x, zero=TRUE)
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
+#' @param decimals Amount of decimals required for the F14C value. Defaults to 8.
 #' @author Maarten Blaauw
 #' @examples
 #'   BCADtoC14(100)
 #' @export
-BCADtoC14 <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL) 
+BCADtoC14 <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL, decimals=8)
   return(calBPtoC14(BCADtocalBP(x, zero=zero), 
-    cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve))
+    cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, decimals=decimals))
 
 
 
@@ -184,13 +366,14 @@ BCADtoC14 <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, t
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
+#' @param decimals Amount of decimals required for the F14C value. Defaults to 8.
 #' @author Maarten Blaauw
 #' @examples
 #'   BCADtoF14C(100)
 #' @export
-BCADtoF14C <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL) 
+BCADtoF14C <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL, decimals=8)
   return(calBPtoF14C(BCADtocalBP(x, zero=zero), 
-    cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve))
+    cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, decimals=decimals))
 
 
 
@@ -206,13 +389,14 @@ BCADtoF14C <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, 
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
+#' @param decimals Amount of decimals required for the F14C value. Defaults to 8.
 #' @author Maarten Blaauw
 #' @examples
 #'   BCADtopMC(100)
 #' @export
-BCADtopMC <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL) 
+BCADtopMC <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL, decimals=8)
   return(calBPtopMC(BCADtocalBP(x, zero=zero), 
-    cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve))
+    cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, decimals=decimals))
 
 
 
@@ -228,13 +412,14 @@ BCADtopMC <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, t
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
+#' @param decimals Amount of decimals required for the F14C value. Defaults to 8.
 #' @author Maarten Blaauw
 #' @examples
 #'   BCADtoD14C(1900)
 #' @export
-BCADtoD14C <- function(x, zero=TRUE, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL) {
+BCADtoD14C <- function(x, zero=TRUE, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, decimals=8) {
   calBP <- BCADtocalBP(x, zero)
-  Fres <- calBPtoF14C(calBP, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve)
+  Fres <- calBPtoF14C(calBP, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, decimals=decimals)
   Dmn <- F14CtoD14C(Fres[,1], t=x)
   Dup <- F14CtoD14C(Fres[,1]+Fres[,2], t=x)
   return(cbind(Dmn, Dup-Dmn, deparse.level=0))
@@ -260,34 +445,38 @@ BCADtoD14C <- function(x, zero=TRUE, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, 
 #'   abline(h=y)
 #'   abline(v=C14tocalBP(y))
 #' @export
-C14tocalBP <- function(y, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL) {
-  if(is.null(thiscurve)) 
-    cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else 
-      cc <- thiscurve
-  
-  # select the relevant part of the calibration curve
-  sel_start <- max(1, which(cc[,2] <= (y + 5)))  # Look for the first value <= y+5
-  sel_end <- min(nrow(cc), which(cc[,2] >= (y - 5)))  # Look for the last value >= y-5
-  cc <- cc[sel_start:sel_end,]
+C14tocalBP <- function(y, cc=1, postbomb=FALSE, rule=2, cc.dir=NULL, thiscurve=NULL) {
+  if(is.null(thiscurve)) {
+    if(cc == 2) # Marine20 has no postbomb counterpart
+      cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else
+        if(postbomb)
+          cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=postbomb, cc.dir=cc.dir) else
+            cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir)
+    } else
+        cc <- thiscurve
 
-  interp <- function(i) 
-    approx(cc[(i-1):i, 2], cc[(i-1):i, 1], y, rule=rule)$y
+  sel <- which((cc[,2] < (y+100) ) * (cc[,2] > (y-100)) > 0)
+  if(length(sel) == 0) # y lies beyond the curve
+    return(NA)
 
-  # deal with the first entry...
-  x <- c()
-  if(cc[1,2] <= y && cc[2,2] > y) 
-    x <- c(x, interp(2)) 
-  
-  # ... and with the rest
-  for(i in 2:nrow(cc)) {
-    if(cc[i-1,2] <= y && cc[i,2] > y) # crosses up
-      x <- c(x, interp(i)) else 
-	    if(cc[i-1,2] > y && cc[i,2] <= y) # crosses down
-          x <- c(x, interp(i))
+  cc <- cc[sel,]
+  x <- seq(min(cc[,1]), max(cc[,1]), length=1e3)
+  mu <- approx(cc[,1], cc[,2], x)$y
+
+  # Identify indices where y crosses the threshold
+  sign_changes <- which((mu[-1] - y) * (mu[-length(mu)] - y) < 0)
+
+  # Perform linear interpolation to estimate exact crossing points
+  intercepts <- c()
+  for(i in seq_along(sign_changes)) {
+    idx <- sign_changes[i]
+    x1 <- x[idx]; x2 <- x[idx + 1]
+    mu1 <- mu[idx]; mu2 <- mu[idx + 1]
+    intercepts[i] <- x1 + (x2 - x1) * (y - mu1) / (mu2 - mu1)
   }
-  
-  return(x)
+  return(intercepts)
 }
+
 
 
 #' @name C14toBCAD
@@ -323,13 +512,13 @@ C14toBCAD <- function(y, cc=1, postbomb=FALSE, rule=1, zero=TRUE, cc.dir=NULL, t
 #' this function can be used to calculate F14C values from radiocarbon ages. The reverse function of \link{F14C.age}.
 #' @param y Reported mean of the 14C age.
 #' @param er Reported error of the 14C age. If left empty, will translate y to F14C.
-#' @param decimals Amount of decimals required for the F14C value. Defaults to 5.
-#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
+#' @param decimals Amount of decimals required for the F14C value. Defaults to 8.
+#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years).
 #' @return F14C values from C14 ages.
 #' @examples
 #'   C14toF14C(-2000, 20)
 #' @export
-C14toF14C <- function(y, er=NULL, decimals=5, lambda=8033) {
+C14toF14C <- function(y, er=NULL, decimals=8, lambda=8033) {
   y <- as.matrix(y)
   if (!is.null(er)) er <- as.matrix(er)
   if(!is.null(er) && length(y) != length(er))
@@ -337,11 +526,11 @@ C14toF14C <- function(y, er=NULL, decimals=5, lambda=8033) {
   fy <- exp(-y / lambda)
   
   if(is.null(er))
-    return(signif(fy, decimals)) else {
+    return(round(fy, decimals)) else {
       er1 <- abs(fy - exp(-(y - er) / lambda))
       er2 <- abs(fy - exp(-(y + er) / lambda))
       sdev <- pmax(er1, er2)
-      return(signif(cbind(fy, sdev, deparse.level=0), decimals))
+      return(round(cbind(fy, sdev, deparse.level=0), decimals))
     }
 }
 
@@ -354,22 +543,15 @@ C14toF14C <- function(y, er=NULL, decimals=5, lambda=8033) {
 #' this function can be used to calculate pMC values from radiocarbon ages. The reverse function of \link{pMCtoC14}.
 #' @param y Reported mean of the C14 age.
 #' @param er Reported error of the C14 age.
-#' @param decimals Amount of decimals required for the pMC value. Defaults to 5.
+#' @param decimals Amount of decimals required for the pMC value. Defaults to 8.
 #' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
 #' @return pMC values from C14 ages.
 #' @examples
 #'   C14topMC(-2000, 20)
 #'   C14topMC(-2000, 20, 1)
 #' @export
-C14topMC <- function(y, er=NULL, decimals=5, lambda=8033) {
-  py <- exp(-y / lambda)
-  if(is.null(er))
-    return(signif(100*y, decimals)) else {
-      er1 <- exp(-(y - er) / lambda)
-      er2 <- exp(-(y + er) / lambda)
-      sdev <- pmax(er1, er2)
-      return(signif(100*cbind(py, sdev, deparse.level=0), decimals))
-  }
+C14topMC <- function(y, er=NULL, decimals=8, lambda=8033) {
+  return(100*C14toF14C(y=y, er=er, decimals=decimals, lambda=lambda))
 }
 
 
@@ -381,14 +563,15 @@ C14topMC <- function(y, er=NULL, decimals=5, lambda=8033) {
 #' @param y The C14 age to translate
 #' @param er Reported error of the C14 age. Returns just the mean if left empty.
 #' @param t the cal BP age
+#' @param decimals Amount of decimals required for the F14C value. Defaults to 8.
 #' @return The corresponding D14C value
 #' @examples
 #'   C14toD14C(0.985, 20, 222)
 #' @export
-C14toD14C <- function(y, er=NULL, t) {
+C14toD14C <- function(y, er=NULL, t, decimals=8) {
   if(!length(y) == length(t))
     stop("inputs 'y' and 't' must have the same length")
-  asF <- cbind(C14toF14C(cbind(y), cbind(er)))
+  asF <- cbind(C14toF14C(cbind(y), cbind(er), decimals=decimals))
   Dmn <- 1000 * ((asF[,1] / exp(cbind(-1*t)/8267)) - 1)
   if(is.null(er))
     return(Dmn) else {
@@ -410,19 +593,19 @@ C14toD14C <- function(y, er=NULL, t) {
 #'  this function can be used to calculate radiocarbon ages from F14C values. The reverse function is \link{age.F14C}.
 #' @param F14C Reported mean of the F14C
 #' @param er Reported error of the F14C. Returns just the mean if left empty.
-#' @param decimals Amount of decimals required for the radiocarbon age. Quite sensitive, defaults to 5.
+#' @param decimals Amount of decimals required for the radiocarbon age. Quite sensitive, defaults to 8.
 #' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
 #' @return The radiocarbon ages from the F14C values. If F14C values are above 100\%, the resulting radiocarbon ages will be negative.
 #' @examples
 #'   F14CtoC14(1.10, 0.5) # a postbomb date, so with a negative C14 age
 #'   F14CtoC14(.80, 0.5) # prebomb dates can also be calculated
 #' @export
-F14CtoC14 <- function(F14C, er=NULL, decimals=5, lambda=8033) {
+F14CtoC14 <- function(F14C, er=NULL, decimals=8, lambda=8033) {
   y <- -lambda * log(F14C)
   if(is.null(er))
-    signif(y, decimals) else {
+    round(y, decimals) else {
     sdev <- y - -lambda * log((F14C+er))
-    signif(cbind(y, sdev, deparse.level=0), decimals)
+    round(cbind(y, sdev, deparse.level=0), decimals)
   }
 }
 
@@ -485,7 +668,7 @@ F14CtoD14C <- function(F14C, er=NULL, t) {
 pMCtoC14 <- function(pMC, er=NULL, decimals=0, lambda=8033) { 
   y <- -lambda * log(pMC/100)
   if(is.null(er))
-    signif(y, decimals) else {
+    round(y, decimals) else {
     sdev <- y - -lambda * log((pMC+er)/100)
     round(cbind(y, sdev, deparse.level=0), decimals)
   }
@@ -521,9 +704,10 @@ pMCtoF14C <- function(pMC, er=NULL)
 #'   pMCtoD14C(0.985, .1, 222)
 #' @export
 pMCtoD14C <- function(pMC, er=NULL, t) {
-  asF <- pMCtoF14C(pMC, er)	
+  asF <- pMCtoF14C(pMC, er)
   F14CtoD14C(asF[,1], asF[,2], t)
 }
+
 
 
 #' @name D14CtoC14
@@ -533,12 +717,13 @@ pMCtoD14C <- function(pMC, er=NULL, t) {
 #' @param D14C The Delta14C value to translate
 #' @param er Reported error of the D14C. Returns just the mean if left empty.
 #' @param t the cal BP age
+#' @param decimals Amount of decimals required for the F14C value. Defaults to 8.
 #' @return The corresponding C14 age
 #' @examples
 #'   D14CtoC14(-10, 1, 238)
 #' @export
-D14CtoC14 <- function(D14C, er=NULL, t) 
-  return( F14CtoC14( D14CtoF14C(D14C=D14C, er=er, t=t) ))
+D14CtoC14 <- function(D14C, er=NULL, t, decimals=8)
+  return( F14CtoC14( D14CtoF14C(D14C=D14C, er=er, t=t), decimals=decimals) )
 
 
 
@@ -576,7 +761,7 @@ D14CtoF14C <- function(D14C, er=NULL, t) {
 #'   D14CtoF14C(-10, 1, 238)
 #' @export
 D14CtopMC <- function(D14C, er=NULL, t) 
-  return(D14CtoF14C(D14C, er, t)/100)
+  return(D14CtoF14C(D14C, er, t)*100)
 
 
 

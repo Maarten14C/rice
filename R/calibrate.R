@@ -44,12 +44,13 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
             if(!(cc %in% c("nh1", "nh2", "nh3", "sh1-2", "sh3")))
               stop("This appears to be a postbomb age or close to being so. Please provide a postbomb curve")
           cc <- rintcal::glue.ccurves(cc, postbomb, cc.dir)
+		  
         } else
           cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample)
     } else
       cc <- thiscurve
 
-  # in F realm?
+  # F realm - not using ccurve's as.F option, this to avoid potential double translations
   if(is.F) { # then put cc in F; y and er are assumed to be in F already 
     cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
   } else
@@ -153,6 +154,7 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 #' @param prob Probability range which should be calculated. Default \code{prob=0.95}.
 #' @param return.raw The raw data to calculate hpds can be returned, e.g. to draw polygons of the calibrated distributions. Defaults to \code{return.raw=FALSE}.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param ka Whether to report results in years (default) or as ka
 #' @param age.round Rounding for ages. Defaults to 0 decimals.
 #' @param prob.round Rounding for reported probabilities. Defaults to 1 decimal.
 #' @param every Yearly precision (defaults to 0.1, as a compromise between speed and accuracy).
@@ -161,9 +163,13 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 #' plot(tmp <- caldist(2450,50), type='l')
 #' abline(v=hpd(tmp)[,1:2], col=4)
 #' @export
-hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, age.round=0, prob.round=1, every=0.1) {
+hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.round=0, prob.round=1, every=0.1) {
 
   # re-interpolate to desired precision
+  if(ka) {
+    every <- every/1e3
+    age.round <- age.round+3
+  }
   calib <- calib[order(calib[,1]),] # ensure calendar ages are in increasing order
   if((max(calib[,1])-min(calib[,1])) >= 20*every) # is there sufficient cal space to calculate hpds?
     calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), by=every), rule=2) else
