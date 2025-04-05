@@ -31,14 +31,14 @@
 #' @param decimals Number of decimals to be returned for F and atom counts.
 #' @author Maarten Blaauw
 #' @examples
-#'   howmanyC14(0)
-#'   howmanyC14(55e3)
+#'   howmanyC14(0) # recent sample
+#'   howmanyC14(55e3) # at dating limit
 #'   howmanyC14(145e3) # way beyond the dating limit, 1 C14 atom per mg remains
 #' @export
-howmanyC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.ratio=1.176e-12, format="g", cc=1, postbomb=FALSE, cc.dir=NULL, thiscurve=NULL, talk=TRUE, decimals=4) {
+howmanyC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.ratio=1.176e-12, format="g", cc=1, postbomb=FALSE, cc.dir=NULL, thiscurve=NULL, talk=TRUE, decimals=3) {
 
   if(use.cc) {
-    F <- calBPtoF14C(age, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve, decimals=10)[,1]
+    F <- calBPtoF14C(age, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
     if(is.na(F)) {
       message("Cannot use calibration curve for this age, assuming C14 age")
       F <- C14toF14C(age, decimals=10)
@@ -50,13 +50,17 @@ howmanyC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.ratio=1.1
   perminute <- round(C14/wght/30,0)
   persecond <- round(perminute/60,0)
 
-  atoms.talk <- formatC(atoms, format=format, digits=decimals)
+  atoms <- formatC(atoms, format=format, digits=decimals)
   C14.talk <- formatC(C14, format=format, digits=decimals)
+  
+  decays <- round(C14 * log(2) / (5730 * 365.25), decimals)
+  decays <- formatC(decays, format=format, digits=decimals)
 
   if(talk) {
-    message(wght, " mg carbon contains ", atoms.talk, " C atoms")
+    message(wght, " mg carbon contains ", atoms, " C atoms")
     message("C14 atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk)
-    message("For a 1 mg AMS target, that's c. ", perminute, " particles per minute, or ", persecond, " per second")
+	message(decays, " C-14 atoms in the sample will decay each day")
+    message("For a 1 mg AMS target, c. ", perminute, " particles will be counted per minute, or ", persecond, " per second")
   }
 
   invisible(C14)

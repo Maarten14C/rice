@@ -4,7 +4,7 @@
 \alias{C14toD14C}
 \title{Transform C14 age(s) into D14C}
 \usage{
-C14toD14C(y, er = NULL, t)
+C14toD14C(y, er = NULL, t, decimals = 8)
 }
 \arguments{
 \item{y}{The C14 age to translate}
@@ -12,6 +12,8 @@ C14toD14C(y, er = NULL, t)
 \item{er}{Reported error of the C14 age. Returns just the mean if left empty.}
 
 \item{t}{the cal BP age}
+
+\item{decimals}{Amount of decimals required for the F14C value. Defaults to 8.}
 }
 \value{
 The corresponding D14C value

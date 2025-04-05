@@ -4,16 +4,16 @@
 \alias{C14toF14C}
 \title{Calculate F14C values from C14 ages}
 \usage{
-C14toF14C(y, er = NULL, decimals = 5, lambda = 8033)
+C14toF14C(y, er = NULL, decimals = 8, lambda = 8033)
 }
 \arguments{
 \item{y}{Reported mean of the 14C age.}
 
 \item{er}{Reported error of the 14C age. If left empty, will translate y to F14C.}
 
-\item{decimals}{Amount of decimals required for the F14C value. Defaults to 5.}
+\item{decimals}{Amount of decimals required for the F14C value. Defaults to 8.}
 
-\item{lambda}{The mean-life of radiocarbon (based on Libby half-life of 5568 years)}
+\item{lambda}{The mean-life of radiocarbon (based on Libby half-life of 5568 years).}
 }
 \value{
 F14C values from C14 ages.

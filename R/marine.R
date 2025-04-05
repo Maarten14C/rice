@@ -1,26 +1,61 @@
-ocean.map <- function(S, W, N, E, mapsize="large", ocean.col="aliceblue", land.col = rgb(0, 0.5, 0, 0.6)) {
+
+ocean.map <- function(S, W, N, E, shells=c(), mapsize="large", padding=0.1, ocean.col="aliceblue", land.col = rgb(0, 0.5, 0, 0.6), rainbow=FALSE, symbol='feeding', symbol.legend=TRUE, legend.loc=c(.95, .02), legend.size=c(.05, .20), mincol="yellow", maxcol="red", colour='dR', warn=TRUE) {
+	
   # Check if useful libraries are installed
   hiresmaps <- "rnaturalearthhires" %in% installed.packages() # TRUE or FALSE
   rne <- requireNamespace("rnaturalearth", quietly = TRUE)
-  rnedata <- requireNamespace("rnaturalearthdata", quietly = TRUE)  
+  rnedata <- requireNamespace("rnaturalearthdata", quietly = TRUE)
+  hassf <- requireNamespace("sf", quietly = TRUE)
   
-  if(!rne)
-    message("Using basic maps. For higher-resolution maps, please install the rnaturalearth R package:",
-      "install.packages(\"rnaturalearth\")")  
-  if(!rnedata)
-    message("Using basic maps. For higher-resolution maps, please install the rnaturalearthdata R package:",
-      "install.packages(\"rnaturalearthdata\")")  
-  if(mapsize=="large" && !hiresmaps) # rnaturalearthhires is nice but is not on CRAN
-      message("For detailed maps, install rnaturalearthhires from GitHub using these commands:\n",
-        "install.packages('devtools') # if devtools hasn't been installed already\n",
-        "devtools::install_github('ropensci/rnaturalearthhires')") 
-    
+  if(!hassf) { # then we'll plot basic maps (ugly)
+    if(warn)
+      message("Using basic maps. For higher-resolution maps, please install the rnaturalearth R package:",
+        "install.packages(\"rnaturalearth\")")  
+
+	width <- abs(E-W); height <- abs(N-S)
+	par(mar=rep(1,4)) 
+    maps::map(xlim=c(W-(padding*width), E+(padding*width)), ylim=c(S-(padding*height), N+(padding*height)),
+	  fill = TRUE, col = land.col, bg = ocean.col)
+    if(rainbow)
+	  color_scale <- rainbow(100) else
+	    color_scale <- grDevices::colorRampPalette(c("yellow", "red"))(100)
+    cols <- color_scale[as.numeric(cut(shells[,5], breaks = 100))]
+    points(shells[,1], shells[,2], col=cols, pch=20)
+
+    value_range <- range(shells[, 5], na.rm = TRUE)
+	
+	coors <- par("usr")
+	xmin <- coors[1] + legend.loc[1] * (coors[2] - coors[1])
+	xmax <- coors[1] + (legend.loc[1]+legend.size[1]) * (coors[2] - coors[1])
+	ymin <- coors[3] + legend.loc[2] * (coors[4] - coors[3])
+	ymax <- coors[3] + (legend.loc[2]+legend.size[2]) * (coors[4] - coors[3])
+	
+	yticks <- seq(ymin, ymax, length.out=4)
+	vals <- round(seq(min(shells[,5]), max(shells[,5]), length=length(yticks)), 0)
+	image(x=c(xmin, xmax), y=seq(ymin, ymax, length.out=100), z=matrix(1:100, nrow = 1), 
+      col=color_scale, axes=FALSE, add=TRUE)
+	text(xmax+.2, yticks, vals, cex=.5, adj=c(0, .5))
+	
+	return()
+  }
+
+  # if more high-res map packages are installed:
+  if(warn) {
+    if(!rnedata)
+      message("Using basic maps. For higher-resolution maps, please install the rnaturalearthdata R package:",
+        "install.packages(\"rnaturalearthdata\")")  
+    if(mapsize=="large" && !hiresmaps) # rnaturalearthhires is nice but is not on CRAN
+        message("For detailed maps, install rnaturalearthhires from GitHub using these commands:\n",
+          "install.packages('devtools') # if devtools hasn't been installed already\n",
+          "devtools::install_github('ropensci/rnaturalearthhires')") 
+  }
+  
   # Handle different scales and package availability
   if(mapsize %in% c("medium", "small")) {
-    world <- if (rne) {
+    world <- if(rne) {
       rnaturalearth::ne_countries(scale = mapsize, returnclass = "sf")
     } else {
-        world <- st_as_sf(maps::map("world", fill = TRUE, plot = FALSE))
+        world <- sf::st_as_sf(maps::map("world", fill = TRUE, plot = FALSE))
     }
   } else if(mapsize == "large") {
     if(hiresmaps) {
@@ -32,7 +67,7 @@ ocean.map <- function(S, W, N, E, mapsize="large", ocean.col="aliceblue", land.c
     } else {
 	    message("please install rnaturalearthdata:",
 	      "install.packages(\"rnaturalearthdata\")")
-        world <- st_as_sf(maps::map("world", fill = TRUE, plot = FALSE))
+        world <- sf::st_as_sf(maps::map("world", fill = TRUE, plot = FALSE))
     }
   }
 
@@ -46,8 +81,20 @@ ocean.map <- function(S, W, N, E, mapsize="large", ocean.col="aliceblue", land.c
         legend.key = element_rect(fill = "transparent")
       )
 
-  return(p)	
+  lon_col <- sym("lon")
+  lat_col <- sym("lat")
+	  
+  if(symbol.legend)
+    p <- p + geom_point(data=shells, aes(x=!!lon_col, y=!!lat_col, color=!!sym(colour), shape=!!sym(symbol)), size=2, alpha=.8) else
+      p <- p + geom_point(data=shells, aes(x=!!lon_col, y=!!lat_col, color=!!sym(colour)), size=2, alpha=.8)
+
+  if(rainbow)
+    p <- p + scale_color_gradientn(colors = rainbow(7)) + labs(shape="feeding") else
+      p <- p + scale_color_gradient(low=mincol, high=maxcol) + labs(shape="feeding")
+
+  print(p)	
 }
+
 
 
 
@@ -69,14 +116,18 @@ ocean.map <- function(S, W, N, E, mapsize="large", ocean.col="aliceblue", land.c
 #' @param maxcol Colour for maximum values.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'.
 #' @param symbol.legend Whether or not to plot the legend for the symbols.
+#' @param legend.loc Location of the legend, if using a basic plot. Defaults to the bottom right corner based on par("usr"), \code{legend.loc=c(0.95, 0.02)}
+#' @param legend.size Size of the legend, if using a basic plot. Defaults to \code{legend.size=c(0.05, 0.2)}
 #' @param ocean.col Colour for the oceans. Defaults to \code{ocean.col="aliceblue"}.
 #' @param land.col Colour for the land. Defaults to semi-transparent darkgreen: \code{land.col=rgb(0, 0.5, 0, 0.6)}.
+#' @param padding Area around the map if using a basic plot. Avoids strange line features. Defaults to \code{padding=1}. 
+#' @param warn Whether or not to warn if some recommended are not available.
 #' @examples
 #'   UK <- find.shells(0, 55, mapsize="medium")
 #'   mean(UK$dR)
 #'   Caribbean <- find.shells(-70, 20, 30, mapsize="medium")
 #' @export
-find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6)) {
+find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, legend.loc=c(0.95, 0.02), legend.size=c(0.05, 0.2), ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), padding=1, warn=TRUE) {
   lon <- lat <- NULL # to get rid of subsequent ggplot2-related warnings
   if(length(c(longitude,latitude)) != 2)
     stop("we need 1 entry for longitude, 1 for latitude")
@@ -85,14 +136,13 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
 
   # from https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
   hav.dist <- function(long1, lat1, long2, lat2) {
-    R <- 6371
+    R <- 6371 # Earth's diameter in km
     p <- pi/180
     diff.long <- (long2 - long1) * p
     diff.lat <- (lat2 - lat1) * p
     a <- sin(diff.lat/2)^2 + cos(lat1 * p) * cos(lat2 * p) * sin(diff.long/2)^2
     b <- 2 * asin(pmin(1, sqrt(a)))
-    d = R * b
-    return(d)
+    return(R * b)
   }
 
   shell_coors <- data.frame(lon=shells$lon, lat=shells$lat)
@@ -109,33 +159,7 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
   N <- max(nearshells$lat)
   E <- max(nearshells$lon)
 
-  xl <- abs(W-E)/20
-  yl <- abs(N-S)/20
-  xmid <- longitude
-  ymid <- latitude
-
-  p <- ocean.map(S, W, N, E, mapsize, ocean.col, land.col)
-  
-  if(length(p) == 0) { # then rnaturalearth is not installed, so we plot a basic map instead
-	padding <- 1 
-  	maps::map(xlim=c(W-padding, E+padding), ylim=c(S-padding, N+padding), fill = TRUE, col = land.col, bg = ocean.col)
-	color_scale <- grDevices::colorRampPalette(c("yellow", "red"))(100)
-	cols <- color_scale[as.numeric(cut(nearshells[,5], breaks = 100))]
-	points(nearshells[,1], nearshells[,2], col=cols, pch=20)
-  } else {
-
-    if(symbol.legend)
-      p <- p +
-        geom_point(data=nearshells, aes(x=lon, y=lat, color=!!sym(colour), shape=!!sym(symbol)), size=size, alpha=.8) else
-          p <- p +
-            geom_point(data=nearshells, aes(x=lon, y=lat, color=!!sym(colour)), size=size, alpha=.8)
-
-    if(rainbow)
-      p <- p + scale_color_gradientn(colors = rainbow(7)) + labs(shape="feeding") else
-        p <- p + scale_color_gradient(low=mincol, high=maxcol) + labs(shape="feeding")
-
-    print(p)
-  }
+  ocean.map(S, W, N, E, shells=nearshells, mapsize=mapsize, ocean.col=ocean.col, land.col=land.col, rainbow=rainbow, symbol=symbol, symbol.legend=symbol.legend, legend.loc=legend.loc, legend.size=legend.size, mincol=mincol, maxcol=maxcol, colour=colour, warn=warn, padding=padding)
 
   return(nearshells)
 }
@@ -163,38 +187,21 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
 #' @param symbol.legend Whether or not to plot the legend for the symbols.
 #' @param ocean.col Colour for the oceans. Defaults to \code{ocean.col="aliceblue"}.
 #' @param land.col Colour for the land. Defaults to semi-transparent darkgreen: \code{land.col=rgb(0, 0.5, 0, 0.6)}.
+#' @param legend.loc Location of the legend, if using a basic plot. Defaults to the bottom right corner based on par("usr"), \code{legend.loc=c(0.95, 0.02)}
+#' @param legend.size Size of the legend, if using a basic plot. Defaults to \code{legend.size=c(0.05, 0.2)}
+#' @param padding Area around the map if using a basic plot. Avoids strange line features. Defaults to \code{padding=0.1}. 
+#' @param warn Whether or not to warn if some recommended are not available.
 #' @examples
 #'  N_UK <- map.shells(53, -11, 60, 2, mapsize="medium")
 #'  mean(N_UK$dR)
 #' @export
-map.shells <- function(S=48,W=-15, N=62, E=5, colour='dR', rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6)) {
+map.shells <- function(S=48, W=-15, N=62, E=5, colour='dR', rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), legend.loc=c(.95, .02), legend.size=c(.05, .2), padding=0.1, warn=TRUE) {
   lon <- lat <- NULL # to get rid of subsequent ggplot2-related warnings
   shells <- get("shells", envir = .GlobalEnv)
   shells[[symbol]] <- as.factor(shells[[symbol]])
   sel <- shells[shells$lon>=W & shells$lon<=E & shells$lat>=S & shells$lat <= N,]
 
-  p <- ocean.map(S, W, N, E, mapsize, ocean.col, land.col)
-
-  if(length(p) == 0) { # then rnaturalearth is not installed, so we plot a basic map instead
-	padding <- 1 
-  	maps::map(xlim=c(W-padding, E+padding), ylim=c(S-padding, N+padding), fill = TRUE, col = land.col, bg = ocean.col)
-	color_scale <- grDevices::colorRampPalette(c("yellow", "red"))(100)
-	cols <- color_scale[as.numeric(cut(sel[,5], breaks = 100))]  # Assign colors based on the value
-	points(sel[,1], sel[,2], col=cols, pch=20)
-  } else {
-
-  if(symbol.legend) 
-    p <- p +
-      geom_point(data=sel, aes(x=lon, y=lat, color=!!sym(colour), shape=!!sym(symbol)), size=size, alpha=.8) else
-        p <- p +
-          geom_point(data=sel, aes(x=lon, y=lat, color=!!sym(colour)), size=size, alpha=.8)
-
-  if(rainbow)
-    p <- p + scale_color_gradientn(colors = rainbow(7)) + labs(shape="feeding") else
-      p <- p + scale_color_gradient(low=mincol, high=maxcol) + labs(shape="feeding")
-
-    print(p)
-  } 
+  ocean.map(S, W, N, E, shells=sel, mapsize=mapsize, ocean.col=ocean.col, land.col=land.col, rainbow=rainbow, symbol=symbol, symbol.legend=symbol.legend, legend.loc=legend.loc, legend.size=legend.size, mincol=mincol, maxcol=maxcol, colour=colour, warn=warn, padding=padding)
   
   return(sel)
 }  

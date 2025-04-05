@@ -9,3 +9,5 @@
 ^R/\.RData$
 ^.*rnaturalearthhires.*
 ^ci/
+^.*\.Rproj$
+^\.Rproj\.user$

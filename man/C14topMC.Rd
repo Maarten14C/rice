@@ -4,14 +4,14 @@
 \alias{C14topMC}
 \title{Calculate pMC values from C14 ages}
 \usage{
-C14topMC(y, er = NULL, decimals = 5, lambda = 8033)
+C14topMC(y, er = NULL, decimals = 8, lambda = 8033)
 }
 \arguments{
 \item{y}{Reported mean of the C14 age.}
 
 \item{er}{Reported error of the C14 age.}
 
-\item{decimals}{Amount of decimals required for the pMC value. Defaults to 5.}
+\item{decimals}{Amount of decimals required for the pMC value. Defaults to 8.}
 
 \item{lambda}{The mean-life of radiocarbon (based on Libby half-life of 5568 years)}
 }

@@ -16,7 +16,7 @@ howmanyC14(
   cc.dir = NULL,
   thiscurve = NULL,
   talk = TRUE,
-  decimals = 4
+  decimals = 3
 )
 }
 \arguments{
@@ -54,7 +54,9 @@ Find the amount of remaining C14 atoms in a sample, given its weight and age.
 The number of carbon atoms in the sample is estimated. Given the known C14/C ratio at F=1, and given the sample's age, we can estimate the number of remaining C14 atoms.
 }
 \examples{
-  calBPtoD14C(100)
+  howmanyC14(0) # recent sample
+  howmanyC14(55e3) # at dating limit
+  howmanyC14(145e3) # way beyond the dating limit, 1 C14 atom per mg remains
 }
 \author{
 Maarten Blaauw

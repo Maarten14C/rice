@@ -16,8 +16,12 @@ find.shells(
   maxcol = "red",
   symbol = "feeding",
   symbol.legend = TRUE,
+  legend.loc = c(0.95, 0.02),
+  legend.size = c(0.05, 0.2),
   ocean.col = "aliceblue",
-  land.col = rgb(0, 0.5, 0, 0.6)
+  land.col = rgb(0, 0.5, 0, 0.6),
+  padding = 1,
+  warn = TRUE
 )
 }
 \arguments{
@@ -43,9 +47,17 @@ find.shells(
 
 \item{symbol.legend}{Whether or not to plot the legend for the symbols.}
 
+\item{legend.loc}{Location of the legend, if using a basic plot. Defaults to the bottom right corner based on par("usr"), \code{legend.loc=c(0.95, 0.02)}}
+
+\item{legend.size}{Size of the legend, if using a basic plot. Defaults to \code{legend.size=c(0.05, 0.2)}}
+
 \item{ocean.col}{Colour for the oceans. Defaults to \code{ocean.col="aliceblue"}.}
 
 \item{land.col}{Colour for the land. Defaults to semi-transparent darkgreen: \code{land.col=rgb(0, 0.5, 0, 0.6)}.}
+
+\item{padding}{Area around the map if using a basic plot. Avoids strange line features. Defaults to \code{padding=1}.}
+
+\item{warn}{Whether or not to warn if some recommended are not available.}
 }
 \value{
 A dataset with the n nearest dR values, and a plot of their coordinates.

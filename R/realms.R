@@ -343,14 +343,13 @@ BCADtocalBP <- function(x, zero=TRUE)
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
-#' @param decimals Amount of decimals required for the F14C value. Defaults to 8.
 #' @author Maarten Blaauw
 #' @examples
 #'   BCADtoC14(100)
 #' @export
-BCADtoC14 <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL, decimals=8)
+BCADtoC14 <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL)
   return(calBPtoC14(BCADtocalBP(x, zero=zero), 
-    cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, decimals=decimals))
+    cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve))
 
 
 
