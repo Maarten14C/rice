@@ -217,11 +217,12 @@ calBPtoBCAD <- function(x, zero=TRUE) {
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
+#' @param decimals Not needed.
 #' @author Maarten Blaauw
 #' @examples
 #' calBPtoC14(100)
 #' @export
-calBPtoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL) {
+calBPtoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, decimals=c()) {
   if(is.null(thiscurve)) {
     if(cc == 2) # Marine20 has no postbomb counterpart
       cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else
