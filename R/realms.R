@@ -16,7 +16,7 @@
 #' @title translate between realms
 #' @details Upon entering a value and its realm, this function will find the corresponding values in the other realms. Note that uncertainties are *not* taken into account, and especially going from C14 BP to cal BP and BC/AD ignores many calibration-related uncertainties. D14C values are only reported for entered values on the cal BP or BC/AD scale.
 #' @param x The value to be translated into other realms
-#' @param from The realm of the entered value. Can be "calBP" for cal BP, "BCAD" for BC/AD, "C14" for C14 BP, "F14C" for F14C, "pMC" for pMC, and "D14C" for D14C.
+#' @param from The realm of the entered value. Can be "calBP" for cal BP, "BCAD" for BC/AD, "C14" for C14 BP, "F14C" for F14C, or "pMC" for pMC. D14C cannot be entered as a value (you could enter the corresponding cal BP or BC/AD ages instead).
 #' @param cc calibration curve for C14 (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
@@ -27,12 +27,13 @@
 #' @param C14.col Colour of the 14C calibration curve. Defaults to semi-transparent blue, \code{C14.col=rgb(0,0,1,.5)}.
 #' @param D14C.col Colour of the D14C curve. Defaults to semi-transparent green, \code{D14C.col=rgb(0,.4,0,.4)}.
 #' @param ka Whether to use years or ka (thousands of years). Defaults to \code{ka=FALSE}.
+#' @param legend.size Size of the font of the legend. Defaults to 0.7 of R's standard size. 
 #' @return A plot and output showing the translations into the different realms.
 #' @examples
 #'   fromto(0, "BCAD")
 #'   fromto(2450, "C14")
 #' @export
-fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NULL, zero=TRUE, width=c(), digits=0, C14.col=rgb(0,0,1,.5), D14C.col=rgb(0,.4,0,.4), ka=FALSE) {
+fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NULL, zero=TRUE, width=c(), digits=0, C14.col=rgb(0,0,1,.5), D14C.col=rgb(0,.4,0,.4), ka=FALSE, legend.size=.7) {
   if(cc==2)
     Cc <- rintcal::ccurve(cc, postbomb=FALSE, cc.dir=cc.dir) else
       if(postbomb)
@@ -112,9 +113,9 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
       stop("Please provide a correct entry for parameter 'from'")
   
   if(length(width) == 0) {
-    exp_interp <- function(x_query) {
+    exp_interp <- function(x) {
       b <- log(10e3 / 100) / 55000
-      return(100 * exp(b * x_query))
+      return(100 * exp(b * x))
     }
     width <- max(exp_interp(calbp))
   }
@@ -145,7 +146,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
     round(f14c, digits+2), " F14C\n", round(pmc, digits+1), " pMC")
   string3 <- ifelse(is.na(d14c), "", paste0(round(d14c, digits+1), " D14C"))
   legend("topleft", legend=c(string1, string2, string3),
-    text.col=c(1, C14.col, D14C.col), bty="n", cex=.8, xjust=0)
+    text.col=c(1, C14.col, D14C.col), bty="n", cex=legend.size, xjust=0)
 
   par(mar=c(4,3,3,3))
   mincalbp <- min(calbp) - width
@@ -217,12 +218,11 @@ calBPtoBCAD <- function(x, zero=TRUE) {
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
-#' @param decimals Not needed.
 #' @author Maarten Blaauw
 #' @examples
 #' calBPtoC14(100)
 #' @export
-calBPtoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, decimals=c()) {
+calBPtoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL) {
   if(is.null(thiscurve)) {
     if(cc == 2) # Marine20 has no postbomb counterpart
       cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else

@@ -264,7 +264,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 #' @param dist.col Colour of the outer lines of the distributions. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.2)}.
 #' @param dist.fill Colour of the inner part of the distributions. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.2)}.
 #' @param hpd.fill Colour of the highest posterior density. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.3)}.
-#' @param dist.height Maximum height of the C14 and calibrated distributions (as proportion of the invisible secondary axes). Defaults to 1.8.
+#' @param dist.height Maximum height of the C14 and calibrated distributions (as proportion of the invisible secondary axes). Defaults to 0.3.
 #' @param dist.float The probability distributions float a bit above the axes by default. Can be set to distinct heights of the axes, e.g.: \code{dist.float=c(0.05, 0.1)}, or to \code{dist.float=0}.
 #' @param cal.rev Whether or not to reverse the direction of the calendar axis.
 #' @param yr.steps Temporal resolution at which C-14 ages are calibrated (in calendar years). By default follows the spacing in the calibration curve.
@@ -329,7 +329,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
   if(bombalert) {
     if(beyond) { # at or beyond younger IntCal limit
       if(!postbomb) # note that there are no postbomb curves for Marine20
-        if(!(cc %in% c("nh1", "nh2", "nh3", "sh1-2", "sh3", "nh1_monthly", "nh2_monthly", "nh3_monthly", "sh1-2_monthly", "sh3_monthly")))
+        if(!(cc %in% c("nh1", "nh2", "nh3", "sh1-2", "sh3")))
           stop("This appears to be a postbomb age (or is close to being one). Please provide a postbomb curve")
     Cc <- rintcal::glue.ccurves(cc, postbomb, cc.dir) # doesn't do resample
   } else {
@@ -341,7 +341,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
     Cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir)
   cc.cal <- 1
   if(BCAD) {
-    Cc[,4] <- calBPtoBCAD(Cc[,1])
+    Cc[,4] <- 1950 - Cc[,1]
     cc.cal <- 4
   }
   if(length(thiscurve) > 0) # then forget the above
@@ -483,41 +483,43 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
 
 
 # internal function to draw distributions
-draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE, hpd=TRUE, ka=FALSE, prob=0.95, prob.round=1, BCAD=FALSE, x.pos=c(), y.pos=c(), ex=1, peak=TRUE, as.unit=FALSE, fraction=0.1, dist.col=rgb(0,0,1,0.3), dist.border=rgb(0,0,1,0.3), hpd.col=rgb(0,0,1,0.3), hpd.border=rgb(0,0,1,0.3)) {
+draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE, hpd=TRUE, ka=FALSE, prob=0.95, prob.round=1, BCAD=FALSE, x.pos=c(), y.pos=c(), ex=1, peak=TRUE, as.unit=TRUE, fraction=0.1, dist.col=rgb(0,0,1,0.3), dist.border=rgb(0,0,1,0.3), hpd.col=rgb(0,0,1,0.3), hpd.border=rgb(0,0,1,0.3)) {
 
   ages0 <- c(dist[1,1], dist[,1], dist[nrow(dist),1])
   agesmirror <- c(dist[,1], rev(dist[,1]))
   max.peak <- max(dist[,2])
   if(peak) # then set peak height to 1
     dist[,2] <- dist[,2] / max.peak
-  dist0 <- ex*c(0, dist[,2], 0)
-  distmirror <- ex/2*c(dist[,2], -1*rev(dist[,2]))
+  dist0 <- c(0, dist[,2], 0)
+  distmirror <- c(dist[,2], -1*rev(dist[,2]))/2
 
   # which direction to draw the distribution(s)
   xy <- par('usr')
   if(on.y) {
-	leftright <- fraction*(xy[2] - xy[1]) # from left to right corner
     if(as.unit)
-      leftright <- ifelse(leftright >= 0, 1, -1)
-    add <- ifelse(up, 1, -1)*ex*leftright
+      leftright <- 1 else
+        leftright <- fraction*(xy[2] - xy[1]) # from left to right corner
+    add <- ifelse(up, ex*leftright, -1*ex*leftright)
   } else {
-    downup <- fraction*(xy[4] - xy[3]) # from bottom to top corner
     if(as.unit)
-      downup <- ifelse(downup >= 0, 1, -1)
-    add <- ifelse(up, 1, -1)*ex*downup 
+      downup <- 1 else
+        downup <- fraction*(xy[4] - xy[3]) # from bottom to top corner
+    add <- ifelse(up, ex*downup, -1*ex*downup)
   }
+
+cat(add, "\n")
 
   if(on.y) { # draw on the left axis
     if(length(x.pos) == 0)
       x.pos <- xy[1] # left extreme of x axis
     if(mirror)
-      pol <- cbind(x.pos+distmirror, agesmirror) else # x.pos was y.pos
+      pol <- cbind(x.pos+add*distmirror, agesmirror) else # x.pos was y.pos
         pol <- cbind(x.pos+add*dist0, ages0)
   } else {
       if(length(y.pos) == 0)
         y.pos <- xy[3] # bottom extreme of y axis
       if(mirror)
-        pol <- cbind(agesmirror, y.pos+distmirror) else
+        pol <- cbind(agesmirror, y.pos+add*distmirror) else
           pol <- cbind(ages0, y.pos+add*dist0)
     }
     polygon(pol, col=dist.col, border=dist.border)
@@ -535,20 +537,20 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
         thisdist <- rbind(c(thisdist[1],0), thisdist, c(thisdist[1], 0))
       ages0 <- c(thisdist[1,1], thisdist[,1], thisdist[nrow(thisdist),1])
       agesmirror <- c(thisdist[,1], rev(thisdist[,1]))
-      dist0 <- ex*c(0, thisdist[,2], 0)
-      distmirror <- ex/2*c(thisdist[,2], -1*rev(thisdist[,2]))
+      dist0 <- c(0, thisdist[,2], 0)
+      distmirror <- c(thisdist[,2], -1*rev(thisdist[,2]))/2
 
       if(on.y) {
         if(length(x.pos) == 0)
           x.pos <- par('usr')[1] # left extreme of x axis
       if(mirror)
-        pol <- cbind(y.pos+distmirror, agesmirror) else
+        pol <- cbind(y.pos+add*distmirror, agesmirror) else
           pol <- cbind(x.pos+add*dist0, ages0) 
       } else {
         if(length(y.pos) == 0)
           y.pos <- par('usr')[3] # bottom extreme of y axis
         if(mirror)
-          pol <- cbind(agesmirror, y.pos+distmirror) else
+          pol <- cbind(agesmirror, y.pos+add*distmirror) else
             pol <- cbind(ages0, y.pos+add*dist0)
       }
     polygon(pol, col=dist.col, border=dist.border)
@@ -756,20 +758,20 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, deltaR=0, de
           d.lim <- ax.lm[3:4]
   }
 
-#   scaling <- c() # to plot multiple dates without overlap
-#   if(length(age) > 1) {
-#     alldepths <- sort(c(d.lim, depth))
-#     if(mirror)
-#       for(i in 2:(length(alldepths)-1)) {
-#         available <- min(abs(diff(alldepths[(i-1):(i+1)])))
-#         scaling <- c(scaling, ex * available / mx[i])
-#       } else
-#           for(i in 2:length(alldepths)) {
-#             available <- min(abs(diff(alldepths[(i-1):(i)])))
-#             scaling <- c(scaling, ex * available / mx[i])
-#           }
-#   } else
-#     scaling <- 1
+  scaling <- c()
+  if(length(age) > 1) {
+    alldepths <- sort(c(d.lim, depth))
+    if(mirror)
+      for(i in 2:(length(alldepths)-1)) {
+        available <- min(abs(diff(alldepths[(i-1):(i+1)])))
+        scaling <- c(scaling, ex * available / mx[i])
+      } else
+          for(i in 2:length(alldepths)) {
+            available <- min(abs(diff(alldepths[(i-1):(i)])))
+            scaling <- c(scaling, ex * available / mx[i])
+          }
+  } else
+    scaling <- 1
 
   # now draw the dates
   for(i in 1:length(age)) {

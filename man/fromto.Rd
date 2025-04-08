@@ -16,13 +16,14 @@ fromto(
   digits = 0,
   C14.col = rgb(0, 0, 1, 0.5),
   D14C.col = rgb(0, 0.4, 0, 0.4),
-  ka = FALSE
+  ka = FALSE,
+  legend.size = 0.7
 )
 }
 \arguments{
 \item{x}{The value to be translated into other realms}
 
-\item{from}{The realm of the entered value. Can be "calBP" for cal BP, "BCAD" for BC/AD, "C14" for C14 BP, "F14C" for F14C, "pMC" for pMC, and "D14C" for D14C.}
+\item{from}{The realm of the entered value. Can be "calBP" for cal BP, "BCAD" for BC/AD, "C14" for C14 BP, "F14C" for F14C, or "pMC" for pMC. D14C cannot be entered as a value (you could enter the corresponding cal BP or BC/AD ages instead).}
 
 \item{cc}{calibration curve for C14 (see \code{caldist()}).}
 
@@ -43,6 +44,8 @@ fromto(
 \item{D14C.col}{Colour of the D14C curve. Defaults to semi-transparent green, \code{D14C.col=rgb(0,.4,0,.4)}.}
 
 \item{ka}{Whether to use years or ka (thousands of years). Defaults to \code{ka=FALSE}.}
+
+\item{legend.size}{Size of the font of the legend. Defaults to 0.7 of R's standard size.}
 }
 \value{
 A plot and output showing the translations into the different realms.

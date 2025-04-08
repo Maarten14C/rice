@@ -14,6 +14,8 @@ calibrate(
   bombalert = TRUE,
   thiscurve = c(),
   as.F = FALSE,
+  is.F = FALSE,
+  is.pMC = FALSE,
   reservoir = 0,
   prob = 0.95,
   BCAD = FALSE,
@@ -29,7 +31,7 @@ calibrate(
   dist.col = rgb(0, 0, 0, 0.3),
   dist.fill = rgb(0, 0, 0, 0.3),
   hpd.fill = rgb(0, 0, 0, 0.3),
-  dist.height = 0.3,
+  dist.height = 1.8,
   dist.float = c(0.01, 0.01),
   cal.rev = FALSE,
   yr.steps = FALSE,
@@ -75,6 +77,10 @@ calibrate(
 
 \item{as.F}{Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.}
 
+\item{is.F}{Use \code{is.F=TRUE} if the date and error are entered as F14C.}
+
+\item{is.pMC}{Use \code{is.pMC=TRUE} if the date and error are entered as pMC.}
+
 \item{reservoir}{Reservoir age, or reservoir age and age offset as two values (e.g., \code{reservoir=c(100,10)}).}
 
 \item{prob}{Probability confidence intervals (between 0 and 1).}
@@ -105,7 +111,7 @@ calibrate(
 
 \item{hpd.fill}{Colour of the highest posterior density. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.3)}.}
 
-\item{dist.height}{Maximum height of the C14 and calibrated distributions (as proportion of the invisible secondary axes). Defaults to 0.3.}
+\item{dist.height}{Maximum height of the C14 and calibrated distributions (as proportion of the invisible secondary axes). Defaults to 1.8.}
 
 \item{dist.float}{The probability distributions float a bit above the axes by default. Can be set to distinct heights of the axes, e.g.: \code{dist.float=c(0.05, 0.1)}, or to \code{dist.float=0}.}
 

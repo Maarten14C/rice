@@ -1,8 +1,10 @@
 # to do: 
 
-# add as.F to glue.ccurves and mix.ccurves (and intcal.data?)
+#### draw.dists, heights are wrong. E.g. wrong in as.one, also in calibrate.
 
-# add is.pMC and is.F option to calibrate(). Then also add 'realm'. Then add a shiny app for postbomb dates. rintcal has as.F through ccurve(as.F=TRUE))
+# check how is.pMC and is.F work in calibrate(). Make interpolation to e.g. years more intelligent (default c() then 1 if prebomb, .1 if postbomb
+
+# rintcal has as.F through ccurve(as.F=TRUE)) (but not as.pMC)
 
 # add data from historical UBA standards/backgrounds?
 
@@ -60,7 +62,7 @@ howmanyC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.ratio=1.1
     message(wght, " mg carbon contains ", atoms, " C atoms")
     message("C14 atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk)
 	message(decays, " C-14 atoms in the sample will decay each day")
-    message("For a 1 mg AMS target, c. ", perminute, " particles will be counted per minute, or ", persecond, " per second")
+    message("For a 1 mg AMS target, assuming a 100% efficiency, ", perminute, " particles would be counted per minute, or ", persecond, " per second")
   }
 
   invisible(C14)

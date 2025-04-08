@@ -27,7 +27,10 @@
 #' plot(calib, type="l")
 #' postbomb <- caldist(-3030, 20, postbomb=1, BCAD=TRUE)
 #' @export
-caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL) {
+caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL) {
+
+  if(is.F && is.pMC)
+    stop("cannot have both is.F=TRUE and is.pMC=TRUE")		
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
@@ -50,15 +53,25 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
     } else
       cc <- thiscurve
 
+  if(postbomb) {
+    xseq <- seq(min(cc[,1]), max(cc[,1]), by=0.05) 	
+	ccmu <- approx(cc[,1], cc[,2], xseq)$y
+	ccsd <- approx(cc[,1], cc[,3], xseq)$y  	
+	cc <- cbind(xseq, ccmu, ccsd)	
+  }
+  
   # F realm - not using ccurve's as.F option, this to avoid potential double translations
   if(is.F) { # then put cc in F; y and er are assumed to be in F already 
     cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
-  } else
-    if(as.F) { # y, er and cc are in C14 realm, but need to be in F
-      cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
-      asF <- C14toF14C(y, er)
-      y <- asF[1]; er <- asF[2]
-    }
+  } else 
+    if(is.pMC) {
+	  cc[,2:3] <- C14topMC(cc[,2], cc[,3])
+    } else
+      if(as.F) { # y, er and cc are in C14 realm, but need to be in F
+        cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
+        asF <- C14toF14C(y, er)
+        y <- asF[1]; er <- asF[2]
+      }
 
   # calibrate; find how far age (measurement) is from cc[,2] of calibration curve
   if(normal)
@@ -85,10 +98,8 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
 
   colnames(cal) <- c("cal BP", "prob")
   if(BCAD) {
-    yrs <- 1950 - cal[,1]
+	cal[,1] <- calBPtoBCAD(cal[,1])
     colnames(cal)[1] <- "BC/AD"
-    yrs[yrs<=0] <- yrs[yrs<=0] - 1 # 0 BC/AD does not exist
-    cal[,1] <- yrs
   }
 
   return(cal)
@@ -170,9 +181,11 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
     every <- every/1e3
     age.round <- age.round+3
   }
+
   calib <- calib[order(calib[,1]),] # ensure calendar ages are in increasing order
+  steppies <- diff(unique(calib[,1]))
   if((max(calib[,1])-min(calib[,1])) >= 20*every) # is there sufficient cal space to calculate hpds?
-    calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), by=every), rule=2) else
+    calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), by=min(steppies, every)), rule=2) else
       calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), length=100), rule=2)
   calib <- cbind(calib$x, calib$y/sum(calib$y)) # normalise probs to 1
 
@@ -200,6 +213,11 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
         perc[i] <- round(100*sum(fromto[,2]), prob.round)
       }
 
+  mindiff <- min(diff(calib[,1]))
+  if(mindiff < 1) # very small values require different rounding
+    age.round <- 1+nchar(gsub("[1-9].*", "", sub("0\\.", "",
+     format(mindiff, scientific = FALSE))))
+  
   hpds <- cbind(round(from, age.round), round(to, age.round), perc)
   hpds <- rbind(hpds) # make as rows, even if only 1
   colnames(hpds) <- c("from", "to", "perc")

@@ -1,75 +1,81 @@
 
 ocean.map <- function(S, W, N, E, shells=c(), mapsize="large", padding=0.1, ocean.col="aliceblue", land.col = rgb(0, 0.5, 0, 0.6), rainbow=FALSE, symbol='feeding', symbol.legend=TRUE, legend.loc=c(.95, .02), legend.size=c(.05, .20), mincol="yellow", maxcol="red", colour='dR', warn=TRUE) {
-	
+
   # Check if useful libraries are installed
-  hiresmaps <- "rnaturalearthhires" %in% installed.packages() # TRUE or FALSE
+  hassf <- requireNamespace("sf", quietly = TRUE)
   rne <- requireNamespace("rnaturalearth", quietly = TRUE)
   rnedata <- requireNamespace("rnaturalearthdata", quietly = TRUE)
-  hassf <- requireNamespace("sf", quietly = TRUE)
-  
-  if(!hassf) { # then we'll plot basic maps (ugly)
-    if(warn)
-      message("Using basic maps. For higher-resolution maps, please install the rnaturalearth R package:",
-        "install.packages(\"rnaturalearth\")")  
+  devtools <- requireNamespace("devtools", quietly = TRUE)
+  hiresmaps <- "rnaturalearthhires" %in% installed.packages() # TRUE or FALSE
 
-	width <- abs(E-W); height <- abs(N-S)
-	par(mar=rep(1,4)) 
+  if(warn) {
+    if(!hassf)
+      message("Using (ugly) basic map. For better maps, please install the packages sf and rnaturalearth: \ninstall.packages(c(\"sf\", \"rnaturalearth\"))") else {
+        if(mapsize=="large") {
+          if(!rne)
+            message("Please install the rnaturalearth package:",
+              "\ninstall.packages(\"rnaturalearth\")")
+          if(!rnedata)
+            message("Please install the rnaturalearthdata package:",
+              "\ninstall.packages(\"rnaturalearthdata\")")
+
+          # rnaturalearthhires is nice but has to be installed from github
+          if(!hiresmaps)
+            if(devtools)
+              message("For detailed maps, install rnaturalearthhires from GitHub:\n",
+                "devtools::install_github('ropensci/rnaturalearthhires')\n") else
+                  message("Install first devtools and then rnaturalearthhires:\n",
+                    "install.packages(\"devtools\")\n",
+                    "devtools::install_github(\"ropensci/rnaturalearthhires\"")
+       }
+    }
+  }
+
+  if(!hassf) { # then we'll plot basic maps (ugly)
+    width <- abs(E-W); height <- abs(N-S)
+    par(mar=rep(1,4))
     maps::map(xlim=c(W-(padding*width), E+(padding*width)), ylim=c(S-(padding*height), N+(padding*height)),
-	  fill = TRUE, col = land.col, bg = ocean.col)
+      fill = TRUE, col = land.col, bg = ocean.col)
     if(rainbow)
-	  color_scale <- rainbow(100) else
-	    color_scale <- grDevices::colorRampPalette(c("yellow", "red"))(100)
+      color_scale <- rainbow(100) else
+        color_scale <- grDevices::colorRampPalette(c("yellow", "red"))(100)
     cols <- color_scale[as.numeric(cut(shells[,5], breaks = 100))]
     points(shells[,1], shells[,2], col=cols, pch=20)
 
     value_range <- range(shells[, 5], na.rm = TRUE)
-	
-	coors <- par("usr")
-	xmin <- coors[1] + legend.loc[1] * (coors[2] - coors[1])
-	xmax <- coors[1] + (legend.loc[1]+legend.size[1]) * (coors[2] - coors[1])
-	ymin <- coors[3] + legend.loc[2] * (coors[4] - coors[3])
-	ymax <- coors[3] + (legend.loc[2]+legend.size[2]) * (coors[4] - coors[3])
-	
-	yticks <- seq(ymin, ymax, length.out=4)
-	vals <- round(seq(min(shells[,5]), max(shells[,5]), length=length(yticks)), 0)
-	image(x=c(xmin, xmax), y=seq(ymin, ymax, length.out=100), z=matrix(1:100, nrow = 1), 
+
+    coors <- par("usr")
+    xmin <- coors[1] + legend.loc[1] * (coors[2] - coors[1])
+    xmax <- coors[1] + (legend.loc[1]+legend.size[1]) * (coors[2] - coors[1])
+    ymin <- coors[3] + legend.loc[2] * (coors[4] - coors[3])
+    ymax <- coors[3] + (legend.loc[2]+legend.size[2]) * (coors[4] - coors[3])
+
+    yticks <- seq(ymin, ymax, length.out=4)
+    vals <- round(seq(min(shells[,5]), max(shells[,5]), length=length(yticks)), 0)
+    image(x=c(xmin, xmax), y=seq(ymin, ymax, length.out=100), z=matrix(1:100, nrow = 1),
       col=color_scale, axes=FALSE, add=TRUE)
-	text(xmax+.2, yticks, vals, cex=.5, adj=c(0, .5))
-	
-	return()
+    text((xmin+xmax)/2, ymax, "dR", adj=c(0.5,0))
+    text(xmax+.2, yticks, vals, cex=.5, adj=c(0, .5))
+
+    return() # plotted basic map, end of function
   }
 
   # if more high-res map packages are installed:
-  if(warn) {
-    if(!rnedata)
-      message("Using basic maps. For higher-resolution maps, please install the rnaturalearthdata R package:",
-        "install.packages(\"rnaturalearthdata\")")  
-    if(mapsize=="large" && !hiresmaps) # rnaturalearthhires is nice but is not on CRAN
-        message("For detailed maps, install rnaturalearthhires from GitHub using these commands:\n",
-          "install.packages('devtools') # if devtools hasn't been installed already\n",
-          "devtools::install_github('ropensci/rnaturalearthhires')") 
-  }
-  
-  # Handle different scales and package availability
-  if(mapsize %in% c("medium", "small")) {
-    world <- if(rne) {
-      rnaturalearth::ne_countries(scale = mapsize, returnclass = "sf")
-    } else {
-        world <- sf::st_as_sf(maps::map("world", fill = TRUE, plot = FALSE))
-    }
+  if(mapsize == "small") {
+    world <- sf::st_as_sf(maps::map("world", fill = TRUE, plot = FALSE))
   } else if(mapsize == "large") {
     if(hiresmaps) {
-      world <- rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
+      if(rne)
+        world <- rnaturalearth::ne_countries(scale = "large", returnclass = "sf") else {
+          world <- sf::st_as_sf(maps::map("world", fill = TRUE, plot = FALSE))
+        }
     } else if(rnedata) {
-	    message("please install rnaturalearthhires from github:",
-	      "devtools::install_github(\"ropensci/rnaturalearthhires\")")
         world <- rnaturalearthdata::countries50
     } else {
-	    message("please install rnaturalearthdata:",
-	      "install.packages(\"rnaturalearthdata\")")
         world <- sf::st_as_sf(maps::map("world", fill = TRUE, plot = FALSE))
     }
-  }
+  } else
+      stop("what mapsize is this? Either provide mapsize=\"small\" or mapsize=\"large\"")
 
   p <- ggplot(data = world) +
     geom_sf(fill = land.col) +
@@ -83,7 +89,7 @@ ocean.map <- function(S, W, N, E, shells=c(), mapsize="large", padding=0.1, ocea
 
   lon_col <- sym("lon")
   lat_col <- sym("lat")
-	  
+
   if(symbol.legend)
     p <- p + geom_point(data=shells, aes(x=!!lon_col, y=!!lat_col, color=!!sym(colour), shape=!!sym(symbol)), size=2, alpha=.8) else
       p <- p + geom_point(data=shells, aes(x=!!lon_col, y=!!lat_col, color=!!sym(colour)), size=2, alpha=.8)
@@ -92,7 +98,7 @@ ocean.map <- function(S, W, N, E, shells=c(), mapsize="large", padding=0.1, ocea
     p <- p + scale_color_gradientn(colors = rainbow(7)) + labs(shape="feeding") else
       p <- p + scale_color_gradient(low=mincol, high=maxcol) + labs(shape="feeding")
 
-  print(p)	
+  print(p)
 }
 
 
@@ -111,7 +117,7 @@ ocean.map <- function(S, W, N, E, shells=c(), mapsize="large", padding=0.1, ocea
 #' @param colour The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.
 #' @param rainbow Whether or not to use a rainbow scale to plot the variable.
 #' @param size Size of the symbols. Defaults to 2.
-#' @param mapsize Resolution of the map. Can be "small", "medium" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to 'medium' if 'rnaturalearthhires' is not installed, and to 'high' if it is installed.
+#' @param mapsize Resolution of the map. Can be "small" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to "small" if 'rnaturalearthhires' is not installed, and to 'high' if it is installed.
 #' @param mincol Colour for minimum values.
 #' @param maxcol Colour for maximum values.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'.
@@ -159,7 +165,8 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
   N <- max(nearshells$lat)
   E <- max(nearshells$lon)
 
-  ocean.map(S, W, N, E, shells=nearshells, mapsize=mapsize, ocean.col=ocean.col, land.col=land.col, rainbow=rainbow, symbol=symbol, symbol.legend=symbol.legend, legend.loc=legend.loc, legend.size=legend.size, mincol=mincol, maxcol=maxcol, colour=colour, warn=warn, padding=padding)
+  ocean.map(S, W, N, E, shells=nearshells,
+    mapsize=mapsize, ocean.col=ocean.col, land.col=land.col, rainbow=rainbow, symbol=symbol, symbol.legend=symbol.legend, legend.loc=legend.loc, legend.size=legend.size, mincol=mincol, maxcol=maxcol, colour=colour, warn=warn, padding=padding)
 
   return(nearshells)
 }
@@ -180,7 +187,7 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
 #' @param colour The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.
 #' @param rainbow Whether or not to use a rainbow scale to plot the variable.
 #' @param size Size of the symbols. Defaults to 2.
-#' @param mapsize Resolution of the map. Can be "small", "medium" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to 'medium' if 'rnaturalearthhires' is not installed, and to 'high' if it is installed.
+#' @param mapsize Resolution of the map. Can be "small" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to "small" if 'rnaturalearthhires' is not installed, and to 'high' if it is installed.
 #' @param mincol Colour for minimum values.
 #' @param maxcol Colour for maximum values.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'. 
@@ -201,7 +208,8 @@ map.shells <- function(S=48, W=-15, N=62, E=5, colour='dR', rainbow=FALSE, size=
   shells[[symbol]] <- as.factor(shells[[symbol]])
   sel <- shells[shells$lon>=W & shells$lon<=E & shells$lat>=S & shells$lat <= N,]
 
-  ocean.map(S, W, N, E, shells=sel, mapsize=mapsize, ocean.col=ocean.col, land.col=land.col, rainbow=rainbow, symbol=symbol, symbol.legend=symbol.legend, legend.loc=legend.loc, legend.size=legend.size, mincol=mincol, maxcol=maxcol, colour=colour, warn=warn, padding=padding)
+  ocean.map(S, W, N, E, shells=sel,
+    mapsize=mapsize, ocean.col=ocean.col, land.col=land.col, rainbow=rainbow, symbol=symbol, symbol.legend=symbol.legend, legend.loc=legend.loc, legend.size=legend.size, mincol=mincol, maxcol=maxcol, colour=colour, warn=warn, padding=padding)
   
   return(sel)
 }  

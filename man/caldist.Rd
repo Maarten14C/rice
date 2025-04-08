@@ -12,6 +12,7 @@ caldist(
   deltaR = 0,
   deltaSTD = 0,
   is.F = FALSE,
+  is.pMC = FALSE,
   as.F = FALSE,
   thiscurve = NULL,
   yrsteps = FALSE,

@@ -11,3 +11,4 @@
 ^ci/
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^checkTheseRunCommands.txt$

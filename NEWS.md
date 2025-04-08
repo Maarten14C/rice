@@ -1,12 +1,13 @@
 # rice 1.1.0
 * added a secondary y axis to the `contaminate`, `clean` and `muck` plots.
+* additional R packages for plotting maps are now only installed and loaded when required.
+* added the latest entries from the calib.org/marine database (2 April 2025). 
 * draw.dates now doesn't throw an error when ka=TRUE, and also works better when rotate.axes=TRUE.
 * added a function `span` to calculate (calibrated) time-spans between two radiocarbon dates.
 * repaired a bug in C14tocalBP which caused NAs for some cal BP values.
 * a function `overlapping` calculates to what degree two calibrated dates are overlapping.
 * within the `realm`-related functions, changed the rounding procedure from `signif` to `round`. 
 * added a function `fromto` that translates values into different domains, and plots them.
-* added the latest entries from the calib.org/marine database (2 April 2025). 
 
 # rice 1.0.0
 * corrected a bug in `C14topMC` where errors were not calculated correctly.
