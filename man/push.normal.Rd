@@ -25,6 +25,7 @@ push.normal(
   cal.lim = c(),
   calib.col = rgb(0, 0, 0, 0.25),
   pushed.col = rgb(0, 0, 1, 0.4),
+  heights = 0.3,
   inset = TRUE,
   inset.col = "darkgreen",
   inset.loc = c(0.6, 0.97, 0.6, 0.97),
@@ -72,6 +73,8 @@ push.normal(
 \item{calib.col}{Colour of the calibrated distribution (defaults to semi-transparent light grey).}
 
 \item{pushed.col}{Colour of the pushed distribution (defaults to semi-transparent blue).}
+
+\item{heights}{Heights of the calibrated and 'pushed' distributions. Defaults to 0.3 of the device's height.}
 
 \item{inset}{Whether or not to plot an inset graph showing the shape of the normal/gamma distribution.}
 
