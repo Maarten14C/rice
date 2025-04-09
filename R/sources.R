@@ -329,7 +329,7 @@ clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.
       message("Observed age as F14C: ", round(F.obs[1], decimals), " +- ", round(F.obs[2], decimals))
       message("True F14C: (", 1-fraction, "*", round(F.obs[1], decimals), ") - (", fraction, "*", round(F.contam, decimals), ") = ", round(F.true, decimals), " +- ", round(F.true.er, decimals))
       message("True C14 age: ", C14.true[1], " +- ", C14.true[2])
-    }	
+    }
   if(MC)
     invisible(list(obs=C14.true, F14C=c(mean=F.true, sd=F.true.er), samples=cbind(F.obs.samples, F.contam.samples, fraction.samples, F.true.samples))) else
       invisible(cbind(C14.true))
@@ -497,6 +497,7 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
 #' @param cal.lim Calendar axis limits. Calculated automatically by default.
 #' @param calib.col Colour of the calibrated distribution (defaults to semi-transparent light grey).
 #' @param pushed.col Colour of the pushed distribution (defaults to semi-transparent blue).
+#' @param heights Heights of the calibrated and 'pushed' distributions. Defaults to 0.3 of the device's height.
 #' @param inset Whether or not to plot an inset graph showing the shape of the normal/gamma distribution.
 #' @param inset.col Colour of the normal/gamma distribution.
 #' @param inset.loc Location of the inset graph.
@@ -505,7 +506,7 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
 #' @examples
 #'   push.normal(250, 25, 50, 10)
 #' @export
-push.normal <- function(y, er, mean, sdev, add=TRUE, n=1e6, prob=0.95, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, cc.dir=NULL, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cal.lim=c(), calib.col=rgb(0,0,0,.25), pushed.col=rgb(0,0,1,.4), inset=TRUE, inset.col="darkgreen", inset.loc=c(0.6, 0.97, 0.6, 0.97), inset.mar=c(3, 0.5, 0.5, 0.5), inset.mgp=c(2,1,0)) {
+push.normal <- function(y, er, mean, sdev, add=TRUE, n=1e6, prob=0.95, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, cc.dir=NULL, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cal.lim=c(), calib.col=rgb(0,0,0,.25), pushed.col=rgb(0,0,1,.4), heights=.3, inset=TRUE, inset.col="darkgreen", inset.loc=c(0.6, 0.97, 0.6, 0.97), inset.mar=c(3, 0.5, 0.5, 0.5), inset.mgp=c(2,1,0)) {
   if(length(y) != 1 || length(er) != 1)
     stop("Please provide one value for both y and er")
   if(length(mean) != 1 || length(sdev) != 1)
@@ -531,8 +532,8 @@ push.normal <- function(y, er, mean, sdev, add=TRUE, n=1e6, prob=0.95, cc=1, pos
   }
   
   plot(0, type="n", xlim=cal.lim, ylim=c(0, 1.5), bty="l", ylab="", yaxt="s", xlab=ifelse(BCAD, "BC/AD", "cal BP"))
-  draw.dist(cbind(calib), dist.col=calib.col, dist.border=calib.col, y.pos=0, ex=-1)
-  hpds <- draw.dist(cbind(shifted$x, shifted$y), prob=prob, y.pos=0, ex=-1)
+  draw.dist(cbind(calib), dist.col=calib.col, dist.border=calib.col, y.pos=0, fraction=heights)
+  hpds <- draw.dist(cbind(shifted$x, shifted$y), prob=prob, y.pos=0, fraction=heights)
 
   # inset graph
   if(inset) {
@@ -576,6 +577,7 @@ push.normal <- function(y, er, mean, sdev, add=TRUE, n=1e6, prob=0.95, cc=1, pos
 #' @param cal.lim Calendar axis limits. Calculated automatically by default.
 #' @param calib.col Colour of the calibrated distribution (defaults to semi-transparent light grey).
 #' @param pushed.col Colour of the pushed distribution (defaults to semi-transparent blue).
+#' @param heights Heights of the calibrated and 'pushed' distributions. Defaults to 0.3 of the device's height.
 #' @param inset Whether or not to plot an inset graph showing the shape of the normal/gamma distribution.
 #' @param inset.col Colour of the normal/gamma distribution.
 #' @param inset.loc Location of the inset graph.
@@ -584,7 +586,7 @@ push.normal <- function(y, er, mean, sdev, add=TRUE, n=1e6, prob=0.95, cc=1, pos
 #' @examples
 #'   push.gamma(250, 25, 50, 2, add=FALSE) # subtract a gamma distribution
 #' @export
-push.gamma <- function(y, er, mean, shape, add=TRUE, n=1e6, prob=0.95, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, cc.dir=NULL, is.F=FALSE, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cal.lim=c(), calib.col=rgb(0,0,0,.25), pushed.col=rgb(0,0,1,.4), inset=TRUE, inset.col="darkgreen", inset.loc=c(0.6, 0.97, 0.6, 0.97), inset.mar=c(3, 0.5, 0.5, 0.5), inset.mgp=c(2,1,0)) {
+push.gamma <- function(y, er, mean, shape, add=TRUE, n=1e6, prob=0.95, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, cc.dir=NULL, is.F=FALSE, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cal.lim=c(), calib.col=rgb(0,0,0,.25), pushed.col=rgb(0,0,1,.4), heights=0.3, inset=TRUE, inset.col="darkgreen", inset.loc=c(0.6, 0.97, 0.6, 0.97), inset.mar=c(3, 0.5, 0.5, 0.5), inset.mgp=c(2,1,0)) {
   if(length(y) != 1 || length(er) != 1)
     stop("Please provide one value for both y and er")
   if(length(mean) != 1 || length(shape) != 1)
@@ -613,8 +615,8 @@ push.gamma <- function(y, er, mean, shape, add=TRUE, n=1e6, prob=0.95, cc=1, pos
   }
   
   plot(0, type="n", xlim=cal.lim, ylim=c(0, 1.5), bty="l", ylab="", yaxt="s", xlab=ifelse(BCAD, "BC/AD", "cal BP"))
-  draw.dist(cbind(calib), dist.col=calib.col, dist.border=calib.col, y.pos=0, ex=-1)
-  hpds <- draw.dist(cbind(shifted$x, shifted$y), prob=prob, y.pos=0, ex=-1)
+  draw.dist(cbind(calib), dist.col=calib.col, dist.border=calib.col, y.pos=0, fraction=heights)
+  hpds <- draw.dist(cbind(shifted$x, shifted$y), prob=prob, y.pos=0, fraction=heights)
  
   # inset graph
   if(inset) {

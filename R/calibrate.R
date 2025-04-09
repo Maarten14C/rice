@@ -48,7 +48,7 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
             if(!(cc %in% c("nh1", "nh2", "nh3", "sh1-2", "sh3")))
               stop("This appears to be a postbomb age or close to being so. Please provide a postbomb curve")
           cc <- rintcal::glue.ccurves(cc, postbomb, cc.dir)
-		  
+
         } else
           cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample)
     } else
@@ -56,9 +56,9 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
 
   if(postbomb) {
     xseq <- seq(min(cc[,1]), max(cc[,1]), by=0.05) 	
-	ccmu <- approx(cc[,1], cc[,2], xseq)$y
-	ccsd <- approx(cc[,1], cc[,3], xseq)$y  	
-	cc <- cbind(xseq, ccmu, ccsd)	
+    ccmu <- approx(cc[,1], cc[,2], xseq)$y
+    ccsd <- approx(cc[,1], cc[,3], xseq)$y
+    cc <- cbind(xseq, ccmu, ccsd)
   }
   
   # F realm - not using ccurve's as.F option, this to avoid potential double translations

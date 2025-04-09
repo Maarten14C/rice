@@ -52,10 +52,12 @@ plot(x, y, type="l", xlab="time (cal BP)", ylab="C-14 remaining")
 
 # Calibration curves
 
-C-14 ages are not exactly similar to calendar ages, owing to past fluctuations in atmospheric C-14 concentrations. We need calibration curves to correct for these fluctuations. The calibration curves can be plotted:
+C-14 ages are not exactly similar to calendar ages, owing to past fluctuations in atmospheric C-14 concentrations. We need calibration curves to correct for these fluctuations. The calibration curves can be plotted (we're adding a 1:1 line to see how C14 ages deviate from calendar ages over time):
 
 ```{r, fig.width=4, fig.asp=.8}
 draw.ccurve()
+grid()
+abline(0, 1, lty=2)
 ```
 
 Or, comparing two calibration curves, on the BC/AD scale:
@@ -150,7 +152,7 @@ D14CtoC14(592, t=4000)
 
 Here's a function to transform values between multiple realms and visualise them:
 
-```{r, fig.width=4, fig.asp=.8}
+```{r, fig.width=8, fig.asp=.6}
 fromto(100, "calBP")
 ```
 
@@ -171,7 +173,7 @@ lines(x/1e3, Dcc[,1]-Dcc[,2])
 
 We can also use draw.ccurve to plot the IntCal20 curve as both C-14 years and D14C:
 
-```{r, fig.width=4, fig.asp=.8}
+```{r, fig.width=6, fig.asp=.8}
 draw.ccurve(cc2="IntCal20", realm2="D", add.yaxis=TRUE)
 ```
 
