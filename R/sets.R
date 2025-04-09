@@ -293,7 +293,7 @@ dist.overlap <- function(dist1, dist2, by=1, visualise=TRUE, prob=0.95, BCAD=FAL
 
 
 
-#' @name spread2
+#' @name spread
 #' @title The spread among calibrated dates
 #' @description Calculates the spread among multiple calibrated radiocarbon dates. It does this by randomly sampling ages from the calibrated dates, and calculating the difference between one random date and all others for that iteration.
 #' @return The spread of all calibrated probabilities. 
@@ -320,11 +320,11 @@ dist.overlap <- function(dist1, dist2, by=1, visualise=TRUE, prob=0.95, BCAD=FAL
 #' @param bty Draw a box around a box of a certain shape. Defaults to \code{bty="l"}.
 #' @examples
 #'   data(shroud)
-#'   spread2(shroud$y,shroud$er)
+#'   spread(shroud$y,shroud$er)
 #'   Zu <- grep("ETH", shroud$ID) # Zurich lab only
-#'   spread2(shroud$y[Zu],shroud$er[Zu])
+#'   spread(shroud$y[Zu],shroud$er[Zu])
 #' @export
-spread2 <- function(y, er, n=1e5, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, thiscurve=NULL, yrsteps=1, cc.resample=FALSE, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, visualise=TRUE, talk=TRUE, prob=0.95, roundby=1, bty="l") {
+spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, thiscurve=NULL, yrsteps=1, cc.resample=FALSE, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, visualise=TRUE, talk=TRUE, prob=0.95, roundby=1, bty="l") {
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)

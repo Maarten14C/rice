@@ -208,7 +208,7 @@ as.bin(shroud$y,shroud$er, 100, move.by=25)
 The spread of multiple calibrated dates can be visualised and summarised:
 
 ```{r, fig.width=5, fig.asp=.8}
-spread2(shroud$y,shroud$er)
+spread(shroud$y,shroud$er)
 ```
 
 The time-span between two dates can be calculated (by sampling *n* pairs of random ages from both calibrated distributions and plotting the time-span for each pair):
