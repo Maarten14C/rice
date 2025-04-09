@@ -9,6 +9,7 @@
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param is.F Set this to TRUE if the provided age and error are in the F14C realm.
+#' @param is.pMC Set this to TRUE if the provided age and error are in the pMC realm.
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
@@ -83,10 +84,10 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
     if(!yrsteps)
       yrsteps <- 0.05 # enough detail to enable calculation of hpd ranges also for postbomb dates
   if(yrsteps)
-    yrsteps <- seq(min(cal[,1]), max(cal[,1]), by=yrsteps) else
-      yrsteps <- cal[,1]
+    yrseq <- seq(min(cal[,1]), max(cal[,1]), by=yrsteps) else
+      yrseq <- cal[,1]
  #     yrsteps <- seq(min(cal[,1]), max(cal[,1]), length=dist.res)
-  cal <- approx(cal[,1], cal[,2], yrsteps, rule=rule)
+  cal <- approx(cal[,1], cal[,2], yrseq, rule=rule)
   # cal <- cbind(cal$x, cal$y/sum(cal$y)) # normalise
   cal <- cbind(cal$x, cal$y)
 
@@ -169,12 +170,13 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 #' @param age.round Rounding for ages. Defaults to 0 decimals.
 #' @param prob.round Rounding for reported probabilities. Defaults to 1 decimal.
 #' @param every Yearly precision (defaults to 0.1, as a compromise between speed and accuracy).
+#' @param bins The number of bins required. Any distribution with fewer bins gets recalculated using 100 narrower bins.
 #' @examples
 #' hpd(caldist(130,20))
 #' plot(tmp <- caldist(2450,50), type='l')
 #' abline(v=hpd(tmp)[,1:2], col=4)
 #' @export
-hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.round=0, prob.round=1, every=0.1) {
+hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.round=0, prob.round=1, every=0.1, bins=20) {
 
   # re-interpolate to desired precision
   if(ka) {
@@ -184,9 +186,10 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
 
   calib <- calib[order(calib[,1]),] # ensure calendar ages are in increasing order
   steppies <- diff(unique(calib[,1]))
-  if((max(calib[,1])-min(calib[,1])) >= 20*every) # is there sufficient cal space to calculate hpds?
-    calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), by=min(steppies, every)), rule=2) else
-      calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), length=100), rule=2)
+  tmpcalib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), by=every))
+  if(length(tmpcalib$x) >= bins) # then the distribution is not very narrow
+	  calib <- tmpcalib else
+        calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), length=100), rule=2)
   calib <- cbind(calib$x, calib$y/sum(calib$y)) # normalise probs to 1
 
   # rank the calibrated ages according to their probabilities
@@ -246,6 +249,7 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param is.F Use this if the provided date is in the F14C realm.
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @author Maarten Blaauw
@@ -255,7 +259,7 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
 #'   l.calib(100, c(130,150), c(15,20)) # multiple radiocarbon ages and a single calendar age
 #'   plot(0:300, l.calib(0:300, 130, 20), type='l')
 #' @export
-l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=c(), cc.dir=c(), normal=TRUE, as.F=FALSE, t.a=3, t.b=4) {
+l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=c(), cc.dir=c(), normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4) {
   
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
@@ -267,12 +271,15 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
     if(length(y) > 1 || length(er)>1)
       stop("cannot deal with multiple entries for both x and y+er") 
 
-  if(as.F) {
-    mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
-    tmp <- C14toF14C(y, er)
-    y <- tmp[,1]; er <- tmp[,2]
+  if(is.F) {
+	mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
   } else
-    mu <- calBPtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
+    if(as.F) {
+      mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
+      tmp <- C14toF14C(y, er)
+      y <- tmp[,1]; er <- tmp[,2]
+    } else
+      mu <- calBPtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
   
   if(normal)
     prob <- dnorm(y, mu[,1], sqrt(mu[,2]^2 + er^2)) else
@@ -295,6 +302,7 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param is.F Use this if the provided date is in the F14C realm.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespans.
@@ -312,13 +320,13 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
 #'   r.calib(10,130,20) # 10 random cal BP ages
 #'   plot(density(r.calib(1e6, 2450, 20)))
 #' @export
-r.calib <- function(n, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=2, cc.dir=NULL) {
+r.calib <- function(n, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=2, cc.dir=NULL) {
   if(length(n) == 0 || n<1)
     stop("n needs to be a value >0")
   if(!length(y) == 1 || !length(er) == 1)
     stop("I can only handle one date at a time")
   
-  calib <- caldist(y, er, cc=cc, postbomb=postbomb, deltaR=deltaR, deltaSTD=deltaSTD, as.F=as.F, thiscurve=thiscurve, yrsteps=yrsteps, normalise=normalise, BCAD=BCAD, rule=rule, cc.dir=cc.dir)
+  calib <- caldist(y, er, cc=cc, postbomb=postbomb, deltaR=deltaR, deltaSTD=deltaSTD, as.F=as.F, is.F=is.F, thiscurve=thiscurve, yrsteps=yrsteps, normalise=normalise, BCAD=BCAD, rule=rule, cc.dir=cc.dir)
   rx <- approx(cumsum(calib[,2])/sum(calib[,2]), calib[,1], runif(n), rule=2)$y
   return(rx)
 }
@@ -339,6 +347,7 @@ r.calib <- function(n, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=F
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param is.F Use this if the provided date is in the F14C realm.
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
@@ -350,11 +359,11 @@ r.calib <- function(n, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=F
 #' calibrate(160, 20, BCAD=TRUE)
 #' younger(1750, 160, 20, BCAD=TRUE)
 #' @export
-younger <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+younger <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
   if(length(y)>1 || length(er) >1)
     stop("I can only deal with one date at a time")
   
-  cal <- caldist(y, er, cc, postbomb=postbomb, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, BCAD=BCAD, threshold=threshold)
+  cal <- caldist(y, er, cc, postbomb=postbomb, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, BCAD=BCAD, threshold=threshold)
   prob <- approx(cal[,1], cumsum(cal[,2])/sum(cal[,2]), x, rule=2)$y # cumulative prob
   return(prob)
 }
@@ -376,6 +385,7 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param is.F Use this if the provided date is in the F14C realm.
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
@@ -387,8 +397,8 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal
 #' calibrate(160, 20, BCAD=TRUE)
 #' older(1750, 160, 20, BCAD=TRUE)
 #' @export
-older <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
-  return(1 - younger(x, y, er, cc, postbomb=postbomb, deltaR, deltaSTD, normal, as.F=as.F, t.a, t.b, BCAD, threshold=threshold))
+older <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+  return(1 - younger(x, y, er, cc, postbomb=postbomb, deltaR, deltaSTD, normal, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, BCAD=BCAD, threshold=threshold))
 }
 
 
@@ -408,6 +418,7 @@ older <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal=T
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param is.F Use this if the provided date is in the F14C realm.
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
@@ -416,10 +427,10 @@ older <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal=T
 #' @examples
 #' p.range(2800, 2400, 2450, 20)
 #' @export
-p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
   if(length(y)>1 || length(er) >1)
     stop("I can only deal with one date at a time")
-  cal <- caldist(y, er, cc, postbomb=postbomb, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, BCAD=BCAD, threshold=threshold)
+  cal <- caldist(y, er, cc, postbomb=postbomb, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, BCAD=BCAD, threshold=threshold)
   prob <- approx(cal[,1], cumsum(cal[,2])/sum(cal[,2]), sort(c(x1, x2)), rule=2)$y 
   return(max(prob)-min(prob))
 }
@@ -439,6 +450,7 @@ p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, n
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param is.F Use this if the provided date is in the F14C realm.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
 #' @param cc.dir Directory where the calibration curves for C14 dates \code{cc} are allocated. By default \code{cc.dir=c()}.
 #' Use \code{cc.dir="."} to choose current working directory. Use \code{cc.dir="Curves/"} to choose sub-folder \code{Curves/}.
@@ -453,13 +465,13 @@ p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, n
 #' calib.t()
 #'
 #' @export
-calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, BCAD=FALSE, cc.dir=c(), normal.col="red", normal.lwd=1.5, t.col=rgb(0,0,0,0.25), t.border=rgb(0,0,0,0,0.25), xlim=c(), ylim=c()) {
+calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, BCAD=FALSE, cc.dir=c(), normal.col="red", normal.lwd=1.5, t.col=rgb(0,0,0,0.25), t.border=rgb(0,0,0,0,0.25), xlim=c(), ylim=c()) {
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
 
-  normalcal <- caldist(y, er, cc, postbomb, BCAD=BCAD, cc.dir=cc.dir, as.F=as.F, normal=TRUE)
-  tcal <- caldist(y, er, cc, postbomb, BCAD=BCAD, as.F=as.F, t.a=t.a, t.b=t.b, cc.dir=cc.dir, normal=FALSE)
+  normalcal <- caldist(y, er, cc, postbomb, BCAD=BCAD, cc.dir=cc.dir, as.F=as.F, is.F=is.F, normal=TRUE)
+  tcal <- caldist(y, er, cc, postbomb, BCAD=BCAD, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, cc.dir=cc.dir, normal=FALSE)
   tpol <- cbind(c(tcal[1,1], tcal[,1], tcal[nrow(tcal),1]), c(0, tcal[,2], 0))
 
   xlab <- ifelse(BCAD, "BC/AD", "cal BP")

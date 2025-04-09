@@ -1,7 +1,5 @@
 # to do: 
 
-#### draw.dists, heights are wrong. E.g. wrong in as.one, also in calibrate.
-
 # check how is.pMC and is.F work in calibrate(). Make interpolation to e.g. years more intelligent (default c() then 1 if prebomb, .1 if postbomb
 
 # rintcal has as.F through ccurve(as.F=TRUE)) (but not as.pMC)

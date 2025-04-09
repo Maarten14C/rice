@@ -117,7 +117,7 @@ ocean.map <- function(S, W, N, E, shells=c(), mapsize="large", padding=0.1, ocea
 #' @param colour The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.
 #' @param rainbow Whether or not to use a rainbow scale to plot the variable.
 #' @param size Size of the symbols. Defaults to 2.
-#' @param mapsize Resolution of the map. Can be "small" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to "small" if 'rnaturalearthhires' is not installed, and to 'high' if it is installed.
+#' @param mapsize Resolution of the map. Can be "small" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to "small" if 'rnaturalearthhires' is not installed, and to "large" if it is installed.
 #' @param mincol Colour for minimum values.
 #' @param maxcol Colour for maximum values.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'.
@@ -129,11 +129,11 @@ ocean.map <- function(S, W, N, E, shells=c(), mapsize="large", padding=0.1, ocea
 #' @param padding Area around the map if using a basic plot. Avoids strange line features. Defaults to \code{padding=1}. 
 #' @param warn Whether or not to warn if some recommended are not available.
 #' @examples
-#'   UK <- find.shells(0, 55, mapsize="medium")
+#'   UK <- find.shells(0, 55, mapsize="small")
 #'   mean(UK$dR)
-#'   Caribbean <- find.shells(-70, 20, 30, mapsize="medium")
+#'   Caribbean <- find.shells(-70, 20, 30, mapsize="small")
 #' @export
-find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, legend.loc=c(0.95, 0.02), legend.size=c(0.05, 0.2), ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), padding=1, warn=TRUE) {
+find.shells <- function(longitude, latitude, nearest=50, colour="dR", rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol="feeding", symbol.legend=TRUE, legend.loc=c(0.95, 0.02), legend.size=c(0.05, 0.2), ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), padding=1, warn=TRUE) {
   lon <- lat <- NULL # to get rid of subsequent ggplot2-related warnings
   if(length(c(longitude,latitude)) != 2)
     stop("we need 1 entry for longitude, 1 for latitude")
@@ -187,7 +187,7 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
 #' @param colour The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.
 #' @param rainbow Whether or not to use a rainbow scale to plot the variable.
 #' @param size Size of the symbols. Defaults to 2.
-#' @param mapsize Resolution of the map. Can be "small" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to "small" if 'rnaturalearthhires' is not installed, and to 'high' if it is installed.
+#' @param mapsize Resolution of the map. Can be "small" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to "small" if 'rnaturalearthhires' is not installed, and to "large" if it is installed.
 #' @param mincol Colour for minimum values.
 #' @param maxcol Colour for maximum values.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'. 
@@ -199,10 +199,10 @@ find.shells <- function(longitude, latitude, nearest=50, colour='dR', rainbow=FA
 #' @param padding Area around the map if using a basic plot. Avoids strange line features. Defaults to \code{padding=0.1}. 
 #' @param warn Whether or not to warn if some recommended are not available.
 #' @examples
-#'  N_UK <- map.shells(53, -11, 60, 2, mapsize="medium")
+#'  N_UK <- map.shells(53, -11, 60, 2, mapsize="small")
 #'  mean(N_UK$dR)
 #' @export
-map.shells <- function(S=48, W=-15, N=62, E=5, colour='dR', rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol='feeding', symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), legend.loc=c(.95, .02), legend.size=c(.05, .2), padding=0.1, warn=TRUE) {
+map.shells <- function(S=48, W=-15, N=62, E=5, colour="dR", rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol="feeding", symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), legend.loc=c(.95, .02), legend.size=c(.05, .2), padding=0.1, warn=TRUE) {
   lon <- lat <- NULL # to get rid of subsequent ggplot2-related warnings
   shells <- get("shells", envir = .GlobalEnv)
   shells[[symbol]] <- as.factor(shells[[symbol]])
@@ -225,7 +225,7 @@ map.shells <- function(S=48, W=-15, N=62, E=5, colour='dR', rainbow=FALSE, size=
 #' @param round Rounding to be applied (defaults to 1 decimal).
 #' @param talk Report details of the found values.
 #' @examples
-#'   N_UK <- map.shells(53, -11, 60, 2, mapsize="medium")
+#'   N_UK <- map.shells(53, -11, 60, 2, mapsize="small")
 #'   weighted_means(N_UK$dR, N_UK$dSTD)
 #' @export
 weighted_means <- function(y, er, round=1, talk=TRUE) {
@@ -265,7 +265,7 @@ weighted_means <- function(y, er, round=1, talk=TRUE) {
 #' @param lty.mn Line type for the weighted mean. Defaults to dashed, \code{lty.mn=2}.
 #' @param col.sd Colour of the rectangle of the error. Defaults to transparent grey, \code{col.sd=rgb(0,0,0,.1)}.
 #' @examples
-#'  N_UK <- map.shells(53, -11, 60, 2, mapsize="medium")
+#'  N_UK <- map.shells(53, -11, 60, 2, mapsize="small")
 #'  shells.mean(N_UK)
 #'  nearby <- find.shells(0,56,20) # somewhere in Scotland
 #'  shells.mean(nearby, distance=TRUE) # distance matters

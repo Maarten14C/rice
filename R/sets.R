@@ -78,7 +78,7 @@ pool <- function(y, er, deltaR=0, deltaSTD=0, threshold=.05, roundby=1) {
 #'   Zu <- grep("ETH", shroud$ID) # Zurich lab only
 #'   as.one(shroud$y[Zu],shroud$er[Zu], BCAD=TRUE)
 #' @export
-as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), d.lim=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=4, prob=0.95, talk=TRUE, roundby=0, bty="n") {
+as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), d.lim=c(), calib.col=rgb(0,0,0,.2), one.col=rgb(0,0,1,.5), one.height=.3, prob=0.95, talk=TRUE, roundby=0, bty="n") {
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
@@ -101,7 +101,7 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE
   product <- apply(probs, 2, prod)
 
   as.dist <- cbind(xseq, product/max(product))
-  hpds <- draw.dist(as.dist, y.pos=max(d.lim), prob=prob, dist.col=one.col, ex=one.height)
+  hpds <- draw.dist(as.dist, y.pos=max(d.lim), prob=prob, dist.col=one.col, fraction=one.height, as.unit=FALSE)
   if(talk) {
     as.points <- suppressWarnings(point.estimates(as.dist, rounded=roundby))
     message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " BC/AD", " cal BP"))
@@ -159,7 +159,7 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE
 #'   # bins of 50 yr, moving by 10 yr, slow
 #' }
 #' @export
-as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), d.lim=c(), calib.col=rgb(0,0,0,.2), bin.col=rgb(0,0,1,.5), bin.height=4, talk=TRUE, prob=0.95, roundby=0, bty="n") {
+as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=1, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cc.dir=NULL, age.lim=c(), age.lab=c(), d.lim=c(), calib.col=rgb(0,0,0,.2), bin.col=rgb(0,0,1,.5), bin.height=.3, talk=TRUE, prob=0.95, roundby=0, bty="n") {
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
@@ -181,7 +181,7 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 
   inbin <- rowSums(tmp)
   as.dist <- cbind(xseq, inbin/max(inbin))
-  hpds <- draw.dist(as.dist, y.pos=max(d.lim), prob=prob, dist.col=bin.col, ex=bin.height)
+  hpds <- draw.dist(as.dist, y.pos=max(d.lim), prob=prob, dist.col=bin.col, as.unit=FALSE, fraction=bin.height)
   
   if(talk) {
     as.points <- suppressWarnings(point.estimates(as.dist, rounded=roundby))
@@ -293,7 +293,7 @@ dist.overlap <- function(dist1, dist2, by=1, visualise=TRUE, prob=0.95, BCAD=FAL
 
 
 
-#' @name spread
+#' @name spread2
 #' @title The spread among calibrated dates
 #' @description Calculates the spread among multiple calibrated radiocarbon dates. It does this by randomly sampling ages from the calibrated dates, and calculating the difference between one random date and all others for that iteration.
 #' @return The spread of all calibrated probabilities. 
@@ -320,11 +320,11 @@ dist.overlap <- function(dist1, dist2, by=1, visualise=TRUE, prob=0.95, BCAD=FAL
 #' @param bty Draw a box around a box of a certain shape. Defaults to \code{bty="l"}.
 #' @examples
 #'   data(shroud)
-#'   spread(shroud$y,shroud$er)
+#'   spread2(shroud$y,shroud$er)
 #'   Zu <- grep("ETH", shroud$ID) # Zurich lab only
-#'   spread(shroud$y[Zu],shroud$er[Zu])
+#'   spread2(shroud$y[Zu],shroud$er[Zu])
 #' @export
-spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, thiscurve=NULL, yrsteps=1, cc.resample=FALSE, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, visualise=TRUE, talk=TRUE, prob=0.95, roundby=1, bty="l") {
+spread2 <- function(y, er, n=1e5, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, thiscurve=NULL, yrsteps=1, cc.resample=FALSE, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, visualise=TRUE, talk=TRUE, prob=0.95, roundby=1, bty="l") {
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
@@ -337,9 +337,8 @@ spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.
     xs[,i] <- r.calib(n, y[i], er[i], cc=cc, postbomb=postbomb, as.F=as.F, thiscurve=thiscurve, yrsteps=yrsteps, cc.resample=cc.resample, threshold=threshold, normal=normal, t.a=t.a, t.b=t.b, cc.dir=cc.dir)
   for(i in 1:n)
     diffs[i,] <- abs(xs[i,ns[i]] - xs[i,-ns[i]])
-  
   as.dens <- density(diffs)
-  as.hpd <- hpd(diffs)
+  as.hpd <- hpd(diffs, every=min(diff(as.dens$x)))
   aspoints <- round(point.estimates(cbind(as.dens$x, as.dens$y)), roundby)
   oneprob <- (1-prob)/2
   minmax <- round(quantile(diffs, probs=c(oneprob, .5, 1-oneprob)), roundby)
