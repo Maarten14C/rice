@@ -1,4 +1,4 @@
-# rice 1.1.0
+# rice 1.1.1
 * added a secondary y axis to the `contaminate`, `clean` and `muck` plots.
 * additional R packages for plotting maps are now only installed and loaded when required.
 * added the latest entries from the calib.org/marine database (2 April 2025). 

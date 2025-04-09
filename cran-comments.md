@@ -5,4 +5,4 @@
 * rhub (R-devel): windows, linux, gcc14
 
 ## R CMD check results
-There were no NOTEs, ERRORs or WARNINGs.
+The previous WARNINGs (rejected version 1.1.0) were caused by a problem with updated documentation. Apologies.
