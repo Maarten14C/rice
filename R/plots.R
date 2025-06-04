@@ -37,7 +37,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 
   # read and narrow down the calibration curve(s)
   if(cc1 %in% c(2, "Marine20")) # then no postbomb curve available
-    cc.1 <- rintcal::ccurve(2, postbomb=FALSE, cc.dir) else
+    cc.1 <- rintcal::ccurve(2, postbomb=CFALSE, cc.dir) else
       if(cc1.postbomb)
         cc.1 <- rintcal::glue.ccurves(cc1, cc1.postbomb, cc.dir) else
           cc.1 <- rintcal::ccurve(cc1, cc1.postbomb, cc.dir)
@@ -404,8 +404,8 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
 
     if(length(C14.lim) == 0) {
       if(BCAD) {
-        cc.min <- max(1, min(which(Cc[,4] <= max(cal.lim))))
-        cc.max <- min(nrow(Cc), max(which(Cc[,4] >= min(cal.lim))))
+        cc.min <- max(1, min(which(Cc[,cc.cal] <= max(cal.lim))))
+        cc.max <- min(nrow(Cc), max(which(Cc[,cc.cal] >= min(cal.lim))))
       } else {  
           cc.min <- max(1, min(which(Cc[,1] >= min(cal.lim))))
           cc.max <- min(nrow(Cc), max(which(Cc[,1] <= max(cal.lim))))

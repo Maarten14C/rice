@@ -1,11 +1,12 @@
 
-ocean.map <- function(S, W, N, E, shells=c(), mapsize="large", padding=0.1, ocean.col="aliceblue", land.col = rgb(0, 0.5, 0, 0.6), rainbow=FALSE, symbol='feeding', symbol.legend=TRUE, legend.loc=c(.95, .02), legend.size=c(.05, .20), mincol="yellow", maxcol="red", colour='dR', warn=TRUE) {
+ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", padding=0.1, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0, 0.6), rainbow=FALSE, symbol='feeding', symbol.legend=TRUE, legend.loc=c(.95, .02), legend.size=c(.05, .20), mincol="yellow", maxcol="red", colour='dR', warn=TRUE) {
 
   # Check if useful libraries are installed
-  hassf <- requireNamespace("sf", quietly = TRUE)
-  rne <- requireNamespace("rnaturalearth", quietly = TRUE)
-  rnedata <- requireNamespace("rnaturalearthdata", quietly = TRUE)
-  devtools <- requireNamespace("devtools", quietly = TRUE)
+  hassf <- requireNamespace("sf", quietly=TRUE)
+  rne <- requireNamespace("rnaturalearth", quietly=TRUE)
+  rnedata <- requireNamespace("rnaturalearthdata", quietly=TRUE)
+  devtools <- requireNamespace("devtools", quietly=TRUE)
+  lflt <- requireNamespace("leaflet", quietly=TRUE)
   hiresmaps <- "rnaturalearthhires" %in% installed.packages() # TRUE or FALSE
 
   if(warn) {
@@ -31,14 +32,40 @@ ocean.map <- function(S, W, N, E, shells=c(), mapsize="large", padding=0.1, ocea
     }
   }
 
+  if(rainbow)
+    color_scale <- rainbow(100) else
+      color_scale <- grDevices::colorRampPalette(c("yellow", "red"))(100)
+
+  if(browse) 
+    if(!lflt) {
+      message("Please install the leaflet package:\ninstall.packages(\"leaflet\")")
+    } else {
+      library(leaflet)
+      dR <- shells[,5]
+      bins <- cut(dR, breaks = 100)
+      cols <- color_scale[as.numeric(bins)]
+      qtiles <- round(quantile(dR, probs = c(1, 0.75, 0.5, 0.25, 0)), 1)
+
+      hover_labels <- paste0(
+       "dR: ", dR, " &plusmn; ", shells[,6],
+       "<br>No.: ", shells$no, "<br>Feeding: ", shells$feeding)
+      map <- leaflet()
+      map <- addProviderTiles(map, providers$Esri.WorldImagery, group = "Esri Satellite")
+      map <- addCircleMarkers(map, data=shells, lng=~lon, lat=~lat,
+        color=cols, radius=5, fillOpacity=0.8,
+        label=lapply(hover_labels, htmltools::HTML))
+      map <- addLegend(map, position = "bottomright",
+        colors=color_scale[c(100, 75, 50, 25, 1)],
+        labels=qtiles, title="dR", opacity = 0.7)
+      print(map)
+      return() # don't continue on to following code
+    }
+
   if(!hassf) { # then we'll plot basic maps (ugly)
     width <- abs(E-W); height <- abs(N-S)
     par(mar=rep(1,4))
     maps::map(xlim=c(W-(padding*width), E+(padding*width)), ylim=c(S-(padding*height), N+(padding*height)),
       fill = TRUE, col = land.col, bg = ocean.col)
-    if(rainbow)
-      color_scale <- rainbow(100) else
-        color_scale <- grDevices::colorRampPalette(c("yellow", "red"))(100)
     cols <- color_scale[as.numeric(cut(shells[,5], breaks = 100))]
     points(shells[,1], shells[,2], col=cols, pch=20)
 
@@ -102,6 +129,30 @@ ocean.map <- function(S, W, N, E, shells=c(), mapsize="large", padding=0.1, ocea
 }
 
 
+# this is a really nice browser map, but needs circulation not temperature
+# leaflet::leaflet() |>
+#  leaflet::setView(lng = 3, lat = 54, zoom = 4) |>
+#  leaflet::addProviderTiles("Esri.WorldImagery") |>
+#  addCmsWMTSTiles(
+#    product     = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
+#    layer       = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+#    variable    = "thetao"
+#  )
+
+
+
+
+# from https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
+hav.dist <- function(long1, lat1, long2, lat2) {
+  R <- 6371 # Earth's diameter in km
+  p <- pi/180
+  diff.long <- (long2 - long1) * p
+  diff.lat <- (lat2 - lat1) * p
+  a <- sin(diff.lat/2)^2 + cos(lat1 * p) * cos(lat2 * p) * sin(diff.long/2)^2
+  b <- 2 * asin(pmin(1, sqrt(a)))
+  return(R * b)
+}
+
 
 
 #' @name find.shells
@@ -114,6 +165,7 @@ ocean.map <- function(S, W, N, E, shells=c(), mapsize="large", padding=0.1, ocea
 #' @param longitude Longitude of the point. Can only deal with one point at a time.
 #' @param latitude Latitude of the point. Can only deal with one point at a time.
 #' @param nearest The number of shell values to be returned. Defaults to 50.
+#' @param browse Type of map to provide. \code{browse=FALSE} (default) plots a static map in R's device (doesn't require Internet access), while \code{browse=TRUE} opens a browsable, interactive map in your Internet browser.
 #' @param colour The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.
 #' @param rainbow Whether or not to use a rainbow scale to plot the variable.
 #' @param size Size of the symbols. Defaults to 2.
@@ -127,30 +179,20 @@ ocean.map <- function(S, W, N, E, shells=c(), mapsize="large", padding=0.1, ocea
 #' @param ocean.col Colour for the oceans. Defaults to \code{ocean.col="aliceblue"}.
 #' @param land.col Colour for the land. Defaults to semi-transparent darkgreen: \code{land.col=rgb(0, 0.5, 0, 0.6)}.
 #' @param padding Area around the map if using a basic plot. Avoids strange line features. Defaults to \code{padding=1}. 
-#' @param warn Whether or not to warn if some recommended are not available.
+#' @param warn Whether or not to warn if some recommended R packages are not available.
+#' @param currents If set to TRUE (the default), the user will be asked if they want to browse a map of ocean currents. If the user responds 'y', an Internet browser window will be opened pointing to a zoomed-in map of ocean currents (at 50 m depth). The ocean currents are from 'earth.nullschool.net' and are based on an ocean circulation model which is updated daily. Owing to limitations of the website, the shell locations cannot currently be added to the page. 
 #' @examples
 #'   UK <- find.shells(0, 55, mapsize="small")
 #'   mean(UK$dR)
 #'   Caribbean <- find.shells(-70, 20, 30, mapsize="small")
 #' @export
-find.shells <- function(longitude, latitude, nearest=50, colour="dR", rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol="feeding", symbol.legend=TRUE, legend.loc=c(0.95, 0.02), legend.size=c(0.05, 0.2), ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), padding=1, warn=TRUE) {
+find.shells <- function(longitude, latitude, nearest=50, browse=FALSE, colour="dR", rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol="feeding", symbol.legend=TRUE, legend.loc=c(0.95, 0.02), legend.size=c(0.05, 0.2), ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), padding=1, warn=TRUE, currents=TRUE) {
   lon <- lat <- NULL # to get rid of subsequent ggplot2-related warnings
   if(length(c(longitude,latitude)) != 2)
     stop("we need 1 entry for longitude, 1 for latitude")
 
   shells <- get("shells", envir = .GlobalEnv)
-
-  # from https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
-  hav.dist <- function(long1, lat1, long2, lat2) {
-    R <- 6371 # Earth's diameter in km
-    p <- pi/180
-    diff.long <- (long2 - long1) * p
-    diff.lat <- (lat2 - lat1) * p
-    a <- sin(diff.lat/2)^2 + cos(lat1 * p) * cos(lat2 * p) * sin(diff.long/2)^2
-    b <- 2 * asin(pmin(1, sqrt(a)))
-    return(R * b)
-  }
-
+  
   shell_coors <- data.frame(lon=shells$lon, lat=shells$lat)
   distances <- apply(shell_coors, 1, function(row) {
     hav.dist(longitude, latitude, row["lon"], row["lat"])})
@@ -159,14 +201,35 @@ find.shells <- function(longitude, latitude, nearest=50, colour="dR", rainbow=FA
   o <- o[1:nearest]
   distances <- distances[o]
   nearshells <- cbind(shells[o,], distances)
-
+  
   S <- min(nearshells$lat)
   W <- min(nearshells$lon)
   N <- max(nearshells$lat)
   E <- max(nearshells$lon)
 
   ocean.map(S, W, N, E, shells=nearshells,
-    mapsize=mapsize, ocean.col=ocean.col, land.col=land.col, rainbow=rainbow, symbol=symbol, symbol.legend=symbol.legend, legend.loc=legend.loc, legend.size=legend.size, mincol=mincol, maxcol=maxcol, colour=colour, warn=warn, padding=padding)
+    mapsize=mapsize, browse=browse, ocean.col=ocean.col, land.col=land.col, rainbow=rainbow, symbol=symbol, symbol.legend=symbol.legend, legend.loc=legend.loc, legend.size=legend.size, mincol=mincol, maxcol=maxcol, colour=colour, warn=warn, padding=padding)
+  
+  if(interactive())
+    if(currents) {
+      if(E < W) E <- E + 360
+      width <- hav.dist(W, (S+N)/2, E, (S+N)/2)
+      height <- hav.dist((W+E)/2, S, (W+E)/2, N)
+      w <- 10000 * (1000 / width)
+      h <- 10000 * ((1000 / 2) / height) 
+  	  sz <- max(300, min(5000, ceiling(min(w, h))))
+   	  answer <- tolower(readline("Do you want to browse a map with ocean currents? [y/N]: "))
+      if(answer == "y") {
+        latitude  <- round((S + N) / 2, 3)
+        longitude <- round((W + E) / 2, 3)
+         browseURL(paste0("https://earth.nullschool.net/#current/ocean/surface/currents/orthographic=",
+          round(longitude, 3), ",", round(latitude, 3), ",", sz))
+	  }
+# alternative, avoiding NOAA dependency, but steering the zoom level is a bit unclear	 
+#		browseURL(paste0("https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=1749038400000&z=-0.5&center=", 
+#		round(longitude, 3), "%2C", round(latitude, 3), '&zoom=', sz, 
+#		"&layers=H4sIAJAgP2gAAzXOUU_DMBQF4P.SZ7aVwijwhjqVBB0RXxZjbppyh00usLQwh8b.bvew8.ydk.Pxy0gtaMuW5eyp2t8VFRSvRXVoyuZx.7a7L5p3qJ8PwHkIXMQb3WPvoB9b6GiE09ey0rMFNRw18DVPoxY7qMOHVQ.Cc55sHCr4VhNaOCON2kwLC5ibFsJa2cloQsfyyc4YsJ9yaPHCcsEDZq6HgITHNHaNVoQsPypy3hm3u5xotGbobtWzohlfzMBy.8JHShltuZBZmqUyFNlNKD8frYXIeJTEYSy3aSJ59Pf5Dwy5X20IAQAA&basemap=dark")) 	 
+    }  
 
   return(nearshells)
 }
@@ -184,6 +247,7 @@ find.shells <- function(longitude, latitude, nearest=50, colour="dR", rainbow=FA
 #' @param W The western limit of the rectangular region.
 #' @param N The northern limit of the rectangular region.
 #' @param E The eastern limit of the rectangular region.
+#' @param browse Type of map to provide. \code{browse=FALSE} (default) plots a static map in R's device (doesn't require Internet access), while \code{browse=TRUE} opens a browsable, interactive map in your Internet browser.
 #' @param colour The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.
 #' @param rainbow Whether or not to use a rainbow scale to plot the variable.
 #' @param size Size of the symbols. Defaults to 2.
@@ -197,23 +261,64 @@ find.shells <- function(longitude, latitude, nearest=50, colour="dR", rainbow=FA
 #' @param legend.loc Location of the legend, if using a basic plot. Defaults to the bottom right corner based on par("usr"), \code{legend.loc=c(0.95, 0.02)}
 #' @param legend.size Size of the legend, if using a basic plot. Defaults to \code{legend.size=c(0.05, 0.2)}
 #' @param padding Area around the map if using a basic plot. Avoids strange line features. Defaults to \code{padding=0.1}. 
-#' @param warn Whether or not to warn if some recommended are not available.
+#' @param warn Whether or not to warn if some recommended R packages are not available.
+#' @param currents If set to TRUE (the default), the user will be asked if they want to browse a map of ocean currents. If the user responds 'y', an Internet browser window will be opened pointing to a zoomed-in map of ocean currents (at 50 m depth). The ocean currents are from 'earth.nullschool.net' and are based on an ocean circulation model which is updated daily. Owing to limitations of the website, the shell locations cannot currently be added to the page. 
 #' @examples
 #'  N_UK <- map.shells(53, -11, 60, 2, mapsize="small")
 #'  mean(N_UK$dR)
 #' @export
-map.shells <- function(S=48, W=-15, N=62, E=5, colour="dR", rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol="feeding", symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), legend.loc=c(.95, .02), legend.size=c(.05, .2), padding=0.1, warn=TRUE) {
+map.shells <- function(S=48, W=-15, N=62, E=5, browse=FALSE, colour="dR", rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol="feeding", symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), legend.loc=c(.95, .02), legend.size=c(.05, .2), padding=0.1, warn=TRUE, currents=TRUE) {
   lon <- lat <- NULL # to get rid of subsequent ggplot2-related warnings
   shells <- get("shells", envir = .GlobalEnv)
   shells[[symbol]] <- as.factor(shells[[symbol]])
   sel <- shells[shells$lon>=W & shells$lon<=E & shells$lat>=S & shells$lat <= N,]
 
   ocean.map(S, W, N, E, shells=sel,
-    mapsize=mapsize, ocean.col=ocean.col, land.col=land.col, rainbow=rainbow, symbol=symbol, symbol.legend=symbol.legend, legend.loc=legend.loc, legend.size=legend.size, mincol=mincol, maxcol=maxcol, colour=colour, warn=warn, padding=padding)
+    mapsize=mapsize, browse=browse, ocean.col=ocean.col, land.col=land.col, rainbow=rainbow, symbol=symbol, symbol.legend=symbol.legend, legend.loc=legend.loc, legend.size=legend.size, mincol=mincol, maxcol=maxcol, colour=colour, warn=warn, padding=padding)
+  
+    if(interactive())
+      if(currents) {
+        if(E < W) E <- E + 360
+        width <- hav.dist(W, (S+N)/2, E, (S+N)/2)
+        height <- hav.dist((W+E)/2, S, (W+E)/2, N)
+        w <- 10000 * (1000 / width)
+        h <- 10000 * ((1000 / 2) / height) 
+    	  sz <- max(300, min(5000, ceiling(min(w, h))))
+     	  answer <- tolower(readline("Do you want to browse a map with ocean currents? [y/N]: "))
+        if(answer == "y") {
+          latitude  <- round((S + N) / 2, 3)
+          longitude <- round((W + E) / 2, 3)
+           browseURL(paste0("https://earth.nullschool.net/#current/ocean/surface/currents/orthographic=",
+            round(longitude, 3), ",", round(latitude, 3), ",", sz))
+  	    }
+  # alternative, avoiding NOAA dependency, but slow and how to steer the zoom level is a bit unclear
+  # browseURL(paste0("https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=1749038400000&z=-0.5&center=", 
+  #		round(longitude, 3), "%2C", round(latitude, 3), '&zoom=', sz,
+  #		"&layers=H4sIAJAgP2gAAzXOUU_DMBQF4P.SZ7aVwijwhjqVBB0RXxZjbppyh00usLQwh8b.bvew8.ydk.Pxy0gtaMuW5eyp2t8VFRSvRXVoyuZx.7a7L5p3qJ8PwHkIXMQb3WPvoB9b6GiE09ey0rMFNRw18DVPoxY7qMOHVQ.Cc55sHCr4VhNaOCON2kwLC5ibFsJa2cloQsfyyc4YsJ9yaPHCcsEDZq6HgITHNHaNVoQsPypy3hm3u5xotGbobtWzohlfzMBy.8JHShltuZBZmqUyFNlNKD8frYXIeJTEYSy3aSJ59Pf5Dwy5X20IAQAA&basemap=dark")) 	 
+      } 
   
   return(sel)
 }  
 
+
+
+#points_df <- data.frame(
+#  name = c("Sample A", "Sample B", "Sample C"),
+#  lat = c(50.5, 51.2, 49.8),
+#  lon = c(-4.0, -3.5, -5.2)
+#)
+
+# Leaflet map with Esri Ocean Basemap (bathymetry)
+#leaflet() %>%
+#  addProviderTiles(providers$Esri.OceanBasemap, group = "Esri Ocean") %>%
+#  addCircleMarkers(data = points_df,
+#                   lng = ~lon, lat = ~lat,
+#                   label = ~name,
+#                   color = "red", radius = 5, fillOpacity = 0.8) %>%
+#  addLayersControl(baseGroups = c("Esri Ocean", "OpenTopoMap", "CartoDB.Positron"),
+#                   options = layersControlOptions(collapsed = FALSE)) %>%
+#  addProviderTiles(providers$OpenTopoMap, group = "OpenTopoMap") %>%
+#  addProviderTiles(providers$CartoDB.Positron, group = "CartoDB.Positron")
 
 
 #' @name weighted_means

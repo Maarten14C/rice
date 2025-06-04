@@ -130,7 +130,7 @@ plot_contamination <- function(true.F, true.er, obs.F, obs.er, perc, perc.er, co
 #' contaminate(5000, 20, 1, 0, 1) # 1% contamination with modern carbon
 #' contaminate(66e6, 1e6, 1, 0, 1) # dino bone, shouldn't be dated as way beyond the dating limit
 #' @export
-contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.er=0, MC=TRUE, its=1e4, decimals=5, roundby=1, visualise=TRUE, talk=TRUE, eq.x=5, eq.y=c(), eq.size=0.75, true.col="darkgreen", observed.col="blue", contamination.col="red", true.pch=20, observed.pch=18, contamination.pch=17, true.name="true", xlab="contamination (%)", ylab="F14C", ylim=c(), C14.axis=TRUE, bty="u") {
+contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.er=0, MC=TRUE, its=1e4, decimals=5, roundby=1, visualise=TRUE, talk=TRUE, eq.x=5, eq.y=c(), eq.size=0.7, true.col="darkgreen", observed.col="blue", contamination.col="red", true.pch=20, observed.pch=18, contamination.pch=17, true.name="true", xlab="contamination (%)", ylab="F14C", ylim=c(), C14.axis=TRUE, bty="u") {
   if(percentage < 0 || percentage > 100)
     stop("percentage should be between 0 and 100%", call.=FALSE) 
   if(F.contam < 0)
@@ -195,8 +195,10 @@ contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.c
       fnt <- c(rep(1, 14), rep(2, 5)) # last bit has to be bold
       if(length(eq.y) == 0)
         eq.y <- 1.01*max(c(F.obs, F.true[,1], F.contam))
+	  op <- par(xpd=TRUE) # to avoid truncated printing 
       for(i in seq_along(txt))
-        text(x = xpos[i], y = eq.y, labels = txt[i], col = colours[i], adj = c(0, 0), font=fnt[i], cex=eq.size/1.32)  
+        text(x = xpos[i], y = eq.y, labels = txt[i], col = colours[i], adj = c(0, 0), font=fnt[i], cex=eq.size/1.32)
+	  op <- par(xpd=FALSE)  
     }
 
   C14.obs <- round(C14.obs, roundby)
