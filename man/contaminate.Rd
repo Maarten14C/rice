@@ -19,7 +19,7 @@ contaminate(
   talk = TRUE,
   eq.x = 5,
   eq.y = c(),
-  eq.size = 0.75,
+  eq.size = 0.7,
   true.col = "darkgreen",
   observed.col = "blue",
   contamination.col = "red",

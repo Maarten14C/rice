@@ -2,9 +2,6 @@
 
 # titles of contaminate plots were plotted outside of the range - now using par(xpd=TRUE)
 
-# can ocean circulation model output be added to ocean maps? A la https://svs.gsfc.nasa.gov/vis/a000000/a003800/a003821/flat_ocean07we_4096rgb.0001-05_print.jpg?
-# or https://earth.nullschool.net/#current/ocean/surface/currents/overlay=significant_wave_height/orthographic=7.26,70.02,3106/loc=-19.763,50.473
-
 # check how is.pMC and is.F work in calibrate(). Make interpolation to e.g. years more intelligent (default c() then 1 if prebomb, .1 if postbomb
 
 # rintcal has as.F through ccurve(as.F=TRUE)) (but not as.pMC)

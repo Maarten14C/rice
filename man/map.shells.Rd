@@ -9,6 +9,7 @@ map.shells(
   W = -15,
   N = 62,
   E = 5,
+  browse = FALSE,
   colour = "dR",
   rainbow = FALSE,
   size = 2,
@@ -22,7 +23,8 @@ map.shells(
   legend.loc = c(0.95, 0.02),
   legend.size = c(0.05, 0.2),
   padding = 0.1,
-  warn = TRUE
+  warn = TRUE,
+  currents = TRUE
 )
 }
 \arguments{
@@ -33,6 +35,8 @@ map.shells(
 \item{N}{The northern limit of the rectangular region.}
 
 \item{E}{The eastern limit of the rectangular region.}
+
+\item{browse}{Type of map to provide. \code{browse=FALSE} (default) plots a static map in R's device (doesn't require Internet access), while \code{browse=TRUE} opens a browsable, interactive map in your Internet browser.}
 
 \item{colour}{The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.}
 
@@ -60,7 +64,9 @@ map.shells(
 
 \item{padding}{Area around the map if using a basic plot. Avoids strange line features. Defaults to \code{padding=0.1}.}
 
-\item{warn}{Whether or not to warn if some recommended are not available.}
+\item{warn}{Whether or not to warn if some recommended R packages are not available.}
+
+\item{currents}{If set to TRUE (the default), the user will be asked if they want to browse a map of ocean currents. If the user responds 'y', an Internet browser window will be opened pointing to a zoomed-in map of ocean currents (at 50 m depth). The ocean currents are from 'earth.nullschool.net' and are based on an ocean circulation model which is updated daily. Owing to limitations of the website, the shell locations cannot currently be added to the page.}
 }
 \value{
 A plot and the relevant dR values.

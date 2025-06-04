@@ -8,6 +8,7 @@ find.shells(
   longitude,
   latitude,
   nearest = 50,
+  browse = FALSE,
   colour = "dR",
   rainbow = FALSE,
   size = 2,
@@ -21,7 +22,8 @@ find.shells(
   ocean.col = "aliceblue",
   land.col = rgb(0, 0.5, 0, 0.6),
   padding = 1,
-  warn = TRUE
+  warn = TRUE,
+  currents = TRUE
 )
 }
 \arguments{
@@ -30,6 +32,8 @@ find.shells(
 \item{latitude}{Latitude of the point. Can only deal with one point at a time.}
 
 \item{nearest}{The number of shell values to be returned. Defaults to 50.}
+
+\item{browse}{Type of map to provide. \code{browse=FALSE} (default) plots a static map in R's device (doesn't require Internet access), while \code{browse=TRUE} opens a browsable, interactive map in your Internet browser.}
 
 \item{colour}{The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.}
 
@@ -57,7 +61,9 @@ find.shells(
 
 \item{padding}{Area around the map if using a basic plot. Avoids strange line features. Defaults to \code{padding=1}.}
 
-\item{warn}{Whether or not to warn if some recommended are not available.}
+\item{warn}{Whether or not to warn if some recommended R packages are not available.}
+
+\item{currents}{If set to TRUE (the default), the user will be asked if they want to browse a map of ocean currents. If the user responds 'y', an Internet browser window will be opened pointing to a zoomed-in map of ocean currents (at 50 m depth). The ocean currents are from 'earth.nullschool.net' and are based on an ocean circulation model which is updated daily. Owing to limitations of the website, the shell locations cannot currently be added to the page.}
 }
 \value{
 A dataset with the n nearest dR values, and a plot of their coordinates.

@@ -7,6 +7,7 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
   rnedata <- requireNamespace("rnaturalearthdata", quietly=TRUE)
   devtools <- requireNamespace("devtools", quietly=TRUE)
   lflt <- requireNamespace("leaflet", quietly=TRUE)
+  coper <- requireNamespace("CopernicusMarine", quietly=TRUE)
   hiresmaps <- "rnaturalearthhires" %in% installed.packages() # TRUE or FALSE
 
   if(warn) {
@@ -30,36 +31,54 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
                     "devtools::install_github(\"ropensci/rnaturalearthhires\"")
        }
     }
+
+  if(browse) {
+    if(!lflt)
+      message("Please install the leaflet package:\ninstall.packages(\"leaflet\")")
+    if(!coper)
+      message("Please install the CopernicusMarine package:\ninstall.packages(\"CopernicusMarine\")")
+    }
   }
 
   if(rainbow)
     color_scale <- rainbow(100) else
       color_scale <- grDevices::colorRampPalette(c("yellow", "red"))(100)
 
-  if(browse) 
-    if(!lflt) {
-      message("Please install the leaflet package:\ninstall.packages(\"leaflet\")")
-    } else {
-      library(leaflet)
-      dR <- shells[,5]
-      bins <- cut(dR, breaks = 100)
-      cols <- color_scale[as.numeric(bins)]
-      qtiles <- round(quantile(dR, probs = c(1, 0.75, 0.5, 0.25, 0)), 1)
+  if(browse) {
+    dR <- shells[,5]
+    bins <- cut(dR, breaks = 100)
+    cols <- color_scale[as.numeric(bins)]
+    qtiles <- round(quantile(dR, probs = c(1, 0.75, 0.5, 0.25, 0)), 1)
 
-      hover_labels <- paste0(
-       "dR: ", dR, " &plusmn; ", shells[,6],
-       "<br>No.: ", shells$no, "<br>Feeding: ", shells$feeding)
-      map <- leaflet()
-      map <- addProviderTiles(map, providers$Esri.WorldImagery, group = "Esri Satellite")
-      map <- addCircleMarkers(map, data=shells, lng=~lon, lat=~lat,
-        color=cols, radius=5, fillOpacity=0.8,
-        label=lapply(hover_labels, htmltools::HTML))
-      map <- addLegend(map, position = "bottomright",
-        colors=color_scale[c(100, 75, 50, 25, 1)],
-        labels=qtiles, title="dR", opacity = 0.7)
-      print(map)
-      return() # don't continue on to following code
-    }
+    hover_labels <- paste0("dR: ", dR, " &plusmn; ", shells[,6],
+     "<br>No.: ", shells$no, "<br>Feeding: ", shells$feeding)
+    map <- leaflet::leaflet()
+    map <- leaflet::addProviderTiles(map, leaflet::providers$Esri.WorldImagery, group = "Esri Satellite")
+    map <- leaflet::addLayersControl(map,
+      baseGroups = c("Esri Satellite", "Positron", "Sea Water Potential Temperature"),
+      options = leaflet::layersControlOptions(collapsed = FALSE))
+    map <- CopernicusMarine::addCmsWMTSTiles(map,
+      product = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
+      layer = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+      variable = "thetao",
+      tilematrixset = "EPSG:3857",
+      options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
+      group = "Sea Water Potential Temperature"
+    )
+    map <- leaflet::addLayersControl(map,
+      baseGroups = c("ESRI Satellite", "Sea Water Potential Temperature"),
+      options = leaflet::layersControlOptions(collapsed = FALSE)
+    )
+
+    map <- leaflet::addCircleMarkers(map, data=shells, lng=~lon, lat=~lat,
+      color=cols, radius=5, fillOpacity=0.8,
+      label=lapply(hover_labels, htmltools::HTML))
+    map <- leaflet::addLegend(map, position = "bottomright",
+      colors=color_scale[c(100, 75, 50, 25, 1)],
+      labels=qtiles, title="dR", opacity = 0.7)
+    print(map)
+    return() # don't continue on to following code
+  }
 
   if(!hassf) { # then we'll plot basic maps (ugly)
     width <- abs(E-W); height <- abs(N-S)
@@ -217,14 +236,14 @@ find.shells <- function(longitude, latitude, nearest=50, browse=FALSE, colour="d
       height <- hav.dist((W+E)/2, S, (W+E)/2, N)
       w <- 10000 * (1000 / width)
       h <- 10000 * ((1000 / 2) / height) 
-  	  sz <- max(300, min(5000, ceiling(min(w, h))))
-   	  answer <- tolower(readline("Do you want to browse a map with ocean currents? [y/N]: "))
+      sz <- max(300, min(5000, ceiling(min(w, h))))
+      answer <- tolower(readline("Do you want to browse a map with ocean currents? [y/N]: "))
       if(answer == "y") {
         latitude  <- round((S + N) / 2, 3)
         longitude <- round((W + E) / 2, 3)
          browseURL(paste0("https://earth.nullschool.net/#current/ocean/surface/currents/orthographic=",
           round(longitude, 3), ",", round(latitude, 3), ",", sz))
-	  }
+      }
 # alternative, avoiding NOAA dependency, but steering the zoom level is a bit unclear	 
 #		browseURL(paste0("https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=1749038400000&z=-0.5&center=", 
 #		round(longitude, 3), "%2C", round(latitude, 3), '&zoom=', sz, 

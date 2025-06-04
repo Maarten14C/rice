@@ -37,7 +37,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 
   # read and narrow down the calibration curve(s)
   if(cc1 %in% c(2, "Marine20")) # then no postbomb curve available
-    cc.1 <- rintcal::ccurve(2, postbomb=CFALSE, cc.dir) else
+    cc.1 <- rintcal::ccurve(2, postbomb=FALSE, cc.dir) else
       if(cc1.postbomb)
         cc.1 <- rintcal::glue.ccurves(cc1, cc1.postbomb, cc.dir) else
           cc.1 <- rintcal::ccurve(cc1, cc1.postbomb, cc.dir)
