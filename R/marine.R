@@ -11,33 +11,33 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
   hiresmaps <- "rnaturalearthhires" %in% installed.packages() # TRUE or FALSE
 
   if(warn) {
-    if(!hassf)
-      message("Using (ugly) basic map. For better maps, please install the packages sf and rnaturalearth: \ninstall.packages(c(\"sf\", \"rnaturalearth\"))") else {
-        if(mapsize=="large") {
-          if(!rne)
-            message("Please install the rnaturalearth package:",
-              "\ninstall.packages(\"rnaturalearth\")")
-          if(!rnedata)
-            message("Please install the rnaturalearthdata package:",
-              "\ninstall.packages(\"rnaturalearthdata\")")
+    if(browse) {
+      if(!lflt)
+        stop("Please install the leaflet package:\ninstall.packages(\"leaflet\")")
+      if(!coper)
+        stop("Please install the CopernicusMarine package:\ninstall.packages(\"CopernicusMarine\")")
+	} else {
+        if(!hassf)
+          message("Using (ugly) basic map. For better maps, please install the packages sf and rnaturalearth: \ninstall.packages(c(\"sf\", \"rnaturalearth\"))") else {
+          if(mapsize=="large") {
+            if(!rne)
+              message("Please install the rnaturalearth package:",
+                "\ninstall.packages(\"rnaturalearth\")")
+            if(!rnedata)
+              message("Please install the rnaturalearthdata package:",
+                "\ninstall.packages(\"rnaturalearthdata\")")
 
-          # rnaturalearthhires is nice but has to be installed from github
-          if(!hiresmaps)
-            if(devtools)
-              message("For detailed maps, install rnaturalearthhires from GitHub:\n",
-                "devtools::install_github('ropensci/rnaturalearthhires')\n") else
-                  message("Install first devtools and then rnaturalearthhires:\n",
-                    "install.packages(\"devtools\")\n",
-                    "devtools::install_github(\"ropensci/rnaturalearthhires\"")
-       }
-    }
-
-  if(browse) {
-    if(!lflt)
-      message("Please install the leaflet package:\ninstall.packages(\"leaflet\")")
-    if(!coper)
-      message("Please install the CopernicusMarine package:\ninstall.packages(\"CopernicusMarine\")")
-    }
+            # rnaturalearthhires is nice but has to be installed from github
+            if(!hiresmaps)
+              if(devtools)
+                message("For detailed maps, install rnaturalearthhires from GitHub:\n",
+                  "devtools::install_github('ropensci/rnaturalearthhires')\n") else
+                    message("Install first devtools and then rnaturalearthhires:\n",
+                      "install.packages(\"devtools\")\n",
+                      "devtools::install_github(\"ropensci/rnaturalearthhires\"")
+          }
+        }
+      }
   }
 
   if(rainbow)
@@ -65,6 +65,14 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
       options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
       group = "Sea Water Potential Temperature"
     )
+#     map <- CopernicusMarine::addCmsWMTSTiles(map,
+#       product = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
+#       layer = "ccmems_mod_glo_phy-wo_anfc_0.083deg_P1D-m",
+#       variable = "vo",
+#       tilematrixset = "EPSG:3857",
+#       options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
+#       group = "Sea water velocity"
+#     )
     map <- leaflet::addLayersControl(map,
       baseGroups = c("ESRI Satellite", "Sea Water Potential Temperature"),
       options = leaflet::layersControlOptions(collapsed = FALSE)
@@ -146,18 +154,6 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
 
   print(p)
 }
-
-
-# this is a really nice browser map, but needs circulation not temperature
-# leaflet::leaflet() |>
-#  leaflet::setView(lng = 3, lat = 54, zoom = 4) |>
-#  leaflet::addProviderTiles("Esri.WorldImagery") |>
-#  addCmsWMTSTiles(
-#    product     = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
-#    layer       = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
-#    variable    = "thetao"
-#  )
-
 
 
 
