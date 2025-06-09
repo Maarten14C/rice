@@ -44,11 +44,17 @@ C-14, or radiocarbon, is a radioactive isotope that decays with a half-life of a
 ```{r, fig.width=4, fig.asp=.8}
 howmanyC14(0)
 howmanyC14(55e3)
-x <- seq(0, 55e3, length=100) # a sequence of ages
+x <- seq(0, 55e3, length=500) # a sequence of ages
 y <- sapply(x, function(x) howmanyC14(x, talk=FALSE))
 plot(x, y, type="l", xlab="time (cal BP)", ylab="C-14 remaining")
 ```
 
+Radiocarbon laboratories correct their measurements for fractionation (to -25 &permil; by default) and for background measurements before they are reported. These calculations can be seen here:
+
+```{r}
+adjust.fractionation(9000, -17) # the sample's d13C was measured at -17
+adjust.background(9000, 50, 48000, 200) # a well-oiled machine, with backgrounds of F=0.00254
+```
 
 # Calibration curves
 
@@ -108,16 +114,17 @@ draw.ccurve(50000, 35000, realm="D")
 
 # Realms
 
-This package provides functions to translate values between the radiocarbon-relevant 'realms' of cal BP (calendar years before AD 1950), BC/AD (here we mean cal BC/AD, but shorten this to BC/AD), C14, F14C, pMC and D14C. The following Table lists the available functions:
+This package provides functions to translate values between the radiocarbon-relevant 'realms' of cal BP (calendar years before AD 1950), BC/AD (here we mean cal BC/AD, but shorten this to BC/AD), b2k (years before AD 2000, popular in the ice core community), C14, F14C, pMC and D14C. The following Table lists the available functions:
 
-| from\\to  | calBP         | BCAD          | C14          | F14C         | pMC         | D14C         |
-|-----------|---------------|---------------|--------------|--------------|-------------|--------------|
-| **calBP** | -             | `calBPtoBCAD` | `calBPtoC14` | `calBPtoF14C`| `calBPtopMC`| `calBPtoD14C`|
-| **BCAD**  | `BCADtocalBP` | -             | `BCADtoC14`  | `BCADtoF14C` | `BCADtopMC` | `BCADtoD14C` |
-| **C14**   | `C14tocalBP`  | `C14toBCAD`   | -            | `C14toF14C`  | `C14topMC`  | `C14toD14C`  |
-| **F14C**  | NA            | NA            | `F14CtoC14`  | -            | `F14CtopMC` | `F14CtoD14C` |
-| **pMC**   | NA            | NA            | `pMCtoC14`   | `pMCtoF14C`  |  -          | `pMCtoD14C`  |
-| **D14C**  | NA            | NA            | `D14CtoC14`  | `D14CtoF14C` | `D14CtopMC` |  -           |
+| from\\to  | calBP         | BCAD          |  b2k         | C14          | F14C         | pMC         | D14C         |
+|-----------|---------------|---------------|--------------|--------------|--------------|-------------|--------------|
+| **calBP** | -             | `calBPtoBCAD` | `calBPtob2k` | `calBPtoC14` | `calBPtoF14C`| `calBPtopMC`| `calBPtoD14C`|
+| **BCAD**  | `BCADtocalBP` | -             | `BCADtob2k`  | `BCADtoC14`  | `BCADtoF14C` | `BCADtopMC` | `BCADtoD14C` |
+| **b2k**   | `b2ktocalBP`  | `b2ktoBCAD`   | -            | `b2ktoC14`   | `b2ktoF14C`  | `b2ktopMC`  | `b2ktoD14C`  |
+| **C14**   | `C14tocalBP`  | `C14toBCAD`   | `C14tob2k`   | -            | `C14toF14C`  | `C14topMC`  | `C14toD14C`  |
+| **F14C**  | NA            | NA            | NA           | `F14CtoC14`  | -            | `F14CtopMC` | `F14CtoD14C` |
+| **pMC**   | NA            | NA            | NA           | `pMCtoC14`   | `pMCtoF14C`  |  -          | `pMCtoD14C`  |
+| **D14C**  | NA            | NA            | NA           | `D14CtoC14`  | `D14CtoF14C` | `D14CtopMC` |  -           |
 
 As an example of the above functions, the IntCal20 C14 age and error belonging to one or more cal BP or cal BCAD ages can be found (interpolating linearly where necessary):
 

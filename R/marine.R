@@ -65,19 +65,10 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
       options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
       group = "Sea Water Potential Temperature"
     )
-#     map <- CopernicusMarine::addCmsWMTSTiles(map,
-#       product = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
-#       layer = "ccmems_mod_glo_phy-wo_anfc_0.083deg_P1D-m",
-#       variable = "vo",
-#       tilematrixset = "EPSG:3857",
-#       options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
-#       group = "Sea water velocity"
-#     )
     map <- leaflet::addLayersControl(map,
       baseGroups = c("ESRI Satellite", "Sea Water Potential Temperature"),
       options = leaflet::layersControlOptions(collapsed = FALSE)
     )
-
     map <- leaflet::addCircleMarkers(map, data=shells, lng=~lon, lat=~lat,
       color=cols, radius=5, fillOpacity=0.8,
       label=lapply(hover_labels, htmltools::HTML))
@@ -154,6 +145,40 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
 
   print(p)
 }
+
+
+
+# none of the below attempts to plot currents in a map together with the shell coordinates work
+#     map <- CopernicusMarine::addCmsWMTSTiles(map,
+#       product = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
+#       layer = "cmems_mod_glo_phy-cur_anfc_0.083deg_PT6H-i",
+#       variable = "cur",
+#       tilematrixset = "EPSG:3857",
+#       options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
+#       group = "Sea water velocity"
+#     )
+#
+# map <- CopernicusMarine::addCmsWMTSTiles(map,
+#  product = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
+#  layer = "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202406",
+#  tilematrixset = "EPSG:3857",
+#  style = "boxfill/linear",
+#  options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
+#  group = "Sea Water Velocity Magnitude"
+# )
+
+
+#
+# map <- CopernicusMarine::addCmsWMTSTiles(
+#  map,
+#  product = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
+#  layer = "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202406",
+#  tilematrixset = "EPSG:3857",
+#  style = "vector",
+#  options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
+#  group = "Sea water velocity magnitude"
+# )
+
 
 
 

@@ -6,7 +6,9 @@
 \usage{
 overlapping(
   y,
-  er,
+  er = c(),
+  labels = c(),
+  is.F = FALSE,
   res = 1000,
   cc = 1,
   postbomb = FALSE,
@@ -18,23 +20,30 @@ overlapping(
   t.a = 3,
   t.b = 4,
   cc.dir = NULL,
-  threshold = 0.001,
-  age.lim = c(),
-  age.lab = c(),
-  calib.col = rgb(0, 0, 0, 0.2),
+  threshold = 0,
+  xlim = c(),
+  xlab = c(),
+  yrby = 1,
+  dist.col = rgb(0, 0, 0, 0.2),
   overlap.col = rgb(0, 0, 1, 0.4),
   overlap.border = NA,
   overlap.height = 1,
   talk = TRUE,
+  visualise = TRUE,
   prob = 0.95,
   roundby = 1,
-  bty = "n"
+  bty = "n",
+  yaxt = "n"
 )
 }
 \arguments{
 \item{y}{The set of radiocarbon dates}
 
 \item{er}{The lab errors of the radiocarbon dates}
+
+\item{labels}{Labels to be printed for the distributions (optional).}
+
+\item{is.F}{Set this to TRUE if the provided age and error are in the F14C realm.}
 
 \item{res}{The resolution to base the calculations on. Defaults to 1000 steps between the minimum and maximum cal BP (these are calculated from the total calendar age range of all calibrated distributions).}
 
@@ -60,25 +69,31 @@ overlapping(
 
 \item{threshold}{Report only values above a threshold. Defaults to \code{threshold=1e-6}.}
 
-\item{age.lim}{Calendar age limits of the calculations. Calculated automatically by default.}
+\item{xlim}{Age limits of the x-axis. Calculated automatically by default.}
 
-\item{age.lab}{Label of the calendar age, defaults to BCAD or cal BP.}
+\item{xlab}{Label of the calendar age, defaults to BCAD or cal BP.}
 
-\item{calib.col}{The colour of the individual calibrated ages. Defaults to semi-transparent grey.}
+\item{yrby}{Resolution in years. Defaults to \code{by=1}.}
 
-\item{overlap.col}{The colour of the overlap distribution}
+\item{dist.col}{The colour of the individual (calibrated) distributions. Defaults to semi-transparent grey. Different colours can also be provided for the individual distributions.}
 
-\item{overlap.border}{The colour of the border of the overlap distribution}
+\item{overlap.col}{The colour of the overlap distribution.}
 
-\item{overlap.height}{The height of the overlap distribution}
+\item{overlap.border}{The colour of the border of the overlap distribution.}
 
-\item{talk}{Whether or not to report a summary of the spread}
+\item{overlap.height}{The height of the overlap distribution.}
+
+\item{talk}{Whether or not to report a summary of the spread.}
+
+\item{visualise}{Whether or not to plot the individual distributions and the overlap.}
 
 \item{prob}{Probability range to report. Defaults to \code{prob=0.95}.}
 
-\item{roundby}{Number of decimals to report}
+\item{roundby}{Number of decimals to report.}
 
 \item{bty}{Draw a box around a box of a certain shape. Defaults to \code{bty="n"}.}
+
+\item{yaxt}{Type of y-axis. Defaults to none drawn (\code{yaxt="n"}).}
 }
 \value{
 The overlap between all calibrated probabilities as percentage, and a plot.
@@ -89,5 +104,5 @@ Calculates the amount of overlap (as percentage) between two or more calibrated 
 \examples{
   y <- c(3820, 4430) # the C14 ages of a twig and a marine shell from a single layer
   er <- c(40, 40) # their lab errors
-  overlapping(y, er, cc=1:2) 
+  overlapping(y, er, cc=1:2, dist.col=3:4, labels=c("twig", "shell"))
 }

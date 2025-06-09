@@ -202,8 +202,10 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #' @title The overlap between calibrated C14 dates
 #' @description Calculates the amount of overlap (as percentage) between two or more calibrated radiocarbon dates. It does this by taking a sequence of calendar dates 'x' and for each calendar date find the calibrated distribution with the minimum height - this minimum height is taken as the overlap between the dates for that age. This is repeated for all 'x'. The sum of these heights is the overlap, which can reach values from 0 to 100\%. 
 #' @return The overlap between all calibrated probabilities as percentage, and a plot. 
-#' @param y The set of radiocarbon dates
+#' @param y The set of radiocarbon dates. Alternatively, existing distributions can be provided as a list of distributions, e.g. already-calibrated distributions or distributions derived from age-model estimates.
 #' @param er The lab errors of the radiocarbon dates
+#' @param labels Labels to be printed for the distributions (optional).
+#' @param is.F Set this to TRUE if the provided age and error are in the F14C realm.
 #' @param res The resolution to base the calculations on. Defaults to 1000 steps between the minimum and maximum cal BP (these are calculated from the total calendar age range of all calibrated distributions).
 #' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
@@ -216,62 +218,65 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param threshold Report only values above a threshold. Defaults to \code{threshold=1e-6}.
-#' @param age.lim Calendar age limits of the calculations. Calculated automatically by default.  
-#' @param age.lab Label of the calendar age, defaults to BCAD or cal BP.
-#' @param calib.col The colour of the individual calibrated ages. Defaults to semi-transparent grey.
-#' @param overlap.col The colour of the overlap distribution
-#' @param overlap.border The colour of the border of the overlap distribution
-#' @param overlap.height The height of the overlap distribution
-#' @param talk Whether or not to report a summary of the spread 
+#' @param xlim Age limits of the x-axis. Calculated automatically by default.  
+#' @param xlab Label of the calendar age, defaults to BCAD or cal BP.
+#' @param yrby Resolution in years. Defaults to \code{by=1}.
+#' @param dist.col The colour of the individual (calibrated) distributions. Defaults to semi-transparent grey. Different colours can also be provided for the individual distributions.
+#' @param overlap.col The colour of the overlap distribution.
+#' @param overlap.border The colour of the border of the overlap distribution.
+#' @param overlap.height The height of the overlap distribution.
+#' @param talk Whether or not to report a summary of the spread.
+#' @param visualise Whether or not to plot the individual distributions and the overlap.
 #' @param prob Probability range to report. Defaults to \code{prob=0.95}.
-#' @param roundby Number of decimals to report
+#' @param roundby Number of decimals to report.
 #' @param bty Draw a box around a box of a certain shape. Defaults to \code{bty="n"}.
+#' @param yaxt Type of y-axis. Defaults to none drawn (\code{yaxt="n"}).
 #' @examples
 #'   y <- c(3820, 4430) # the C14 ages of a twig and a marine shell from a single layer
 #'   er <- c(40, 40) # their lab errors
-#'   overlapping(y, er, cc=1:2) 
+#'   overlapping(y, er, cc=1:2, dist.col=3:4, labels=c("twig", "shell"))
+#'   mydists <- list(caldist(130,20, cc=1), caldist(150,20, cc=0))
+#'   overlapping(mydists)
 #' @export
-overlapping <- function(y, er, res=1e3, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, BCAD=FALSE, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, threshold=0.001, age.lim=c(), age.lab=c(), calib.col=rgb(0,0,0,.2), overlap.col=rgb(0,0,1,.4), overlap.border=NA, overlap.height=1, talk=TRUE, prob=0.95, roundby=1, bty="n") {
- 
-  y <- y - deltaR
-  er <- sqrt(er^2 + deltaSTD^2)	
-
+overlapping <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, BCAD=FALSE, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, threshold=0, xlim=c(), xlab=c(), yrby=1, dist.col=rgb(0,0,0,.2), overlap.col=rgb(0,0,1,.4), overlap.border=NA, overlap.height=1, talk=TRUE, visualise=TRUE, prob=0.95, roundby=1, bty="n", yaxt="n") {
   if(length(cc) == 1)
     cc <- rep(cc,length(y))
-  calib <- draw.dates(y, er, d.lim=c(0, length(y)+1), cc=cc, cc.dir=cc.dir, thiscurve=thiscurve, BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, threshold=threshold, col=calib.col, mirror=FALSE, up=TRUE, hpd.col=NA, border=NA, yaxt="n", d.lab="", bty=bty)
-  locs <- par('usr') # limits of axes (x1, x2, y1, y2)
-  xseq <- seq(locs[1], locs[2], length=res)
-  abline(h=locs[3], lwd=2)
+  if(!is.list(y)) { # then put y&r into a list
+    if(length(y) != length(er))
+      stop("length of 'y' should be the same as length of 'er'")
 
-  probs <- sapply(1:length(y), function(i) {
-    l.calib(xseq, y[i], er[i], cc=cc[i], postbomb=postbomb, thiscurve=thiscurve, cc.dir=cc.dir, normal=normal, t.a=t.a, t.b=t.b)})
-  min_values <- apply(probs, 1, min, na.rm = TRUE)
+    dists <- list()
+    for(i in 1:length(y))
+      dists[[i]] <- caldist(y[i], er[i], cc=cc[i], is.F=is.F, postbomb=postbomb,
+        deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, thiscurve=thiscurve, BCAD=BCAD)
+  } else
+    dists <- y
 
-  perc_overlap <- min(1, sum(min_values))
-  as.dist <- cbind(xseq, min_values)
-  message("Overlap: ", round(100*perc_overlap, roundby), "%")
-  hpds <- draw.dist(as.dist, prob=prob, dist.col=overlap.col, hpd.col=overlap.col, dist.border=overlap.border, hpd.border=overlap.border, y.pos=length(y)+1, ex=overlap.height)
+  xmin <- Inf; xmax <- -Inf
+  for(i in 1:length(dists)) {
+    xmin <- min(xmin, dists[[i]][,1])
+    xmax <- max(xmax, dists[[i]][,1])	
+  }
 
-  invisible(list(overlap=as.dist, hpds=hpds))
-}
+  xseq <- seq(xmin, xmax, by=yrby)
+  probs <- array(NA, dim=c(length(xseq), length(dists)))
+  for(i in 1:length(dists)) {
+    thisprob <- approx(dists[[i]][,1], dists[[i]][,2], xseq, rule=1)$y
+    thisprob[is.na(thisprob)] <- 0
+    thisprob <- thisprob / sum(thisprob)
+    thisprob[thisprob < threshold] <- 0
+    probs[,i] <- thisprob
+  }  
+  overlap <- apply(probs, 1, min, na.rm=TRUE)
+  if(length(overlap) == 0)
+    overlap <- 0
 
+  if(length(dist.col) == 1)
+    dist.col <- rep(dist.col, length(dists))
+  if(length(labels) > 0)
+    if(length(labels) < length(dists))
+      message("please provide a label for all entries")
 
-
-# this is not working as expected yet...
-dist.overlap <- function(dist1, dist2, by=1, visualise=TRUE, prob=0.95, BCAD=FALSE, 
-  dist1.col=rgb(0,.5, 0, .2), dist2.col=rgb(1,0,0,.2), overlap.col=rgb(0,0,0,.2), xlim=c(), xlab=c(), bty="l", yaxt="n") {
-  xseq <- seq(min(dist1[,1], dist2[,1]), max(dist1[,1], dist2[,1]), by=by)
-  prob1 <- approx(dist1[,1], dist1[,2], xseq, rule=2)$y
-  prob2 <- approx(dist2[,1], dist2[,2], xseq, rule=2)$y
-  
-  prob1 <- prob1 / sum(prob1)
-  prob2 <- prob2 / sum(prob2)
-  overlap <- pmin(prob1, prob2)
-  
-  total_overlap <- sum(overlap)
-  smaller_area <- min(sum(prob1), sum(prob2))
-  overlap_percentage <- (total_overlap / smaller_area) * 100  # Normalized overlap percentage
-  
   if(visualise) {
     if(length(xlim) == 0)  
       if(BCAD)
@@ -281,14 +286,19 @@ dist.overlap <- function(dist1, dist2, by=1, visualise=TRUE, prob=0.95, BCAD=FAL
       if(BCAD)
         xlab <- "BC/AD" else
           xlab <- "cal BP"
-
-    plot(0, type="n", xlim=xrng, xlab=xlab, ylim=c(0, -3.3), ylab="", bty=bty, yaxt=yaxt)	
-    draw.dist(cbind(xseq, prob1), dist.col=dist1.col, dist.border=dist1.col, prob=prob, mirror=FALSE, y.pos=-2.2, peak=T)
-    draw.dist(cbind(xseq, prob2), dist.col=dist2.col, dist.border=dist2.col, prob=prob, y.pos=-1.1, peak=T)
-    draw.dist(cbind(xseq, overlap), dist.col=overlap.col, dist.border=overlap.col, prob=prob, y.pos=0, peak=T)
+    plot(0, type="n", xlim=xrng, xlab=xlab, ylim=c(0, length(dists)+1), ylab="", bty=bty, yaxt=yaxt)
+    for(i in 1:length(dists)) {
+      draw.dist(dists[[i]], dist.col=dist.col[i], y.pos=i, dist.border=dist.col[i], prob=prob, mirror=FALSE, peak=TRUE, BCAD=BCAD)
+      if(length(labels) > 0)
+        text(max(dists[[i]][,1]), i, labels=labels[i], col=dist.col[i], adj=c(0,-1))
+    }
+    if(max(overlap) > 0)
+      draw.dist(cbind(xseq, overlap), dist.col=overlap.col, dist.border=overlap.col, prob=prob, y.pos=0, peak=TRUE, BCAD=BCAD, hpd=FALSE)
   }
   
-  return(overlap_percentage)
+  if(talk)
+    message("overlap: ", round(100*sum(overlap), roundby), "%")
+  invisible(100*sum(overlap))
 }
 
 

@@ -22,7 +22,7 @@ BCADtopMC(
 
 \item{postbomb}{Whether or not to use a postbomb curve (see \code{caldist()}).}
 
-\item{zero}{Whether or not to include 0 in BC/AD years. Defaults to TRUE.}
+\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.}
 
 \item{rule}{How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.}
 
@@ -36,7 +36,7 @@ BCADtopMC(
 The calibration-curve F14C belonging to the entered BC/AD age
 }
 \description{
-Given a calendar age, the calibration curve (default cc=1) is interpolated and the corresponding pMC and error are returned. BC ages are negative. In this implementation, the year 0 BC/AD does exist.
+Given a calendar age, the calibration curve (default cc=1) is interpolated and the corresponding pMC and error are returned. BC ages are negative.
 }
 \details{
 Interpolation is used, and values outside the calibration curve are given as NA. For ages younger than AD 1950, a postbomb curve will have to be provided.

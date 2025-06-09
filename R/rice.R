@@ -1,18 +1,14 @@
-# add b2k to the realms equations
+# add sample weight functions (per Philippa Ascough's suggestion. Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
-# titles of contaminate plots were plotted outside of the range - now using par(xpd=TRUE)
+# in calibrate(), make interpolation to e.g. years more intelligent (default c() then 1 if prebomb, .1 if postbomb
 
-# check how is.pMC and is.F work in calibrate(). Make interpolation to e.g. years more intelligent (default c() then 1 if prebomb, .1 if postbomb
-
-# rintcal has as.F through ccurve(as.F=TRUE)) (but not as.pMC)
+# rintcal has as.F through ccurve(as.F=TRUE) (but not as.pMC)
 
 # add data from historical UBA standards/backgrounds?
 
 # terr-marine contribution calculation
 
-# AMS background and fractionation corrections
-
-
+# error multipliers
 
 #' @name howmanyC14
 #' @title Amount of C14 particles in a sample
@@ -61,10 +57,95 @@ howmanyC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.ratio=1.1
   if(talk) {
     message(wght, " mg carbon contains ", atoms, " C atoms")
     message("C14 atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk)
-	message(decays, " C-14 atoms in the sample will decay each day")
+    message(decays, " C-14 atoms in the sample will decay each day")
     message("For a 1 mg AMS target, assuming a 100% efficiency, ", perminute, " particles would be counted per minute, or ", persecond, " per second")
   }
 
   invisible(C14)
 }
+
+
+
+#' @name adjust.fractionation
+#' @title Adjust a radiocarbon age for fractionation
+#' @description Calculate the radiocarbon age by adjusting a sample's d13C to the reference d13C of -25 permil. It is planned to update this function to more properly reflect calculations in the 14CHRONO lab.
+#' @details Radiocarbon ages are corrected for fractionation (which can take place in the field, or during lab pretreatment and measurement), by calculating the radiocarbon age as if the d13C fractionation were at the d13C of the standard (-25 permil). Errors are not taken into account.
+#' @return The fractionation-adjusted age.
+#' @param y The age of the sample (in C14 by default, but can also be in F or pMC).
+#' @param d13C The measured d13C value.
+#' @param reference_d13C The reference/standard d13C value (OX2, oxalic acid 2, NIST SRM 4990C made from 1977 French beet molasses), set at -25 permil by default.
+#' @param realm Type of radiocarbon age. Can be in `C14` (default), `F14C` or `pMC`.
+#' @author Maarten Blaauw
+#' @examples
+#'   adjust.fractionation(5000, -17)
+#' @export
+adjust.fractionation <- function(y, d13C, reference_d13C=-25, realm="C14") {
+  ratio = (1 + reference_d13C / 1000) / (1 + d13C / 1000)
+  realm <- tolower(realm)
+
+  if(grepl("^c", realm))
+    return(-8033 * log( ratio^2 * exp(-y / 8033) ))
+  if(grepl("^f", realm))
+    return(y * ratio^2)
+  if(grepl("^p", realm))
+    return((y/100) * ratio^2 * 100) # calculate as F
+
+  stop("Unknown realm; use 'C14', 'F', or 'pMC'")
+}
+
+
+
+#' @name adjust.background
+#' @title Adjust a radiocarbon age for background measurements
+#' @description Calculate the radiocarbon age by adjusting it for a measured background. It is planned to update this function to more properly reflect calculations in the 14CHRONO lab.
+#' @details Radiocarbon ages are measured using a series of standards and backgrounds, and the raw values are then corrected for these background values. Backgrounds are >0 (in F14C) owing to contamination in even the cleanest lab.
+#' @return The background-adjusted age.
+#' @param y The age of the sample (in C14 by default, but can also be in F or pMC).
+#' @param er The error of the date.
+#' @param bg The background measurement. Should be in the same realm as that of the sample.
+#' @param bg.er The error of the background measurement. Should be in the same realm as that of the sample.
+#' @param realm Type of radiocarbon age. Can be in `C14` (default), `F14C` or `pMC`.
+#' @author Maarten Blaauw
+#' @examples
+#'   adjust.background(9000, 50, 45000, 200)
+#' @export
+adjust.background <- function(y, er, bg, bg.er, realm="C14") {
+  realm <- tolower(realm)
+  is_c14 <- grepl("^c", realm)
+  is_pmc <- grepl("^p", realm)
+  is_f14c <- grepl("^f", realm)
+
+  if((is_c14 && y > bg) || ((is_f14c || is_pmc) && y < bg))
+    stop("sample's age is older than background age!")
+
+  if(is_c14) {
+    tmp <- C14toF14C(y, er)
+    y <- tmp[,1]; er <- tmp[,2]
+    tmp <- C14toF14C(bg, bg.er)
+    bg <- tmp[,1]; bg.er <- tmp[,2]
+  } else
+    if(is_pmc) {
+      tmp <- pMCtoF14C(y, er)
+      y <- tmp[,1]; er <- tmp[,2]
+      tmp <- pMCtoF14C(bg, bg.er)
+      bg <- tmp[,1]; bg.er <- tmp[,2]
+    } else
+    if(!is_f14c)
+      stop("Unknown realm; use 'C14', 'F', or 'pMC'")
+
+  X <- y - bg
+  D <- 1 - bg
+  sigma_X <- sqrt(er^2 + bg.er^2)
+
+  F_corr <- X / D
+  er_corr <- sqrt( (1/D)^2 * sigma_X^2 + (X/(D^2))^2 * bg.er^2 )
+
+  if(is_f14c)
+    return(data.frame(F_corr, er_corr)) else
+    if(is_pmc)
+      return(data.frame(100*F_corr, 100*er_corr)) else
+      if(is_c14)
+        return(data.frame(F14CtoC14(F_corr, er_corr)))
+}
+
 

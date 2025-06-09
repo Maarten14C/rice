@@ -270,22 +270,29 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
   } else
     if(length(y) > 1 || length(er)>1)
       stop("cannot deal with multiple entries for both x and y+er") 
-
-  if(is.F) {
-	mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
-  } else
-    if(as.F) {
-      mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
-      tmp <- C14toF14C(y, er)
-      y <- tmp[,1]; er <- tmp[,2]
-    } else
-      mu <- calBPtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
   
-  if(normal)
-    prob <- dnorm(y, mu[,1], sqrt(mu[,2]^2 + er^2)) else
-      prob <- (t.b + ((y-mu[,1])^2) / (2*(sqrt(er^2+mu[,2]^2)^2))) ^ (-1*(t.a+0.5))
-  prob[is.na(prob)] <- 0
-  return(prob)
+  if(cc == 0) { # June 2025
+	if(normal) 
+      prob <- dnorm(x, y, er) else 
+        prob <- (t.b + ((x - y)^2) / (2 * er^2)) ^ (-1 * (t.a + 0.5))
+    prob[is.na(prob)] <- 0
+    return(prob)	
+  } else {
+    if(is.F) {
+      mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
+    } else
+        if(as.F) {
+          mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
+          tmp <- C14toF14C(y, er)
+          y <- tmp[,1]; er <- tmp[,2]
+        } else
+          mu <- calBPtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
+    if(normal)
+      prob <- dnorm(y, mu[,1], sqrt(mu[,2]^2 + er^2)) else
+        prob <- (t.b + ((y-mu[,1])^2) / (2*(sqrt(er^2+mu[,2]^2)^2))) ^ (-1*(t.a+0.5))
+    prob[is.na(prob)] <- 0
+    return(prob)
+  }
 }
 
 

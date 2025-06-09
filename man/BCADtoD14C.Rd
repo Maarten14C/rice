@@ -18,7 +18,7 @@ BCADtoD14C(
 \arguments{
 \item{x}{The cal BP year.}
 
-\item{zero}{Whether or not to include 0 in BC/AD years. Defaults to TRUE.}
+\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.}
 
 \item{cc}{calibration curve for C14 (see \code{caldist()}).}
 

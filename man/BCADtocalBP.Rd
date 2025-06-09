@@ -9,7 +9,7 @@ BCADtocalBP(x, zero = TRUE)
 \arguments{
 \item{x}{The BCAD age(s) to be translated into cal BP age(s). BC ages are negative, AD ages are positive.}
 
-\item{zero}{Whether or not zero BC/AD should be included. Defaults to 0.}
+\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.}
 }
 \value{
 The cal BP age(s).

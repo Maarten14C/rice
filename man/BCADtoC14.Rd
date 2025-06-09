@@ -21,7 +21,7 @@ BCADtoC14(
 
 \item{postbomb}{Whether or not to use a postbomb curve (see \code{caldist()}).}
 
-\item{zero}{Whether or not to include 0 in BC/AD years. Defaults to TRUE.}
+\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.}
 
 \item{rule}{How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.}
 

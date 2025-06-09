@@ -61,15 +61,15 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
       cc.1[,2:3] <- cc.1[,2:3]/1e3
   }
 
-  if(grepl("f", tolower(realm))) {
+  if(grepl("^f", tolower(realm))) {
     F <- C14toF14C(cc.1[,2], cc.1[,3])
     cc.1[,2:3] <- F
   }
-  if(grepl("p", tolower(realm))) {
+  if(grepl("^p", tolower(realm))) {
     p <- C14topMC(cc.1[,2], cc.1[,3])
     cc.1[,2:3] <- p
   }
-  if(grepl("d", tolower(realm))) {
+  if(grepl("^d", tolower(realm))) {
     asD <- C14toD14C(cc.1[,2], cc.1[,3], cc.1[,1])
     cc.1[,2:3] <- cbind(asD)
   }
@@ -358,8 +358,10 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
       if(is.F)
         asF <- c(age, error) else
           asF <- C14toF14C(age, error)
-  if(asF[1] < (2*asF[2])) { # according to background conventions
-    msg <- "age < (2*er) in F14C space; this date is at background and should NOT be calibrated!"
+    # maxcc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, as.F=TRUE)
+    # maxcc <- maxcc[nrow(maxcc),2:3]
+    if(asF[1] < (2*asF[2])) { # according to background conventions
+    msg <- paste("age < (2*er) in F14C space; this date is at background and should NOT be calibrated!")
     if(edge)
       stop(msg) else
         message(msg)
@@ -386,7 +388,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
 
   C14.dist <- caldist(age, sqrt(error^2 + cc.er^2), cc=0, BCAD=FALSE, postbomb=FALSE) # just to draw a normal dist
   cal.dist <- caldist(age, error, cc=cc, yrsteps=yr.steps, threshold=threshold,
-  normal=normal, is.F=is.F, as.F=as.F, t.a=t.a, t.b=t.b, postbomb=postbomb, cc.dir=cc.dir, BCAD=BCAD)
+  normal=normal, is.F=is.F, is.pMC=is.pMC, as.F=as.F, t.a=t.a, t.b=t.b, postbomb=postbomb, cc.dir=cc.dir, BCAD=BCAD)
 
   # copy entries at edges of calibrated hpds, to ensure rectangular polygons
   if(draw) {
@@ -401,7 +403,6 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
     if(cal.rev)
       cal.lim <- rev(cal.lim)
     }  
-
     if(length(C14.lim) == 0) {
       if(BCAD) {
         cc.min <- max(1, min(which(Cc[,cc.cal] <= max(cal.lim))))

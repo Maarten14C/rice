@@ -9,7 +9,7 @@ calBPtoBCAD(x, zero = TRUE)
 \arguments{
 \item{x}{The calBP age(s) to be translated into BC/AD ages.}
 
-\item{zero}{Whether or not zero BC/AD should be included. Defaults to 0.}
+\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.}
 }
 \value{
 The BC/AD age(s). BC ages are negative, AD ages are positive.
