@@ -913,10 +913,12 @@ pMCtoD14C <- function(pMC, er=NULL, t) {
 #'   D14CtoC14(-10, 1, 238)
 #' @export
 D14CtoC14 <- function(D14C, er=NULL, t, decimals=8) {
-  toF <- cbind(D14CtoF14C(D14C=D14C, er=er, t=t))
+  toF <- D14CtoF14C(D14C=D14C, er=er, t=t)
   if(is.null(dim(toF)))
-    return(F14CtoC14(toF, c(), decimals=decimals)) else
+    return(F14CtoC14(toF, c(), decimals=decimals)) else {
+     # toF <- rbind(toF)
       return(F14CtoC14(toF[,1], toF[,2], decimals=decimals))
+    }
 }
 
 
