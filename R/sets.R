@@ -241,14 +241,19 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 overlapping <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, BCAD=FALSE, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, threshold=0, xlim=c(), xlab=c(), yrby=1, dist.col=rgb(0,0,0,.2), overlap.col=rgb(0,0,1,.4), overlap.border=NA, overlap.height=1, talk=TRUE, visualise=TRUE, prob=0.95, roundby=1, bty="n", yaxt="n") {
   if(length(cc) == 1)
     cc <- rep(cc,length(y))
-  if(!is.list(y)) { # then put y&r into a list
+  if(length(deltaR) == 1)
+    deltaR <- rep(deltaR, length(y))
+  if(length(deltaSTD) == 1)
+    deltaSTD <- rep(deltaSTD, length(y))
+
+  if(!is.list(y)) { # then put y&er into a list
     if(length(y) != length(er))
       stop("length of 'y' should be the same as length of 'er'")
 
     dists <- list()
     for(i in 1:length(y))
       dists[[i]] <- caldist(y[i], er[i], cc=cc[i], is.F=is.F, postbomb=postbomb,
-        deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, thiscurve=thiscurve, BCAD=BCAD)
+        deltaR=deltaR[i], deltaSTD=deltaSTD[i], normal=normal, t.a=t.a, t.b=t.b, thiscurve=thiscurve, BCAD=BCAD)
   } else
     dists <- y
 

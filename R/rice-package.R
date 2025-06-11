@@ -30,3 +30,21 @@ NULL
     Sys.setenv("R_RNATURAL_EARTH_CACHE" = tempdir())
   }
 }
+
+#
+# # function from rintcal, which for rice's fromto function requires as.D:
+# glue.ccurves <- function(prebomb="IntCal20", postbomb="NH1", thisprebombcurve=c(), thispostbombcurve=c(), as.F=FALSE, as.pMC=FALSE, as.D=FALSE, cc.dir=c(), decimals=8) {
+#   if(length(thispostbombcurve) == 0)
+#     postbomb <- ccurve(postbomb, TRUE, cc.dir=cc.dir, as.F=as.F, as.pMC=as.pMC, as.D=as.D, decimals=decimals) else
+#       postbomb <- thispostbombcurve
+#   if(length(thisprebombcurve) == 0)
+#     prebomb <- ccurve(prebomb, FALSE, cc.dir=cc.dir, as.F=as.F, as.pMC=as.pMC, as.D=as.D, decimals=decimals) else
+#       prebomb <- thisprebombcurve
+#
+#   glued <- rbind(postbomb, prebomb)
+#   glued <- glued[order(glued[,1]),]
+#   repeated <- which(diff(glued[,1]) == 0)
+#   if(length(repeated) > 0)
+#     invisible(glued[-repeated,]) else # remove any repeated years
+#       invisible(glued[order(glued[,1]),])
+# }

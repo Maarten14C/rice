@@ -1,8 +1,8 @@
 # add sample weight functions (per Philippa Ascough's suggestion. Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
-# in calibrate(), make interpolation to e.g. years more intelligent (default c() then 1 if prebomb, .1 if postbomb
+# does rintcal::glue.ccurves require as.D?
 
-# rintcal has as.F through ccurve(as.F=TRUE) (but not as.pMC)
+# in calibrate(), make interpolation to e.g. years more intelligent (default c() then 1 if prebomb, .1 if postbomb
 
 # add data from historical UBA standards/backgrounds?
 

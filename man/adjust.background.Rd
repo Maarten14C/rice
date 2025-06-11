@@ -21,7 +21,7 @@ adjust.background(y, er, bg, bg.er, realm = "C14")
 The background-adjusted age.
 }
 \description{
-Calculate the radiocarbon age by adjusting it for a measured background.
+Calculate the radiocarbon age by adjusting it for a measured background. It is planned to update this function to more properly reflect calculations in the 14CHRONO lab.
 }
 \details{
 Radiocarbon ages are measured using a series of standards and backgrounds, and the raw values are then corrected for these background values. Backgrounds are >0 (in F14C) owing to contamination in even the cleanest lab.

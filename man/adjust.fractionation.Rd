@@ -19,7 +19,7 @@ adjust.fractionation(y, d13C, reference_d13C = -25, realm = "C14")
 The fractionation-adjusted age.
 }
 \description{
-Calculate the radiocarbon age by adjusting a sample's d13C to the reference d13C of -25 permil.
+Calculate the radiocarbon age by adjusting a sample's d13C to the reference d13C of -25 permil. It is planned to update this function to more properly reflect calculations in the 14CHRONO lab.
 }
 \details{
 Radiocarbon ages are corrected for fractionation (which can take place in the field, or during lab pretreatment and measurement), by calculating the radiocarbon age as if the d13C fractionation were at the d13C of the standard (-25 permil). Errors are not taken into account.

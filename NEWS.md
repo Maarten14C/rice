@@ -1,11 +1,12 @@
-# rice 1.1.2
-* new realm functions for b2k ages (years before AD 2000), popular in the ice core community.
-* new optional browsable plots for `find.shells` and `map.shells` functions. Requires Internet connection. 
+# rice 1.2.0
+* new realm functions to convert from/to b2k (years before AD 2000), an age scale popular in the ice core community.
+* new optional browsable plots for `find.shells` and `map.shells` functions. Use `browse=TRUE`. Requires Internet connection. 
 * The `find.shells` and `map.shells` functions now also offer to plot a browsable maps of (current) ocean currents. This to help interpret which shells would be most representative of different ocean water masses. Requires Internet connection. 
 * titles of contaminate plots are now plotted inside of the device range.
 * new functions `adjust.fractionation` and `adjust.background` to correct for fractionation and background values (still experimental).
 * the `calibrate` function now draws correctly when is.pMC=TRUE.
 * the `overlapping` function can now calculate the overlap between either radiocarbon ages or distributions (the latter should be provided as lists).
+* the function `D14CtoC14` had a bug that misinterpreted columns - should work better now.
 
 # rice 1.1.1
 * added a secondary y axis to the `contaminate`, `clean` and `muck` plots.

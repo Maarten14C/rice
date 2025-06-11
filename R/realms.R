@@ -123,12 +123,16 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
 
   layout(matrix(1:2, nrow=1), widths=c(.5, .5))
   c14lim <- c(c14-width, c14+width) # hmmm
+  #message(c14lim[1], " ", c14lim[2])
   c14lim <- range(Cc[,2])
+  #message(c14lim[1], " ", c14lim[2])
   flim <- c(0, min(1.2*f14c,2))
+  #message(flim[1], " ", flim[2])
   par(mar=c(4,3,3,1), mgp=c(2, .7, 0), yaxt="s")
   plot(f14c, c14, xlim=flim, ylim=c14lim, 
     xlab=expression("F"^14*"C"), ylab=expression(""^14*"C BP"),
       bty="c", type="n", xaxs="i")
+
   abline(h=c14, lty=2)
   abline(v=f14c, lty=2)
   curve(-8033*log(x), from=min(flim), n=1e3, to=1.05*max(flim), add=TRUE, col=C14.col, lwd=2)
@@ -153,7 +157,6 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
   mincalbp <- min(calbp) - width
   maxcalbp <- max(calbp) + width
   D14C.coors <- draw.ccurve(mincalbp, maxcalbp, cc1=cc, cc2=cc, cc1.postbomb=TRUE, cc2.postbomb=TRUE, realm2="d", cc2.col=D14C.col, cc2.fill=D14C.col, add.yaxis=TRUE, cc.dir=cc.dir, ka=ka, bty="n", legend=NA, xaxs="i", yaxt="n", c14.lab="")
-
   C14.coors <- par("usr")
   if(!is.na(d14c))
     f.y <- ((d14c-D14C.coors[3])/(D14C.coors[4] - D14C.coors[3])) * (C14.coors[4] - C14.coors[3]) + C14.coors[3]
@@ -909,8 +912,12 @@ pMCtoD14C <- function(pMC, er=NULL, t) {
 #' @examples
 #'   D14CtoC14(-10, 1, 238)
 #' @export
-D14CtoC14 <- function(D14C, er=NULL, t, decimals=8)
-  return( F14CtoC14( D14CtoF14C(D14C=D14C, er=er, t=t), decimals=decimals) )
+D14CtoC14 <- function(D14C, er=NULL, t, decimals=8) {
+  toF <- cbind(D14CtoF14C(D14C=D14C, er=er, t=t))
+  if(is.null(dim(toF)))
+    return(F14CtoC14(toF, c(), decimals=decimals)) else
+      return(F14CtoC14(toF[,1], toF[,2], decimals=decimals))
+}
 
 
 

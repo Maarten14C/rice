@@ -66,7 +66,7 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
     cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
   } else 
     if(is.pMC) {
-	  cc[,2:3] <- C14topMC(cc[,2], cc[,3])
+      cc[,2:3] <- C14topMC(cc[,2], cc[,3])
     } else
       if(as.F) { # y, er and cc are in C14 realm, but need to be in F
         cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
@@ -99,7 +99,7 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
 
   colnames(cal) <- c("cal BP", "prob")
   if(BCAD) {
-	cal[,1] <- calBPtoBCAD(cal[,1])
+    cal[,1] <- calBPtoBCAD(cal[,1])
     colnames(cal)[1] <- "BC/AD"
   }
 
@@ -272,7 +272,7 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
       stop("cannot deal with multiple entries for both x and y+er") 
   
   if(cc == 0) { # June 2025
-	if(normal) 
+    if(normal)
       prob <- dnorm(x, y, er) else 
         prob <- (t.b + ((x - y)^2) / (2 * er^2)) ^ (-1 * (t.a + 0.5))
     prob[is.na(prob)] <- 0
@@ -533,4 +533,3 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve
     write.table(Cc, file.path(cc.dir, name), row.names=FALSE, col.names=FALSE, sep=sep)
   invisible(Cc)
 }
-

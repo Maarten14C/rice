@@ -133,7 +133,7 @@ calibrate(
 
 \item{rounded}{Rounding of the percentages of the reported hpd ranges. Defaults to 1 decimal.}
 
-\item{every}{Yearly precision (defaults to \code{every=1}).}
+\item{every}{Not used, use yr.steps instead.}
 
 \item{extend.range}{Range by which the axes are extended beyond the data limits. Defaults to 5\%.}
 

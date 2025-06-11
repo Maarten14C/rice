@@ -13,6 +13,9 @@ draw.ccurve(
   cc2.postbomb = FALSE,
   BCAD = FALSE,
   realm = "C14",
+  as.F = FALSE,
+  as.pMC = FALSE,
+  as.D = FALSE,
   realm2 = c(),
   cal.lab = NA,
   cal.rev = FALSE,
@@ -47,7 +50,13 @@ draw.ccurve(
 
 \item{BCAD}{The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
 
-\item{realm}{Which 'realm' of radiocarbon to use. Defaults to \code{realm="C14"} but can also be set to \code{realm="F14C"}, \code{realm="pMC"} or \code{realm="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents).}
+\item{realm}{Which 'realm' of radiocarbon to use. Defaults to \code{realm="C14"} but can also be set to \code{realm="F14C"}, \code{realm="pMC"} or \code{realm="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents). Alternatively, the realm can be defined using `as.F=TRUE`, `as.pMC=TRUE` or `as.D=TRUE`.}
+
+\item{as.F}{Plot as F14C values. Defaults to \code{as.F=FALSE}.}
+
+\item{as.pMC}{Plot as pMC values. Defaults to \code{as.pMC=FALSE}.}
+
+\item{as.D}{Plot as D14C values. Defaults to \code{as.D=FALSE}.}
 
 \item{realm2}{Which 'realm' to use for the second calibration curve (if used). Defaults to \code{realm="C14"} but can also be set to \code{realm="F14C"}, \code{realm="pMC"} or \code{realm="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents).}
 
@@ -73,7 +82,7 @@ draw.ccurve(
 
 \item{cc2.fill}{Colour of the calibration curve (fill), if activated (default cc2=NA).}
 
-\item{add}{Whether or not to add the curve(s) to an existing plot. Defaults to FALSE, which draws a new plot}
+\item{add}{Whether or not to add the curve(s) to an existing plot. Defaults to FALSE, which draws a new plot.}
 
 \item{bty}{Draw a box around a box of a certain shape. Defaults to \code{bty="l"}.}
 

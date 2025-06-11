@@ -37,7 +37,7 @@ overlapping(
 )
 }
 \arguments{
-\item{y}{The set of radiocarbon dates}
+\item{y}{The set of radiocarbon dates. Alternatively, existing distributions can be provided as a list of distributions, e.g. already-calibrated distributions or distributions derived from age-model estimates.}
 
 \item{er}{The lab errors of the radiocarbon dates}
 
@@ -105,4 +105,6 @@ Calculates the amount of overlap (as percentage) between two or more calibrated 
   y <- c(3820, 4430) # the C14 ages of a twig and a marine shell from a single layer
   er <- c(40, 40) # their lab errors
   overlapping(y, er, cc=1:2, dist.col=3:4, labels=c("twig", "shell"))
+  mydists <- list(caldist(130,20, cc=1), caldist(150,20, cc=0))
+  overlapping(mydists)
 }
