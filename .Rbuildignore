@@ -7,7 +7,7 @@
 ^revdep$
 ^.github$
 ^R/\.RData$
-^.*rnaturalearthhires.*
+^rnaturalearthhires$
 ^ci/
 ^.*\.Rproj$
 ^\.Rproj\.user$
