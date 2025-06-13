@@ -7,6 +7,7 @@
 * the `calibrate` function now draws correctly when is.pMC=TRUE.
 * the `overlapping` function can now calculate the overlap between either radiocarbon ages or distributions (the latter should be provided as lists).
 * the function `D14CtoC14` had a bug that misinterpreted columns - should work better now.
+* added testthat functions to facilitate debugging.
 
 # rice 1.1.1
 * added a secondary y axis to the `contaminate`, `clean` and `muck` plots.

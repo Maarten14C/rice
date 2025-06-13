@@ -787,8 +787,8 @@ C14toD14C <- function(y, er=NULL, t, decimals=8) {
 #' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
 #' @return The radiocarbon ages from the F14C values. If F14C values are above 100\%, the resulting radiocarbon ages will be negative.
 #' @examples
-#'   F14CtoC14(1.10, 0.5) # a postbomb date, so with a negative C14 age
-#'   F14CtoC14(.80, 0.5) # prebomb dates can also be calculated
+#'   F14CtoC14(1.10, 0.005) # a postbomb date, so with a negative C14 age
+#'   F14CtoC14(.80, 0.005) # prebomb dates can also be calculated
 #' @export
 F14CtoC14 <- function(F14C, er=NULL, decimals=8, lambda=8033) {
   y <- -lambda * log(F14C)
@@ -799,6 +799,16 @@ F14CtoC14 <- function(F14C, er=NULL, decimals=8, lambda=8033) {
   }
 }
 
+# chatGPT suggests:
+#F14CtoC14 <- function(F14C, er = NULL, decimals = 8, lambda = 8033) {
+#  y <- -lambda * log(F14C)
+#  if (is.null(er)) {
+#    round(y, decimals)
+#  } else {
+#    sdev <- lambda * er / F14C
+#    round(cbind(y, sdev), decimals)
+#  }
+#}
 
 
 #' @name F14CtopMC
@@ -917,6 +927,7 @@ D14CtoC14 <- function(D14C, er=NULL, t, decimals=8) {
   if(is.null(dim(toF)))
     return(F14CtoC14(toF, c(), decimals=decimals)) else {
      # toF <- rbind(toF)
+      toF <- as.matrix(toF, ncol=2)
       return(F14CtoC14(toF[,1], toF[,2], decimals=decimals))
     }
 }

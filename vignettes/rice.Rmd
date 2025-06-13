@@ -44,7 +44,7 @@ C-14, or radiocarbon, is a radioactive isotope that decays with a half-life of a
 ```{r, fig.width=4, fig.asp=.8}
 howmanyC14(0)
 howmanyC14(55e3)
-x <- seq(0, 55e3, length=500) # a sequence of ages
+x <- seq(0, 55e3, length=100) # a sequence of ages
 y <- sapply(x, function(x) howmanyC14(x, talk=FALSE))
 plot(x, y, type="l", xlab="time (cal BP)", ylab="C-14 remaining")
 ```
@@ -226,13 +226,13 @@ The time-span between two dates can be calculated (by sampling *n* pairs of rand
 span(700, 20, 750, 20)
 ```
 
-We can assess to what degree two calibrated distributions are overlapping (as the minimum calibrated height for each calendar year in a range). For example, imagine two dates from the same archaeological layer, a twig (3820 &pm; 40 C-14 BP, requiring calibration with IntCal20) and a marine shell (4430 &pm; 40 C-14 BP, requiring Marine20, with a regional marine offset of 90 &pm; 25). To what degree are their calibrated distributions overlapping?
+We can assess to what degree two calibrated distributions are overlapping (as the minimum calibrated height for each calendar year in a range). For example, imagine two dates from the same archaeological layer, a twig (3820 &pm; 40 C-14 BP, requiring calibration with IntCal20) and a marine shell (4430 &pm; 40 C-14 BP, requiring Marine20, with a regional marine offset of 90 &pm; 25). By what percentage do the two calibrated distributions overlap?
 
 ```{r, fig.width=5, fig.asp=.8}
 y <- c(3820, 4590-90) 
 er <- c(40, sqrt(40^2 + 25^2)) 
 cc <- c(1,2)
-overlapping(y, er, cc=cc)
+overlap(y, er, cc=cc)
 ```
 
 # Contamination
@@ -455,6 +455,6 @@ and calibration of post-bomb 14C Data. *Radiocarbon* 46, 1299-1304 <http://dx.do
 
 [^9]: https://www.cam.ac.uk/stories/journeysofdiscovery-pulsars
 
-[^10]: https://www.radiox.co.uk/artists/joy-division/cover-joy-division-unknown-pleasures-meaning/
+[^10]: https://www.radiox.co.uk/artists/joy-division/unknown-pleasures-album-cover-meaning/
 
 [^11]: https://en.wikipedia.org/wiki/Hallstatt_plateau

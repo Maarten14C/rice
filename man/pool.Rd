@@ -4,7 +4,15 @@
 \alias{pool}
 \title{Test if a set of radiocarbon dates can be combined}
 \usage{
-pool(y, er, deltaR = 0, deltaSTD = 0, threshold = 0.05, roundby = 1)
+pool(
+  y,
+  er,
+  deltaR = 0,
+  deltaSTD = 0,
+  threshold = 0.05,
+  roundby = 1,
+  talk = TRUE
+)
 }
 \arguments{
 \item{y}{The set of radiocarbon dates to be tested}
@@ -18,6 +26,8 @@ pool(y, er, deltaR = 0, deltaSTD = 0, threshold = 0.05, roundby = 1)
 \item{threshold}{Probability threshold above which chisquare values are considered acceptable (between 0 and 1; default \code{threshold=0.05}).}
 
 \item{roundby}{Rounding of the reported mean, chisquare and and p-value. Defaults to \code{roundby=1}.}
+
+\item{talk}{It's better than staying silent.}
 }
 \value{
 The pooled mean and error if the p-value is above the threshold - a warning if it is not.

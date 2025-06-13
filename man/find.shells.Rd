@@ -63,7 +63,7 @@ find.shells(
 
 \item{warn}{Whether or not to warn if some recommended R packages are not available.}
 
-\item{currents}{If set to TRUE (the default), the user will be asked if they want to browse a map of ocean currents. If the user responds 'y', an Internet browser window will be opened pointing to a zoomed-in map of ocean currents (at 50 m depth). The ocean currents are from 'earth.nullschool.net' and are based on an ocean circulation model which is updated daily. Owing to limitations of the website, the shell locations cannot currently be added to the page.}
+\item{currents}{If set to TRUE (the default), the user will be asked if they want to browse a map of ocean currents. If the user responds 'y', an Internet browser window will be opened pointing to a zoomed-in map of ocean currents (at 50 m depth). The ocean currents are from 'earth.nullschool.net' and are based on an ocean circulation model which is updated daily. Owing to limitations of the website, the shell locations cannot currently be added to the page itself.}
 }
 \value{
 A dataset with the n nearest dR values, and a plot of their coordinates.

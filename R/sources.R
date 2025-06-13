@@ -8,6 +8,7 @@
 #' @param fractions_ages The radiocarbon ages of the individual fractions. The fraction without a date should be entered as NA.
 #' @param fractions_errors The errors of the radiocarbon ages of the individual fractions. The fraction without a date should be entered as NA.
 #' @param roundby Rounding of the reported age
+#' @param talk Provide feedback
 #' @examples
 #' Cs <- c(.02, .05, .03, .04) # carbon contents of each fraction
 #' wghts <- c(5, 4, 2, .5) # weights for all fractions, e.g., in mg
@@ -15,7 +16,7 @@
 #' errors <- c(10, 12, 10, NA) # errors, unmeasured is NA
 #' fractions(150, 20, Cs, wghts, ages, errors) # assuming a bulk age of 150 +- 20 C14 BP
 #' @export
-fractions <- function(bulk_age, bulk_er, fractions_percC, fractions_weights, fractions_ages, fractions_errors, roundby=1) {
+fractions <- function(bulk_age, bulk_er, fractions_percC, fractions_weights, fractions_ages, fractions_errors, roundby=1, talk=TRUE) {
 
   if(length(which(is.na(fractions_ages))) > 1 || length(which(is.na(fractions_errors))) > 1)
     stop("Cannot deal with multiple missing fraction ages/errors")
@@ -41,9 +42,11 @@ fractions <- function(bulk_age, bulk_er, fractions_percC, fractions_weights, fra
   unknown_F <- bulk_F[1] - sum(fractions_cF)
   unknown_age_estimated <- F14CtoC14(unknown_F / totC[unknown_age])
 
-  unknown_age <- round(c(unknown_age_estimated[1], overall_uncertainty), roundby)
+  unknown_age <- c(age=unknown_age_estimated[1], error=overall_uncertainty)
 
-  message(paste0("estimated C14 age of fraction ", which(is.na(fractions_ages)), ": ", unknown_age[1], " +- ", unknown_age[2]))
+  if(talk)
+    message(paste0("estimated C14 age of fraction ", which(is.na(fractions_ages)), ": ",
+      round(unknown_age[1], roundby), " +- ", round(unknown_age[2], roundby)))
   invisible(unknown_age)
 }
 
@@ -195,10 +198,10 @@ contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.c
       fnt <- c(rep(1, 14), rep(2, 5)) # last bit has to be bold
       if(length(eq.y) == 0)
         eq.y <- 1.01*max(c(F.obs, F.true[,1], F.contam))
-	  op <- par(xpd=TRUE) # to avoid truncated printing 
+      op <- par(xpd=TRUE) # to avoid truncated printing
       for(i in seq_along(txt))
         text(x = xpos[i], y = eq.y, labels = txt[i], col = colours[i], adj = c(0, 0), font=fnt[i], cex=eq.size/1.32)
-	  op <- par(xpd=FALSE)  
+      op <- par(xpd=FALSE)
     }
 
   C14.obs <- round(C14.obs, roundby)

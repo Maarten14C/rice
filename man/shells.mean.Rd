@@ -12,7 +12,8 @@ shells.mean(
   pch = 20,
   col.mn = 1,
   lty.mn = 2,
-  col.sd = rgb(0, 0, 0, 0.1)
+  col.sd = rgb(0, 0, 0, 0.1),
+  talk = TRUE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ shells.mean(
 \item{lty.mn}{Line type for the weighted mean. Defaults to dashed, \code{lty.mn=2}.}
 
 \item{col.sd}{Colour of the rectangle of the error. Defaults to transparent grey, \code{col.sd=rgb(0,0,0,.1)}.}
+
+\item{talk}{Report details of the found values.}
 }
 \value{
 A plot of the dR values, as well as the weighted mean (vertical line) and (weighted) error (rectangle).

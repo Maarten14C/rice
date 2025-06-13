@@ -1,6 +1,6 @@
 # add sample weight functions (per Philippa Ascough's suggestion. Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
-# does rintcal::glue.ccurves require as.D?
+# do rintcal::glue.ccurves and mix.ccurves require as.D?
 
 # in calibrate(), make interpolation to e.g. years more intelligent (default c() then 1 if prebomb, .1 if postbomb
 
@@ -8,7 +8,7 @@
 
 # terr-marine contribution calculation
 
-# error multipliers
+# error multipliers, rounding
 
 #' @name howmanyC14
 #' @title Amount of C14 particles in a sample
@@ -141,11 +141,13 @@ adjust.background <- function(y, er, bg, bg.er, realm="C14") {
   er_corr <- sqrt( (1/D)^2 * sigma_X^2 + (X/(D^2))^2 * bg.er^2 )
 
   if(is_f14c)
-    return(data.frame(F_corr, er_corr)) else
+    return(data.frame(F14C=F_corr, F14C_er=er_corr)) else
     if(is_pmc)
-      return(data.frame(100*F_corr, 100*er_corr)) else
-      if(is_c14)
-        return(data.frame(F14CtoC14(F_corr, er_corr)))
+      return(data.frame(pMC=100*F_corr, pMC_er=100*er_corr)) else
+      if(is_c14) {
+        as.C <- data.frame(F14CtoC14(F_corr, er_corr))
+        return(data.frame(C14=as.C[,1], C14.er=as.C[,2]))
+      }
 }
 
 

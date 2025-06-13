@@ -16,7 +16,7 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
         stop("Please install the leaflet package:\ninstall.packages(\"leaflet\")")
       if(!coper)
         stop("Please install the CopernicusMarine package:\ninstall.packages(\"CopernicusMarine\")")
-	} else {
+    } else {
         if(!hassf)
           message("Using (ugly) basic map. For better maps, please install the packages sf and rnaturalearth: \ninstall.packages(c(\"sf\", \"rnaturalearth\"))") else {
           if(mapsize=="large") {
@@ -50,8 +50,8 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
     cols <- color_scale[as.numeric(bins)]
     qtiles <- round(quantile(dR, probs = c(1, 0.75, 0.5, 0.25, 0)), 1)
 
-    hover_labels <- paste0("dR: ", dR, " &plusmn; ", shells[,6],
-     "<br>No.: ", shells$no, "<br>Feeding: ", shells$feeding)
+    hover_labels <- paste0("&Delta;R: ", dR, " &plusmn; ", shells[,6],
+      "<br>No.: ", shells$no, "<br>Feeding: ", shells$feeding)
     map <- leaflet::leaflet()
     map <- leaflet::addProviderTiles(map, leaflet::providers$Esri.WorldImagery, group = "Esri Satellite")
     map <- leaflet::addLayersControl(map,
@@ -99,11 +99,13 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
     vals <- round(seq(min(shells[,5]), max(shells[,5]), length=length(yticks)), 0)
     image(x=c(xmin, xmax), y=seq(ymin, ymax, length.out=100), z=matrix(1:100, nrow = 1),
       col=color_scale, axes=FALSE, add=TRUE)
-    text((xmin+xmax)/2, ymax, "dR", adj=c(0.5,0))
+    text((xmin+xmax)/2, ymax, expression(Delta*R), adj=c(0.5,0))
     text(xmax+.2, yticks, vals, cex=.5, adj=c(0, .5))
 
     return() # plotted basic map, end of function
   }
+
+  #shells <- shells[, !duplicated(names(shells))]
 
   # if more high-res map packages are installed:
   if(mapsize == "small") {
@@ -126,7 +128,7 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
     geom_sf(fill = land.col) +
     coord_sf(xlim = c(W, E), ylim = c(S, N), expand = TRUE) +
       theme(
-        panel.grid.major = element_line(color = rgb(0, 0, 0, 0.5), linetype = 2, size = 0.1),
+        panel.grid.major = element_line(color = rgb(0, 0, 0, 0.5), linetype = 2, linewidth = 0.1),
         panel.background = element_rect(fill = ocean.col),
         legend.background = element_rect(fill = "transparent"),
         legend.key = element_rect(fill = "transparent")
@@ -139,9 +141,10 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
     p <- p + geom_point(data=shells, aes(x=!!lon_col, y=!!lat_col, color=!!sym(colour), shape=!!sym(symbol)), size=2, alpha=.8) else
       p <- p + geom_point(data=shells, aes(x=!!lon_col, y=!!lat_col, color=!!sym(colour)), size=2, alpha=.8)
 
-  if(rainbow)
-    p <- p + scale_color_gradientn(colors = rainbow(7)) + labs(shape="feeding") else
-      p <- p + scale_color_gradient(low=mincol, high=maxcol) + labs(shape="feeding")
+  if(rainbow) {
+    p <- p + scale_color_gradientn(colors = rainbow(7)) + labs(color = expression(Delta*R), shape = "feeding")
+  } else
+      p <- p + scale_color_gradient(low = mincol, high = maxcol) + labs(color = expression(Delta*R), shape = "feeding")
 
   print(p)
 }
@@ -168,7 +171,7 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
 # )
 
 
-#
+
 # map <- CopernicusMarine::addCmsWMTSTiles(
 #  map,
 #  product = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
@@ -178,7 +181,6 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
 #  options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
 #  group = "Sea water velocity magnitude"
 # )
-
 
 
 
@@ -220,7 +222,7 @@ hav.dist <- function(long1, lat1, long2, lat2) {
 #' @param land.col Colour for the land. Defaults to semi-transparent darkgreen: \code{land.col=rgb(0, 0.5, 0, 0.6)}.
 #' @param padding Area around the map if using a basic plot. Avoids strange line features. Defaults to \code{padding=1}. 
 #' @param warn Whether or not to warn if some recommended R packages are not available.
-#' @param currents If set to TRUE (the default), the user will be asked if they want to browse a map of ocean currents. If the user responds 'y', an Internet browser window will be opened pointing to a zoomed-in map of ocean currents (at 50 m depth). The ocean currents are from 'earth.nullschool.net' and are based on an ocean circulation model which is updated daily. Owing to limitations of the website, the shell locations cannot currently be added to the page. 
+#' @param currents If set to TRUE (the default), the user will be asked if they want to browse a map of ocean currents. If the user responds 'y', an Internet browser window will be opened pointing to a zoomed-in map of ocean currents (at 50 m depth). The ocean currents are from 'earth.nullschool.net' and are based on an ocean circulation model which is updated daily. Owing to limitations of the website, the shell locations cannot currently be added to the page itself.
 #' @examples
 #'   UK <- find.shells(0, 55, mapsize="small")
 #'   mean(UK$dR)
@@ -302,7 +304,7 @@ find.shells <- function(longitude, latitude, nearest=50, browse=FALSE, colour="d
 #' @param legend.size Size of the legend, if using a basic plot. Defaults to \code{legend.size=c(0.05, 0.2)}
 #' @param padding Area around the map if using a basic plot. Avoids strange line features. Defaults to \code{padding=0.1}. 
 #' @param warn Whether or not to warn if some recommended R packages are not available.
-#' @param currents If set to TRUE (the default), the user will be asked if they want to browse a map of ocean currents. If the user responds 'y', an Internet browser window will be opened pointing to a zoomed-in map of ocean currents (at 50 m depth). The ocean currents are from 'earth.nullschool.net' and are based on an ocean circulation model which is updated daily. Owing to limitations of the website, the shell locations cannot currently be added to the page. 
+#' @param currents If set to TRUE (the default), the user will be asked if they want to browse a map of ocean currents. If the user responds 'y', an Internet browser window will be opened pointing to a zoomed-in map of ocean currents (at 50 m depth). The ocean currents are from 'earth.nullschool.net' and are based on an ocean circulation model which is updated daily. Owing to limitations of the website, the shell locations cannot currently be added to the page itself.
 #' @examples
 #'  N_UK <- map.shells(53, -11, 60, 2, mapsize="small")
 #'  mean(N_UK$dR)
@@ -323,14 +325,14 @@ map.shells <- function(S=48, W=-15, N=62, E=5, browse=FALSE, colour="dR", rainbo
         height <- hav.dist((W+E)/2, S, (W+E)/2, N)
         w <- 10000 * (1000 / width)
         h <- 10000 * ((1000 / 2) / height) 
-    	  sz <- max(300, min(5000, ceiling(min(w, h))))
-     	  answer <- tolower(readline("Do you want to browse a map with ocean currents? [y/N]: "))
+        sz <- max(300, min(5000, ceiling(min(w, h))))
+        answer <- tolower(readline("Do you want to browse a map with ocean currents? [y/N]: "))
         if(answer == "y") {
           latitude  <- round((S + N) / 2, 3)
           longitude <- round((W + E) / 2, 3)
            browseURL(paste0("https://earth.nullschool.net/#current/ocean/surface/currents/orthographic=",
             round(longitude, 3), ",", round(latitude, 3), ",", sz))
-  	    }
+        }
   # alternative, avoiding NOAA dependency, but slow and how to steer the zoom level is a bit unclear
   # browseURL(paste0("https://data.marine.copernicus.eu/viewer/expert?view=viewer&crs=epsg%3A4326&t=1749038400000&z=-0.5&center=", 
   #		round(longitude, 3), "%2C", round(latitude, 3), '&zoom=', sz,
@@ -409,16 +411,17 @@ weighted_means <- function(y, er, round=1, talk=TRUE) {
 #' @param col.mn Colour for the weighted mean. Defaults to black, \code{col.mn=1}.
 #' @param lty.mn Line type for the weighted mean. Defaults to dashed, \code{lty.mn=2}.
 #' @param col.sd Colour of the rectangle of the error. Defaults to transparent grey, \code{col.sd=rgb(0,0,0,.1)}.
+#' @param talk Report details of the found values.
 #' @examples
 #'  N_UK <- map.shells(53, -11, 60, 2, mapsize="small")
 #'  shells.mean(N_UK)
 #'  nearby <- find.shells(0,56,20) # somewhere in Scotland
 #'  shells.mean(nearby, distance=TRUE) # distance matters
 #' @export
-shells.mean <- function(dat, feeding=c(), draw=TRUE, distance=FALSE, pch=20, col.mn=1, lty.mn=2, col.sd=rgb(0,0,0,.1)) {
+shells.mean <- function(dat, feeding=c(), draw=TRUE, distance=FALSE, pch=20, col.mn=1, lty.mn=2, col.sd=rgb(0,0,0,.1), talk=TRUE) {
   if(length(feeding)>0)
     dat <- dat[which(dat$feeding %in% feeding)]
-  wmn_sd <- weighted_means(dat$dR, dat$dSTD)
+  wmn_sd <- weighted_means(dat$dR, dat$dSTD, talk=talk)
   if(draw) {
     food <- dat$feeding
     allfood <- unique(food)

@@ -11,6 +11,7 @@
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param threshold Probability threshold above which chisquare values are considered acceptable (between 0 and 1; default \code{threshold=0.05}).
 #' @param roundby Rounding of the reported mean, chisquare and and p-value. Defaults to \code{roundby=1}.
+#' @param talk It's better than staying silent.
 #' @author Maarten Blaauw
 #' @examples
 #'   data(shroud)
@@ -18,7 +19,7 @@
 #'   Zu <- grep("ETH", shroud$ID) # Zurich lab only
 #'   pool(shroud$y[Zu],shroud$er[Zu])
 #' @export
-pool <- function(y, er, deltaR=0, deltaSTD=0, threshold=.05, roundby=1) {
+pool <- function(y, er, deltaR=0, deltaSTD=0, threshold=.05, roundby=1, talk=TRUE) {
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
@@ -29,11 +30,13 @@ pool <- function(y, er, deltaR=0, deltaSTD=0, threshold=.05, roundby=1) {
   p <- pchisq(T, length(y)-1, lower.tail=FALSE)
   
   if(p < threshold) {
-    message("! Scatter too large to calculate the pooled mean\nChisq value: ", 
-      round(T, roundby+2), ", p-value ", round(p, roundby+2), " < ", threshold, sep="") 
+    if(talk)
+      message("! Scatter too large to calculate the pooled mean\nChisq value: ",
+        round(T, roundby+2), ", p-value ", round(p, roundby+2), " < ", threshold, sep="")
   } else { 
-      message("pooled mean: ", round(pooled.y, roundby), " +- ", round(pooled.er, roundby), 
-       "\nChi2: ", round(T, roundby+2), ", p-value ", round(p, roundby+2), " (>", threshold, ", OK)", sep="")
+      if(talk)
+        message("pooled mean: ", round(pooled.y, roundby), " +- ", round(pooled.er, roundby),
+         "\nChi2: ", round(T, roundby+2), ", p-value ", round(p, roundby+2), " (>", threshold, ", OK)", sep="")
       return(c(pooled.y, pooled.er))
     }
 }
@@ -198,7 +201,7 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 
 
 
-#' @name overlapping
+#' @name overlap
 #' @title The overlap between calibrated C14 dates
 #' @description Calculates the amount of overlap (as percentage) between two or more calibrated radiocarbon dates. It does this by taking a sequence of calendar dates 'x' and for each calendar date find the calibrated distribution with the minimum height - this minimum height is taken as the overlap between the dates for that age. This is repeated for all 'x'. The sum of these heights is the overlap, which can reach values from 0 to 100\%. 
 #' @return The overlap between all calibrated probabilities as percentage, and a plot. 
@@ -234,11 +237,11 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #' @examples
 #'   y <- c(3820, 4430) # the C14 ages of a twig and a marine shell from a single layer
 #'   er <- c(40, 40) # their lab errors
-#'   overlapping(y, er, cc=1:2, dist.col=3:4, labels=c("twig", "shell"))
+#'   overlap(y, er, cc=1:2, dist.col=3:4, labels=c("twig", "shell"))
 #'   mydists <- list(caldist(130,20, cc=1), caldist(150,20, cc=0))
-#'   overlapping(mydists)
+#'   overlap(mydists)
 #' @export
-overlapping <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, BCAD=FALSE, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, threshold=0, xlim=c(), xlab=c(), yrby=1, dist.col=rgb(0,0,0,.2), overlap.col=rgb(0,0,1,.4), overlap.border=NA, overlap.height=1, talk=TRUE, visualise=TRUE, prob=0.95, roundby=1, bty="n", yaxt="n") {
+overlap <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, BCAD=FALSE, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, threshold=0, xlim=c(), xlab=c(), yrby=1, dist.col=rgb(0,0,0,.2), overlap.col=rgb(0,0,1,.4), overlap.border=NA, overlap.height=1, talk=TRUE, visualise=TRUE, prob=0.95, roundby=1, bty="n", yaxt="n") {
   if(length(cc) == 1)
     cc <- rep(cc,length(y))
   if(length(deltaR) == 1)
@@ -260,21 +263,21 @@ overlapping <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbo
   xmin <- Inf; xmax <- -Inf
   for(i in 1:length(dists)) {
     xmin <- min(xmin, dists[[i]][,1])
-    xmax <- max(xmax, dists[[i]][,1])	
+    xmax <- max(xmax, dists[[i]][,1])
   }
 
   xseq <- seq(xmin, xmax, by=yrby)
   probs <- array(NA, dim=c(length(xseq), length(dists)))
-  for(i in 1:length(dists)) {
-    thisprob <- approx(dists[[i]][,1], dists[[i]][,2], xseq, rule=1)$y
-    thisprob[is.na(thisprob)] <- 0
-    thisprob <- thisprob / sum(thisprob)
-    thisprob[thisprob < threshold] <- 0
-    probs[,i] <- thisprob
+  for(i in 1:length(dists)) { # find and normalise all distributions
+    this.prob <- approx(dists[[i]][,1], dists[[i]][,2], xseq, rule=1)$y
+    this.prob[is.na(this.prob)] <- 0
+    this.prob <- this.prob / sum(this.prob)
+    this.prob[this.prob < threshold] <- 0
+    probs[,i] <- this.prob
   }  
-  overlap <- apply(probs, 1, min, na.rm=TRUE)
-  if(length(overlap) == 0)
-    overlap <- 0
+  this.overlap <- apply(probs, 1, min, na.rm=TRUE) # find the minimum prob for each x in xseq
+  if(length(this.overlap) == 0)
+    this.overlap <- 0
 
   if(length(dist.col) == 1)
     dist.col <- rep(dist.col, length(dists))
@@ -297,13 +300,13 @@ overlapping <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbo
       if(length(labels) > 0)
         text(max(dists[[i]][,1]), i, labels=labels[i], col=dist.col[i], adj=c(0,-1))
     }
-    if(max(overlap) > 0)
-      draw.dist(cbind(xseq, overlap), dist.col=overlap.col, dist.border=overlap.col, prob=prob, y.pos=0, peak=TRUE, BCAD=BCAD, hpd=FALSE)
+    if(max(this.overlap) > 0)
+      draw.dist(cbind(xseq, this.overlap), dist.col=overlap.col, dist.border=overlap.col, prob=prob, y.pos=0, peak=TRUE, BCAD=BCAD, hpd=FALSE)
   }
   
   if(talk)
-    message("overlap: ", round(100*sum(overlap), roundby), "%")
-  invisible(100*sum(overlap))
+    message("overlap: ", round(100*sum(this.overlap), roundby), "%")
+  invisible(100*sum(this.overlap))
 }
 
 

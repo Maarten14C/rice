@@ -26,6 +26,6 @@ Post-bomb dates are often reported as F14C (between 0 at c. 55 kcal BP and 1 at 
  this function can be used to calculate radiocarbon ages from F14C values. The reverse function is \link{age.F14C}.
 }
 \examples{
-  F14CtoC14(1.10, 0.5) # a postbomb date, so with a negative C14 age
-  F14CtoC14(.80, 0.5) # prebomb dates can also be calculated
+  F14CtoC14(1.10, 0.005) # a postbomb date, so with a negative C14 age
+  F14CtoC14(.80, 0.005) # prebomb dates can also be calculated
 }

@@ -11,7 +11,8 @@ fractions(
   fractions_weights,
   fractions_ages,
   fractions_errors,
-  roundby = 1
+  roundby = 1,
+  talk = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ fractions(
 \item{fractions_errors}{The errors of the radiocarbon ages of the individual fractions. The fraction without a date should be entered as NA.}
 
 \item{roundby}{Rounding of the reported age}
+
+\item{talk}{Provide feedback}
 }
 \description{
 Estimate a missing radiocarbon age from a sample which has C14 dates on both the bulk and on fractions, but where 1 sample was too small to be dated. This can be used in for example soils separated into size fractions, where one of the samples turns out to be too small to be dated. Requires to have the bulk age, the ages of the dated fractions, and the carbon contents and weights of all fractions.
