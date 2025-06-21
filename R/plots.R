@@ -303,7 +303,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 #' calibrate(age=130, error=10, BCAD=TRUE)
 #' calibrate(4450, 40, reservoir=c(100, 50))
 #' @export
-calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, bombalert=TRUE, thiscurve=c(), as.F=TRUE, is.F=FALSE, is.pMC=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, draw=TRUE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.3), dist.fill=rgb(0,0,0,0.3), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=FALSE, yr.steps=FALSE, cc.resample=5, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, round.age=c(), round.hpd.ages=0, round.hpd.probs=1, every=NA, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", print.truncate.warning=TRUE, mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, cc.er=0, asymmetric=TRUE, ...) {
+calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, bombalert=TRUE, thiscurve=c(), as.F=TRUE, is.F=FALSE, is.pMC=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, draw=TRUE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.3), dist.fill=rgb(0,0,0,0.3), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=FALSE, yr.steps=FALSE, cc.resample=5, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, round.age=c(), round.hpd.ages=0, round.hpd.probs=1, every=NA, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", warning.loc="right", print.truncate.warning=TRUE, mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, cc.er=0, asymmetric=TRUE, ...) {
   
   if(is.F && is.pMC)
     stop("Cannot have both is.F=TRUE and is.PMC=TRUE.")
@@ -478,7 +478,9 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
     hpds <- draw.dist(cal.dist, on.y=FALSE, y.pos=cclim, as.unit=FALSE, fraction=dist.height, mirror=FALSE, up=TRUE, peak=TRUE, prob=prob, BCAD=BCAD, hpd.border=NA, hpd.col=hpd.fill, dist.col=dist.fill, dist.border=dist.col, age.round=round.hpd.ages, prob.round=round.hpd.probs)
 
     # legends
-    cc.name <- switch(cc, "IntCal20", "Marine20", "SHCal20")
+    if(cc %in% 0:4)
+      cc.name <- switch(cc, "IntCal20", "Marine20", "SHCal20") else
+        cc.name <- cc
     if(length(round.age)==0)
       if(is.F)
         round.age <- 4 else 	
@@ -503,7 +505,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
   
   if(truncate.warning)
     if(print.truncate.warning)
-      legend("right", "Warning! Date truncated ", text.col="red", bty="n", cex=legend.cex, xjust=1)
+      legend(warning.loc, "Warning! Date truncated ", text.col="red", bty="n", cex=legend.cex, xjust=1)
   
   invisible(list(calib=cal.dist, hpd=hpds))
 }
@@ -556,11 +558,14 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
     hpds <- hpds$hpds
 
     for(i in 1:nrow(hpds)) {
-      thisdist <- (dist[,1] >= min(hpds[i,1:2])) * (dist[,1] <= max(hpds[i,1:2]))
-      thisdist <- dist[which(thisdist == 1),]
+      sel <- dist[,1] >= min(hpds[i,1:2]) & dist[,1] <= max(hpds[i,1:2])
+      thisdist <- dist[sel, , drop=FALSE]
 
-      if(length(thisdist) == 2) # then just 1 row
-        thisdist <- rbind(c(thisdist[1],0), thisdist, c(thisdist[1], 0))
+      if(nrow(thisdist) == 0)
+        next  # skip to the next hpd if there's no overlap
+      if(nrow(thisdist) == 1)
+        thisdist <- rbind(c(thisdist[1,1], 0), thisdist, c(thisdist[1,1], 0))
+
       ages0 <- c(thisdist[1,1], thisdist[,1], thisdist[nrow(thisdist),1])
       agesmirror <- c(thisdist[,1], rev(thisdist[,1]))
       dist0 <- ex*c(0, thisdist[,2], 0)

@@ -1,17 +1,7 @@
-# in calibrate, plot the uncalibrated distribution skewed if in C14 (but symmetrical if as.F or as.pMC)
-# dist.y <- caldist(.0007, .0007, is.F=TRUE, cc=0)
-# plot(C14toF14C(dist.y[,1]), dist.y[,2], type="l")
-
-# calibrate, check that is.F, as.F etc. continue to work as F, T
-
-# a plot of F vs 14C, with distributions for both scales
-
-# dist.y <- caldist(.007, .0007, cc=0, is.F=T) causes an error (fine if cc=1)
-
 
 # add sample weight functions (per Philippa Ascough's suggestion. Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
-# do rintcal::glue.ccurves and mix.ccurves require as.D?
+# do rintcal::glue.ccurves and mix.ccurves require as.D? Perhaps not because not all curves have columns for D14C, and if they do have them (Intcal20 curves), these values do not include extra var present in the reported 14C ages.
 
 # in calibrate(), make interpolation to e.g. years more intelligent (default c() then 1 if prebomb, .1 if postbomb
 
