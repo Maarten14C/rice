@@ -480,15 +480,17 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
     # legends
     cc.name <- switch(cc, "IntCal20", "Marine20", "SHCal20")
     if(length(round.age)==0)
-      round.age <- 0
+      if(is.F)
+        round.age <- 4 else 	
+         round.age <- 0
     if(length(round.hpd.ages)==0)
       round.hpd.ages <- 0
     if(length(round.hpd.probs)==0)
       round.hpd.probs <- 1
 	
     C14.label <- c(cc.name, 
-      paste(format(round(age, round.age), scientific=FALSE), "\u00B1",
-      format(round(error, round.age), scientific=FALSE)))
+      paste(format(round(age, round.age), scientific=FALSE, nsmall=round.age), "\u00B1",
+      format(round(error, round.age), scientific=FALSE, nsmall=round.age)))
     legend(legend1.loc, legend=C14.label, text.col=c(cc.col, 1),  ncol=1, bty="n", cex=legend.cex)
 	
 	hpds[,1:2] <- format(round(hpds[,1:2], round.hpd.ages), nsmall=round.hpd.ages)

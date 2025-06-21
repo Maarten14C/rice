@@ -99,7 +99,10 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
     cal[,2] <- cal[,2]/sum(cal[,2])
   # remove years with very small probabilities on the extremes of the distribution
   above <- which(cal[,2] >= (threshold * max(cal[,2]))) # relative to its peak
-  cal <- cal[min(above):max(above),] # now does not necessarily sum to exactly 1 any more
+  if(length(above)>2)
+    cal <- cal[min(above):max(above),] # now does not necessarily sum to exactly 1 any more
+  if(normalise) # ... so normalise again if asked for
+    cal[,2] <- cal[,2]/sum(cal[,2])
 
   if(is.null(col.names)) {
     colnames(cal) <- c("cal BP", "prob")
