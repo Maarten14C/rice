@@ -4,7 +4,7 @@
 \alias{pMCtoD14C}
 \title{Transform F14C into D14C}
 \usage{
-pMCtoD14C(pMC, er = NULL, t)
+pMCtoD14C(pMC, er = NULL, t, roundby = NA)
 }
 \arguments{
 \item{pMC}{The pMC value to translate}
@@ -12,6 +12,8 @@ pMCtoD14C(pMC, er = NULL, t)
 \item{er}{Reported error of the pMC value. Returns just the mean if left empty.}
 
 \item{t}{the cal BP age}
+
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
 }
 \value{
 The corresponding D14C value

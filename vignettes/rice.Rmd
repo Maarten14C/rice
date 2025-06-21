@@ -155,6 +155,12 @@ C14toD14C(152, t=4000)
 D14CtoC14(592, t=4000)
 ```
 
+Although ages are most often expressed as 14C BP, radiocarbon labs calculate these ages from the measured F14C values. Since 14C BP = -8033 * ln(F), the distributions of especially older 14C ages and those with large errors become skewed, sometimes with their tails extending into infinite ages:
+ 
+```{r, fig.width=5, fig.asp=1}
+draw.CF(50000, 3000) 
+```
+
 ---
 
 Here's a function to transform values between multiple realms and visualise them:
@@ -229,7 +235,7 @@ span(700, 20, 750, 20)
 We can assess to what degree two calibrated distributions are overlapping (as the minimum calibrated height for each calendar year in a range). For example, imagine two dates from the same archaeological layer, a twig (3820 &pm; 40 C-14 BP, requiring calibration with IntCal20) and a marine shell (4430 &pm; 40 C-14 BP, requiring Marine20, with a regional marine offset of 90 &pm; 25). By what percentage do the two calibrated distributions overlap?
 
 ```{r, fig.width=5, fig.asp=.8}
-y <- c(3820, 4590-90) 
+y <- c(3820, 4430+90)
 er <- c(40, sqrt(40^2 + 25^2)) 
 cc <- c(1,2)
 overlap(y, er, cc=cc)
@@ -286,7 +292,7 @@ for (i in 1:length(contam)) {
 
 If that is too much code for you, try this function instead:
 
-```{r, fig.width=6, fig.asp=.8}
+```{r, fig.width=6}
 draw.contamination()
 ```
 

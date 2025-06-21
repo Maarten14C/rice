@@ -4,7 +4,7 @@
 \alias{F14CtoD14C}
 \title{Transform F14C into D14C}
 \usage{
-F14CtoD14C(F14C, er = NULL, t)
+F14CtoD14C(F14C, er = NULL, t, roundby = NA)
 }
 \arguments{
 \item{F14C}{The F14C value to translate}
@@ -12,6 +12,8 @@ F14CtoD14C(F14C, er = NULL, t)
 \item{er}{Reported error of the F14C. Returns just the mean if left empty.}
 
 \item{t}{the cal BP age}
+
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
 }
 \value{
 The corresponding D14C value

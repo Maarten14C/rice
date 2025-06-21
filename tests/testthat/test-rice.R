@@ -1,7 +1,7 @@
 test_that("howmanyC14 returns expected C14 atoms", {
   result <- howmanyC14(55e3, talk=FALSE)
   expect_length(result, 1)
-  expect_equal(result, 115447, tolerance = 1e-5)
+  expect_equal(unname(result), 115446, tolerance = 1e-5)
 })
 
 test_that("adjust.fractionation returns expected adjusted C14 age", {
@@ -149,84 +149,3 @@ test_that("muck returns percentage", {
   result <- muck(600, 30, 2000, 0, 1, .01, talk=FALSE)
   expect_equal(result$perc, 67.4, tolerance=0.01)
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

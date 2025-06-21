@@ -165,13 +165,13 @@ test_that("calBPtoF14C returns expected F14C values", {
   calBP <- 2000
 
   # Run the function with known input
-  result <- calBPtoF14C(calBP)
+  result <- unname(calBPtoF14C(calBP))
 
   # Check that the result is a numeric vector of length 2 (F14C, uncertainty)
   expect_length(result, 2)
 
   # Check that the values are within expected bounds
-  expect_gt(result[1], 0)     # F14C > 0
+  expect_gt(result[1], 0) # F14C > 0
 
   # check with expected result
   expected <- matrix(c(0.7728371, 0.00134808), nrow=1)

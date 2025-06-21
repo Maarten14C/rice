@@ -4,12 +4,14 @@
 \alias{F14CtopMC}
 \title{Calculate pMC ages from F14C values.}
 \usage{
-F14CtopMC(F14C, er = NULL)
+F14CtopMC(F14C, er = NULL, roundby = NA)
 }
 \arguments{
 \item{F14C}{Reported mean of the F14C}
 
 \item{er}{Reported error of the F14C. Returns just the mean if left empty.}
+
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
 }
 \value{
 The pMC values from the F14C values. Basically the original values multiplied by 100.

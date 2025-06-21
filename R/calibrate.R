@@ -14,7 +14,8 @@
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespans.
-#' @param dist.res As an alternative to yrsteps, provide the amount of 'bins' in the distribution
+#' @param dist.res As an alternative to yrsteps, provide the amount of 'bins' in the distribution.
+#' @param cc0.res Length of 'curve' when cc=0 (no calibration curve). Defaults to 5000, in order to provide enough points for detailed distributions.  
 #' @param threshold Report only values above a threshold. Defaults to \code{threshold=1e-6}.
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param t.a Value a of the t distribution (defaults to 3).
@@ -23,61 +24,64 @@
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
 #' @param rule Which extrapolation rule to use. Defaults to \code{rule=1} which returns NAs.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
+#' @param col.names Names for the output columns. Defaults to calBP/BCAD and probs, respectively (depending on the value of BCAD).
 #' @examples
 #' calib <- caldist(130,10)
 #' plot(calib, type="l")
 #' postbomb <- caldist(-3030, 20, postbomb=1, BCAD=TRUE)
 #' @export
-caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL) {
+caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, cc0.res=5e3, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL, col.names=NULL) {
 
   if(is.F && is.pMC)
-    stop("cannot have both is.F=TRUE and is.pMC=TRUE")		
+    stop("cannot have both is.F=TRUE and is.pMC=TRUE")
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
 
   if(length(thiscurve) == 0) {
     if(cc == 0) { # no ccurve needed
-      xseq <- seq(y-8*er, y+8*er, length=2e3) # hard-coded values, hmmm
-      cc <- cbind(xseq, xseq, rep(0, length(xseq)))
+      xseq <- seq(y-4*er, y+4*er, length=cc0.res)
+      this.cc <- cbind(xseq, xseq, rep(0, length(xseq)))
     } else
     if(is.F)
-      cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample) else
+      this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample) else
         if(min(y) < max(3*er) || postbomb) { # was y - er < 0
           if(!postbomb)
             if(!(cc %in% c("nh1", "nh2", "nh3", "sh1-2", "sh3")))
               stop("This appears to be a postbomb age or close to being so. Please provide a postbomb curve")
-          cc <- rintcal::glue.ccurves(cc, postbomb, cc.dir)
+          this.cc <- rintcal::glue.ccurves(cc, postbomb, cc.dir)
 
         } else
-          cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample)
+          this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample)
     } else
-      cc <- thiscurve
+      this.cc <- thiscurve
 
   if(postbomb) {
-    xseq <- seq(min(cc[,1]), max(cc[,1]), by=0.05) 	
-    ccmu <- approx(cc[,1], cc[,2], xseq)$y
-    ccsd <- approx(cc[,1], cc[,3], xseq)$y
-    cc <- cbind(xseq, ccmu, ccsd)
+    xseq <- seq(min(this.cc[,1]), max(this.cc[,1]), by=0.05)
+    ccmu <- approx(this.cc[,1], this.cc[,2], xseq)$y
+    ccsd <- approx(this.cc[,1], this.cc[,3], xseq)$y
+    this.cc <- cbind(xseq, ccmu, ccsd)
   }
-  
+
   # F realm - not using ccurve's as.F option, this to avoid potential double translations
   if(is.F) { # then put cc in F; y and er are assumed to be in F already 
-    cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
+    this.cc[,2:3] <- C14toF14C(this.cc[,2], this.cc[,3])
   } else 
     if(is.pMC) {
-      cc[,2:3] <- C14topMC(cc[,2], cc[,3])
+      this.cc[,2:3] <- C14topMC(this.cc[,2], this.cc[,3])
     } else
       if(as.F) { # y, er and cc are in C14 realm, but need to be in F
-        cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
+        this.cc[,2:3] <- C14toF14C(this.cc[,2], this.cc[,3])
         asF <- C14toF14C(y, er)
         y <- asF[1]; er <- asF[2]
       }
+  if(cc==0)
+    this.cc[,2] <- this.cc[,1]
 
   # calibrate; find how far age (measurement) is from cc[,2] of calibration curve
   if(normal)
-    cal <- cbind(cc[,1], dnorm(cc[,2], y, sqrt(er^2+cc[,3]^2))) else
-      cal <- cbind(cc[,1], (t.b + ((y-cc[,2])^2) / (2*(cc[,3]^2 + er^2))) ^ (-1*(t.a+0.5)))
+    cal <- cbind(this.cc[,1], dnorm(this.cc[,2], y, sqrt(er^2+this.cc[,3]^2))) else
+      cal <- cbind(this.cc[,1], (t.b + ((y-this.cc[,2])^2) / (2*(this.cc[,3]^2 + er^2))) ^ (-1*(t.a+0.5)))
 
   # interpolate and normalise calibrated distribution to 1
   if(postbomb)
@@ -97,11 +101,16 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
   above <- which(cal[,2] >= (threshold * max(cal[,2]))) # relative to its peak
   cal <- cal[min(above):max(above),] # now does not necessarily sum to exactly 1 any more
 
-  colnames(cal) <- c("cal BP", "prob")
-  if(BCAD) {
-    cal[,1] <- calBPtoBCAD(cal[,1])
-    colnames(cal)[1] <- "BC/AD"
-  }
+  if(is.null(col.names)) {
+    colnames(cal) <- c("cal BP", "prob")
+    if(BCAD) {
+      cal[,1] <- calBPtoBCAD(cal[,1])
+      colnames(cal)[1] <- "BC/AD"
+    }
+  } else
+      if(!is.na(col.names[1]))
+        if(length(col.names) == 2)
+          colnames(cal) <- col.names
 
   return(cal)
 }
@@ -188,13 +197,13 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
   steppies <- diff(unique(calib[,1]))
   tmpcalib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), by=every))
   if(length(tmpcalib$x) >= bins) # then the distribution is not very narrow
-	  calib <- tmpcalib else
-        calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), length=100), rule=2)
+    calib <- tmpcalib else
+      calib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), length=100), rule=2)
   calib <- cbind(calib$x, calib$y/sum(calib$y)) # normalise probs to 1
 
   # rank the calibrated ages according to their probabilities
   o <- order(calib[,2], decreasing=TRUE) # decreasing probs
-  calib <- cbind(calib[o,], cumsum(calib[o,2]) /  sum(calib[,2]))
+  calib <- cbind(calib[o,], cumsum(calib[o,2]) / sum(calib[,2]))
   calib <- cbind(calib, calib[,3] <= prob) # yr, probs, cumprobs, within/outside ranges (T/F)
   calib <- calib[order(calib[,1], decreasing=TRUE),] # put ages in order again
 
@@ -216,14 +225,13 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
         perc[i] <- round(100*sum(fromto[,2]), prob.round)
       }
 
-  mindiff <- min(diff(calib[,1]))
-  if(mindiff < 1) # very small values require different rounding
+  mindiff <- min(abs(diff(calib[,1])))
+  if(mindiff < 0.01) # very small values require different rounding
     age.round <- 1+nchar(gsub("[1-9].*", "", sub("0\\.", "",
-     format(mindiff, scientific = FALSE))))
-  
-  hpds <- cbind(round(from, age.round), round(to, age.round), perc)
-  hpds <- rbind(hpds) # make as rows, even if only 1
-  colnames(hpds) <- c("from", "to", "perc")
+      format(mindiff, scientific = FALSE))))
+
+  hpds <- data.frame(from=round(from, age.round), to=round(to, age.round), 
+    perc=round(perc, prob.round))
 
   if(return.raw)
     return(list(calib=calib[,-3], hpds=hpds)) else

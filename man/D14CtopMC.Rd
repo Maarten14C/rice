@@ -4,7 +4,7 @@
 \alias{D14CtopMC}
 \title{Transform D14C into pMC}
 \usage{
-D14CtopMC(D14C, er = NULL, t)
+D14CtopMC(D14C, er = NULL, t, roundby = NA)
 }
 \arguments{
 \item{D14C}{The Delta14C value to translate}
@@ -12,6 +12,8 @@ D14CtopMC(D14C, er = NULL, t)
 \item{er}{Reported error of the D14C. Returns just the mean if left empty.}
 
 \item{t}{the cal BP age}
+
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
 }
 \value{
 The corresponding F14C value

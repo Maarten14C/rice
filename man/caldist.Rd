@@ -18,6 +18,7 @@ caldist(
   yrsteps = FALSE,
   cc.resample = FALSE,
   dist.res = 200,
+  cc0.res = 5000,
   threshold = 0.001,
   normal = TRUE,
   t.a = 3,
@@ -25,7 +26,8 @@ caldist(
   normalise = TRUE,
   BCAD = FALSE,
   rule = 1,
-  cc.dir = NULL
+  cc.dir = NULL,
+  col.names = NULL
 )
 }
 \arguments{
@@ -53,7 +55,9 @@ caldist(
 
 \item{cc.resample}{The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespans.}
 
-\item{dist.res}{As an alternative to yrsteps, provide the amount of 'bins' in the distribution}
+\item{dist.res}{As an alternative to yrsteps, provide the amount of 'bins' in the distribution.}
+
+\item{cc0.res}{Length of 'curve' when cc=0 (no calibration curve). Defaults to 5000, in order to provide enough points for detailed distributions.}
 
 \item{threshold}{Report only values above a threshold. Defaults to \code{threshold=1e-6}.}
 
@@ -70,6 +74,8 @@ caldist(
 \item{rule}{Which extrapolation rule to use. Defaults to \code{rule=1} which returns NAs.}
 
 \item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.}
+
+\item{col.names}{Names for the output columns. Defaults to calBP/BCAD and probs, respectively (depending on the value of BCAD).}
 }
 \value{
 The probability distribution(s) as two columns: cal BP ages and their associated probabilities

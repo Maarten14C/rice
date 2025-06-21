@@ -4,14 +4,14 @@
 \alias{pMCtoC14}
 \title{Calculate C14 ages from pMC values.}
 \usage{
-pMCtoC14(pMC, er = NULL, decimals = 0, lambda = 8033)
+pMCtoC14(pMC, er = NULL, roundby = NA, lambda = 8033)
 }
 \arguments{
 \item{pMC}{Reported mean of the pMC.}
 
 \item{er}{Reported error of the pMC.}
 
-\item{decimals}{Amount of decimals required for the radiocarbon age.}
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
 
 \item{lambda}{The mean-life of radiocarbon (based on Libby half-life of 5568 years)}
 }

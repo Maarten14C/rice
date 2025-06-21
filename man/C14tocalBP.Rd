@@ -10,7 +10,8 @@ C14tocalBP(
   postbomb = FALSE,
   rule = 2,
   cc.dir = NULL,
-  thiscurve = NULL
+  thiscurve = NULL,
+  roundby = NA
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ C14tocalBP(
 \item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.}
 
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).}
+
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
 }
 \value{
 The cal BP age(s) belonging to the entered C14 age

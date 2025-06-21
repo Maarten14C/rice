@@ -147,7 +147,7 @@ contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.c
     if(length(y) != length(er))
       stop("y and er need to be of the same length", call.=FALSE)
 
-  F.true <- as.data.frame(C14toF14C(y, er, decimals))
+  F.true <- as.data.frame(C14toF14C(y, er, roundby=decimals))
 
   if(MC) {
     if(its < 10)
@@ -167,7 +167,7 @@ contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.c
         F.contam.samples <- rnorm(length(fraction.samples), F.contam, F.contam.er)
 
     F.obs.samples <- (1 - fraction.samples) * F.true.samples + fraction.samples * F.contam.samples # calculate observed F's
-    C14.obs.samples <- F14CtoC14(F.obs.samples, 0, decimals)[,1]
+    C14.obs.samples <- F14CtoC14(F.obs.samples, 0, roundby=decimals)[,1]
     F.obs <- mean(F.obs.samples)
     F.obs.er <- sd(F.obs.samples)
     if(is.na(F.obs.er)) { # if errors are 0, then sd(0) gives NA
@@ -180,7 +180,7 @@ contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.c
   } else {
       F.obs <- ((1-fraction)*F.true[,1]) + (fraction*F.contam)
       F.obs.er <- sqrt(F.true[,2]^2 + F.contam.er^2)
-      C14.obs <- F14CtoC14(F.obs, er, decimals)
+      C14.obs <- F14CtoC14(F.obs, er, roundby=decimals)
     }
 
   if(visualise)
@@ -274,7 +274,7 @@ clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.
     if(length(y) != length(er))
       stop("y and er need to be of the same length", call.=FALSE)
   
-  F.obs <- as.data.frame(C14toF14C(y, er, decimals))
+  F.obs <- as.data.frame(C14toF14C(y, er, roundby=decimals))
 
   if(MC) {
     if(its < 10)
@@ -294,7 +294,7 @@ clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.
         F.contam.samples <- rnorm(length(fraction.samples), F.contam, F.contam.er)
 
     F.true.samples <- (F.obs.samples - fraction.samples * F.contam.samples) / (1 - fraction.samples)
-    C14.true.samples <- F14CtoC14(F.true.samples, 0, decimals)[,1]
+    C14.true.samples <- F14CtoC14(F.true.samples, 0, roundby=decimals)[,1]
     F.true <- mean(F.true.samples)
     F.true.er <- sd(F.true.samples)
     if(is.na(F.true.er)) { # if errors are 0, then sd(0) gives NA
@@ -306,7 +306,7 @@ clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.
   } else {
       F.true <- (F.obs[,1] - fraction * F.contam) / (1 - fraction)
       F.true.er <- sqrt(F.obs[,2]^2 + F.contam.er^2)
-      C14.true <- F14CtoC14(F.true, er, decimals)
+      C14.true <- F14CtoC14(F.true, er, roundby=decimals)
     }
 
   C14.true <- round(C14.true, roundby)

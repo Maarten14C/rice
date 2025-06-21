@@ -12,7 +12,7 @@ BCADtoD14C(
   rule = 1,
   cc.dir = NULL,
   thiscurve = NULL,
-  decimals = 8
+  roundby = NA
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ BCADtoD14C(
 
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).}
 
-\item{decimals}{Amount of decimals required for the F14C value. Defaults to 8.}
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
 }
 \value{
 The calibration-curve 14C year belonging to the entered cal BP age

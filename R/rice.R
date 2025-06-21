@@ -1,3 +1,14 @@
+# in calibrate, plot the uncalibrated distribution skewed if in C14 (but symmetrical if as.F or as.pMC)
+# dist.y <- caldist(.0007, .0007, is.F=TRUE, cc=0)
+# plot(C14toF14C(dist.y[,1]), dist.y[,2], type="l")
+
+# calibrate, check that is.F, as.F etc. continue to work as F, T
+
+# a plot of F vs 14C, with distributions for both scales
+
+# dist.y <- caldist(.007, .0007, cc=0, is.F=T) causes an error (fine if cc=1)
+
+
 # add sample weight functions (per Philippa Ascough's suggestion. Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
 # do rintcal::glue.ccurves and mix.ccurves require as.D?
@@ -39,9 +50,9 @@ howmanyC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.ratio=1.1
     F <- calBPtoF14C(age, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
     if(is.na(F)) {
       message("Cannot use calibration curve for this age, assuming C14 age")
-      F <- C14toF14C(age, decimals=10)
+      F <- C14toF14C(age, roundby=10)
   }} else
-      F <- C14toF14C(age, decimals=10) # then t is on the C14 scale
+      F <- C14toF14C(age, roundby=10) # then t is on the C14 scale
 
   atoms <- (wght/1e3)*Av/12 # number of C atoms in a mg
   C14 <- round(F * C14.ratio * atoms, 0) # C14 atoms roundest to nearest number
