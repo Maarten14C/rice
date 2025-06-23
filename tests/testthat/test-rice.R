@@ -13,8 +13,8 @@ test_that("adjust.fractionation returns expected adjusted C14 age", {
 test_that("adjust.background returns expected background-corrected C14 age", {
   result <- unname(unlist(adjust.background(9000, 50, 45000, 200)))
   expect_length(result, 2)
-  expect_equal(result[1], 9061.71819, tolerance = 1e-5)
-  expect_equal(result[2], 50.62849, tolerance = 1e-5)
+  expect_equal(result[1], 9061.71822, tolerance = 1e-5)
+  expect_equal(result[2], 50.94971, tolerance = 1e-5)
 })
 
 ### marine
@@ -50,7 +50,7 @@ test_that("point.estimates returns expected point estimates", {
 
 test_that("point.estimates returns expected point estimates", {
   result <- hpd(caldist(130,20))
-  expect_length(result, 9)
+  expect_length(result, 3)
   expect_equal(result[,3], c(68.7, 1.9, 24.5), tolerance = 1e-5)
 })
 
@@ -84,7 +84,7 @@ test_that("p.range returns expected probability", {
 test_that("calib.t returns expected ages", {
   result <- calib.t(2450, 50)
   expect_length(result, 2)
-  expect_equal(result$text$x, 2130.5, tolerance = .1)
+  expect_equal(result$text$x, 2445.81, tolerance = .1)
 })
 
 ### sets
@@ -121,7 +121,7 @@ test_that("fractions returns ...", {
   errors <- c(10, 12, 10, NA) # errors, unmeasured is NA
   result <- fractions(150, 20, Cs, wghts, ages, errors, talk=FALSE) # assuming a bulk age of 150 +- 20 C14 B
 
-  expect_equal(unname(result), c(640.474582, 436.327848), tolerance=1e-3)
+  expect_equal(unname(unlist(result)), c(640.474582, 436.327848), tolerance=1e-3)
 })
 
 test_that("contaminate returns correct updated result", {

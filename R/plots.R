@@ -278,11 +278,15 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param rounded Rounding of the percentages of the reported hpd ranges. Defaults to 1 decimal.
+#' @param round.age Rounding of the uncalibrated 14C age as reported on the plot. Defaults to 0 decimals for 14C ages, 4 for F14C values.
+#' @param round.hpd.ages Rounding of the ages of the hpd ranges. Defaults to 0 decimals.
+#' @param round.hpd.probs Rounding of the percentages of the hpd ranges. Defaults to 1 decimal.
 #' @param every Deprecated. See `rounded`.
 #' @param extend.range Range by which the axes are extended beyond the data limits. Defaults to 5\%.
 #' @param legend.cex Size of the font of the legends. Defaults to 0.8.
 #' @param legend1.loc Where the first legend (with the calibration curve name and the uncalibrated date) is plotted. Defaults to topleft.
 #' @param legend2.loc Where the second legend (with the hpd ranges) is plotted. Defaults to topright.
+#' @param warning.loc Location for any warnings. Defaults to right.
 #' @param print.truncate.warning Whether or not a truncation warning is printed on the plot. Defaults to \code{print.truncate.warning=TRUE}.
 #' @param mgp Axis text margins (where should titles, labels and tick marks be plotted).
 #' @param mar Plot margins (amount of white space along edges of axes 1-4).
@@ -321,10 +325,10 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
   youngest.cc <- c(95,603,118,0,0) # youngest C14 ages of, respectively, IntCal20, Marine20, SHCal20, and extra entries
   if(any(cc %in% 1:4)) {
     if(is.F) {
-      beyond <- (age + (3*error)) > C14toF14C(youngest.cc)[cc]
+      beyond <- (age + (3*error)) > C14toF14C(youngest.cc[cc])
     } else 
         if(is.pMC) {
-          beyond <- (age + (3*error)) > C14topMC(youngest.cc)[cc]
+          beyond <- (age + (3*error)) > C14topMC(youngest.cc[cc])
         } else
       beyond <- (age - (3*error)) < youngest.cc[cc]
   }
@@ -354,7 +358,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
     Cc <- cbind(Cc[,1], C14toF14C(Cc[,2], Cc[,3]), Cc[,cc.cal])
   if(is.pMC) # then also put Cc on the F scale
     Cc <- cbind(Cc[,1], C14topMC(Cc[,2], Cc[,3]), Cc[,cc.cal])
-  
+
   # warn/stop if the date lies (partly) beyond the calibration curve
   if(is.pMC)
     asF <- c(age, error)/100 else
@@ -388,12 +392,11 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
       stop("Cannot calibrate dates beyond the calibration curve!")
   if(border > 0)
     truncate.warning <- TRUE
+  C14.dist <- caldist(age, sqrt(error^2 + cc.er^2), cc=0, BCAD=FALSE, postbomb=FALSE, is.F=is.F, is.pMC=is.pMC, as.F=as.F, normal=normal, t.a=t.a, t.b=t.b)
 
-  # C14.dist <- caldist(age, sqrt(error^2 + cc.er^2), cc=0, BCAD=FALSE, postbomb=FALSE)
-  C14.dist <- caldist(age, error, cc=0, BCAD=FALSE, postbomb=FALSE, normal=normal, is.F=is.F, is.pMC=is.pMC, as.F=as.F, t.a=t.a, t.b=t.b) # just to draw a normal dist. er was sqrt(error^2 + cc.er^2)
   if(!is.F && !is.pMC)
     if(asymmetric) { # then calculate in F, followed by translation into C14
-      redo.as.F <- C14toF14C(age, error) # not taking into account cc's errors
+      redo.as.F <- as.numeric(C14toF14C(age, error)) # not taking into account cc's errors
       F.dist <- caldist(redo.as.F[1], redo.as.F[2], cc=0, BCAD=FALSE, postbomb=FALSE)
       F.dist <- F.dist[!is.nan(F.dist[,1]),] # remove non-numbers
       F.dist <- F.dist[F.dist[,1]>=0,] # also remove F < 0
@@ -489,18 +492,18 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
       round.hpd.ages <- 0
     if(length(round.hpd.probs)==0)
       round.hpd.probs <- 1
-	
+
     C14.label <- c(cc.name, 
       paste(format(round(age, round.age), scientific=FALSE, nsmall=round.age), "\u00B1",
       format(round(error, round.age), scientific=FALSE, nsmall=round.age)))
     legend(legend1.loc, legend=C14.label, text.col=c(cc.col, 1),  ncol=1, bty="n", cex=legend.cex)
-	
-	hpds[,1:2] <- format(round(hpds[,1:2], round.hpd.ages), nsmall=round.hpd.ages)
-	hpds[,3] <- format(round(hpds[,3], round.hpd.probs), nsmall=round.hpd.probs)
-	
- 	colnames(hpds)[3] <- "%"
-	print.hpds <- rbind(colnames(hpds), apply(hpds, 2, as.character))
-	legend(legend2.loc, legend=print.hpds, ncol=3, cex=legend.cex, bty="n")	
+
+    hpds[,1:2] <- format(round(hpds[,1:2], round.hpd.ages), nsmall=round.hpd.ages)
+    hpds[,3] <- format(round(hpds[,3], round.hpd.probs), nsmall=round.hpd.probs)
+
+    colnames(hpds)[3] <- "%"
+    print.hpds <- rbind(colnames(hpds), apply(hpds, 2, as.character))
+    legend(legend2.loc, legend=print.hpds, ncol=3, cex=legend.cex, bty="n")
   }
   
   if(truncate.warning)
@@ -871,10 +874,10 @@ draw.CF <- function(y, er, normal=TRUE, t.a=3, t.b=4, height=1, extend.axes=.1, 
     stop("one value should be provided for 'er'")	
   
   C14.dist <- caldist(y, er, cc=0, normal=normal, t.a=t.a, t.b=t.b, cc0.res=dist.res)
-  y.as.F <- C14toF14C(y, er)
+  y.as.F <- unname(unlist(C14toF14C(y, er)))
+  cat(0)
   F.dist <- caldist(y.as.F[1], y.as.F[2], cc=0, normal=normal, t.a=t.a, t.b=t.b, cc0.res=dist.res)
-
-  F.dist <- caldist(y.as.F[1], y.as.F[2], cc=0, BCAD=FALSE, postbomb=FALSE)
+  cat(1)
   F.dist <- F.dist[!is.nan(F.dist[,1]),] # remove non-numbers
   F.dist <- F.dist[F.dist[,1]>=0,] # also remove F < 0
   C14.dist <- cbind(F14CtoC14(F.dist[,1], c()), F.dist[,2])
@@ -891,13 +894,13 @@ draw.CF <- function(y, er, normal=TRUE, t.a=3, t.b=4, height=1, extend.axes=.1, 
 
   coors <- par('usr')
   if(length(x.pos) == 0)
-	x.pos <- coors[1] + (coors[2]-coors[1])/50  
+    x.pos <- coors[1] + (coors[2]-coors[1])/50
   if(length(y.pos) == 0)
-	y.pos <- coors[3] + (coors[4]-coors[3])/100  
+    y.pos <- coors[3] + (coors[4]-coors[3])/100
 
   if(draw.date) {
     xpos <- coors[1] + (coors[2]-coors[1])/100
-	segments(xpos, y-er, xpos, y+er, col=date.col, lwd=1.5)
+    segments(xpos, y-er, xpos, y+er, col=date.col, lwd=1.5)
     points(xpos, y, pch=19, col=date.col)
   }
 
@@ -920,8 +923,8 @@ draw.CF <- function(y, er, normal=TRUE, t.a=3, t.b=4, height=1, extend.axes=.1, 
   y.as.F <- round(y.as.F, roundby+4)
   if(!is.na(legend.pos)) {
     txt <- c(bquote(""*.(y) %+-% .(er) ~ "BP"),  
-	  bquote(""%->%.(y.as.F[1]) %+-% .(y.as.F[2]) ~ F^{14}*C), 
-	  bquote(""%->%.(y)~"(+"*.(abs(erplus)) ~", -"*.(abs(ermin))*") BP"))
+      bquote(""%->%.(y.as.F[1]) %+-% .(y.as.F[2]) ~ F^{14}*C),
+      bquote(""%->%.(y)~"(+"*.(abs(erplus)) ~", -"*.(abs(ermin))*") BP"))
     legend(legend.pos, legend=txt, bty="n", cex=legend.size)  
   }
 
@@ -981,8 +984,9 @@ draw.D14C <- function(cal1=c(), cal2=c(), cc=rintcal::ccurve(), BCAD=FALSE, mar=
   cc <- cc[yrmin:yrmax,]
   cc.Fmin <- C14toF14C(cc[,2]+cc[,3])
   cc.Fmax <- C14toF14C(cc[,2]-cc[,3])
-  cc.D14Cmin <- F14CtoD14C(cc.Fmin, t=cc[,1])
-  cc.D14Cmax <- F14CtoD14C(cc.Fmax, t=cc[,1])
+  cc.D14Cmin <- F14CtoD14C(cc.Fmin, t=cc[,1])[,1]
+  cc.D14Cmax <- F14CtoD14C(cc.Fmax, t=cc[,1])[,1]
+
   op <- par(mar=mar, bty=bty, mgp=mgp, xaxs=xaxs, yaxs=yaxs)
   on.exit(par(op))
   kyr <- ifelse(ka, 1e3, 1)
@@ -1027,7 +1031,7 @@ draw.D14C <- function(cal1=c(), cal2=c(), cc=rintcal::ccurve(), BCAD=FALSE, mar=
 #' @title Draw contamination impacts
 #' @description Show how contamination with different fractions of modern carbon affect observed C-14 ages.
 #' @return A plot of real and observed (contamination-impacted) C14 ages.
-#' @param from Minimum 14C age for the plot. Defaults to 0
+#' @param from Minimum 14C age for the plot. Defaults to 0.
 #' @param to Maximum 14C age for the plot. Defaults to 50e3.
 #' @param ka Use C14 kBP. Defaults to TRUE.
 #' @param age.res Resolution of age scale. Defaults to 500, which results in smooth curves. Higher numbers will take longer to draw.

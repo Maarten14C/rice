@@ -41,8 +41,7 @@ fractions <- function(bulk_age, bulk_er, fractions_percC, fractions_weights, fra
   # Calculate the remaining fraction's F14C value and age
   unknown_F <- bulk_F[1] - sum(fractions_cF)
   unknown_age_estimated <- F14CtoC14(unknown_F / totC[unknown_age])
-
-  unknown_age <- c(age=unknown_age_estimated[1], error=overall_uncertainty)
+  unknown_age <- unlist(c(unknown_age_estimated[1], overall_uncertainty))
 
   if(talk)
     message(paste0("estimated C14 age of fraction ", which(is.na(fractions_ages)), ": ",
@@ -88,7 +87,7 @@ plot_contamination <- function(true.F, true.er, obs.F, obs.er, perc, perc.er, co
   if(C14.axis) {
     C14.ticks <- F14CtoC14(pretty(ylim)) # find the C14 ages of the F tick marks
     C14.ticks <- C14.ticks[!is.na(C14.ticks)]
-    C14.ticklocs <- c(C14toF14C(C14.ticks))
+    C14.ticklocs <- unlist(C14toF14C(C14.ticks))
     axis(4, C14.ticklocs, labels=round(C14.ticks,0))
     mtext("C14", 4, 2.5)
   }
@@ -197,7 +196,7 @@ contaminate <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.c
       xpos <- eq.x+(eq.size*cumsum(c(0, strwidth(txt[-length(txt)])))/1.32)
       fnt <- c(rep(1, 14), rep(2, 5)) # last bit has to be bold
       if(length(eq.y) == 0)
-        eq.y <- 1.01*max(c(F.obs, F.true[,1], F.contam))
+        eq.y <- 1.01*max(unlist(F.obs, F.true[,1], F.contam))
       op <- par(xpd=TRUE) # to avoid truncated printing
       for(i in seq_along(txt))
         text(x = xpos[i], y = eq.y, labels = txt[i], col = colours[i], adj = c(0, 0), font=fnt[i], cex=eq.size/1.32)
@@ -324,7 +323,7 @@ clean <- function(y, er=0, percentage, percentage.error=0, F.contam=1, F.contam.
       xpos <- eq.x+(cumsum(c(0, strwidth(txt[-length(txt)], cex=eq.size/1.36)))) # txt length
       fnt <- c(rep(1, 14), rep(2, 5)) # last bit has to be bold
       if(length(eq.y) == 0)
-        eq.y <- 1.01*max(c(F.obs[,1], F.true, F.contam))
+        eq.y <- 1.01*max(unlist(F.obs[,1], F.true, F.contam))
       for(i in seq_along(txt))
         text(x = xpos[i], y = eq.y, labels = txt[i], col = colours[i], adj = c(0, 0), font=fnt[i], cex=eq.size/1.36)
     }
@@ -450,7 +449,7 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
         contamination.col, 1, target.col, 1, contamination.col)
       xpos <- eq.x+(eq.size*cumsum(c(0, strwidth(txt[-length(txt)])))/.98)
       if(length(eq.y) == 0)
-        eq.y <- 1.01*max(c(F.obs, F.target[,1], F.contam))
+        eq.y <- 1.01*max(unlist(F.obs, F.target[,1], F.contam))
       for(i in seq_along(txt))
         text(x = xpos[i], y = eq.y, labels = txt[i], col = colours[i], adj = c(0, 0), cex=eq.size/.98)
     }

@@ -23,7 +23,7 @@ draw.contamination(
 )
 }
 \arguments{
-\item{from}{Minimum 14C age for the plot. Defaults to 0}
+\item{from}{Minimum 14C age for the plot. Defaults to 0.}
 
 \item{to}{Maximum 14C age for the plot. Defaults to 50e3.}
 

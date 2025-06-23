@@ -42,11 +42,15 @@ calibrate(
   t.a = 3,
   t.b = 4,
   rounded = 1,
+  round.age = c(),
+  round.hpd.ages = 0,
+  round.hpd.probs = 1,
   every = NA,
   extend.range = 0.05,
   legend.cex = 0.8,
   legend1.loc = "topleft",
   legend2.loc = "topright",
+  warning.loc = "right",
   print.truncate.warning = TRUE,
   mgp = c(2, 1, 0),
   mar = c(3, 3, 1, 1),
@@ -134,7 +138,13 @@ calibrate(
 
 \item{rounded}{Rounding of the percentages of the reported hpd ranges. Defaults to 1 decimal.}
 
-\item{every}{Deprecated.}
+\item{round.age}{Rounding of the uncalibrated 14C age as reported on the plot. Defaults to 0 decimals for 14C ages, 4 for F14C values.}
+
+\item{round.hpd.ages}{Rounding of the ages of the hpd ranges. Defaults to 0 decimals.}
+
+\item{round.hpd.probs}{Rounding of the percentages of the hpd ranges. Defaults to 1 decimal.}
+
+\item{every}{Deprecated. See `rounded`.}
 
 \item{extend.range}{Range by which the axes are extended beyond the data limits. Defaults to 5\%.}
 
@@ -143,6 +153,8 @@ calibrate(
 \item{legend1.loc}{Where the first legend (with the calibration curve name and the uncalibrated date) is plotted. Defaults to topleft.}
 
 \item{legend2.loc}{Where the second legend (with the hpd ranges) is plotted. Defaults to topright.}
+
+\item{warning.loc}{Location for any warnings. Defaults to right.}
 
 \item{print.truncate.warning}{Whether or not a truncation warning is printed on the plot. Defaults to \code{print.truncate.warning=TRUE}.}
 

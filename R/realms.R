@@ -129,10 +129,13 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
   flim <- c(0, min(1.2*f14c,2))
   #message(flim[1], " ", flim[2])
   par(mar=c(4,3,3,1), mgp=c(2, .7, 0), yaxt="s")
+
+  calbp <- as.numeric(calbp)
+  f14c <- as.numeric(f14c)
+  c14 <- as.numeric(c14)
   plot(f14c, c14, xlim=flim, ylim=c14lim, 
     xlab=expression("F"^14*"C"), ylab=expression(""^14*"C BP"),
       bty="c", type="n", xaxs="i")
-
   abline(h=c14, lty=2)
   abline(v=f14c, lty=2)
   curve(-8033*log(x), from=min(flim), n=1e3, to=1.05*max(flim), add=TRUE, col=C14.col, lwd=2)
@@ -159,7 +162,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
   D14C.coors <- draw.ccurve(mincalbp, maxcalbp, cc1=cc, cc2=cc, cc1.postbomb=TRUE, cc2.postbomb=TRUE, realm2="d", cc2.col=D14C.col, cc2.fill=D14C.col, add.yaxis=TRUE, cc.dir=cc.dir, ka=ka, bty="n", legend=NA, xaxs="i", yaxt="n", c14.lab="")
   C14.coors <- par("usr")
   if(!is.na(d14c))
-    f.y <- ((d14c-D14C.coors[3])/(D14C.coors[4] - D14C.coors[3])) * (C14.coors[4] - C14.coors[3]) + C14.coors[3]
+    f.y <- as.numeric(((d14c-D14C.coors[3])/(D14C.coors[4] - D14C.coors[3])) * (C14.coors[4] - C14.coors[3]) + C14.coors[3])
 
   pr <- pretty(seq(C14.coors[1], C14.coors[2], length=5))
   if(ka) {
@@ -255,7 +258,7 @@ calBPtoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=N
     mu <- round(mu, roundby)
     er <- round(er, roundby)
   }
-  return(cbind(mu=mu, sd=er))
+  return(data.frame(mu=mu, sd=er))
 }
 
 
@@ -332,7 +335,7 @@ calBPtoD14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=
     Dmn <- round(Dmn, roundby)
     sdev <- round(sdev, roundby)
   }
-  return(cbind(D14C=Dmn, sd=sdev))
+  return(data.frame(D14C=Dmn, sd=sdev))
 }
 
 
@@ -476,8 +479,8 @@ BCADtoD14C <- function(x, zero=TRUE, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, 
   Dup <- F14CtoD14C(Fres[,1]+Fres[,2], t=x)
 
   if(is.na(roundby))
-    return(cbind(D14C=Dmn, sd=Dup-Dmn)) else
-      return(round(cbind(D14C=Dmn, sd=Dup-Dmn), roundby))
+    return(data.frame(D14C=Dmn, sd=Dup-Dmn)) else
+      return(data.frame(cbind(D14C=Dmn, sd=Dup-Dmn), roundby))
 }
 
 
@@ -608,8 +611,8 @@ b2ktoD14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NU
   Dup <- F14CtoD14C(Fres[,1]+Fres[,2], t=x)
 
   if(is.na(roundby))
-    return(cbind(D14C=Dmn, sd=Dup-Dmn)) else
-      return(round(cbind(D14C=Dmn, sd=Dup-Dmn), roundby))
+    return(data.frame(D14C=Dmn, sd=Dup-Dmn)) else
+      return(round(data.frame(D14C=Dmn, sd=Dup-Dmn), roundby))
 }
 
 
@@ -728,32 +731,69 @@ C14tob2k <- function(y, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NUL
 #' @param er Reported error of the 14C age. If left empty, will translate y to F14C.
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
 #' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years).
+#' @param botherrors Since going from C14 to F14C involves a logarithmic transformation (F=exp(-y/lambda)), errors that are symmetric on the C14 scale will become asymmetric on the F14C scale. By default, only the largest error is reported, but if \code{botherrors=TRUE}, both errors are reported.
 #' @return F14C values from C14 ages.
 #' @examples
 #'   C14toF14C(-2000, 20)
 #' @export
-C14toF14C <- function(y, er=NULL, roundby=NA, lambda=8033) {
+C14toF14C <- function(y, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE) {
   y <- as.matrix(y)
-  if(!is.null(er))
-    er <- as.matrix(er)
-  if(!is.null(er) && length(y) != length(er))
-    stop("y and er must have the same length.")	
-  fy <- exp(-y / lambda)
-  
-  if(is.null(er)) {
-    if(is.na(roundby))
-      return(fy) else
-        return(round(fy, roundby))
+
+  if(!is.null(er)) {
+    if(is.vector(er))
+      er <- matrix(er, ncol = 1)
+    if(is.vector(y))
+      y <- matrix(y, ncol = 1)
+    if(nrow(er) != nrow(y))
+      stop("y and er must have same length")
   }
 
-  er1 <- abs(fy - exp(-(y - er) / lambda))
-  er2 <- abs(fy - exp(-(y + er) / lambda))
-  sdev <- pmax(er1, er2)
+  if(ncol(y) != 1 || (!is.null(er) && ncol(er) != 1))
+    stop("y and er must be single-column vectors or matrices")
 
-  if(is.na(roundby))
-    return(cbind(F14C=fy, sd=sdev)) else
-      return(round(cbind(F14C=fy, sd=sdev), roundby))
+  fy <- exp(-y / lambda)
+
+  if(is.null(er)) {
+    if(is.na(roundby))
+      return(data.frame(F14C=fy)) else
+        return(data.frame(F14C=round(fy, roundby)))
+  }
+
+  er1 <- abs(fy - exp(-(y - er) / lambda)) # younger error
+  er2 <- abs(fy - exp(-(y + er) / lambda)) # older error
+
+  if(botherrors) {
+    result <- data.frame(F14C=as.vector(fy), sd1=as.vector(er1), sd2=as.vector(er2))
+    if(is.na(roundby))
+      return(result) else
+        return(round(result, roundby))
+  } else {
+     result <- data.frame(F14C=as.vector(fy), sd=as.vector(pmax(er1, er2)))
+     if(is.na(roundby))
+       return(result) else
+         return(round(result, roundby))
+  }
 }
+
+
+
+#' @name CtoF
+#' @title Calculate F14C values from C14 ages
+#' @description Calculate F14C values from radiocarbon ages
+#' @details Post-bomb dates are often reported as F14C or fraction modern carbon. Since software such as Bacon expects radiocarbon ages,
+#' this function can be used to calculate F14C values from radiocarbon ages. The reverse function of \link{F14C.age}. This function is a shortcut to C14toF14C.
+#' @param y Reported mean of the 14C age.
+#' @param er Reported error of the 14C age. If left empty, will translate y to F14C.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years).
+#' @param botherrors Since going from C14 to F14C involves a logarithmic transformation (F=exp(-y/lambda)), errors that are symmetric on the C14 scale will become asymmetric on the F14C scale. By default, only the largest error is reported, but if \code{botherrors=TRUE}, both errors are reported.
+#' @return F14C values from C14 ages.
+#' @examples
+#'   CtoF(-2000, 20)
+#' @export
+CtoF <- function(y, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE)
+  C14toF14C(y=y, er=er, roundby=roundby, lambda=lambda, botherrors=botherrors)
+
 
 
 
@@ -805,8 +845,8 @@ C14toD14C <- function(y, er=NULL, t, roundby=NA) {
       Ddown <- 1000 * ((Fdown / exp(-t / 8267)) - 1)
       sdev <- pmax(abs(Dup - Dmn), abs(Ddown - Dmn))
       if(is.na(roundby))
-        return(cbind(Dmn, sdev)) else
-          return(round(cbind(Dmn, sdev), roundby))
+        return(data.frame(Dmn, sdev)) else
+          return(data.frame(cbind(Dmn, sdev), roundby))
     }
 }
 
@@ -820,25 +860,66 @@ C14toD14C <- function(y, er=NULL, t, roundby=NA) {
 #' @param F14C Reported mean of the F14C
 #' @param er Reported error of the F14C. Returns just the mean if left empty.
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
-#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
-#' @return The radiocarbon ages from the F14C values. If F14C values are above 100\%, the resulting radiocarbon ages will be negative.
+#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years).
+#' @param botherrors Since going from C14 to F14C involves a logarithmic transformation (F=exp(-y/lambda)), errors that are symmetric on the C14 scale will become asymmetric on the F14C scale. By default, only the largest error is reported, but if \code{reportbotherrors=TRUE}, both errors are reported. #' @return The radiocarbon ages from the F14C values. If F14C values are above 100\%, the resulting radiocarbon ages will be negative.
 #' @examples
 #'   F14CtoC14(1.10, 0.005) # a postbomb date, so with a negative C14 age
 #'   F14CtoC14(.80, 0.005) # prebomb dates can also be calculated
 #' @export
-F14CtoC14 <- function(F14C, er=NULL, roundby=NA, lambda=8033) {
-  y <- -lambda * log(F14C)
-  if(is.null(er)) {
-    if(is.na(roundby))
+F14CtoC14 <- function(F14C, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE) {
+  y <- rep(NaN, length(F14C))
+  if(is.null(er)) { # no errors
+    valid <- which(F14C > 0)
+    y[valid] <- -lambda * log(F14C[valid])
+    if(is.na(roundby)) 
       return(y) else
         return(round(y, roundby))
-    } else {
-    sdev <- y - -lambda * log((F14C+er))
+    }
+  
+  if(min(er) < 0)
+    stop("cannot have negative errors")
+  
+  negative <- which(F14C-er < 0) # can't calculate log of negative values
+  valid <- setdiff(seq_along(F14C), negative)
+  
+  y[valid] <- -lambda * log(F14C[valid])
+  y[F14C==0] <- Inf
+
+  error.older <- abs(y - (-lambda * log(F14C - er)))
+  if(botherrors) {
+    error.younger <- rep(NaN, length(error.older))  
+    error.younger[valid] <- y - (-lambda * log(F14C[valid] + er[valid]))
+    result <- data.frame(C14=y, error.younger=error.younger, error.older=error.older)
     if(is.na(roundby))
-      return(cbind(y, sdev, deparse.level=0)) else
-        return(round(cbind(y, sdev, deparse.level=0), roundby))
-  }
+      return(result) else
+        return(round(result, roundby))
+  } else {
+      result <- data.frame(C14=y, error=error.older)
+      if(is.na(roundby))
+        return(result) else
+          return(round(result, roundby))
+    }
 }
+
+
+
+#' @name FtoC
+#' @title Calculate C14 ages from F14C values.
+#' @description Calculate C14 ages from F14C values of radiocarbon dates. Shorthand for the function F14CtoC14.
+#' @details Post-bomb dates are often reported as F14C (between 0 at c. 55 kcal BP and 1 at c. AD 1950). Since software such as Bacon expects radiocarbon ages,
+#'  this function can be used to calculate radiocarbon ages from F14C values. The reverse function is \link{age.F14C}.
+#' @param F14C Reported mean of the F14C
+#' @param er Reported error of the F14C. Returns just the mean if left empty.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years).
+#' @param botherrors Since going from C14 to F14C involves a logarithmic transformation (F=exp(-y/lambda)), errors that are symmetric on the C14 scale will become asymmetric on the F14C scale. By default, only the largest error is reported, but if \code{reportbotherrors=TRUE}, both errors are reported. #' @return The radiocarbon ages from the F14C values. If F14C values are above 100\%, the resulting radiocarbon ages will be negative.
+#' @return The radiocarbon ages from the F14C values. If F14C values are above 100\%, the resulting radiocarbon ages will be negative.
+#' @examples
+#'   FtoC(1.10, 0.005) # a postbomb date, so with a negative C14 age
+#'   FtoC(.80, 0.005) # prebomb dates can also be calculated
+#' @export
+FtoC <- function(F14C, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE) 
+  F14CtoC14(F14C=F14C, er=er, roundby=roundby, lambda=lambda, botherrors=botherrors)
 
 
 
@@ -856,8 +937,8 @@ F14CtoC14 <- function(F14C, er=NULL, roundby=NA, lambda=8033) {
 #' @export
 F14CtopMC <- function(F14C, er=NULL, roundby=NA)
   if(is.na(roundby))
-    return(100*cbind(F14C, er)) else
-      return(round(100*cbind(F14C, er), roundby))
+    return(100*data.frame(F14C=F14C, er=er)) else
+      return(round(100*data.frame(F14C=F14C, er=er), roundby))
 
 
 
@@ -883,8 +964,8 @@ F14CtoD14C <- function(F14C, er=NULL, t, roundby=NA) {
   } else {
       Dup <- 1000 * (((F14C + er) / exp(-t / 8267)) - 1)
       if(is.na(roundby))
-        return(cbind(D14C=Dmn, sdev=Dup - Dmn)) else
-          return(round(cbind(D14C=Dmn, sdev=Dup - Dmn), roundby))
+        return(data.frame(D14C=Dmn, sdev=Dup - Dmn)) else
+          return(round(data.frame(D14C=Dmn, sdev=Dup - Dmn), roundby))
     }
 }
 
@@ -914,8 +995,8 @@ pMCtoC14 <- function(pMC, er=NULL, roundby=NA, lambda=8033) {
   } else {
     sdev <- y - -lambda * log((pMC+er)/100)
     if(is.na(roundby))
-      return(cbind(C14=y, sdev=sdev)) else
-        return(round(cbind(C14=y, sdev=sdev), roundby))
+      return(data.frame(C14=y, sdev=sdev)) else
+        return(round(data.frame(C14=y, sdev=sdev), roundby))
   }
 }
 
@@ -975,10 +1056,9 @@ pMCtoD14C <- function(pMC, er=NULL, t, roundby=NA) {
 #' @export
 D14CtoC14 <- function(D14C, er=NULL, t, roundby=NA) {
   toF <- D14CtoF14C(D14C=D14C, er=er, t=t, roundby=NA)
-  if(is.null(dim(toF))) {
-    return(F14CtoC14(toF, c(), roundby=roundby))
+  if(ncol(toF) == 1) {
+    return(unlist(F14CtoC14(toF[1], c(), roundby=roundby)))
     } else {
-     # toF <- rbind(toF)
       toF <- as.matrix(toF, ncol=2)
       return(F14CtoC14(toF[,1], toF[,2], roundby=roundby))
     }
@@ -1002,13 +1082,13 @@ D14CtoF14C <- function(D14C, er=NULL, t, roundby=NA) {
   asF <- ((D14C/1000)+1) * exp(-t/8267)
   if(is.null(er)) {
     if(is.na(roundby))
-      return(asF) else
-        return(round(asF, roundby))
+      return(data.frame(F14C=asF)) else
+        return(data.frame(F14C=round(asF, roundby)))
   } else {
       Fup <- (((D14C+er)/1000)+1) * exp(-t/8267)
       if(is.na(roundby))
-        return(cbind(D14C=asF, sdev=Fup-asF)) else
-          return(round(cbind(D14C=asF, sdev=Fup-asF), roundby))
+        return(data.frame(F14C=asF, sdev=Fup-asF)) else
+          return(round(data.frame(F14C=asF, sdev=Fup-asF), roundby))
     }
 }
 

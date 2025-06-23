@@ -44,5 +44,6 @@ Calculate highest posterior density ranges of calibrated distribution
 \examples{
 hpd(caldist(130,20))
 plot(tmp <- caldist(2450,50), type='l')
-abline(v=hpd(tmp)[,1:2], col=4)
+myhpds <- hpd(tmp)
+abline(v=unlist(myhpds[,1:2]), col=4)
 }

@@ -40,20 +40,19 @@ howmanyC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.ratio=1.1
     F <- calBPtoF14C(age, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
     if(is.na(F)) {
       message("Cannot use calibration curve for this age, assuming C14 age")
-      F <- C14toF14C(age, roundby=10)
+      F <- C14toF14C(age)
   }} else
-      F <- C14toF14C(age, roundby=10) # then t is on the C14 scale
+      F <- C14toF14C(age) # then t is on the C14 scale
 
+  F <- as.numeric(F)
   atoms <- (wght/1e3)*Av/12 # number of C atoms in a mg
-  C14 <- round(F * C14.ratio * atoms, 0) # C14 atoms roundest to nearest number
+  C14 <- as.numeric(round(F * C14.ratio * atoms, 0)) # C14 atoms roundest to nearest number
   perminute <- round(C14/wght/30,0)
   persecond <- round(perminute/60,0)
-
   atoms <- formatC(atoms, format=format, digits=decimals)
   C14.talk <- formatC(C14, format=format, digits=decimals)
-  
   decays <- round(C14 * log(2) / (5730 * 365.25), decimals)
-  decays <- formatC(decays, format=format, digits=decimals)
+ decays <- formatC(decays, format=format, digits=decimals)
 
   if(talk) {
     message(wght, " mg carbon contains ", atoms, " C atoms")

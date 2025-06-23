@@ -65,16 +65,18 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
 
   # F realm - not using ccurve's as.F option, this to avoid potential double translations
   if(is.F) { # then put cc in F; y and er are assumed to be in F already 
-    this.cc[,2:3] <- C14toF14C(this.cc[,2], this.cc[,3])
-  } else 
+    res <- C14toF14C(this.cc[,2], this.cc[,3])
+    this.cc[,2:3] <- as.matrix(res)
+  } else
     if(is.pMC) {
       this.cc[,2:3] <- C14topMC(this.cc[,2], this.cc[,3])
     } else
       if(as.F) { # y, er and cc are in C14 realm, but need to be in F
-        this.cc[,2:3] <- C14toF14C(this.cc[,2], this.cc[,3])
-        asF <- C14toF14C(y, er)
+        this.cc <- cbind(this.cc[,1], C14toF14C(this.cc[,2], this.cc[,3]))
+        asF <- as.numeric(C14toF14C(y, er))
         y <- asF[1]; er <- asF[2]
       }
+
   if(cc==0)
     this.cc[,2] <- this.cc[,1]
 
@@ -186,7 +188,8 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 #' @examples
 #' hpd(caldist(130,20))
 #' plot(tmp <- caldist(2450,50), type='l')
-#' abline(v=hpd(tmp)[,1:2], col=4)
+#' myhpds <- hpd(tmp)
+#' abline(v=unlist(myhpds[,1:2]), col=4)
 #' @export
 hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.round=0, prob.round=1, every=0.1, bins=20) {
 
@@ -238,7 +241,7 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
 
   if(return.raw)
     return(list(calib=calib[,-3], hpds=hpds)) else
-      return(hpds)
+      return(data.frame(hpds))
 }
 
 
