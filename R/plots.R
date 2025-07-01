@@ -486,7 +486,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
         cc.name <- cc
     if(length(round.age)==0)
       if(is.F)
-        round.age <- 4 else 	
+        round.age <- 4 else
          round.age <- 0
     if(length(round.hpd.ages)==0)
       round.hpd.ages <- 0
@@ -875,9 +875,7 @@ draw.CF <- function(y, er, normal=TRUE, t.a=3, t.b=4, height=1, extend.axes=.1, 
   
   C14.dist <- caldist(y, er, cc=0, normal=normal, t.a=t.a, t.b=t.b, cc0.res=dist.res)
   y.as.F <- unname(unlist(C14toF14C(y, er)))
-  cat(0)
   F.dist <- caldist(y.as.F[1], y.as.F[2], cc=0, normal=normal, t.a=t.a, t.b=t.b, cc0.res=dist.res)
-  cat(1)
   F.dist <- F.dist[!is.nan(F.dist[,1]),] # remove non-numbers
   F.dist <- F.dist[F.dist[,1]>=0,] # also remove F < 0
   C14.dist <- cbind(F14CtoC14(F.dist[,1], c()), F.dist[,2])

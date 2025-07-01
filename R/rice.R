@@ -1,15 +1,102 @@
 
 # add sample weight functions (per Philippa Ascough's suggestion. Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
+
+# calculate coverage instead of overlap. coverage = by how much is dist A contained within dist B? And same for B within A. 
+
+# fruits-type model that mixes atmospheric and marine calibration curves.  Freshwater effects can cause C14 shifts of up to 1k.
+
+# add option to muck function to plot a graph of possible F_contam and perc_contam to explain the found vs expected results. Has to use MCMC. 
+
+# prepare a function to redo deltaR calcs when new Marine curve comes out. Using BCADtocalBP(shells$collected), calBPto14C(cc=2) and shells$C14, shells$er.
+
 # do rintcal::glue.ccurves and mix.ccurves require as.D? Perhaps not because not all curves have columns for D14C, and if they do have them (Intcal20 curves), these values do not include extra var present in the reported 14C ages.
 
-# in calibrate(), make interpolation to e.g. years more intelligent (default c() then 1 if prebomb, .1 if postbomb
+# make a function contaminate with multiple contamination sources (perc_i, F_i). Or does this work already with the fractions function? See how the fractions functions could be adapted to deal with all ages 'known'.  
+
+# in calibrate(), make interpolation to e.g. years more intelligent (default c() then 1 if prebomb, .1 if postbomb. I think this is OK already.
 
 # add data from historical UBA standards/backgrounds?
 
 # terr-marine contribution calculation
 
 # error multipliers, rounding
+
+
+
+#' @name map.dates
+#' @title A browseable map of 180k archaeological C-14 dates
+#' @description Produce an interactive, browseable map of the c. 180k archaeological radiocarbon dates provided by the p3k14c R package. The p2k14c R package has been removed from CRAN (probably owing to the retirement of other mapping-related packages). Here we download the 2022 version of the database as a .csv file from url 'https://www.p3k14c.org/download/'.
+#' @details See Bocinsky, R. Kyle, Darcy Bird, Lux Miranda, and Jacob Freeman, (2022.6). Compendium of R code and data for p3k14c: A synthetic global database of archaeological radiocarbon dates. Accessed 1 July 2025. https://doi.org/10.5281/zenodo.6633635
+#' requires the 'leaflet' R package to be installed. An error will occur if it isn't installed.
+#' Bird, D., Miranda, L., Vander Linden, M. et al. p3k14c, a synthetic global database of archaeological radiocarbon dates. Sci Data 9, 27 (2022). https://doi.org/10.1038/s41597-022-01118-7
+#' @return An interactive, browseable map returning all radiocarbon dates (age and Lab ID) in the database. 
+#' @param S The southern limit of the rectangular region.
+#' @param W The western limit of the rectangular region.
+#' @param N The northern limit of the rectangular region.
+#' @param E The eastern limit of the rectangular region.
+#' @param fl The file containing the database. You can download this yourself from 'https://www.p3k14c.org/download/'.
+#' @param download Whether or not to try to download the database .csv file. Note: it weighs around 26 MB (c. 4 MB zipped).
+#' @param rainbow Whether or not to use a rainbow scale to plot the variable.
+#' @param mincol Colour for minimum values. Defaults to 'yellow'.
+#' @param maxcol Colour for maximum values. Defaults to 'red'. 
+#' @param size Size of the symbols. Defaults to 2.
+#' @param legend.loc Location of the legend, if using a basic plot. Defaults to the top right.
+#' @examples
+#'   alldates <- map.dates()
+#' @export
+map.dates <- function(S=48, W=-15, N=62, E=5, fl="~/Dropbox/devsoftware/p3k14c_2022.06.csv", download=FALSE, rainbow=FALSE, mincol="yellow", maxcol="red", size=2, legend.loc="topright") {
+  if(!file.exists(fl)) {
+    if(download) {
+      fl <- tempfile(fileext = ".csv")
+      download.file("https://www.p3k14c.org/data/p3k14c_2022.06.csv", fl, mode = "wb")
+    } else
+        stop("please download the table from 'https://www.p3k14c.org/download/' \
+      and then point fl to the downloaded file (note: size c. 26 MB)")
+	  
+  }
+  dates <- read.csv(fl)
+  dates <- dates[!is.na(dates$Lat),]
+  dates <- dates[!is.na(dates$Long),]  
+  
+  age <- dates$Age
+  bins <- cut(age, breaks = 100)
+  if(rainbow)
+    color_scale <- rainbow(100) else
+      color_scale <- grDevices::colorRampPalette(c("yellow", "red"))(100)
+  
+  cols <- color_scale[as.numeric(bins)]
+  lflt <- requireNamespace("leaflet", quietly=TRUE)
+  if(warn) 
+    if(!lflt)
+      stop("Please install the leaflet package:\ninstall.packages(\"leaflet\")")
+
+  if(rainbow)
+    color_scale <- rainbow(100) else
+      color_scale <- grDevices::colorRampPalette(c("yellow", "red"))(100)
+
+  age <- dates$Age
+  bins <- cut(age, breaks = 100) 
+  cols <- color_scale[as.numeric(bins)]
+  qtiles <- round(quantile(age, probs = c(1, 0.75, 0.5, 0.25, 0)), 1)
+
+  hover_labels <- paste0(age, " &plusmn; ", dates$Error, "<br>", dates$Material, "<br>", dates$LabID)
+	  
+  map <- leaflet::leaflet(data=dates)
+  map <- leaflet::fitBounds(map, lng1 = W, lat1 = S, lng2 = E, lat2 = N)
+  map <- leaflet::addProviderTiles(map, leaflet::providers$Esri.WorldImagery, group = "Esri Satellite")
+  map <- leaflet::addLayersControl(map,
+    baseGroups = c("Esri Satellite"), options = leaflet::layersControlOptions(collapsed = FALSE))
+  map <- leaflet::addCircleMarkers(map, lng=~Long, lat=~Lat, 
+    color=cols, radius=size, fillOpacity=0.5, label=lapply(hover_labels, htmltools::HTML))
+  map <- leaflet::addLegend(map, position = legend.loc,
+    colors=color_scale[c(100, 75, 50, 25, 1)], labels=qtiles, title="C-14 age", opacity = 0.7)
+  print(map)
+  
+  invisible(dates)
+}
+
+
 
 #' @name howmanyC14
 #' @title Amount of C14 particles in a sample

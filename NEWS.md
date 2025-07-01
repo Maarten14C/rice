@@ -2,6 +2,7 @@
 * `caldist` now deals better with uncalibrated distributions (cc=0).
 * Where relevant, realm-related functions such as `C14toF14C` now have more flexibility regarding rounding of values. The default is no rounding. 
 * new function `draw.CF` to visualise the relationship between 14C ages and their F values, and how ages with large errors become skewed/asymmetric.
+* new function `map.dates` to plot a browseable map of the c. 180k radiocarbon dates in the p13k14c package.
 
 # rice 1.2.0
 * new realm functions to convert from/to b2k (years before AD 2000), an age scale popular in the ice core community.
