@@ -201,6 +201,21 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 
 
 
+hpd.coverage <- function(distA, distB, prob=.95) {
+  hpdA <- hpd(distA, prob=prob)	
+  hpdB <- hpd(distB, prob=prob)	
+
+  for(i in 1:nrow(hpdA)) 
+    for(j in 1:nrow(hpdB)) 
+      if(max(hpdA[i,1:2]) >= min(hpdB[j,1:2]) && 
+        min(hpdA[i,1:2]) <= max(hpdB[j,1:2]))
+          return(TRUE)
+
+  return(FALSE) 
+}
+
+
+
 #' @name coverage
 #' @title coverage of one distribution by another
 #' @description Samples n random points from distribution A (with higher likelihoods proportionally more likely to be sampled), and for each point checks whether distribution B covers that point. Then the proportion of points where A is covered by B is returned. Can also calculate the coverage of distribution B by distribution A (if both=TRUE). The value of the coverage can range between 0 (distribution A is not covered by distribution B) to 1 (B covers A completely).

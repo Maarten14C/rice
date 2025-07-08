@@ -9,27 +9,27 @@ map.dates(
   W = -15,
   N = 62,
   E = 5,
-  fl = "~/Dropbox/devsoftware/p3k14c_2022.06.csv",
+  fl = c(),
   download = FALSE,
   rainbow = FALSE,
   mincol = "yellow",
   maxcol = "red",
-  size = 2,
+  size = 1.5,
   legend.loc = "topright"
 )
 }
 \arguments{
-\item{S}{The southern limit of the rectangular region.}
+\item{S}{The southern limit of the initial map.}
 
-\item{W}{The western limit of the rectangular region.}
+\item{W}{The western limit of the initial map.}
 
-\item{N}{The northern limit of the rectangular region.}
+\item{N}{The northern limit of the initial map.}
 
-\item{E}{The eastern limit of the rectangular region.}
+\item{E}{The eastern limit of initial map.}
 
-\item{fl}{The file containing the database. You can download this yourself from 'https://www.p3k14c.org/download/'.}
+\item{fl}{The file containing the database. If not available already, it is downloaded automatically where possible from 'https://www.p3k14c.org/download/', but you can also download it yourself and provide its location, e.g., \code{fl="~/Downloads/p3k14c_2022.06.csv"}.}
 
-\item{download}{Whether or not to try to download the database .csv file. Note: it weighs around 26 MB (c. 4 MB zipped).}
+\item{download}{Whether or not to try to download the database .csv file. Note: it weighs around 26 MB (c. 4 MB zipped). If your version of R is below 4.0, you'll have to download the file manually.}
 
 \item{rainbow}{Whether or not to use a rainbow scale to plot the variable.}
 
@@ -37,7 +37,7 @@ map.dates(
 
 \item{maxcol}{Colour for maximum values. Defaults to 'red'.}
 
-\item{size}{Size of the symbols. Defaults to 2.}
+\item{size}{Size of the symbols. Defaults to 1.5.}
 
 \item{legend.loc}{Location of the legend, if using a basic plot. Defaults to the top right.
 ## Not run: 
@@ -47,10 +47,10 @@ map.dates(
 An interactive, browseable map returning all radiocarbon dates (age and Lab ID) in the database.
 }
 \description{
-Produce an interactive, browseable map of the c. 180k archaeological radiocarbon dates provided by the p3k14c R package. The p3k14c R package has been removed from CRAN (probably owing to the retirement of other mapping-related packages). Here we download the 2022 version of the database as a .csv file from url 'https://www.p3k14c.org/download/'.
+Produce an interactive, browseable map of the c. 180k (!) archaeological radiocarbon dates provided by the p3k14c R package. The p3k14c R package has been removed from CRAN (owing to the retirement of other mapping-related packages). Here we download the 2022 version of the database as a .csv file from url 'https://www.p3k14c.org/download/'.
 }
 \details{
-See Bocinsky, R. Kyle, Darcy Bird, Lux Miranda, and Jacob Freeman, (2022.6). Compendium of R code and data for p3k14c: A synthetic global database of archaeological radiocarbon dates. Accessed 1 July 2025. https://doi.org/10.5281/zenodo.6633635
+See Bocinsky, R. Kyle, Darcy Bird, Lux Miranda, and Jacob Freeman (2022.6). Compendium of R code and data for p3k14c: A synthetic global database of archaeological radiocarbon dates. Accessed 1 July 2025. https://doi.org/10.5281/zenodo.6633635
 requires the 'leaflet' R package to be installed. An error will occur if it isn't installed.
 Bird, D., Miranda, L., Vander Linden, M. et al. p3k14c, a synthetic global database of archaeological radiocarbon dates. Sci Data 9, 27 (2022). https://doi.org/10.1038/s41597-022-01118-7
 }

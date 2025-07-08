@@ -1,6 +1,8 @@
 
 # add sample weight functions (per Philippa Ascough's suggestion. Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
+# hpd.coverage function?
+
 # add documentation for reading intcal data files (rintcal). Make a function that reads in the json file and places the relevant data into list items meta, calendar (e.g. dendro data) and C14.
 
 # fruits-type model that mixes atmospheric and marine calibration curves.  Freshwater effects can cause C14 shifts of up to 1k.
