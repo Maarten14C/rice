@@ -12,6 +12,7 @@ contaminate(
   F.contam = 1,
   F.contam.er = 0,
   MC = TRUE,
+  seed = NA,
   its = 10000,
   decimals = 5,
   roundby = 1,
@@ -48,6 +49,8 @@ contaminate(
 \item{F.contam.er}{error of the contamination. Defaults to 0.}
 
 \item{MC}{Whether or not to use Monte Carlo iterations to estimate the values. Defaults to TRUE, because it treats uncertainties better than if set to FALSE.}
+
+\item{seed}{For reproducibility, a seed can be set (e.g., \code{seed=123}). Defaults to NA, no seed set.}
 
 \item{its}{Amount of iterations to use if MC=TRUE. Defaults to 10,000.}
 

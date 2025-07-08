@@ -17,10 +17,11 @@ draw.ccurve(
   as.pMC = FALSE,
   as.D = FALSE,
   realm2 = c(),
-  cal.lab = NA,
+  cal.lab = c(),
   cal.rev = FALSE,
-  c14.lab = NA,
-  c14.lim = NA,
+  c14.lab = c(),
+  cc2.lab = c(),
+  c14.lim = c(),
   c14.rev = FALSE,
   ka = FALSE,
   add.yaxis = FALSE,
@@ -30,6 +31,8 @@ draw.ccurve(
   cc2.fill = rgb(0, 0.5, 0, 0.2),
   add = FALSE,
   bty = "l",
+  mar = c(),
+  mgp = c(),
   cc.dir = NULL,
   legend = "topleft",
   ...
@@ -66,6 +69,8 @@ draw.ccurve(
 
 \item{c14.lab}{Label for the C-14 axis. Defaults to 14C BP (or 14C kBP if ka=TRUE).}
 
+\item{cc2.lab}{Label for the righthand axis (if present). Defaults to the chosen realm.}
+
 \item{c14.lim}{Axis limits for the C-14 axis. Calculated automatically by default.}
 
 \item{c14.rev}{Reverse the C-14 axis.}
@@ -85,6 +90,10 @@ draw.ccurve(
 \item{add}{Whether or not to add the curve(s) to an existing plot. Defaults to FALSE, which draws a new plot.}
 
 \item{bty}{Draw a box around a box of a certain shape. Defaults to \code{bty="l"}.}
+
+\item{mar}{Plot margins (amount of white space along edges of axes 1-4). Defaults to give more white space if a second y-axis is to be plotted.}
+
+\item{mgp}{Axis text margins (where should titles, labels and tick marks be plotted).}
 
 \item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.}
 

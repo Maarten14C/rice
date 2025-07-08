@@ -1,7 +1,7 @@
 Package: rice
 Type: Package
 Title: Radiocarbon Equations
-Version: 1.2.1
+Version: 1.3.0
 Author: Maarten Blaauw [aut, cre] (<https://orcid.org/0000-0002-5680-1515>)
 Authors@R: c(
   person("Maarten", "Blaauw", email = "maarten.blaauw@qub.ac.uk", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-5680-1515")))
@@ -12,10 +12,9 @@ Encoding: UTF-8
 RoxygenNote: 7.3.2
 Imports: rlang, ggplot2, maps (>= 3.4.2.1)
 Suggests: 
-    knitr, rmarkdown, utf8, remotes, devtools,
-    sf, rnaturalearthdata, rnaturalearth (>= 1.0.1),
-    leaflet, htmltools, CopernicusMarine,
-    testthat (>= 3.0.0)
+  R (>= 4.0.0), knitr, rmarkdown, utf8, remotes, devtools,
+  sf, rnaturalearthdata, rnaturalearth (>= 1.0.1),
+  leaflet, htmltools, CopernicusMarine, testthat (>= 3.0.0)
 Depends: R (>= 3.5.0), rintcal (>= 1.2.1)
 Language: en-GB
 VignetteBuilder: knitr

@@ -10,6 +10,7 @@ push.gamma(
   mean,
   shape,
   add = TRUE,
+  seed = NA,
   n = 1e+06,
   prob = 0.95,
   cc = 1,
@@ -44,6 +45,8 @@ push.gamma(
 \item{shape}{The shape of the gamma distribution. If setting this to shape=1, it becomes an exponential distribution.}
 
 \item{add}{The distribution can be added or subtracted. Adding results in ages being pushed to younger age distributions, and subtracting to older ones.}
+
+\item{seed}{For reproducibility, a seed can be set (e.g., \code{seed=123}). Defaults to NA, no seed set.}
 
 \item{n}{The amount of random values to sample (from both the calibrated distribution and the gamma distribution) to calculate the push. Defaults to \code{n=1e6}.}
 

@@ -17,6 +17,7 @@
 #' @param cal.lab The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}), or to \code{age.lab="kcal BP"} etc. if ka=TRUE.
 #' @param cal.rev Reverse the calendar axis. 
 #' @param c14.lab Label for the C-14 axis. Defaults to 14C BP (or 14C kBP if ka=TRUE).
+#' @param cc2.lab Label for the righthand axis (if present). Defaults to the chosen realm.
 #' @param c14.lim Axis limits for the C-14 axis. Calculated automatically by default. 
 #' @param c14.rev Reverse the C-14 axis.
 #' @param ka Use kcal BP (and C14 kBP).
@@ -27,6 +28,8 @@
 #' @param cc2.fill Colour of the calibration curve (fill), if activated (default cc2=NA).
 #' @param add Whether or not to add the curve(s) to an existing plot. Defaults to FALSE, which draws a new plot.
 #' @param bty Draw a box around a box of a certain shape. Defaults to \code{bty="l"}.
+#' @param mar Plot margins (amount of white space along edges of axes 1-4). Defaults to give more white space if a second y-axis is to be plotted.
+#' @param mgp Axis text margins (where should titles, labels and tick marks be plotted).
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param legend Location of the legend (only activated if more than one curve is plotted). Plotted in the topleft corner by default. Use \code{legend=c()} to leave empty
 #' @param ... Any additional optional plotting parameters. 
@@ -36,7 +39,7 @@
 #' draw.ccurve(1800, 2020, BCAD=TRUE, cc2="nh1", cc2.postbomb=TRUE)
 #' draw.ccurve(1800, 2010, BCAD=TRUE, cc2="nh1", add.yaxis=TRUE)
 #' @export
-draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb=FALSE, cc2.postbomb=FALSE, BCAD=FALSE, realm="C14", as.F=FALSE, as.pMC=FALSE, as.D=FALSE, realm2=c(), cal.lab=NA, cal.rev=FALSE, c14.lab=NA, c14.lim=NA, c14.rev=FALSE, ka=FALSE, add.yaxis=FALSE, cc1.col=rgb(0,0,1,.5), cc1.fill=rgb(0,0,1,.2), cc2.col=rgb(0,.5,0,.5), cc2.fill=rgb(0,.5,0,.2), add=FALSE, bty="l", cc.dir=NULL, legend="topleft", ...) {
+draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb=FALSE, cc2.postbomb=FALSE, BCAD=FALSE, realm="C14", as.F=FALSE, as.pMC=FALSE, as.D=FALSE, realm2=c(), cal.lab=c(), cal.rev=FALSE, c14.lab=c(), cc2.lab=c(), c14.lim=c(), c14.rev=FALSE, ka=FALSE, add.yaxis=FALSE, cc1.col=rgb(0,0,1,.5), cc1.fill=rgb(0,0,1,.2), cc2.col=rgb(0,.5,0,.5), cc2.fill=rgb(0,.5,0,.2), add=FALSE, bty="l", mar=c(), mgp=c(), cc.dir=NULL, legend="topleft", ...) {
 
   # checking realm
   if(sum(as.F, as.pMC, as.D) > 1)
@@ -79,7 +82,16 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 
   cc1.pol <- cbind(c(cc.1[,cc.cal], rev(cc.1[,cc.cal])), c(cc.1[,2]-cc.1[,3], rev(cc.1[,2]+cc.1[,3])))
   
+  if(length(mgp) == 0)
+     mgp <- c(2.5,1,0)
+  if(!add.yaxis)
+    if(length(mar) == 0)
+      mar <- c(4,4,1,1)+.1 
+  
   if(!is.na(cc2)) {
+    if(add.yaxis)  
+      if(length(mar) == 0)
+        mar <- c(4,4,1,4)+.1 
     if(length(realm2) == 0)
       realm2 <- realm
     if(cc2.postbomb)
@@ -90,24 +102,35 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
     mindat <- cc.2[,cc.cal] >= .9*min(cal1, cal2)
     maxdat <- cc.2[,cc.cal] <= 1.1*max(cal1, cal2)
 
+    if(grepl("c", tolower(realm2)))
+      if(length(cc2.lab) == 0)
+        cc2.lab <- expression(""^14*C~BP)
     if(ka) {
       cc.2[,1] <- cc.2[,1]/1e3
       if(grepl("c", tolower(realm2))) # ka doesn't make sense for F14C, pMC, or D14C
         cc.2[,2:3] <- cc.2[,2:3]/1e3
+      if(length(cc2.lab) == 0)
+        cc2.lab <- expression(""^14*C~kBP)
     }
     if(grepl("f", tolower(realm2))) {
         F <- C14toF14C(cc.2[,2], cc.2[,3])
         cc.2[,2:3] <- F
+        if(length(cc2.lab) == 0)
+          cc2.lab <- expression("F"^14*C)		
       }
     if(grepl("p", tolower(realm2))) {
       p <- C14topMC(cc.2[,2], cc.2[,3])
       cc.2[,2:3] <- p
+      if(length(cc2.lab) == 0)
+        cc2.lab <- "pMC" 
     }
     if(grepl("d", tolower(realm2))) {
       F <- C14toF14C(cc.2[,2], cc.2[,3])
       Dmax <- F14CtoD14C(F[,1]+F[,2], t=cc.2[,1])
       D <- F14CtoD14C(F[,1], t=cc.2[,1])
       cc.2[,2:3] <- cbind(D, Dmax-D)
+      if(length(cc2.lab) == 0)
+        cc2.lab <- expression(Delta^14*C)
     }
 
     cc.2 <- cc.2[which(mindat * maxdat == 1),] # limit to the relevant part of the cc only
@@ -125,7 +148,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
     cal.lim <- cal.lim/1e3
   
   if(!add) { # then prepare plotting parameters
-    if(is.na(cal.lab))
+    if(length(cal.lab) == 0)
       if(ka) {
         if(BCAD) 
           cal.lab <- "ka BC/AD" else
@@ -134,7 +157,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
         if(BCAD)
           cal.lab <- "BC/AD" else
             cal.lab <- "cal. yr BP"
-    if(is.na(c14.lab))
+    if(length(c14.lab) == 0)
       if(grepl("p", tolower(realm)))
         c14.lab <- "pMC" else
           if(grepl("f", tolower(realm)))
@@ -144,7 +167,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
                   if(ka)
                     c14.lab <- expression(""^14*C~kBP) else
                       c14.lab <- expression(""^14*C~BP)
-    if(is.na(c14.lim[1]))
+    if(length(c14.lim) == 0)
       if(is.na(cc2))
         c14.lim <- range(cc1.pol[,2]) else
           if(add.yaxis)
@@ -154,7 +177,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
       c14.lim <- rev(c14.lim)
 
     # draw the graph and data
-    plot(0, type="n", xlim=cal.lim, xlab=cal.lab, ylim=c14.lim, ylab=c14.lab, bty=bty, ...)
+    plot(0, type="n", xlim=cal.lim, xlab=cal.lab, ylim=c14.lim, ylab=c14.lab, mar=mar, mgp=mgp, bty=bty, ...)
   }
 
   # add the calibration curve
@@ -169,6 +192,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
       on.exit(par(oldpar))
       par(new=TRUE)
       plot(cc2.pol, type="n", xlim=cal.lim, xlab="", ylab="", bty="n", xaxt="n", yaxt="n")
+	  mtext(cc2.lab, 4, par('mgp')[1], col=cc2.col)
     }
     polygon(cc2.pol, col=cc2.fill, border=NA) # calibration curve
     lines(cc.2[,cc.cal], cc.2[,2]-cc.2[,3], col=cc2.col)
@@ -178,6 +202,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
     if(length(legend) > 0)
       legend(legend, legend=c(cc1, cc2), text.col=c(cc1.col, cc2.col), bty="n")
   }
+  
   invisible(par("usr")) # for subsequent plot manipulations
 }
 

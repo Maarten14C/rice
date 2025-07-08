@@ -25,7 +25,8 @@ r.calib(
   normalise = TRUE,
   BCAD = FALSE,
   rule = 2,
-  cc.dir = NULL
+  cc.dir = NULL,
+  seed = NA
 )
 }
 \arguments{
@@ -70,6 +71,8 @@ r.calib(
 \item{rule}{Which extrapolation rule to use. Defaults to \code{rule=1} which returns NAs.}
 
 \item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.}
+
+\item{seed}{For reproducibility, a seed can be set (e.g., \code{seed=123}). Defaults to NA, no seed set.}
 }
 \value{
 n randomly sampled calendar ages

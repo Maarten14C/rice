@@ -11,7 +11,10 @@ muck(
   y.target.er = 0,
   F.contam = 1,
   F.contam.er = 0,
+  perc.contam = NA,
+  perc.contam.er = 0,
   MC = TRUE,
+  seed = NA,
   its = 10000,
   roundby = 1,
   decimals = 3,
@@ -47,7 +50,13 @@ muck(
 
 \item{F.contam.er}{The error of the contamination. Defaults to 0.}
 
+\item{perc.contam}{The percentage of the contamination. By default (\code{perc.contam=NA}), this is the parameter of interest and this is found by setting F.contam to a specified value. If however the value of `perc.contam` is set, then the function will calculate the F14C of the contamination instead.}
+
+\item{perc.contam.er}{The error of the percentage of contamination. Defaults to 0.}
+
 \item{MC}{Whether or not to use Monte Carlo iterations to estimate the values. Defaults to TRUE, because it treats uncertainties better than if set to FALSE.}
+
+\item{seed}{For reproducibility, a seed can be set (e.g., \code{seed=123}). Defaults to NA, no seed set.}
 
 \item{its}{Amount of iterations to use if MC=TRUE. Defaults to 10,000.}
 
@@ -90,16 +99,19 @@ muck(
 \item{bty}{Draw a box around a box of a certain shape. Defaults to \code{bty="u"}.}
 }
 \value{
-The required contamination (as percentage), as well as a plot
+The required contamination (as percentage) or the F14C of the contamination, as well as a plot
 }
 \description{
-Given an observed and a target radiocarbon age, calculate the amount of contamination required to explain the observed age.
+Given an observed, a target radiocarbon age and the F14C or amount of contamination, calculate the amount of contamination (or its F14C) required to explain the observed age.
 }
 \details{
 Whereas the function takes true/target and observed C14 ages as input and percentage contamination as output, internal calculations are done in the F14C realm and using contamination fractions (between 0 and 1). The central calculation is `frac = (F_obs - F_true) / (F_contam - F_true)`, where `frac` is the fraction of contamination to explain how we went from the observed to the true C14 age, `F_obs` is the observed C14 age in F14C, `F_true` is the true or target age in F14C, `F_contam` is the F value of the contamination. In some extreme cases (e.g., if dividing by zero), the calculation will spit out unexpected results. Messages will be provided in most of these cases.
 }
 \examples{
+# observed age 600 +- 30, target age 2000 +- 0, contamination F 1 +- 0.01
   muck(600, 30, 2000, 0, 1, .01)
+# assuming we need to find the F14C of a 10\\% contamination
+  muck(600, 30, 800, 30, perc.contam=10)
 }
 \author{
 Maarten Blaauw

@@ -1,8 +1,13 @@
-# rice 1.2.1
-* `caldist` now deals better with uncalibrated distributions (cc=0).
+# rice 1.3.0
+* `caldist` now deals better with uncalibrated distributions (`cc=0`).
 * Where relevant, realm-related functions such as `C14toF14C` now have more flexibility regarding rounding of values. The default is no rounding. 
 * new function `draw.CF` to visualise the relationship between 14C ages and their F values, and how ages with large errors become skewed/asymmetric.
-* new function `map.dates` to plot a browseable map of the c. 180k radiocarbon dates in the p13k14c package.
+* new function `map.dates` to plot a browseable map of the c. 180k radiocarbon dates within the p13k14c package.
+* the functions which use random samples (e.g., `contaminate`) now have the option for a seed to be set.
+* the function `muck` now not only returns the percentage of contamination required to to from an observed age to a target one (and an assumed F14C of the contamination). As an alternative, if the percentage of contamination is known, then the required F14C of the contamination can be returned.
+* The functions `F14CtoC14` and `C14toF14C` can now also be called with shorter names - `FtoC` and `CtoF`, respectively.
+* new function `coverage` which calculates to what degree a distribution A is covered by (i.e., falls within) another distribution B. This could be used to check for example how well an age estimate from an age-model fits with a calibrated date. If both overlap, even if the date has a much wider distribution than the model estimate, then the coverage is high (even if the total overlap between the narrow and wider distributions is much less than 100\%). 
+* `draw.ccurve` now plots the title of the second axis if it is plotted (`add.yaxis=TRUE`).
 
 # rice 1.2.0
 * new realm functions to convert from/to b2k (years before AD 2000), an age scale popular in the ice core community.

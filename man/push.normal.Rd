@@ -10,6 +10,7 @@ push.normal(
   mean,
   sdev,
   add = TRUE,
+  seed = NA,
   n = 1e+06,
   prob = 0.95,
   cc = 1,
@@ -43,6 +44,8 @@ push.normal(
 \item{sdev}{The standard deviation of the normal distribution.}
 
 \item{add}{The distribution can be added or subtracted. Adding results in ages being pushed to younger age distributions, and subtracting to older ones.}
+
+\item{seed}{For reproducibility, a seed can be set (e.g., \code{seed=123}). Defaults to NA, no seed set.}
 
 \item{n}{The amount of random values to sample (from both the calibrated distribution and the gamma/normal distribution) to calculate the push. Defaults to \code{n=1e6}.}
 

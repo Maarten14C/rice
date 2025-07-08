@@ -336,18 +336,23 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
 #' @param rule Which extrapolation rule to use. Defaults to \code{rule=1} which returns NAs.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
+#' @param seed For reproducibility, a seed can be set (e.g., \code{seed=123}). Defaults to NA, no seed set.
 #' @author Maarten Blaauw
 #' @examples
 #'   r.calib(10,130,20) # 10 random cal BP ages
 #'   plot(density(r.calib(1e6, 2450, 20)))
 #' @export
-r.calib <- function(n, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=2, cc.dir=NULL) {
+r.calib <- function(n, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=2, cc.dir=NULL, seed=NA) {
   if(length(n) == 0 || n<1)
     stop("n needs to be a value >0")
   if(!length(y) == 1 || !length(er) == 1)
     stop("I can only handle one date at a time")
   
   calib <- caldist(y, er, cc=cc, postbomb=postbomb, deltaR=deltaR, deltaSTD=deltaSTD, as.F=as.F, is.F=is.F, thiscurve=thiscurve, yrsteps=yrsteps, normalise=normalise, BCAD=BCAD, rule=rule, cc.dir=cc.dir)
+  if(!is.na(seed))
+    if(is.numeric(seed))  
+      set.seed(seed) else
+        message("seed has to be numeric")
   rx <- approx(cumsum(calib[,2])/sum(calib[,2]), calib[,1], runif(n), rule=2)$y
   return(rx)
 }
