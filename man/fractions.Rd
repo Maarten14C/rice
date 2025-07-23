@@ -5,12 +5,12 @@
 \title{Estimate a missing radiocarbon age from fractions}
 \usage{
 fractions(
-  bulk_age,
-  bulk_er,
-  fractions_percC,
-  fractions_weights,
-  fractions_ages,
-  fractions_errors,
+  bulk_age = NULL,
+  bulk_er = NULL,
+  fractions_percC = NULL,
+  fractions_weights = NULL,
+  fractions_ages = NULL,
+  fractions_errors = NA,
   roundby = 1,
   talk = TRUE
 )
@@ -36,9 +36,15 @@ fractions(
 Estimate a missing radiocarbon age from a sample which has C14 dates on both the bulk and on fractions, but where 1 sample was too small to be dated. This can be used in for example soils separated into size fractions, where one of the samples turns out to be too small to be dated. Requires to have the bulk age, the ages of the dated fractions, and the carbon contents and weights of all fractions.
 }
 \examples{
-Cs <- c(.02, .05, .03, .04) # carbon contents of each fraction
-wghts <- c(5, 4, 2, .5) # weights for all fractions, e.g., in mg
-ages <- c(130, 130, 130, NA) # ages of all fractions. The unmeasured one is NA
-errors <- c(10, 12, 10, NA) # errors, unmeasured is NA
-fractions(150, 20, Cs, wghts, ages, errors) # assuming a bulk age of 150 +- 20 C14 BP
+  Cs <- c(.02, .05, .03, .04) # carbon contents of each fraction
+  wghts <- c(5, 4, 2, .5) # weights for all fractions, e.g., in mg
+  ages <- c(130, 130, 130, NA) # ages of all fractions. The unmeasured one is NA
+  errors <- c(10, 12, 10, NA) # errors, unmeasured is NA
+  fractions(150, 20, Cs, wghts, ages, errors) # assuming a bulk age of 150 +- 20 C14 BP
+  # if all fraction ages are known, model the combined age:
+  Cs <- c(.02, .05, .03, .04) # carbon contents of each fraction
+  wghts <- c(5, 4, 2, .5) # weights for all fractions, e.g., in mg
+  ages <- c(130, 130, 130, 200)
+  errors <- c(10, 12, 10, 14)
+  fractions(,, Cs, wghts, ages, errors)
 }

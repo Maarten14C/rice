@@ -10,9 +10,9 @@ muck(
   y.target,
   y.target.er = 0,
   F.contam = 1,
-  F.contam.er = 0,
+  F.contam.er = 0.001,
   perc.contam = NA,
-  perc.contam.er = 0,
+  perc.contam.er = 0.001,
   MC = TRUE,
   seed = NA,
   its = 10000,
@@ -48,11 +48,11 @@ muck(
 
 \item{F.contam}{the F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.}
 
-\item{F.contam.er}{The error of the contamination. Defaults to 0.}
+\item{F.contam.er}{The error of the contamination. Defaults to a very small but >0 value, 0.001\%.}
 
 \item{perc.contam}{The percentage of the contamination. By default (\code{perc.contam=NA}), this is the parameter of interest and this is found by setting F.contam to a specified value. If however the value of `perc.contam` is set, then the function will calculate the F14C of the contamination instead.}
 
-\item{perc.contam.er}{The error of the percentage of contamination. Defaults to 0.}
+\item{perc.contam.er}{The error of the percentage of contamination. Defaults to a very small but >0 value, 0.001\%.}
 
 \item{MC}{Whether or not to use Monte Carlo iterations to estimate the values. Defaults to TRUE, because it treats uncertainties better than if set to FALSE.}
 
@@ -72,7 +72,7 @@ muck(
 
 \item{eq.y}{Vertical location of the equation. Defaults to the top of the graph.}
 
-\item{eq.size}{Size of the font of the equation. In case the equation gets jumbled up upon resizing of a graphical device, just issue the previous `clean` command again. Defaults to \code{eq.size=0.8}.}
+\item{eq.size}{Size of the font of the equation. In case the equation gets jumbled up upon resizing of a graphical device, just issue the previous `muck` command again. Defaults to \code{eq.size=0.8}.}
 
 \item{target.col}{Colour for the target/true values. Defaults to darkgreen.}
 

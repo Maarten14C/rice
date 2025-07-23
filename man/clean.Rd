@@ -8,9 +8,9 @@ clean(
   y,
   er = 0,
   percentage,
-  percentage.error = 0,
+  percentage.error = 0.001,
   F.contam = 1,
-  F.contam.er = 0,
+  F.contam.er = 0.001,
   MC = TRUE,
   seed = NA,
   its = 10000,
@@ -42,11 +42,11 @@ clean(
 
 \item{percentage}{Relative amount of contamination. Must be between 0 and 100 (\%)}
 
-\item{percentage.error}{Uncertainty of the contamination. Assumed to be normally distributed (which fails close to 0\% or 100\% contamination levels). Defaults to 0\%.}
+\item{percentage.error}{Uncertainty of the contamination. Assumed to be normally distributed (which fails close to 0\% or 100\% contamination levels). Defaults to a very small but >0 value, 0.001\%.}
 
 \item{F.contam}{The F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.}
 
-\item{F.contam.er}{The error of the contamination. Defaults to 0.}
+\item{F.contam.er}{The error of the contamination. Defaults to a very small but >0 value, 0.001\%.}
 
 \item{MC}{Whether or not to use Monte Carlo iterations to estimate the values. Defaults to TRUE, because it treats uncertainties better than if set to FALSE.}
 

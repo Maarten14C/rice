@@ -1,13 +1,13 @@
+# check vignette - muck looks weird; muck(591, 30, BCADtoC14(40)[,1], 0, 1) goes wrong - no diagonal curve. Owing to an NA? Yes, because F.contam.er has to be provided.
 
 # add sample weight functions (per Philippa Ascough's suggestion). Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
-# add data from historical UBA standards/backgrounds?
-
-# prepare a function to redo deltaR calcs when new Marine curve comes out. Using BCADtocalBP(shells$collected), calBPto14C(cc=2) and shells$C14, shells$er. Unclear how the dR errors are obtained.
+# prepare a function to redo deltaR calcs when new Marine curves come out. Using BCADtocalBP(shells$collected), calBPto14C(cc=2) and shells$C14, shells$er. Unclear how the dR errors are obtained.
 
 # fruits-type model that mixes atmospheric and marine calibration curves. Freshwater effects can cause C14 shifts of up to 1k.
 
-# error multipliers, rounding. Could add procedures for different labs, e.g. QUB_bg, etc. This would be useful for reasons of transparency and community standards.
+# error multipliers, rounding. Could add procedures for different labs, e.g. QUB_bg, etc. This would be useful for reasons of transparency and community standards. Add data from historical UBA standards/backgrounds?
+
 
 
 

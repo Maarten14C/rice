@@ -277,6 +277,12 @@ muck(591, 30, perFaith[,1], perFaith[,2], repairF[,1], repairF[,2])
 
 This means that the dated sample would have to consist almost entirely of Medieval age material - which is exactly what was found by Damon et al. (1989)[^6].
 
+What if we had a sample with a known percentage of contamination, and wanted to know the required activity (F14C) of said contamination to explain away a date? This can be done by providing the percentage contamination (e.g., 10\%):
+
+```{r, fig.width=5, fig.asp=.8}
+muck(500, 20, 600, 25, perc.contam=10)
+```
+
 The effect of different levels of contamination can be visualised:
 
 ```{r, fig.width=6, fig.asp=.8}
@@ -292,7 +298,7 @@ for (i in 1:length(contam)) {
 
 If that is too much code for you, try this function instead:
 
-```{r, fig.width=6}
+```{r, fig.width=6, fig.asp=.8}
 draw.contamination()
 ```
 

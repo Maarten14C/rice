@@ -53,4 +53,5 @@ Produce an interactive, browseable map of the c. 180k (!) archaeological radioca
 See Bocinsky, R. Kyle, Darcy Bird, Lux Miranda, and Jacob Freeman (2022.6). Compendium of R code and data for p3k14c: A synthetic global database of archaeological radiocarbon dates. Accessed 1 July 2025. https://doi.org/10.5281/zenodo.6633635
 requires the 'leaflet' R package to be installed. An error will occur if it isn't installed.
 Bird, D., Miranda, L., Vander Linden, M. et al. p3k14c, a synthetic global database of archaeological radiocarbon dates. Sci Data 9, 27 (2022). https://doi.org/10.1038/s41597-022-01118-7
+The map and data are provided within the rice package because of problems with installing the p3k14c github package. Since p3k14c depends on the retired package rgeos, installation is currently unsuccessful. Given the huge potential of the p3k14c dataset, it was decided to provide a way to download, plot and analyse it within `rice` until the p3k14c package problems are resolved. The p3k14c data has been provided under a CC-0 license.
 }

@@ -8,9 +8,9 @@ contaminate(
   y,
   er = 0,
   percentage,
-  percentage.error = 0,
+  percentage.error = 0.001,
   F.contam = 1,
-  F.contam.er = 0,
+  F.contam.er = 0.001,
   MC = TRUE,
   seed = NA,
   its = 10000,
@@ -42,11 +42,11 @@ contaminate(
 
 \item{percentage}{Relative amount of contamination. Must be between 0 and 1}
 
-\item{percentage.error}{Uncertainty of the contamination. Assumed to be normally distributed (which fails close to 0\% or 100\% contamination levels). Defaults to 0\%.}
+\item{percentage.error}{Uncertainty of the contamination. Assumed to be normally distributed (which fails close to 0\% or 100\% contamination levels). Defaults to a very small but >0 value, 0.001\%.}
 
 \item{F.contam}{the F14C of the contamination. Set at 1 for carbon of modern radiocarbon age, at 0 for 14C-free carbon, or anywhere inbetween.}
 
-\item{F.contam.er}{error of the contamination. Defaults to 0.}
+\item{F.contam.er}{error of the contamination. Defaults to a very small but >0 value, 0.001\%.}
 
 \item{MC}{Whether or not to use Monte Carlo iterations to estimate the values. Defaults to TRUE, because it treats uncertainties better than if set to FALSE.}
 
@@ -66,7 +66,7 @@ contaminate(
 
 \item{eq.y}{Vertical location of the equation. Defaults to the top of the graph.}
 
-\item{eq.size}{Size of the font of the equation. In case the equation gets jumbled up upon resizing of a graphical device, just issue the previous `clean` command again. Defaults to \code{eq.size=0.8}.}
+\item{eq.size}{Size of the font of the equation. In case the equation gets jumbled up upon resizing of a graphical device, just issue the previous `contaminate` command again. Defaults to \code{eq.size=0.8}.}
 
 \item{true.col}{Colour for the target/true values. Defaults to "darkgreen".}
 
@@ -102,8 +102,9 @@ Given a true/target radiocarbon age, calculate the impact of contamination (for 
 Whereas the function takes C14 ages and percentage contamination as input, internal calculations are done in the F14C realm and using fractions (between 0 and 1). The central calculation is `F_obs = ((1-frac)*F_true) + (frac*F_contam)`, where `F_obs` is the observed C14 age as F14C, `frac` is the fraction of contamination, `F_true` is the F14C of the true/target C14 age, and `F_contam` is the F activity of the contamination. In some extreme cases, the calculations will spit out unexpected results. Messages will be provided in most of these cases.
 }
 \examples{
-contaminate(5000, 20, 1, 0, 1) # 1\% contamination with modern carbon
-contaminate(66e6, 1e6, 1, 0, 1) # dino bone, shouldn't be dated as way beyond the dating limit
+contaminate(5000, 20, 5, 0, 1) # 5\% contamination with modern carbon
+# dino bone with 1\% contamination, shouldn't be dated as way beyond the dating limit:
+contaminate(66e6, 1e6, 1, 0, 1) 
 }
 \author{
 Maarten Blaauw
