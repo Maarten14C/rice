@@ -314,6 +314,8 @@ errors <- c(10, 12, 10, NA) # errors, unmeasured is NA
 fractions(150, 20, Cs, wghts, ages, errors) # assuming a bulk age of 150 +- 20 C14 BP 
 ```
 
+The above function can also be used to find the expected age of an entire sample, given the fractions and their ages - please type `?fractions` for more detail. 
+
 # Calibration
 
 Now on to calibration of radiocarbon dates. We can obtain the calibrated probability distributions from radiocarbon dates, e.g., one of 130 &pm; 10 C14 BP:
@@ -415,6 +417,13 @@ You can also extract say the 20 shells closest to a coordinate, e.g., 120 East a
 myshells <- find.shells(120, 10, 20)
 shells.mean(myshells, distance=TRUE)
 ```
+
+Instead of a static map, for `find.shells` and `map.shells` you can also request an interactive, browsable map, which will open in your Internet browser:
+
+```{r, fig.width=5, fig.asp=1, eval=FALSE}
+find.shells(120, 10, 50, browse=TRUE)
+```
+<img src="./findshells_browse.png" width="600" />
 
 # Multiple calibrations
 

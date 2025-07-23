@@ -7,8 +7,10 @@
 ^revdep$
 ^.github$
 ^R/\.RData$
+^\.RData$
 ^rnaturalearthhires$
 ^ci/
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^checkTheseRunCommands.txt$
+^\.DS_Store$

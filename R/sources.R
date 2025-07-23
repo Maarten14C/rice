@@ -224,8 +224,9 @@ contaminate <- function(y, er=0, percentage, percentage.error=0.001, F.contam=1,
       colours <- c(observed.col, rep(true.col, 5), 1, rep(contamination.col, 5), rep(observed.col, 7))
       xpos <- eq.x+(eq.size*cumsum(c(0, strwidth(txt[-length(txt)])))/1.32)
       fnt <- c(rep(1, 14), rep(2, 5)) # last bit has to be bold
+      coors <- par('usr')
       if(length(eq.y) == 0)
-        eq.y <- 1.01*max(c(F.obs, F.true[,1], F.contam))
+        eq.y <- coors[4] - .05*(coors[4]-coors[3])
 
       op <- par(xpd=TRUE) # to avoid truncated printing
       for(i in seq_along(txt))
@@ -357,8 +358,9 @@ clean <- function(y, er=0, percentage, percentage.error=0.001, F.contam=1, F.con
       colours <- c(true.col, rep(observed.col, 5), 1, rep(contamination.col, 5), rep(true.col, 7))
       xpos <- eq.x+(cumsum(c(0, strwidth(txt[-length(txt)], cex=eq.size/1.36)))) # txt length
       fnt <- c(rep(1, 14), rep(2, 5)) # last bit has to be bold
+      coors <- par('usr')
       if(length(eq.y) == 0)
-        eq.y <- 1.01*max(unlist(F.obs[,1], F.true, F.contam))
+        eq.y <- coors[4] - .05*(coors[4]-coors[3])
       for(i in seq_along(txt))
         text(x = xpos[i], y = eq.y, labels = txt[i], col = colours[i], adj = c(0, 0), font=fnt[i], cex=eq.size/1.36)
     }
@@ -523,7 +525,7 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
         contamination.col=contamination.col, true.pch=target.pch, true.name=true.name,
         observed.pch=observed.pch, contamination.pch=contamination.pch, ylab=ylab, bty=bty, C14.axis=C14.axis)
       if(is.na(perc.contam)) {
-        txt <- c("contamination", " = (", round(F.obs[,1], decimals), "-", 
+        txt <- c("contam", " = (", round(F.obs[,1], decimals), "-", 
           round(F.target[,1], decimals), ") / (",
           round(F.contam, decimals), "-",  round(F.target[,1], decimals), ") = ", 
           round(median(frac), decimals)) 

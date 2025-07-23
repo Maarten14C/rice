@@ -44,7 +44,7 @@ Estimate a missing radiocarbon age from a sample which has C14 dates on both the
   # if all fraction ages are known, model the combined age:
   Cs <- c(.02, .05, .03, .04) # carbon contents of each fraction
   wghts <- c(5, 4, 2, .5) # weights for all fractions, e.g., in mg
-  ages <- c(130, 130, 130, 200)
+  ages <- c(130, 140, 150, 200)
   errors <- c(10, 12, 10, 14)
   fractions(,, Cs, wghts, ages, errors)
 }

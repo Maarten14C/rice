@@ -1,4 +1,4 @@
-# check vignette - muck looks weird; muck(591, 30, BCADtoC14(40)[,1], 0, 1) goes wrong - no diagonal curve. Owing to an NA? Yes, because F.contam.er has to be provided.
+# 
 
 # add sample weight functions (per Philippa Ascough's suggestion). Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
@@ -7,7 +7,6 @@
 # fruits-type model that mixes atmospheric and marine calibration curves. Freshwater effects can cause C14 shifts of up to 1k.
 
 # error multipliers, rounding. Could add procedures for different labs, e.g. QUB_bg, etc. This would be useful for reasons of transparency and community standards. Add data from historical UBA standards/backgrounds?
-
 
 
 
@@ -53,7 +52,7 @@ map.dates <- function(S=48, W=-15, N=62, E=5, fl=c(), download=FALSE, rainbow=FA
         download.file(url, destfile = local_file, mode = "wb")
         return(local_file)
       } else
-          stop("please download p3k14c_2022.06.csv from https://www.p3k14c.org/data/ and provide its location as e.g., fl='~/Downloads/p3k14c_2022.06.csv'") 
+          stop("please run the command 'map.dates(download=TRUE)', or download p3k14c_2022.06.csv from https://www.p3k14c.org/data/ and provide its location as e.g., fl='~/Downloads/p3k14c_2022.06.csv'") 
     } else {
         if(download) {
           message("Downloading file with c. 180k C-14 dates from https://www.p3k14c.org/...")
