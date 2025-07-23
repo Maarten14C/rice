@@ -311,7 +311,7 @@ find.shells <- function(longitude, latitude, nearest=50, browse=FALSE, colour="d
 #' @export
 map.shells <- function(S=48, W=-15, N=62, E=5, browse=FALSE, colour="dR", rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol="feeding", symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), legend.loc=c(.95, .02), legend.size=c(.05, .2), padding=0.1, warn=TRUE, currents=TRUE) {
   lon <- lat <- NULL # to get rid of subsequent ggplot2-related warnings
-  shells <- get("shells", envir = .GlobalEnv)
+  shells <- get("shells", envir = asNamespace("rice")) # envir was .GlobalEnv
   shells[[symbol]] <- as.factor(shells[[symbol]])
   sel <- shells[shells$lon>=W & shells$lon<=E & shells$lat>=S & shells$lat <= N,]
 

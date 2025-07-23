@@ -200,8 +200,21 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 }
 
 
-
-hpd.coverage <- function(distA, distB, prob=.95) {
+#' @name hpd.overlap
+#' @title Check whether hpds of two distributions overlap
+#' @description Checks whether any of the highest posterior densities (hpds) of two distributions overlap. 
+#' @return TRUE if at least one of the hpds of distA overlaps with that of distB. 
+#' @param distA Distribution A. Expects two columns: values and their probabilities (e.g., caldist(130,10, cc=1)).
+#' @param distB Distribution B. Expects two columns: values and their probabilities (e.g., caldist(130,10, cc=1)).
+#' @param prob The probability of the highest posterior densities. Defaults to 95\%.
+#' @examples
+#'   distA <- caldist(130, 20, cc=0) # normal distribution
+#'   distB <- caldist(130, 20, cc=1) # calibrated distribution
+#'   plot(distB, type="l")
+#'   lines(distA, col=2)
+#'   hpd.overlap(distA, distB)
+#' @export
+hpd.overlap <- function(distA, distB, prob=.95) {
   hpdA <- hpd(distA, prob=prob)	
   hpdB <- hpd(distB, prob=prob)	
 

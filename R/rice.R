@@ -1,19 +1,11 @@
 
-# add sample weight functions (per Philippa Ascough's suggestion. Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
-
-# hpd.coverage function?
-
-# add documentation for reading intcal data files (rintcal). Make a function that reads in the json file and places the relevant data into list items meta, calendar (e.g. dendro data) and C14.
-
-# fruits-type model that mixes atmospheric and marine calibration curves.  Freshwater effects can cause C14 shifts of up to 1k.
-
-# prepare a function to redo deltaR calcs when new Marine curve comes out. Using BCADtocalBP(shells$collected), calBPto14C(cc=2) and shells$C14, shells$er. 
-
-# make a function contaminate with multiple contamination sources (perc_i, F_i). Or does this work already with the fractions function? See how the fractions functions could be adapted to deal with all ages 'known'. something like 'mix(C14=c(230, 5000, 600, 200), er=c(20, 40, 20, 15), fraction=c(.2, .4, .2, .2), cc=c(1,1,2,1), percC=c(100, 20, 60, 80))' 
+# add sample weight functions (per Philippa Ascough's suggestion). Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
 # add data from historical UBA standards/backgrounds?
 
-# terr-marine contribution calculation
+# prepare a function to redo deltaR calcs when new Marine curve comes out. Using BCADtocalBP(shells$collected), calBPto14C(cc=2) and shells$C14, shells$er. Unclear how the dR errors are obtained.
+
+# fruits-type model that mixes atmospheric and marine calibration curves. Freshwater effects can cause C14 shifts of up to 1k.
 
 # error multipliers, rounding. Could add procedures for different labs, e.g. QUB_bg, etc. This would be useful for reasons of transparency and community standards.
 
@@ -25,6 +17,7 @@
 #' @details See Bocinsky, R. Kyle, Darcy Bird, Lux Miranda, and Jacob Freeman (2022.6). Compendium of R code and data for p3k14c: A synthetic global database of archaeological radiocarbon dates. Accessed 1 July 2025. https://doi.org/10.5281/zenodo.6633635
 #' requires the 'leaflet' R package to be installed. An error will occur if it isn't installed.
 #' Bird, D., Miranda, L., Vander Linden, M. et al. p3k14c, a synthetic global database of archaeological radiocarbon dates. Sci Data 9, 27 (2022). https://doi.org/10.1038/s41597-022-01118-7
+#' The map and data are provided within the rice package because of problems with installing the p3k14c github package. Since p3k14c depends on the retired package rgeos, installation is currently unsuccessful. Given the huge potential of the p3k14c dataset, it was decided to provide a way to download, plot and analyse it within `rice` until the p3k14c package problems are resolved. The p3k14c data has been provided under a CC-0 license.
 #' @return An interactive, browseable map returning all radiocarbon dates (age and Lab ID) in the database. 
 #' @param S The southern limit of the initial map.
 #' @param W The western limit of the initial map.
@@ -42,7 +35,7 @@
 # ## End(Not run)
 #' @export
 map.dates <- function(S=48, W=-15, N=62, E=5, fl=c(), download=FALSE, rainbow=FALSE, mincol="yellow", maxcol="red", size=1.5, legend.loc="topright") {
-	
+
   download_dates <- function() {
     if(getRversion() < "4.0.0")
       stop("Please update to a more recent version of R.\n", 
@@ -53,22 +46,22 @@ map.dates <- function(S=48, W=-15, N=62, E=5, fl=c(), download=FALSE, rainbow=FA
     if (!dir.exists(dir)) dir.create(dir, recursive = TRUE)
 
     local_file <- file.path(dir, "p3k14c_2022.06.csv")
-	url <- "https://www.p3k14c.org/data/p3k14c_2022.06.csv"
+    url <- "https://www.p3k14c.org/data/p3k14c_2022.06.csv"
 
     if(!file.exists(local_file)) {
       if(download) {
         download.file(url, destfile = local_file, mode = "wb")
-		return(local_file)
-	  } else
+        return(local_file)
+      } else
           stop("please download p3k14c_2022.06.csv from https://www.p3k14c.org/data/ and provide its location as e.g., fl='~/Downloads/p3k14c_2022.06.csv'") 
     } else {
-	    if(download) {
+        if(download) {
           message("Downloading file with c. 180k C-14 dates from https://www.p3k14c.org/...")
           download.file(url, destfile = local_file, mode = "wb")
         } else
-	      message("using cached file ", local_file)
-	  return(local_file)
-      }	
+          message("using cached file ", local_file)
+          return(local_file)
+      }
   }
   
   if(length(fl) && file.exists(fl)) 
@@ -92,7 +85,7 @@ map.dates <- function(S=48, W=-15, N=62, E=5, fl=c(), download=FALSE, rainbow=FA
     stop("Please install the leaflet package:\ninstall.packages(\"leaflet\")")
 
   hover_labels <- paste0(age, " &plusmn; ", dates$Error, "<br>", dates$Material, "<br>", dates$LabID)
-	  
+
   map <- leaflet::leaflet(data=dates)
   map <- leaflet::fitBounds(map, lng1=W, lat1=S, lng2=E, lat2=N)
   map <- leaflet::addProviderTiles(map, leaflet::providers$Esri.WorldImagery, group = "Esri Satellite")
