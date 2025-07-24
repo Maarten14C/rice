@@ -7,7 +7,7 @@ Radiocarbon is widely used for dating a range of archaeological and geographical
 Please check out the vignettes folder for a tutorial. In short, install the package from github, load it and run the two main functions:
 
 ```{r, eval=FALSE}
-require(devtools)
+require(remotes)
 install_github("Maarten14C/rice")
 library(rice)
 calibrate(2450,20)
@@ -17,9 +17,9 @@ draw.contamination()
 
 # Installation
 
-To use high-resolution maps, install the `rnaturalearthhires` package from GitHub (also install devtools if you haven't already):
+To use high-resolution maps, install the `rnaturalearthhires` package from GitHub (also install `remotes` if you haven't already):
 
 ```{r}
-install.packages("devtools")
-devtools::install_github("ropensci/rnaturalearthhires")
+install.packages("remotes")
+remotes::install_github("ropensci/rnaturalearthhires")
 ```

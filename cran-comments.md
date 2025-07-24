@@ -1,6 +1,6 @@
 ## Test environments
-* local Mac install, R 4.5.0
-* local fedora install, R 4.5.0
+* local Mac install, R 4.5.1
+* local fedora install, R 4.5.1
 * rhub (R-devel): windows, linux
 
 ## R CMD check results

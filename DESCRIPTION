@@ -12,10 +12,12 @@ Encoding: UTF-8
 RoxygenNote: 7.3.2
 Imports: rlang, ggplot2, maps (>= 3.4.2.1)
 Suggests: 
-  knitr, rmarkdown, utf8, remotes, devtools, sf, 
+  knitr, rmarkdown, utf8, remotes, remotes, sf, p3k14c,
   rnaturalearthdata, rnaturalearth (>= 1.0.1),
   leaflet, htmltools, CopernicusMarine, testthat (>= 3.0.0)
 Depends: R (>= 3.5.0), rintcal (>= 1.3.0)
+Remotes:
+    people3k/p3k14c
 Language: en-GB
 VignetteBuilder: knitr
 NeedsCompilation: no

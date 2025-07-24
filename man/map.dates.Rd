@@ -2,14 +2,13 @@
 % Please edit documentation in R/rice.R
 \name{map.dates}
 \alias{map.dates}
-\title{A browseable map of 180k archaeological C-14 dates}
+\title{A map of 180k archaeological C-14 dates}
 \usage{
 map.dates(
   S = 48,
   W = -15,
   N = 62,
   E = 5,
-  fl = c(),
   download = FALSE,
   rainbow = FALSE,
   mincol = "yellow",
@@ -27,9 +26,7 @@ map.dates(
 
 \item{E}{The eastern limit of initial map.}
 
-\item{fl}{The file containing the database. If not available already, it is downloaded automatically where possible from 'https://www.p3k14c.org/download/', but you can also download it yourself and provide its location, e.g., \code{fl="~/Downloads/p3k14c_2022.06.csv"}.}
-
-\item{download}{Whether or not to try to download the database .csv file. Note: it weighs around 26 MB (c. 4 MB zipped). If your version of R is below 4.0, you'll have to download the file manually.}
+\item{download}{Whether or not to try to download the p13k14c data. If set to FALSE (default option) and if the p3k14c package is not installed, instructions to do so are provided. If TRUE and p3k14c is not installed, the relevant file will be downloaded from `www.p3k14c.org`. Note: it weighs around 26 MB (c. 4 MB zipped).}
 
 \item{rainbow}{Whether or not to use a rainbow scale to plot the variable.}
 
@@ -39,19 +36,19 @@ map.dates(
 
 \item{size}{Size of the symbols. Defaults to 1.5.}
 
-\item{legend.loc}{Location of the legend, if using a basic plot. Defaults to the top right.
+\item{legend.loc}{Location of the legend. Defaults to the top right.
 ## Not run: 
   alldates <- map.dates()}
 }
 \value{
-An interactive, browseable map returning all radiocarbon dates (age and Lab ID) in the database.
+An interactive, browseable map returning all radiocarbon dates (age and Lab ID) in the p3k14c database.
 }
 \description{
-Produce an interactive, browseable map of the c. 180k (!) archaeological radiocarbon dates provided by the p3k14c R package. The p3k14c R package has been removed from CRAN (owing to the retirement of other mapping-related packages). Here we download the 2022 version of the database as a .csv file from url 'https://www.p3k14c.org/download/'.
+Produce an interactive, browseable map of the c. 180k (!) archaeological radiocarbon dates provided by the p3k14c R package.
 }
 \details{
-See Bocinsky, R. Kyle, Darcy Bird, Lux Miranda, and Jacob Freeman (2022.6). Compendium of R code and data for p3k14c: A synthetic global database of archaeological radiocarbon dates. Accessed 1 July 2025. https://doi.org/10.5281/zenodo.6633635
-requires the 'leaflet' R package to be installed. An error will occur if it isn't installed.
+The p3k14c R package is available on github ("people3k/p3k14c"). See Bocinsky, R. Kyle, Darcy Bird, Lux Miranda, and Jacob Freeman (2022.6). Compendium of R code and data for p3k14c: A synthetic global database of archaeological radiocarbon dates. Accessed 1 July 2025. https://doi.org/10.5281/zenodo.6633635. The p3k14c data has been provided under a CC-0 license.
 Bird, D., Miranda, L., Vander Linden, M. et al. p3k14c, a synthetic global database of archaeological radiocarbon dates. Sci Data 9, 27 (2022). https://doi.org/10.1038/s41597-022-01118-7
-The map and data are provided within the rice package because of problems with installing the p3k14c github package. Since p3k14c depends on the retired package rgeos, installation is currently unsuccessful. Given the huge potential of the p3k14c dataset, it was decided to provide a way to download, plot and analyse it within `rice` until the p3k14c package problems are resolved. The p3k14c data has been provided under a CC-0 license.
+You are recommended to have a look at the github instructions for the p3k14c package. The `map.dates` function is provided here for an initial visual analysis of the data; p3k14c provides functions to get much more out of the data.
+Plotting requires the 'leaflet' R package to be installed. An error will occur if it isn't. If your version of R is below 4.0.0 (released back in April 2020), you're prompted to install a more recent version.
 }

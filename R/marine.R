@@ -5,7 +5,7 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
   hassf <- requireNamespace("sf", quietly=TRUE)
   rne <- requireNamespace("rnaturalearth", quietly=TRUE)
   rnedata <- requireNamespace("rnaturalearthdata", quietly=TRUE)
-  devtools <- requireNamespace("devtools", quietly=TRUE)
+  remotes <- requireNamespace("remotes", quietly=TRUE)
   lflt <- requireNamespace("leaflet", quietly=TRUE)
   coper <- requireNamespace("CopernicusMarine", quietly=TRUE)
   hiresmaps <- "rnaturalearthhires" %in% installed.packages() # TRUE or FALSE
@@ -31,12 +31,12 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
 
             # rnaturalearthhires is nice but has to be installed from github
             if(!hiresmaps)
-              if(devtools)
+              if(remotes)
                 message("For detailed maps, install rnaturalearthhires from GitHub:\n",
-                  "devtools::install_github('ropensci/rnaturalearthhires')\n") else
-                    message("Install first devtools and then rnaturalearthhires:\n",
-                      "install.packages(\"devtools\")\n",
-                      "devtools::install_github(\"ropensci/rnaturalearthhires\"")
+                  "remotes::install_github('ropensci/rnaturalearthhires')\n") else
+                    message("Install first remotes and then rnaturalearthhires:\n",
+                      "install.packages(\"remotes\")\n",
+                      "remotes::install_github(\"ropensci/rnaturalearthhires\"")
           }
         }
       }
@@ -213,7 +213,7 @@ hav.dist <- function(long1, lat1, long2, lat2) {
 #' @param colour The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.
 #' @param rainbow Whether or not to use a rainbow scale to plot the variable.
 #' @param size Size of the symbols. Defaults to 2.
-#' @param mapsize Resolution of the map. Can be "small" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to "small" if 'rnaturalearthhires' is not installed, and to "large" if it is installed.
+#' @param mapsize Resolution of the map. Can be "small" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command remotes::install_github("ropensci/rnaturalearthhires")). Defaults to "small" if 'rnaturalearthhires' is not installed, and to "large" if it is installed.
 #' @param mincol Colour for minimum values.
 #' @param maxcol Colour for maximum values.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'.
@@ -298,7 +298,7 @@ find.shells <- function(longitude, latitude, nearest=50, browse=FALSE, colour="d
 #' @param colour The variable to be plotted as colour. Expects a continuous variable. Defaults to 'dR'.
 #' @param rainbow Whether or not to use a rainbow scale to plot the variable.
 #' @param size Size of the symbols. Defaults to 2.
-#' @param mapsize Resolution of the map. Can be "small" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command devtools::install_github("ropensci/rnaturalearthhires")). Defaults to "small" if 'rnaturalearthhires' is not installed, and to "large" if it is installed.
+#' @param mapsize Resolution of the map. Can be "small" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command remotes::install_github("ropensci/rnaturalearthhires")). Defaults to "small" if 'rnaturalearthhires' is not installed, and to "large" if it is installed.
 #' @param mincol Colour for minimum values.
 #' @param maxcol Colour for maximum values.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'. 

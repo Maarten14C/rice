@@ -1,4 +1,4 @@
-# 
+#
 
 # add sample weight functions (per Philippa Ascough's suggestion). Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
@@ -11,63 +11,54 @@
 
 
 #' @name map.dates
-#' @title A browseable map of 180k archaeological C-14 dates
-#' @description Produce an interactive, browseable map of the c. 180k (!) archaeological radiocarbon dates provided by the p3k14c R package. The p3k14c R package has been removed from CRAN (owing to the retirement of other mapping-related packages). Here we download the 2022 version of the database as a .csv file from url 'https://www.p3k14c.org/download/'.
-#' @details See Bocinsky, R. Kyle, Darcy Bird, Lux Miranda, and Jacob Freeman (2022.6). Compendium of R code and data for p3k14c: A synthetic global database of archaeological radiocarbon dates. Accessed 1 July 2025. https://doi.org/10.5281/zenodo.6633635
-#' requires the 'leaflet' R package to be installed. An error will occur if it isn't installed.
+#' @title A map of 180k archaeological C-14 dates
+#' @description Produce an interactive, browseable map of the c. 180k (!) archaeological radiocarbon dates provided by the p3k14c R package.
+#' @details The p3k14c R package is available on github ("people3k/p3k14c"). See Bocinsky, R. Kyle, Darcy Bird, Lux Miranda, and Jacob Freeman (2022.6). Compendium of R code and data for p3k14c: A synthetic global database of archaeological radiocarbon dates. Accessed 1 July 2025. https://doi.org/10.5281/zenodo.6633635. The p3k14c data has been provided under a CC-0 license.
 #' Bird, D., Miranda, L., Vander Linden, M. et al. p3k14c, a synthetic global database of archaeological radiocarbon dates. Sci Data 9, 27 (2022). https://doi.org/10.1038/s41597-022-01118-7
-#' The map and data are provided within the rice package because of problems with installing the p3k14c github package. Since p3k14c depends on the retired package rgeos, installation is currently unsuccessful. Given the huge potential of the p3k14c dataset, it was decided to provide a way to download, plot and analyse it within `rice` until the p3k14c package problems are resolved. The p3k14c data has been provided under a CC-0 license.
-#' @return An interactive, browseable map returning all radiocarbon dates (age and Lab ID) in the database. 
+#' You are recommended to have a look at the github instructions for the p3k14c package. The `map.dates` function is provided here for an initial visual analysis of the data; p3k14c provides functions to get much more out of the data.
+#' Plotting requires the 'leaflet' R package to be installed. An error will occur if it isn't. If your version of R is below 4.0.0 (released back in April 2020), you're prompted to install a more recent version.
+#' @return An interactive, browseable map returning all radiocarbon dates (age and Lab ID) in the p3k14c database.
 #' @param S The southern limit of the initial map.
 #' @param W The western limit of the initial map.
 #' @param N The northern limit of the initial map.
 #' @param E The eastern limit of initial map.
-#' @param fl The file containing the database. If not available already, it is downloaded automatically where possible from 'https://www.p3k14c.org/download/', but you can also download it yourself and provide its location, e.g., \code{fl="~/Downloads/p3k14c_2022.06.csv"}.
-#' @param download Whether or not to try to download the database .csv file. Note: it weighs around 26 MB (c. 4 MB zipped). If your version of R is below 4.0, you'll have to download the file manually.
+#' @param download Whether or not to try to download the p13k14c data. If set to FALSE (default option) and if the p3k14c package is not installed, instructions to do so are provided. If TRUE and p3k14c is not installed, the relevant file will be downloaded from `www.p3k14c.org`. Note: it weighs around 26 MB (c. 4 MB zipped).
 #' @param rainbow Whether or not to use a rainbow scale to plot the variable.
 #' @param mincol Colour for minimum values. Defaults to 'yellow'.
 #' @param maxcol Colour for maximum values. Defaults to 'red'. 
 #' @param size Size of the symbols. Defaults to 1.5.
-#' @param legend.loc Location of the legend, if using a basic plot. Defaults to the top right.
+#' @param legend.loc Location of the legend. Defaults to the top right.
 #' ## Not run: 
 #'   alldates <- map.dates()
 # ## End(Not run)
 #' @export
-map.dates <- function(S=48, W=-15, N=62, E=5, fl=c(), download=FALSE, rainbow=FALSE, mincol="yellow", maxcol="red", size=1.5, legend.loc="topright") {
+map.dates <- function(S=48, W=-15, N=62, E=5, download=FALSE, rainbow=FALSE, mincol="yellow", maxcol="red", size=1.5, legend.loc="topright") {
 
-  download_dates <- function() {
-    if(getRversion() < "4.0.0")
-      stop("Please update to a more recent version of R.\n", 
-        "Alternatively, download the file p3k14c_2022.06.csv from 'https://www.p3k14c.org/data/'",
-        "and let the function know where it is, e.g.,
-        'map.dates(fl='~/Downloads/p3k14c_2022.06.csv').")		
-    dir <- tools::R_user_dir("rice", "data")
-    if (!dir.exists(dir)) dir.create(dir, recursive = TRUE)
+  # if p3k14c is installed, take the data from there. If not, suggest to install it, or download data from p3k14c.org
+  p3k14c <- requireNamespace("p3k14c", quietly=TRUE)
+  remotes <- requireNamespace("remotes", quietly=TRUE)
+  if(getRversion() < "4.0.0")
+    stop("R version 4.0.0 or higher is required for this function. Please upgrade R.")
+  lflt <- requireNamespace("leaflet", quietly=TRUE)
+  if(!lflt)
+    stop("Please install the leaflet package:\ninstall.packages(\"leaflet\")")
 
-    local_file <- file.path(dir, "p3k14c_2022.06.csv")
-    url <- "https://www.p3k14c.org/data/p3k14c_2022.06.csv"
-
-    if(!file.exists(local_file)) {
-      if(download) {
+  if(p3k14c)
+    dates <- p3k14c::p3k14c_data else
+      if(download) { # then download from the p3k14c.org site and store in rice's data directory
+        dir <- tools::R_user_dir("rice", "data")
+        if(!dir.exists(dir))
+          dir.create(dir, recursive=TRUE)
+        local_file <- file.path(dir, "p3k14c_2022.06.csv")
+        url <- "https://www.p3k14c.org/data/p3k14c_2022.06.csv"
         download.file(url, destfile = local_file, mode = "wb")
-        return(local_file)
-      } else
-          stop("please run the command 'map.dates(download=TRUE)', or download p3k14c_2022.06.csv from https://www.p3k14c.org/data/ and provide its location as e.g., fl='~/Downloads/p3k14c_2022.06.csv'") 
-    } else {
-        if(download) {
-          message("Downloading file with c. 180k C-14 dates from https://www.p3k14c.org/...")
-          download.file(url, destfile = local_file, mode = "wb")
-        } else
-          message("using cached file ", local_file)
-          return(local_file)
-      }
-  }
-  
-  if(length(fl) && file.exists(fl)) 
-    csv_path <- fl else 
-      csv_path <- download_dates()
+        dates <- utils::read.csv(local_file)
+      } else {
+        if(remotes)
+          stop("please install p3k14c first: 'remotes::install_github(\"people3k/p3k14c\")', then re-run 'map.dates()'") else
+            stop("please install remotes: 'install(\"remotes\")' \nthen install p3k14c: 'remotes::install_github(\"people3k/p3k14c\")' \n then re-run 'map.dates()'")
+        }
 
-  dates <- read.csv(csv_path)	
   dates <- dates[!is.na(dates$Lat),]
   dates <- dates[!is.na(dates$Long),]  
   
@@ -79,10 +70,6 @@ map.dates <- function(S=48, W=-15, N=62, E=5, fl=c(), download=FALSE, rainbow=FA
   cols <- color_scale[as.numeric(bins)]
   qtiles <- round(quantile(age, probs = c(1, 0.75, 0.5, 0.25, 0)), 1)
   
-  lflt <- requireNamespace("leaflet", quietly=TRUE)
-  if(!lflt)
-    stop("Please install the leaflet package:\ninstall.packages(\"leaflet\")")
-
   hover_labels <- paste0(age, " &plusmn; ", dates$Error, "<br>", dates$Material, "<br>", dates$LabID)
 
   map <- leaflet::leaflet(data=dates)
