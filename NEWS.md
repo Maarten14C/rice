@@ -2,7 +2,6 @@
 * `caldist` now deals better with uncalibrated distributions (`cc=0`).
 * Where relevant, realm-related functions such as `C14toF14C` now have more flexibility regarding rounding of values. The default is no rounding. 
 * new function `draw.CF` to visualise the relationship between 14C ages and their F values, and how ages with large errors become skewed/asymmetric.
-* new function `map.dates` to plot a browseable map of the c. 180k radiocarbon dates within the p3k14c package (see https://doi.org/10.5281/zenodo.6633635, and http://www.p3k14c.org).
 * the functions which use random samples (e.g., `contaminate`) now have the option for a seed to be set.
 * the function `muck` now not only returns the percentage of contamination required to to from an observed age to a target one (and an assumed F14C of the contamination). As an alternative, if the percentage of contamination is known, then the required F14C of the contamination can be returned.
 * The functions `F14CtoC14` and `C14toF14C` can now also be called with shorter names - `FtoC` and `CtoF`, respectively.
