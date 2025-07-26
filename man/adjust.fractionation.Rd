@@ -4,7 +4,7 @@
 \alias{adjust.fractionation}
 \title{Adjust a radiocarbon age for fractionation}
 \usage{
-adjust.fractionation(y, d13C, reference_d13C = -25, realm = "C14")
+adjust.fractionation(y, d13C, reference_d13C = -25, timescale = "C14")
 }
 \arguments{
 \item{y}{The age of the sample (in C14 by default, but can also be in F or pMC).}
@@ -13,7 +13,7 @@ adjust.fractionation(y, d13C, reference_d13C = -25, realm = "C14")
 
 \item{reference_d13C}{The reference/standard d13C value (OX2, oxalic acid 2, NIST SRM 4990C made from 1977 French beet molasses), set at -25 permil by default.}
 
-\item{realm}{Type of radiocarbon age. Can be in `C14` (default), `F14C` or `pMC`.}
+\item{timescale}{Type of radiocarbon age. Can be in `C14` (default), `F14C` or `pMC`.}
 }
 \value{
 The fractionation-adjusted age.

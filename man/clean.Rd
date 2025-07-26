@@ -99,7 +99,7 @@ The true/target radiocarbon age and error
 Given an observed radiocarbon age, remove the impact of contamination (for example, 1\% contamination with modern carbon) to estimate the true/target age
 }
 \details{
-Whereas the function takes C14 ages and percentage contamination as input, internal calculations are done in the F14C realm and using fractions (between 0 and 1). The central calculation is `F_true = ((1-frac)*F_obs) - (frac*F_contam)`, where `F_true` is the true or target age in F14C, `frac` is the fraction of contamination, `F_obs` is the F14C of the observed C14 age, and `F_contam` is the F activity of the contamination. In some extreme cases, the calculations will spit out unexpected results. Messages will be provided in most of these cases.
+Whereas the function takes C14 ages and percentage contamination as input, internal calculations are done in the F14C timescale and using fractions (between 0 and 1). The central calculation is `F_true = ((1-frac)*F_obs) - (frac*F_contam)`, where `F_true` is the true or target age in F14C, `frac` is the fraction of contamination, `F_obs` is the F14C of the observed C14 age, and `F_contam` is the F activity of the contamination. In some extreme cases, the calculations will spit out unexpected results. Messages will be provided in most of these cases.
 }
 \examples{
 # 1\% contamination with modern carbon (no uncertainties in contamination's percentage or F)

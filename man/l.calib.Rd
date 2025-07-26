@@ -42,9 +42,9 @@ l.calib(
 
 \item{normal}{Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).}
 
-\item{as.F}{Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.}
+\item{as.F}{Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.}
 
-\item{is.F}{Use this if the provided date is in the F14C realm.}
+\item{is.F}{Use this if the provided date is in the F14C timescale.}
 
 \item{t.a}{Value a of the t distribution (defaults to 3).}
 

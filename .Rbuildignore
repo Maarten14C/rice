@@ -14,3 +14,4 @@
 ^\.Rproj\.user$
 ^checkTheseRunCommands.txt$
 ^\.DS_Store$
+^.*/\.DS_Store$

@@ -105,7 +105,7 @@ The required contamination (as percentage) or the F14C of the contamination, as 
 Given an observed, a target radiocarbon age and the F14C or amount of contamination, calculate the amount of contamination (or its F14C) required to explain the observed age.
 }
 \details{
-Whereas the function takes true/target and observed C14 ages as input and percentage contamination as output, internal calculations are done in the F14C realm and using contamination fractions (between 0 and 1). The central calculation is `frac = (F_obs - F_true) / (F_contam - F_true)`, where `frac` is the fraction of contamination to explain how we went from the observed to the true C14 age, `F_obs` is the observed C14 age in F14C, `F_true` is the true or target age in F14C, `F_contam` is the F value of the contamination. In some extreme cases (e.g., if dividing by zero), the calculation will spit out unexpected results. Messages will be provided in most of these cases.
+Whereas the function takes true/target and observed C14 ages as input and percentage contamination as output, internal calculations are done in the F14C timescale and using contamination fractions (between 0 and 1). The central calculation is `frac = (F_obs - F_true) / (F_contam - F_true)`, where `frac` is the fraction of contamination to explain how we went from the observed to the true C14 age, `F_obs` is the observed C14 age in F14C, `F_true` is the true or target age in F14C, `F_contam` is the F value of the contamination. In some extreme cases (e.g., if dividing by zero), the calculation will spit out unexpected results. Messages will be provided in most of these cases.
 }
 \examples{
 # observed age 600 +- 30, target age 2000 +- 0, contamination F 1 +- 0.01

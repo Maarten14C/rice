@@ -14,7 +14,7 @@ draw.dates(
   deltaSTD = 0,
   thiscurve = c(),
   oncurve = FALSE,
-  realm = "C",
+  timescale = "C",
   reservoir = c(),
   normal = TRUE,
   t.a = 3,
@@ -81,7 +81,7 @@ draw.dates(
 
 \item{oncurve}{Whether or not to plot the calibration curve and then plot the dates onto this curve. Defaults to FALSE.}
 
-\item{realm}{If oncurve is used, by default the calibration curve is plotted in the C14 age realm. Alternatively, it can be provided as \code{realm="F14C"} or \code{realm="pMC"}}
+\item{timescale}{If oncurve is used, by default the calibration curve is plotted in the C14 age timescale. Alternatively, it can be provided as \code{timescale="F14C"} or \code{timescale="pMC"}}
 
 \item{reservoir}{Reservoir age, or reservoir age and age offset.}
 

@@ -120,7 +120,7 @@ plot_contamination <- function(true.F, true.er, obs.F, obs.er, perc, perc.er, co
 #' @name contaminate
 #' @title Simulate the impact of contamination on a radiocarbon age
 #' @description Given a true/target radiocarbon age, calculate the impact of contamination (for example, 1\% contamination with modern carbon) on the observed age. Can optionally include contamination uncertainties, but then Monte Carlo iterations should be used (option MC=TRUE).
-#' @details Whereas the function takes C14 ages and percentage contamination as input, internal calculations are done in the F14C realm and using fractions (between 0 and 1). The central calculation is `F_obs = ((1-frac)*F_true) + (frac*F_contam)`, where `F_obs` is the observed C14 age as F14C, `frac` is the fraction of contamination, `F_true` is the F14C of the true/target C14 age, and `F_contam` is the F activity of the contamination. In some extreme cases, the calculations will spit out unexpected results. Messages will be provided in most of these cases.
+#' @details Whereas the function takes C14 ages and percentage contamination as input, internal calculations are done in the F14C timescale and using fractions (between 0 and 1). The central calculation is `F_obs = ((1-frac)*F_true) + (frac*F_contam)`, where `F_obs` is the observed C14 age as F14C, `frac` is the fraction of contamination, `F_true` is the F14C of the true/target C14 age, and `F_contam` is the F activity of the contamination. In some extreme cases, the calculations will spit out unexpected results. Messages will be provided in most of these cases.
 #' @return The observed radiocarbon age and error
 #' @param y The 'true' radiocarbon age
 #' @param er The error of the 'true' radiocarbon age
@@ -252,7 +252,7 @@ contaminate <- function(y, er=0, percentage, percentage.error=0.001, F.contam=1,
 #' @name clean
 #' @title Simulate removing contamination from a radiocarbon age
 #' @description Given an observed radiocarbon age, remove the impact of contamination (for example, 1\% contamination with modern carbon) to estimate the true/target age
-#' @details Whereas the function takes C14 ages and percentage contamination as input, internal calculations are done in the F14C realm and using fractions (between 0 and 1). The central calculation is `F_true = ((1-frac)*F_obs) - (frac*F_contam)`, where `F_true` is the true or target age in F14C, `frac` is the fraction of contamination, `F_obs` is the F14C of the observed C14 age, and `F_contam` is the F activity of the contamination. In some extreme cases, the calculations will spit out unexpected results. Messages will be provided in most of these cases.
+#' @details Whereas the function takes C14 ages and percentage contamination as input, internal calculations are done in the F14C timescale and using fractions (between 0 and 1). The central calculation is `F_true = ((1-frac)*F_obs) - (frac*F_contam)`, where `F_true` is the true or target age in F14C, `frac` is the fraction of contamination, `F_obs` is the F14C of the observed C14 age, and `F_contam` is the F activity of the contamination. In some extreme cases, the calculations will spit out unexpected results. Messages will be provided in most of these cases.
 #' @return The true/target radiocarbon age and error
 #' @param y The observed radiocarbon age
 #' @param er The error of the observed radiocarbon age
@@ -381,7 +381,7 @@ clean <- function(y, er=0, percentage, percentage.error=0.001, F.contam=1, F.con
 #' @name muck
 #' @title Calculate the amount of muck/contamination to explain an observed C14 age
 #' @description Given an observed, a target radiocarbon age and the F14C or amount of contamination, calculate the amount of contamination (or its F14C) required to explain the observed age.
-#' @details Whereas the function takes true/target and observed C14 ages as input and percentage contamination as output, internal calculations are done in the F14C realm and using contamination fractions (between 0 and 1). The central calculation is `frac = (F_obs - F_true) / (F_contam - F_true)`, where `frac` is the fraction of contamination to explain how we went from the observed to the true C14 age, `F_obs` is the observed C14 age in F14C, `F_true` is the true or target age in F14C, `F_contam` is the F value of the contamination. In some extreme cases (e.g., if dividing by zero), the calculation will spit out unexpected results. Messages will be provided in most of these cases.
+#' @details Whereas the function takes true/target and observed C14 ages as input and percentage contamination as output, internal calculations are done in the F14C timescale and using contamination fractions (between 0 and 1). The central calculation is `frac = (F_obs - F_true) / (F_contam - F_true)`, where `frac` is the fraction of contamination to explain how we went from the observed to the true C14 age, `F_obs` is the observed C14 age in F14C, `F_true` is the true or target age in F14C, `F_contam` is the F value of the contamination. In some extreme cases (e.g., if dividing by zero), the calculation will spit out unexpected results. Messages will be provided in most of these cases.
 #' @return The required contamination (as percentage) or the F14C of the contamination, as well as a plot
 #' @param y.obs The observed radiocarbon age
 #' @param y.obs.er The error of the observed radiocarbon age
@@ -682,7 +682,7 @@ push.normal <- function(y, er, mean, sdev, add=TRUE, seed=NA, n=1e6, prob=0.95, 
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
-#' @param is.F Use this if the provided date is in the F14C realm.
+#' @param is.F Use this if the provided date is in the F14C timescale.
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).

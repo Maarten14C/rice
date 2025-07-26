@@ -80,7 +80,7 @@ calibrate(
 
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().}
 
-\item{as.F}{Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=TRUE}, since it takes better care of asymmetric distributions and older dates close to the dating limit. If set as \code{as.F=FALSE}, the C14 realm will be used.}
+\item{as.F}{Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=TRUE}, since it takes better care of asymmetric distributions and older dates close to the dating limit. If set as \code{as.F=FALSE}, the C14 timescale will be used.}
 
 \item{is.F}{Use \code{is.F=TRUE} if the date and error are entered as F14C.}
 
@@ -172,7 +172,7 @@ calibrate(
 
 \item{cc.er}{The error of the calibration curve. Only used for plotting the uncalibrated C14 distribution, which by default only shows the date's uncertainty (the calibration curve uncertainty is indeed taken into account during calibration). If known, the calibration curve's error can be added.}
 
-\item{asymmetric}{Whether or not to plot the C14 distribution asymmetric. If \code{asymmetric=TRUE} (default), the underlying calculations are done in the F14C realm, then converted to C14 ages for plotting the C14 distribution.}
+\item{asymmetric}{Whether or not to plot the C14 distribution asymmetric. If \code{asymmetric=TRUE} (default), the underlying calculations are done in the F14C timescale, then converted to C14 ages for plotting the C14 distribution.}
 
 \item{...}{Other plotting parameters.}
 }

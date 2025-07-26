@@ -12,11 +12,11 @@ draw.ccurve(
   cc1.postbomb = FALSE,
   cc2.postbomb = FALSE,
   BCAD = FALSE,
-  realm = "C14",
+  timescale = "C14",
   as.F = FALSE,
   as.pMC = FALSE,
   as.D = FALSE,
-  realm2 = c(),
+  timescale2 = c(),
   cal.lab = c(),
   cal.rev = FALSE,
   c14.lab = c(),
@@ -53,7 +53,7 @@ draw.ccurve(
 
 \item{BCAD}{The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
 
-\item{realm}{Which 'realm' of radiocarbon to use. Defaults to \code{realm="C14"} but can also be set to \code{realm="F14C"}, \code{realm="pMC"} or \code{realm="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents). Alternatively, the realm can be defined using `as.F=TRUE`, `as.pMC=TRUE` or `as.D=TRUE`.}
+\item{timescale}{Which timescale of radiocarbon to use. Defaults to \code{timescale="C14"} but can also be set to \code{timescale="F14C"}, \code{timescale="pMC"} or \code{timescale="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents). Alternatively, the timescale can be defined using `as.F=TRUE`, `as.pMC=TRUE` or `as.D=TRUE`.}
 
 \item{as.F}{Plot as F14C values. Defaults to \code{as.F=FALSE}.}
 
@@ -61,7 +61,7 @@ draw.ccurve(
 
 \item{as.D}{Plot as D14C values. Defaults to \code{as.D=FALSE}.}
 
-\item{realm2}{Which 'realm' to use for the second calibration curve (if used). Defaults to \code{realm="C14"} but can also be set to \code{realm="F14C"}, \code{realm="pMC"} or \code{realm="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents).}
+\item{timescale2}{Which timescale to use for the second calibration curve (if used). Defaults to \code{timescale2="C14"} but can also be set to \code{timescale2="F14C"}, \code{timescale2="pMC"} or \code{timescale2="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents).}
 
 \item{cal.lab}{The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}), or to \code{age.lab="kcal BP"} etc. if ka=TRUE.}
 
@@ -69,7 +69,7 @@ draw.ccurve(
 
 \item{c14.lab}{Label for the C-14 axis. Defaults to 14C BP (or 14C kBP if ka=TRUE).}
 
-\item{cc2.lab}{Label for the righthand axis (if present). Defaults to the chosen realm.}
+\item{cc2.lab}{Label for the righthand axis (if present). Defaults to the chosen timescale.}
 
 \item{c14.lim}{Axis limits for the C-14 axis. Calculated automatically by default.}
 

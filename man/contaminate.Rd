@@ -99,7 +99,7 @@ The observed radiocarbon age and error
 Given a true/target radiocarbon age, calculate the impact of contamination (for example, 1\% contamination with modern carbon) on the observed age. Can optionally include contamination uncertainties, but then Monte Carlo iterations should be used (option MC=TRUE).
 }
 \details{
-Whereas the function takes C14 ages and percentage contamination as input, internal calculations are done in the F14C realm and using fractions (between 0 and 1). The central calculation is `F_obs = ((1-frac)*F_true) + (frac*F_contam)`, where `F_obs` is the observed C14 age as F14C, `frac` is the fraction of contamination, `F_true` is the F14C of the true/target C14 age, and `F_contam` is the F activity of the contamination. In some extreme cases, the calculations will spit out unexpected results. Messages will be provided in most of these cases.
+Whereas the function takes C14 ages and percentage contamination as input, internal calculations are done in the F14C timescale and using fractions (between 0 and 1). The central calculation is `F_obs = ((1-frac)*F_true) + (frac*F_contam)`, where `F_obs` is the observed C14 age as F14C, `frac` is the fraction of contamination, `F_true` is the F14C of the true/target C14 age, and `F_contam` is the F activity of the contamination. In some extreme cases, the calculations will spit out unexpected results. Messages will be provided in most of these cases.
 }
 \examples{
 contaminate(5000, 20, 5, 0, 1) # 5\% contamination with modern carbon

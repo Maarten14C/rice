@@ -71,23 +71,23 @@ howmanyC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.ratio=1.1
 #' @param y The age of the sample (in C14 by default, but can also be in F or pMC).
 #' @param d13C The measured d13C value.
 #' @param reference_d13C The reference/standard d13C value (OX2, oxalic acid 2, NIST SRM 4990C made from 1977 French beet molasses), set at -25 permil by default.
-#' @param realm Type of radiocarbon age. Can be in `C14` (default), `F14C` or `pMC`.
+#' @param timescale Type of radiocarbon age. Can be in `C14` (default), `F14C` or `pMC`.
 #' @author Maarten Blaauw
 #' @examples
 #'   adjust.fractionation(5000, -17)
 #' @export
-adjust.fractionation <- function(y, d13C, reference_d13C=-25, realm="C14") {
+adjust.fractionation <- function(y, d13C, reference_d13C=-25, timescale="C14") {
   ratio = (1 + reference_d13C / 1000) / (1 + d13C / 1000)
-  realm <- tolower(realm)
+  timescale <- tolower(timescale)
 
-  if(grepl("^c", realm))
+  if(grepl("^c", timescale))
     return(-8033 * log( ratio^2 * exp(-y / 8033) ))
-  if(grepl("^f", realm))
+  if(grepl("^f", timescale))
     return(y * ratio^2)
-  if(grepl("^p", realm))
+  if(grepl("^p", timescale))
     return((y/100) * ratio^2 * 100) # calculate as F
 
-  stop("Unknown realm; use 'C14', 'F', or 'pMC'")
+  stop("Unknown timescale; use 'C14', 'F', or 'pMC'")
 }
 
 
@@ -99,18 +99,18 @@ adjust.fractionation <- function(y, d13C, reference_d13C=-25, realm="C14") {
 #' @return The background-adjusted age.
 #' @param y The age of the sample (in C14 by default, but can also be in F or pMC).
 #' @param er The error of the date.
-#' @param bg The background measurement. Should be in the same realm as that of the sample.
-#' @param bg.er The error of the background measurement. Should be in the same realm as that of the sample.
-#' @param realm Type of radiocarbon age. Can be in `C14` (default), `F14C` or `pMC`.
+#' @param bg The background measurement. Should be in the same timescale as that of the sample.
+#' @param bg.er The error of the background measurement. Should be in the same timescale as that of the sample.
+#' @param timescale Type of radiocarbon age. Can be in `C14` (default), `F14C` or `pMC`.
 #' @author Maarten Blaauw
 #' @examples
 #'   adjust.background(9000, 50, 45000, 200)
 #' @export
-adjust.background <- function(y, er, bg, bg.er, realm="C14") {
-  realm <- tolower(realm)
-  is_c14 <- grepl("^c", realm)
-  is_pmc <- grepl("^p", realm)
-  is_f14c <- grepl("^f", realm)
+adjust.background <- function(y, er, bg, bg.er, timescale="C14") {
+  timescale <- tolower(timescale)
+  is_c14 <- grepl("^c", timescale)
+  is_pmc <- grepl("^p", timescale)
+  is_f14c <- grepl("^f", timescale)
 
   if((is_c14 && y > bg) || ((is_f14c || is_pmc) && y < bg))
     stop("sample's age is older than background age!")
@@ -128,7 +128,7 @@ adjust.background <- function(y, er, bg, bg.er, realm="C14") {
       bg <- tmp[,1]; bg.er <- tmp[,2]
     } else
     if(!is_f14c)
-      stop("Unknown realm; use 'C14', 'F', or 'pMC'")
+      stop("Unknown timescale; use 'C14', 'F', or 'pMC'")
 
   X <- y - bg
   D <- 1 - bg

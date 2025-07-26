@@ -54,8 +54,8 @@ pool <- function(y, er, deltaR=0, deltaSTD=0, threshold=.05, roundby=1, talk=TRU
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
-#' @param is.F Set this to TRUE if the provided age and error are in the F14C realm.
-#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param is.F Set this to TRUE if the provided age and error are in the F14C timescale.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param threshold Report only values above a threshold. Defaults to \code{threshold=1e-6}.
@@ -134,8 +134,8 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
-#' @param is.F Set this to TRUE if the provided age and error are in the F14C realm.
-#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param is.F Set this to TRUE if the provided age and error are in the F14C timescale.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param threshold Report only values above a threshold. Defaults to \code{threshold=1e-6}.
@@ -295,7 +295,7 @@ coverage <- function(distA, distB, n=1e4, k=10, nameA="A", nameB="B", decimals=4
 #' @param y The set of radiocarbon dates. Alternatively, existing distributions can be provided as a list of distributions, e.g. already-calibrated distributions or distributions derived from age-model estimates.
 #' @param er The lab errors of the radiocarbon dates
 #' @param labels Labels to be printed for the distributions (optional).
-#' @param is.F Set this to TRUE if the provided age and error are in the F14C realm.
+#' @param is.F Set this to TRUE if the provided age and error are in the F14C timescale.
 #' @param res The resolution to base the calculations on. Defaults to 1000 steps between the minimum and maximum cal BP (these are calculated from the total calendar age range of all calibrated distributions).
 #' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
@@ -409,7 +409,7 @@ overlap <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbomb=F
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
-#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., cc.resample=5 for 5-yr timespans.
@@ -478,7 +478,7 @@ spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
 #' @param deltaR Age offset (e.g. for marine samples). Can be a vector of length 2.
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation). Can be a vector of length 2.
-#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., cc.resample=5 for 5-yr timespans.

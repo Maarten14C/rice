@@ -4,18 +4,18 @@
 \alias{adjust.background}
 \title{Adjust a radiocarbon age for background measurements}
 \usage{
-adjust.background(y, er, bg, bg.er, realm = "C14")
+adjust.background(y, er, bg, bg.er, timescale = "C14")
 }
 \arguments{
 \item{y}{The age of the sample (in C14 by default, but can also be in F or pMC).}
 
 \item{er}{The error of the date.}
 
-\item{bg}{The background measurement. Should be in the same realm as that of the sample.}
+\item{bg}{The background measurement. Should be in the same timescale as that of the sample.}
 
-\item{bg.er}{The error of the background measurement. Should be in the same realm as that of the sample.}
+\item{bg.er}{The error of the background measurement. Should be in the same timescale as that of the sample.}
 
-\item{realm}{Type of radiocarbon age. Can be in `C14` (default), `F14C` or `pMC`.}
+\item{timescale}{Type of radiocarbon age. Can be in `C14` (default), `F14C` or `pMC`.}
 }
 \value{
 The background-adjusted age.

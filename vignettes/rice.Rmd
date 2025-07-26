@@ -105,16 +105,16 @@ Since the postbomb curve dwarfs the IntCal20 curve, we could also plot both on s
 draw.ccurve(1600, 2020, BCAD=TRUE, cc2='nh1', add.yaxis=TRUE)
 ```
 
-The calibration curves can also be plotted in the 'realms' of F14C, pMC or D14C (see below), e.g.:
+The calibration curves can also be plotted in the timescales of F14C, pMC or D14C (see below), e.g.:
 
 ```{r, fig.width=4, fig.asp=.8}
-draw.ccurve(50000, 35000, realm="D")
+draw.ccurve(50000, 35000, timescale="D")
 ```
 
 
-# Realms
+# Timescales
 
-This package provides functions to translate values between the radiocarbon-relevant 'realms' of cal BP (calendar years before AD 1950), BC/AD (here we mean cal BC/AD, but shorten this to BC/AD), b2k (years before AD 2000, popular in the ice core community), C14, F14C, pMC and D14C. The following Table lists the available functions:
+This package provides functions to translate values between the radiocarbon-relevant timescales of cal BP (calendar years before AD 1950), BC/AD (here we mean cal BC/AD, but shorten this to BC/AD), b2k (years before AD 2000, popular in the ice core community), C14, F14C, pMC and D14C. The following Table lists the available functions:
 
 | from\\to  | calBP         | BCAD          |  b2k         | C14          | F14C         | pMC         | D14C         |
 |-----------|---------------|---------------|--------------|--------------|--------------|-------------|--------------|
@@ -163,7 +163,7 @@ draw.CF(50000, 3000)
 
 ---
 
-Here's a function to transform values between multiple realms and visualise them:
+Here's a function to transform values between multiple timescales and visualise them:
 
 ```{r, fig.width=8, fig.asp=.6}
 fromto(100, "calBP")
@@ -187,7 +187,7 @@ lines(x/1e3, Dcc[,1]-Dcc[,2])
 We can also use draw.ccurve to plot the IntCal20 curve as both C-14 years and D14C:
 
 ```{r, fig.width=6, fig.asp=.8}
-draw.ccurve(cc2="IntCal20", realm2="D", add.yaxis=TRUE)
+draw.ccurve(cc2="IntCal20", timescale2="D", add.yaxis=TRUE)
 ```
 
 # Pooling dates

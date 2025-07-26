@@ -1,11 +1,11 @@
-# realms
+# timescales
 pMCtoC14(100,1)
 C14tocalBP(130)
 C14tocalBP(130, cc=2) # NA
 
 # calibration curves
 draw.ccurve()
-draw.ccurve(, cc2=1, realm2="D14C", add.yaxis=T)
+draw.ccurve(, cc2=1, timescale2="D14C", add.yaxis=T)
 
 # calibration
 calibrate(1.1, .0020, is.F=T, cc="nh1_monthly")

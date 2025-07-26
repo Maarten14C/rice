@@ -9,15 +9,15 @@
 #' @param cc1.postbomb Use \code{postbomb=TRUE} to get a postbomb calibration curve for cc1 (default \code{cc1.postbomb=FALSE}).
 #' @param cc2.postbomb Use \code{postbomb=TRUE} to get a postbomb calibration curve for cc2 (default \code{cc2.postbomb=FALSE}).
 #' @param BCAD The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
-#' @param realm Which 'realm' of radiocarbon to use. Defaults to \code{realm="C14"} but can also be set to \code{realm="F14C"}, \code{realm="pMC"} or \code{realm="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents). Alternatively, the realm can be defined using `as.F=TRUE`, `as.pMC=TRUE` or `as.D=TRUE`.
+#' @param timescale Which timescale of radiocarbon to use. Defaults to \code{timescale="C14"} but can also be set to \code{timescale="F14C"}, \code{timescale="pMC"} or \code{timescale="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents). Alternatively, the timescale can be defined using `as.F=TRUE`, `as.pMC=TRUE` or `as.D=TRUE`.
 #' @param as.F Plot as F14C values. Defaults to \code{as.F=FALSE}.
 #' @param as.pMC Plot as pMC values. Defaults to \code{as.pMC=FALSE}.
 #' @param as.D Plot as D14C values. Defaults to \code{as.D=FALSE}.
-#' @param realm2 Which 'realm' to use for the second calibration curve (if used). Defaults to \code{realm="C14"} but can also be set to \code{realm="F14C"}, \code{realm="pMC"} or \code{realm="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents).
+#' @param timescale2 Which timescale to use for the second calibration curve (if used). Defaults to \code{timescale2="C14"} but can also be set to \code{timescale2="F14C"}, \code{timescale2="pMC"} or \code{timescale2="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents).
 #' @param cal.lab The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}), or to \code{age.lab="kcal BP"} etc. if ka=TRUE.
 #' @param cal.rev Reverse the calendar axis. 
 #' @param c14.lab Label for the C-14 axis. Defaults to 14C BP (or 14C kBP if ka=TRUE).
-#' @param cc2.lab Label for the righthand axis (if present). Defaults to the chosen realm.
+#' @param cc2.lab Label for the righthand axis (if present). Defaults to the chosen timescale.
 #' @param c14.lim Axis limits for the C-14 axis. Calculated automatically by default. 
 #' @param c14.rev Reverse the C-14 axis.
 #' @param ka Use kcal BP (and C14 kBP).
@@ -39,19 +39,19 @@
 #' draw.ccurve(1800, 2020, BCAD=TRUE, cc2="nh1", cc2.postbomb=TRUE)
 #' draw.ccurve(1800, 2010, BCAD=TRUE, cc2="nh1", add.yaxis=TRUE)
 #' @export
-draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb=FALSE, cc2.postbomb=FALSE, BCAD=FALSE, realm="C14", as.F=FALSE, as.pMC=FALSE, as.D=FALSE, realm2=c(), cal.lab=c(), cal.rev=FALSE, c14.lab=c(), cc2.lab=c(), c14.lim=c(), c14.rev=FALSE, ka=FALSE, add.yaxis=FALSE, cc1.col=rgb(0,0,1,.5), cc1.fill=rgb(0,0,1,.2), cc2.col=rgb(0,.5,0,.5), cc2.fill=rgb(0,.5,0,.2), add=FALSE, bty="l", mar=c(), mgp=c(), cc.dir=NULL, legend="topleft", ...) {
+draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb=FALSE, cc2.postbomb=FALSE, BCAD=FALSE, timescale="C14", as.F=FALSE, as.pMC=FALSE, as.D=FALSE, timescale2=c(), cal.lab=c(), cal.rev=FALSE, c14.lab=c(), cc2.lab=c(), c14.lim=c(), c14.rev=FALSE, ka=FALSE, add.yaxis=FALSE, cc1.col=rgb(0,0,1,.5), cc1.fill=rgb(0,0,1,.2), cc2.col=rgb(0,.5,0,.5), cc2.fill=rgb(0,.5,0,.2), add=FALSE, bty="l", mar=c(), mgp=c(), cc.dir=NULL, legend="topleft", ...) {
 
-  # checking realm
+  # checking timescale
   if(sum(as.F, as.pMC, as.D) > 1)
     stop("only one of as.F, as.pMC or as.D can be set to TRUE")
   if(sum(as.F, as.pMC, as.D) > 0) {
-    if(as.F) realm <- "f"
-    if(as.pMC) realm <- "p"
-    if(as.D) realm <- "d"
+    if(as.F) timescale <- "f"
+    if(as.pMC) timescale <- "p"
+    if(as.D) timescale <- "d"
   } else {
-    if(grepl("^f", tolower(realm))) as.F <- TRUE
-    if(grepl("^p", tolower(realm))) as.pMC <- TRUE
-    if(grepl("^d", tolower(realm))) as.D <- TRUE
+    if(grepl("^f", tolower(timescale))) as.F <- TRUE
+    if(grepl("^p", tolower(timescale))) as.pMC <- TRUE
+    if(grepl("^d", tolower(timescale))) as.D <- TRUE
   }
 
   # read and narrow down the calibration curve(s)
@@ -76,7 +76,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 
   if(ka) {
     cc.1[,1] <- cc.1[,1]/1e3
-    if(grepl("c", tolower(realm)) && sum(as.F, as.pMC, as.D) == 0)  # ka doesn't make sense for F14C, pMC, or D14C
+    if(grepl("c", tolower(timescale)) && sum(as.F, as.pMC, as.D) == 0)  # ka doesn't make sense for F14C, pMC, or D14C
       cc.1[,2:3] <- cc.1[,2:3]/1e3
   }
 
@@ -92,8 +92,8 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
     if(add.yaxis)  
       if(length(mar) == 0)
         mar <- c(4,4,1,4)+.1 
-    if(length(realm2) == 0)
-      realm2 <- realm
+    if(length(timescale2) == 0)
+      timescale2 <- timescale
     if(cc2.postbomb)
       cc.2 <- rintcal::glue.ccurves(prebomb=cc1, postbomb=cc2.postbomb, cc.dir=cc.dir) else 
         cc.2 <- rintcal::ccurve(cc2, cc2.postbomb, cc.dir)
@@ -102,29 +102,29 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
     mindat <- cc.2[,cc.cal] >= .9*min(cal1, cal2)
     maxdat <- cc.2[,cc.cal] <= 1.1*max(cal1, cal2)
 
-    if(grepl("c", tolower(realm2)))
+    if(grepl("c", tolower(timescale2)))
       if(length(cc2.lab) == 0)
         cc2.lab <- expression(""^14*C~BP)
     if(ka) {
       cc.2[,1] <- cc.2[,1]/1e3
-      if(grepl("c", tolower(realm2))) # ka doesn't make sense for F14C, pMC, or D14C
+      if(grepl("c", tolower(timescale2))) # ka doesn't make sense for F14C, pMC, or D14C
         cc.2[,2:3] <- cc.2[,2:3]/1e3
       if(length(cc2.lab) == 0)
         cc2.lab <- expression(""^14*C~kBP)
     }
-    if(grepl("f", tolower(realm2))) {
+    if(grepl("f", tolower(timescale2))) {
         F <- C14toF14C(cc.2[,2], cc.2[,3])
         cc.2[,2:3] <- F
         if(length(cc2.lab) == 0)
           cc2.lab <- expression("F"^14*C)		
       }
-    if(grepl("p", tolower(realm2))) {
+    if(grepl("p", tolower(timescale2))) {
       p <- C14topMC(cc.2[,2], cc.2[,3])
       cc.2[,2:3] <- p
       if(length(cc2.lab) == 0)
         cc2.lab <- "pMC" 
     }
-    if(grepl("d", tolower(realm2))) {
+    if(grepl("d", tolower(timescale2))) {
       F <- C14toF14C(cc.2[,2], cc.2[,3])
       Dmax <- F14CtoD14C(F[,1]+F[,2], t=cc.2[,1])
       D <- F14CtoD14C(F[,1], t=cc.2[,1])
@@ -135,7 +135,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 
     cc.2 <- cc.2[which(mindat * maxdat == 1),] # limit to the relevant part of the cc only
     if(ka)
-      if(grepl("c", tolower(realm2)))
+      if(grepl("c", tolower(timescale2)))
         cc.2 <- cc.2/1e3
 
     cc2.pol <- cbind(c(cc.2[,cc.cal], rev(cc.2[,cc.cal])), c(cc.2[,2]-cc.2[,3], rev(cc.2[,2]+cc.2[,3])))
@@ -158,11 +158,11 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
           cal.lab <- "BC/AD" else
             cal.lab <- "cal. yr BP"
     if(length(c14.lab) == 0)
-      if(grepl("p", tolower(realm)))
+      if(grepl("p", tolower(timescale)))
         c14.lab <- "pMC" else
-          if(grepl("f", tolower(realm)))
+          if(grepl("f", tolower(timescale)))
             c14.lab <- expression(F^14*C) else
-              if(grepl("d", tolower(realm)))
+              if(grepl("d", tolower(timescale)))
                 c14.lab <- expression(Delta^14*C) else
                   if(ka)
                     c14.lab <- expression(""^14*C~kBP) else
@@ -274,7 +274,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation). Can also be provided within option 'reservoir'.
 #' @param bombalert Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
-#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=TRUE}, since it takes better care of asymmetric distributions and older dates close to the dating limit. If set as \code{as.F=FALSE}, the C14 realm will be used.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=TRUE}, since it takes better care of asymmetric distributions and older dates close to the dating limit. If set as \code{as.F=FALSE}, the C14 timescale will be used.
 #' @param is.F Use \code{is.F=TRUE} if the date and error are entered as F14C.
 #' @param is.pMC Use \code{is.pMC=TRUE} if the date and error are entered as pMC.
 #' @param reservoir Reservoir age, or reservoir age and age offset as two values (e.g., \code{reservoir=c(100,10)}).
@@ -320,7 +320,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 #' @param bty Draw a box around the graph ("n" for none, and "l", "7", "c", "u", "]" or "o" for correspondingly shaped boxes).
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param cc.er The error of the calibration curve. Only used for plotting the uncalibrated C14 distribution, which by default only shows the date's uncertainty (the calibration curve uncertainty is indeed taken into account during calibration). If known, the calibration curve's error can be added.
-#' @param asymmetric Whether or not to plot the C14 distribution asymmetric. If \code{asymmetric=TRUE} (default), the underlying calculations are done in the F14C realm, then converted to C14 ages for plotting the C14 distribution. 
+#' @param asymmetric Whether or not to plot the C14 distribution asymmetric. If \code{asymmetric=TRUE} (default), the underlying calculations are done in the F14C timescale, then converted to C14 ages for plotting the C14 distribution. 
 #' @param ... Other plotting parameters.
 #' @return A graph of the raw and calibrated C-14 date, the calibrated ranges and, invisibly, the calibrated distribution and hpd ranges.
 #' @examples
@@ -633,7 +633,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation). Can also be provided within option 'reservoir'.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
 #' @param oncurve Whether or not to plot the calibration curve and then plot the dates onto this curve. Defaults to FALSE.
-#' @param realm If oncurve is used, by default the calibration curve is plotted in the C14 age realm. Alternatively, it can be provided as \code{realm="F14C"} or \code{realm="pMC"}  
+#' @param timescale If oncurve is used, by default the calibration curve is plotted in the C14 age timescale. Alternatively, it can be provided as \code{timescale="F14C"} or \code{timescale="pMC"}  
 #' @param reservoir Reservoir age, or reservoir age and age offset.
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2009).
 #' @param t.a Value a of the t distribution (defaults to 3).
@@ -691,7 +691,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
 #'   draw.dates(y, er, y, d.lab="Radiocarbon age (BP)")
 #'   draw.ccurve(add=TRUE, cc1.col=rgb(0,.5,0,.5))
 #' @export
-draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=c(), oncurve=FALSE, realm="C", reservoir=c(), normal=TRUE, t.a=3, t.b=4, prob=0.95, threshold=.001, BCAD=FALSE, draw.hpd=TRUE, hpd.border=NA, hpd.col=rgb(0,0,1,.7), cal.hpd.col=rgb(0, 0.5, 0.5, 0.35), rounded=0.1, every=1, mirror=TRUE, up=TRUE, draw.base=TRUE, col=rgb(0,0,1,.3), border=rgb(0,0,1,.5), cal.col=rgb(0, 0.5, 0.5, 0.35), cal.border=rgb(0, 0.5, 0.5, 0.35), add=FALSE, ka=FALSE, rotate.axes=FALSE, ex=.8, normalise=TRUE, cc.col=rgb(0,.5,0,.5), cc.border=rgb(0,.5,0,.5), cc.resample=5, age.lab=c(), age.lim=c(), age.rev=FALSE, d.lab=c(), d.lim=c(), d.rev=TRUE, labels=c(), label.x=1, label.y=c(), label.cex=0.8, label.col=border, label.offset=c(0,0), label.adj=c(1,0), label.rot=0, cc.dir=NULL, dist.res=100, ...) {
+draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=c(), oncurve=FALSE, timescale="C", reservoir=c(), normal=TRUE, t.a=3, t.b=4, prob=0.95, threshold=.001, BCAD=FALSE, draw.hpd=TRUE, hpd.border=NA, hpd.col=rgb(0,0,1,.7), cal.hpd.col=rgb(0, 0.5, 0.5, 0.35), rounded=0.1, every=1, mirror=TRUE, up=TRUE, draw.base=TRUE, col=rgb(0,0,1,.3), border=rgb(0,0,1,.5), cal.col=rgb(0, 0.5, 0.5, 0.35), cal.border=rgb(0, 0.5, 0.5, 0.35), add=FALSE, ka=FALSE, rotate.axes=FALSE, ex=.8, normalise=TRUE, cc.col=rgb(0,.5,0,.5), cc.border=rgb(0,.5,0,.5), cc.resample=5, age.lab=c(), age.lim=c(), age.rev=FALSE, d.lab=c(), d.lim=c(), d.rev=TRUE, labels=c(), label.x=1, label.y=c(), label.cex=0.8, label.col=border, label.offset=c(0,0), label.adj=c(1,0), label.rot=0, cc.dir=NULL, dist.res=100, ...) {
 
   age <- age - deltaR
   error <- sqrt(error^2 + deltaSTD^2)
@@ -755,9 +755,9 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, deltaR=0, de
     if(ka)
       depth <- age/1e3 else
         depth <- age  
-    if(grepl("p", tolower(realm)))
+    if(grepl("p", tolower(timescale)))
       depth <- C14topMC(depth)
-    if(grepl("f", tolower(realm)))
+    if(grepl("f", tolower(timescale)))
       depth <- C14toF14C(depth)
   }
 
@@ -770,9 +770,9 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, deltaR=0, de
 
     if(length(d.lab) == 0)
       if(oncurve) {
-        if(grepl("p", tolower(realm)))
+        if(grepl("p", tolower(timescale)))
           d.lab <- "pMC" else 
-         if(grepl("f", tolower(realm)))
+         if(grepl("f", tolower(timescale)))
            d.lab <- "F14C" else
            if(ka)
              d.lab <- "C14 kBP" else
@@ -801,9 +801,9 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, deltaR=0, de
           cc <- rintcal::ccurve(cc=cc[1], postbomb=postbomb[1])
         if(BCAD)
           cc[,1] <- calBPtoBCAD(cc[,1])
-        if(grepl("p", tolower(realm)))
+        if(grepl("p", tolower(timescale)))
           cc[,2:3] <- C14topMC(cc[,2], cc[,3])
-        if(grepl("f", tolower(realm)))
+        if(grepl("f", tolower(timescale)))
           cc[,2:3] <- C14toF14C(cc[,2], cc[,3])
         if(ka)
           cc <- cc/1e3

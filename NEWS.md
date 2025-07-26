@@ -1,6 +1,9 @@
+# rice 1.4.0
+* renamed 'realm' to the more accurate term 'timescale'.
+
 # rice 1.3.0
 * `caldist` now deals better with uncalibrated distributions (`cc=0`).
-* Where relevant, realm-related functions such as `C14toF14C` now have more flexibility regarding rounding of values. The default is no rounding. 
+* Where relevant, timescale-related functions such as `C14toF14C` now have more flexibility regarding rounding of values. The default is no rounding. 
 * new function `draw.CF` to visualise the relationship between 14C ages and their F values, and how ages with large errors become skewed/asymmetric.
 * the functions which use random samples (e.g., `contaminate`) now have the option for a seed to be set.
 * the function `muck` now not only returns the percentage of contamination required to to from an observed age to a target one (and an assumed F14C of the contamination). As an alternative, if the percentage of contamination is known, then the required F14C of the contamination can be returned.
@@ -11,7 +14,7 @@
 * the function `fractions` now calculates a combined age if the weights, percentage carbon and ages of all fractions are provided. 
 
 # rice 1.2.0
-* new realm functions to convert from/to b2k (years before AD 2000), an age scale popular in the ice core community.
+* new timescale functions to convert from/to b2k (years before AD 2000), an age scale popular in the ice core community.
 * new optional browsable plots for `find.shells` and `map.shells` functions. Use `browse=TRUE`. Requires Internet connection. 
 * The `find.shells` and `map.shells` functions now also offer to plot a browsable maps of (current) ocean currents. This to help interpret which shells would be most representative of different ocean water masses. Requires Internet connection. 
 * titles of contaminate plots are now plotted inside of the device range.
@@ -30,7 +33,7 @@
 * added a function `span` to calculate (calibrated) time-spans between two radiocarbon dates.
 * repaired a bug in C14tocalBP which caused NAs for some cal BP values.
 * a function `overlapping` calculates to what degree two calibrated dates are overlapping.
-* within the `realm`-related functions, changed the rounding procedure from `signif` to `round`. 
+* within the timescale-related functions, changed the rounding procedure from `signif` to `round`. 
 * added a function `fromto` that translates values into different domains, and plots them.
 * calibrated distributions are now drawn in more consistent ways (e.g., direction up/down, height).
 
@@ -42,7 +45,7 @@
 * added more warnings to `calibrate` for very old dates.
 * calibrated distributions are now plotted more consistently between functions.
 * added uncertainty estimates to the `clean`, `contaminate` and `muck` functions, using Monte Carlo-based sampling.
-* Some of the `realm` functions translating to D14C space didn't handle multiple entries well. This should work correctly now.
+* Some of the timescale functions translating to D14C space didn't handle multiple entries well. This should work correctly now.
 * `find.shells` and `map.shells` now deal better with missing mapping-related packages.
 
 # rice 0.4.0
@@ -50,7 +53,7 @@
 * the `decontaminate` function has been renamed to `clean` and has been updated with clearer messages; it now removes contamination to calculate the true/target age. A plot is made, and calculation details are provided.
 * new function `muck` to calculate how much contamination has to be inferred to go from an observed age to a true/target age. A plot is made, and calculation details are provided.
 * new functions `C14tocalBP` and `C14toBCAD`. Since these rely on the outdated 'intercept calibration' method, these functions are provided for illustrative purposes only.
-* draw.dates can now also plot the dates on the calibration curve, using the `oncurve` option. If so, then the curve and dates can also be plotted in the `F14C` or `pMC` realms.
+* draw.dates can now also plot the dates on the calibration curve, using the `oncurve` option. If so, then the curve and dates can also be plotted in the `F14C` or `pMC` timescales.
 * New function `r.calib` that samples random calendar ages from a calibrated distribution.
 * new function `p.range` to calculate a calibrated age's probability of lying between a range of BC/AD or cal BP ages.
 * new function `as.one` to calculate the product of multiple calibrated ages, assuming that they all stem from (exactly) the same calendar age. Not that this is dangerous, and care should be taken to make sure that the assumptions are met.
@@ -60,11 +63,11 @@
 # rice 0.3.0
 * hpd ranges are now calculated at a specified precision (defaults to yearly)
 * new function `BCADto14C` to calculate the 14C age belonging to a BC/AD age (this calls the function `calBPto14C`)
-* new option `as.F` to calibrate in the F14C realm (the default remains to calibrate in the C14 realm)
+* new option `as.F` to calibrate in the F14C timescale (the default remains to calibrate in the C14 timescale)
 * warnings are printed on calibrate() plots if dates are truncated and edge=TRUE (with the default edge=FALSE, dates that are truncated are not calibrated). The printed warning can be removed by setting `print.truncate.warning=FALSE`
 * renaming `age.F14C`, `F14C.age`, `age.pMC` and `pMC.age` to, respectively, `C14toF14C`, `F14CtoC14`, `C14topMC` and `pMCtoC14`. This because `age` is an ambivalent term in this context
 * new functions `BCADtocalBP` and `calBPtoBCAD` to transfer cal BP into BC/AD ages and vice versa. Can deal with (e.g. Gregorian/Julian) calendars which do not include 0
-* new functions to translate between any of the realms `calBP`, `BCAD`, `C14`, `F14C`, `pMC` and `D14C`.
+* new functions to translate between any of the timescales `calBP`, `BCAD`, `C14`, `F14C`, `pMC` and `D14C`.
 * new function `smooth.ccurve` to smooth a calibration curve using a moving window of a specified width. This can be useful to calibrate material that is known to have accumulated, say, over two decades
 * new function `pool` which calculates the chi2 and accompanying p-value for a set of multiple measurements on the same sample. If the scatter between the values is low enough for the p-value to be below a threshold, then the pooled mean and uncertainty are returned
 * the function draw.dates now has an option `oncurve` to draw the dates onto the calibration curve.
@@ -78,7 +81,7 @@
 * new function `shells.mean` to plot deltaRs of selected shells, and calculate a weighted mean deltaR
 * new function `weighted_means` to calculate weighted means and errors for multiple radiocarbon dates (or delta R values)
 * repaired a bug in `draw.D14C`
-* `draw.ccurve` now can plot the C14 in the 'realms' of C14 BP, F14C, pMC and D14C using the 'realm' option.
+* `draw.ccurve` now can plot the C14 in the timescales of C14 BP, F14C, pMC and D14C using the `timescale` option.
 
 # rice 0.1.1
 * added citation information

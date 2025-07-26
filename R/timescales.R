@@ -10,14 +10,11 @@
 
 
 
-# still working on this - function for a shiny app to translate between realms
-# right/D14C axis is wrong (same units as left/C14 axis)
-
 #' @name fromto
-#' @title translate between realms
-#' @details Upon entering a value and its realm, this function will find the corresponding values in the other realms. Note that uncertainties are *not* taken into account, and especially going from C14 BP to cal BP and BC/AD ignores many calibration-related uncertainties. D14C values are only reported for entered values on the cal BP or BC/AD scale.
-#' @param x The value to be translated into other realms
-#' @param from The realm of the entered value. Can be "calBP" for cal BP, "BCAD" for BC/AD, "C14" for C14 BP, "F14C" for F14C, or "pMC" for pMC. D14C cannot be entered as a value (you could enter the corresponding cal BP or BC/AD ages instead).
+#' @title translate between timescales
+#' @details Upon entering a value and its timescale, this function will find the corresponding values in the other timescales. Note that uncertainties are *not* taken into account, and especially going from C14 BP to cal BP and BC/AD ignores many calibration-related uncertainties. D14C values are only reported for entered values on the cal BP or BC/AD scale.
+#' @param x The value to be translated into other timescales
+#' @param from The timescales of the entered value. Can be "calBP" for cal BP, "BCAD" for BC/AD, "C14" for C14 BP, "F14C" for F14C, or "pMC" for pMC. D14C cannot be entered as a value (you could enter the corresponding cal BP or BC/AD ages instead).
 #' @param cc calibration curve for C14 (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
@@ -29,7 +26,7 @@
 #' @param D14C.col Colour of the D14C curve. Defaults to semi-transparent green, \code{D14C.col=rgb(0,.4,0,.4)}.
 #' @param ka Whether to use years or ka (thousands of years). Defaults to \code{ka=FALSE}.
 #' @param legend.size Size of the font of the legend. Defaults to 0.7 of R's standard size. 
-#' @return A plot and output showing the translations into the different realms.
+#' @return A plot and output showing the translations into the different timescales.
 #' @examples
 #'   fromto(0, "BCAD")
 #'   fromto(2450, "C14")
@@ -159,7 +156,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
   par(mar=c(4,3,3,3))
   mincalbp <- min(calbp) - width
   maxcalbp <- max(calbp) + width
-  D14C.coors <- draw.ccurve(mincalbp, maxcalbp, cc1=cc, cc2=cc, cc1.postbomb=TRUE, cc2.postbomb=TRUE, realm2="d", cc2.col=D14C.col, cc2.fill=D14C.col, add.yaxis=TRUE, cc.dir=cc.dir, ka=ka, bty="n", legend=NA, xaxs="i", yaxt="n", c14.lab="")
+  D14C.coors <- draw.ccurve(mincalbp, maxcalbp, cc1=cc, cc2=cc, cc1.postbomb=TRUE, cc2.postbomb=TRUE, timescale2="d", cc2.col=D14C.col, cc2.fill=D14C.col, add.yaxis=TRUE, cc.dir=cc.dir, ka=ka, bty="n", legend=NA, xaxs="i", yaxt="n", c14.lab="")
   C14.coors <- par("usr")
   if(!is.na(d14c))
     f.y <- as.numeric(((d14c-D14C.coors[3])/(D14C.coors[4] - D14C.coors[3])) * (C14.coors[4] - C14.coors[3]) + C14.coors[3])

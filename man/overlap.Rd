@@ -43,7 +43,7 @@ overlap(
 
 \item{labels}{Labels to be printed for the distributions (optional).}
 
-\item{is.F}{Set this to TRUE if the provided age and error are in the F14C realm.}
+\item{is.F}{Set this to TRUE if the provided age and error are in the F14C timescale.}
 
 \item{res}{The resolution to base the calculations on. Defaults to 1000 steps between the minimum and maximum cal BP (these are calculated from the total calendar age range of all calibrated distributions).}
 

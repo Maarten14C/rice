@@ -64,7 +64,7 @@ push.gamma(
 
 \item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.}
 
-\item{is.F}{Use this if the provided date is in the F14C realm.}
+\item{is.F}{Use this if the provided date is in the F14C timescale.}
 
 \item{normal}{Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).}
 

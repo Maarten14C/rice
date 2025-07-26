@@ -8,9 +8,9 @@
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
-#' @param is.F Set this to TRUE if the provided age and error are in the F14C realm.
-#' @param is.pMC Set this to TRUE if the provided age and error are in the pMC realm.
-#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
+#' @param is.F Set this to TRUE if the provided age and error are in the F14C timescale.
+#' @param is.pMC Set this to TRUE if the provided age and error are in the pMC timescale.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespans.
@@ -63,7 +63,7 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
     this.cc <- cbind(xseq, ccmu, ccsd)
   }
 
-  # F realm - not using ccurve's as.F option, this to avoid potential double translations
+  # F timescale - not using ccurve's as.F option, this to avoid potential double translations
   if(is.F) { # then put cc in F; y and er are assumed to be in F already 
     res <- C14toF14C(this.cc[,2], this.cc[,3])
     this.cc[,2:3] <- as.matrix(res)
@@ -71,7 +71,7 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
     if(is.pMC) {
       this.cc[,2:3] <- C14topMC(this.cc[,2], this.cc[,3])
     } else
-      if(as.F) { # y, er and cc are in C14 realm, but need to be in F
+      if(as.F) { # y, er and cc are in C14 timescale, but need to be in F
         this.cc <- cbind(this.cc[,1], C14toF14C(this.cc[,2], this.cc[,3]))
         asF <- as.numeric(C14toF14C(y, er))
         y <- asF[1]; er <- asF[2]
@@ -262,8 +262,8 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
-#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
-#' @param is.F Use this if the provided date is in the F14C realm.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
+#' @param is.F Use this if the provided date is in the F14C timescale.
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @author Maarten Blaauw
@@ -322,8 +322,8 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
-#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
-#' @param is.F Use this if the provided date is in the F14C realm.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
+#' @param is.F Use this if the provided date is in the F14C timescale.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespans.
@@ -372,8 +372,8 @@ r.calib <- function(n, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=F
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
-#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
-#' @param is.F Use this if the provided date is in the F14C realm.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
+#' @param is.F Use this if the provided date is in the F14C timescale.
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
@@ -410,8 +410,8 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
-#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
-#' @param is.F Use this if the provided date is in the F14C realm.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
+#' @param is.F Use this if the provided date is in the F14C timescale.
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
@@ -443,8 +443,8 @@ older <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, normal=T
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
-#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
-#' @param is.F Use this if the provided date is in the F14C realm.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
+#' @param is.F Use this if the provided date is in the F14C timescale.
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
@@ -475,8 +475,8 @@ p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, n
 #' @param postbomb Which postbomb curve to use for negative 14C dates.
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
-#' @param as.F Whether or not to calculate ages in the F14C realm. Defaults to \code{as.F=FALSE}, which uses the C14 realm.
-#' @param is.F Use this if the provided date is in the F14C realm.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
+#' @param is.F Use this if the provided date is in the F14C timescale.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
 #' @param cc.dir Directory where the calibration curves for C14 dates \code{cc} are allocated. By default \code{cc.dir=c()}.
 #' Use \code{cc.dir="."} to choose current working directory. Use \code{cc.dir="Curves/"} to choose sub-folder \code{Curves/}.
