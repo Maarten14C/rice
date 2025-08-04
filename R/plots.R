@@ -156,7 +156,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
       } else
         if(BCAD)
           cal.lab <- "BC/AD" else
-            cal.lab <- "cal. yr BP"
+            cal.lab <- "cal BP"
     if(length(c14.lab) == 0)
       if(grepl("p", tolower(timescale)))
         c14.lab <- "pMC" else

@@ -278,7 +278,7 @@ find.shells <- function(longitude, latitude, nearest=50, browse=FALSE, colour="d
       }
     }  
 
-  return(nearshells)
+  invisible(nearshells)
 }
 
 
@@ -347,7 +347,7 @@ map.shells <- function(S=48, W=-15, N=62, E=5, browse=FALSE, colour="dR", rainbo
         }
       } 
   
-  return(sel)
+  invisible(sel)
 }  
 
 

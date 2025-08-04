@@ -472,8 +472,8 @@ BCADtopMC <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, t
 BCADtoD14C <- function(x, zero=TRUE, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
   calBP <- BCADtocalBP(x, zero)
   Fres <- calBPtoF14C(calBP, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=NA)
-  Dmn <- F14CtoD14C(Fres[,1], t=x)
-  Dup <- F14CtoD14C(Fres[,1]+Fres[,2], t=x)
+  Dmn <- F14CtoD14C(Fres[,1], t=calBP)
+  Dup <- F14CtoD14C(Fres[,1]+Fres[,2], t=calBP)
 
   if(is.na(roundby))
     return(data.frame(D14C=Dmn, sd=Dup-Dmn)) else
@@ -604,8 +604,8 @@ b2ktopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NUL
 b2ktoD14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
   calBP <- b2ktocalBP(x)
   Fres <- calBPtoF14C(calBP, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=NA)
-  Dmn <- F14CtoD14C(Fres[,1], t=x)
-  Dup <- F14CtoD14C(Fres[,1]+Fres[,2], t=x)
+  Dmn <- F14CtoD14C(Fres[,1], t=calBP)
+  Dup <- F14CtoD14C(Fres[,1]+Fres[,2], t=calBP)
 
   if(is.na(roundby))
     return(data.frame(D14C=Dmn, sd=Dup-Dmn)) else

@@ -1,5 +1,6 @@
 # rice 1.4.0
 * renamed 'realm' to the more accurate term 'timescale'.
+* `BCADtoD14C` and `b2ktoD14C` now calculate D14C values correctly.
 
 # rice 1.3.0
 * `caldist` now deals better with uncalibrated distributions (`cc=0`).

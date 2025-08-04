@@ -10,6 +10,7 @@ push.gamma(
   mean,
   shape,
   add = TRUE,
+  subtract = FALSE,
   seed = NA,
   n = 1e+06,
   prob = 0.95,
@@ -44,7 +45,9 @@ push.gamma(
 
 \item{shape}{The shape of the gamma distribution. If setting this to shape=1, it becomes an exponential distribution.}
 
-\item{add}{The distribution can be added or subtracted. Adding results in ages being pushed to younger age distributions, and subtracting to older ones.}
+\item{add}{The distribution can be added or subtracted. Adding results in ages being pushed to older age distributions, and subtracting to younger ones.}
+
+\item{subtract}{The distribution can be added or subtracted. Adding results in ages being pushed to older age distributions, and subtracting to younger ones. Defaults to \code{subtract=FALSE}. If set to TRUE, overrides 'add'.}
 
 \item{seed}{For reproducibility, a seed can be set (e.g., \code{seed=123}). Defaults to NA, no seed set.}
 

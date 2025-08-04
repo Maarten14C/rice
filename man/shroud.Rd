@@ -5,7 +5,7 @@
 \alias{shroud}
 \title{shroud Data}
 \format{
-A data frame with 1968 rows and 15 variables.
+A data frame with the Lab numbers, ages and errors of 12 Shroud dates.
 \describe{
   \item{ID}{Lab numbers. Replicates are indicates with .1, .2, etc.}
   \item{y}{Radiocarbon year}

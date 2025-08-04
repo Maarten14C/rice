@@ -90,7 +90,7 @@ as.one(
 The product of all calibrated probabilities over the range of cal BP years.
 }
 \description{
-Combine all calibrated dates by calculating their product for a range of calendar ages, as if all dates belonged to the same (unknown) single calendar age. This assumed that they all belong to the same single year in time. Use with great care, as often dates could stem from material that could have accumulated over a (much) longer time-span, and if so, then the result will be wrong. See Baillie (1991)'s 'suck-in' effect, Journal of Theoretical Archaeology 2, 12-16.
+Combine all calibrated dates by calculating their product for a range of calendar ages, as if all dates belonged to the same (unknown) single calendar age. This assumes that they all belong to the same single year in time. Use with great care, as often dates could stem from material that could have accumulated over a (much) longer time-span, and if so, then the result will be wrong. See Baillie (1991)'s 'suck-in' effect, Journal of Theoretical Archaeology 2, 12-16.
 }
 \details{
 This calculates the product of all calibrated probabilities, over the range of calendar ages to which the radiocarbon ages calibrate.
