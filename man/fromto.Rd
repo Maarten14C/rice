@@ -15,7 +15,7 @@ fromto(
   width = c(),
   digits = 0,
   C14.col = rgb(0, 0, 1, 0.5),
-  D14C.col = rgb(0, 0.4, 0, 0.4),
+  Delta14C.col = rgb(0, 0.4, 0, 0.4),
   ka = FALSE,
   legend.size = 0.7
 )
@@ -23,7 +23,7 @@ fromto(
 \arguments{
 \item{x}{The value to be translated into other timescales}
 
-\item{from}{The timescales of the entered value. Can be "calBP" for cal BP, "BCAD" for BC/AD, "C14" for C14 BP, "F14C" for F14C, or "pMC" for pMC. D14C cannot be entered as a value (you could enter the corresponding cal BP or BC/AD ages instead).}
+\item{from}{The timescales of the entered value. Can be "calBP" for cal BP, "BCAD" for BC/AD, "C14" for C14 BP, "F14C" for F14C, or "pMC" for pMC. Delta14C cannot be entered as a value (you could enter the corresponding cal BP or BC/AD ages instead).}
 
 \item{cc}{calibration curve for C14 (see \code{caldist()}).}
 
@@ -41,7 +41,7 @@ fromto(
 
 \item{C14.col}{Colour of the 14C calibration curve. Defaults to semi-transparent blue, \code{C14.col=rgb(0,0,1,.5)}.}
 
-\item{D14C.col}{Colour of the D14C curve. Defaults to semi-transparent green, \code{D14C.col=rgb(0,.4,0,.4)}.}
+\item{Delta14C.col}{Colour of the Delta14C curve. Defaults to semi-transparent green, \code{Delta14C.col=rgb(0,.4,0,.4)}.}
 
 \item{ka}{Whether to use years or ka (thousands of years). Defaults to \code{ka=FALSE}.}
 
@@ -54,7 +54,7 @@ A plot and output showing the translations into the different timescales.
 translate between timescales
 }
 \details{
-Upon entering a value and its timescale, this function will find the corresponding values in the other timescales. Note that uncertainties are *not* taken into account, and especially going from C14 BP to cal BP and BC/AD ignores many calibration-related uncertainties. D14C values are only reported for entered values on the cal BP or BC/AD scale.
+Upon entering a value and its timescale, this function will find the corresponding values in the other timescales. Note that uncertainties are *not* taken into account, and especially going from C14 BP to cal BP and BC/AD ignores many calibration-related uncertainties. Delta14C values are only reported for entered values on the cal BP or BC/AD scale.
 }
 \examples{
   fromto(0, "BCAD")

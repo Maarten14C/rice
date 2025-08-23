@@ -15,7 +15,7 @@ draw.ccurve(
   timescale = "C14",
   as.F = FALSE,
   as.pMC = FALSE,
-  as.D = FALSE,
+  as.Delta = FALSE,
   timescale2 = c(),
   cal.lab = c(),
   cal.rev = FALSE,
@@ -51,17 +51,17 @@ draw.ccurve(
 
 \item{cc2.postbomb}{Use \code{postbomb=TRUE} to get a postbomb calibration curve for cc2 (default \code{cc2.postbomb=FALSE}).}
 
-\item{BCAD}{The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
+\item{BCAD}{The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to cal BC/AD using \code{BCAD=TRUE}.}
 
-\item{timescale}{Which timescale of radiocarbon to use. Defaults to \code{timescale="C14"} but can also be set to \code{timescale="F14C"}, \code{timescale="pMC"} or \code{timescale="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents). Alternatively, the timescale can be defined using `as.F=TRUE`, `as.pMC=TRUE` or `as.D=TRUE`.}
+\item{timescale}{Which timescale of radiocarbon to use. Defaults to \code{timescale="C14"} but can also be set to \code{timescale="F14C"}, \code{timescale="pMC"} or \code{timescale="Delta14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents). Alternatively, the timescale can be defined using `as.F=TRUE`, `as.pMC=TRUE` or `as.D=TRUE`.}
 
 \item{as.F}{Plot as F14C values. Defaults to \code{as.F=FALSE}.}
 
 \item{as.pMC}{Plot as pMC values. Defaults to \code{as.pMC=FALSE}.}
 
-\item{as.D}{Plot as D14C values. Defaults to \code{as.D=FALSE}.}
+\item{as.Delta}{Plot as Delta14C values. Defaults to \code{as.Delta=FALSE}.}
 
-\item{timescale2}{Which timescale to use for the second calibration curve (if used). Defaults to \code{timescale2="C14"} but can also be set to \code{timescale2="F14C"}, \code{timescale2="pMC"} or \code{timescale2="D14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents).}
+\item{timescale2}{Which timescale to use for the second calibration curve (if used). Defaults to \code{timescale2="C14"} but can also be set to \code{timescale2="F14C"}, \code{timescale2="pMC"} or \code{timescale2="Delta14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents).}
 
 \item{cal.lab}{The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}), or to \code{age.lab="kcal BP"} etc. if ka=TRUE.}
 

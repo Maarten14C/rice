@@ -1,20 +1,20 @@
 
-# from/to	calBP		BCAD		b2k			C14			F14C		pMC			D14C
-# calBP					calBPtoBCAD	calBPtob2k	calBPtoC14	calBPtoF14C	calBPtopMC	calBPtoD14C
-# BCAD		BCADtocalP				BCADtob2k	BCADtoC14	BCADtoF14C	BCADtopMC	BCADtoD14C
-# b2k       b2ktocalBP	b2ktoBCAD				b2ktoC14	b2ktoF14C	b2ktopMC	b2ktoD14C
-# C14		C14tocalBP	C14toBCAD	C14tob2k				C14toF14C	C14topMC	C14toD14C
-# F14C		NA			NA			NA			F14CtoC14				F14CtopMC	F14CtoD14C
-# pMC		NA			NA			NA			pMCtoC14	pMCtoF14C				pMCtoD14C
-# D14C		NA			NA			NA			D14CtoC14	D14CtoF14C	D14CtopMC
+# from/to	calBP		BCAD		b2k			C14			F14C		pMC			Delta14C
+# calBP					calBPtoBCAD	calBPtob2k	calBPtoC14	calBPtoF14C	calBPtopMC	calBPtoDelta14C
+# BCAD		BCADtocalP				BCADtob2k	BCADtoC14	BCADtoF14C	BCADtopMC	BCADtoDelta14C
+# b2k       b2ktocalBP	b2ktoBCAD				b2ktoC14	b2ktoF14C	b2ktopMC	b2ktoDelta14C
+# C14		C14tocalBP	C14toBCAD	C14tob2k				C14toF14C	C14topMC	C14toDelta14C
+# F14C		NA			NA			NA			F14CtoC14				F14CtopMC	F14CtoDelta14C
+# pMC		NA			NA			NA			pMCtoC14	pMCtoF14C				pMCtoDelta14C
+# Delta14C		NA			NA			NA			Delta14CtoC14	Delta14CtoF14C	Delta14CtopMC
 
 
 
 #' @name fromto
 #' @title translate between timescales
-#' @details Upon entering a value and its timescale, this function will find the corresponding values in the other timescales. Note that uncertainties are *not* taken into account, and especially going from C14 BP to cal BP and BC/AD ignores many calibration-related uncertainties. D14C values are only reported for entered values on the cal BP or BC/AD scale.
+#' @details Upon entering a value and its timescale, this function will find the corresponding values in the other timescales. Note that uncertainties are *not* taken into account, and especially going from C14 BP to cal BP and BC/AD ignores many calibration-related uncertainties. Delta14C values are only reported for entered values on the cal BP or BC/AD scale.
 #' @param x The value to be translated into other timescales
-#' @param from The timescales of the entered value. Can be "calBP" for cal BP, "BCAD" for BC/AD, "C14" for C14 BP, "F14C" for F14C, or "pMC" for pMC. D14C cannot be entered as a value (you could enter the corresponding cal BP or BC/AD ages instead).
+#' @param from The timescales of the entered value. Can be "calBP" for cal BP, "BCAD" for BC/AD, "C14" for C14 BP, "F14C" for F14C, or "pMC" for pMC. Delta14C cannot be entered as a value (you could enter the corresponding cal BP or BC/AD ages instead).
 #' @param cc calibration curve for C14 (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
@@ -23,7 +23,7 @@
 #' @param width Width of the righthand plot. Calculated automatically by default (older ages get wider windows).
 #' @param digits Rounding of the reported values. Defaults to 0 digits.
 #' @param C14.col Colour of the 14C calibration curve. Defaults to semi-transparent blue, \code{C14.col=rgb(0,0,1,.5)}.
-#' @param D14C.col Colour of the D14C curve. Defaults to semi-transparent green, \code{D14C.col=rgb(0,.4,0,.4)}.
+#' @param Delta14C.col Colour of the Delta14C curve. Defaults to semi-transparent green, \code{Delta14C.col=rgb(0,.4,0,.4)}.
 #' @param ka Whether to use years or ka (thousands of years). Defaults to \code{ka=FALSE}.
 #' @param legend.size Size of the font of the legend. Defaults to 0.7 of R's standard size. 
 #' @return A plot and output showing the translations into the different timescales.
@@ -31,7 +31,7 @@
 #'   fromto(0, "BCAD")
 #'   fromto(2450, "C14")
 #' @export
-fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NULL, zero=TRUE, width=c(), digits=0, C14.col=rgb(0,0,1,.5), D14C.col=rgb(0,.4,0,.4), ka=FALSE, legend.size=.7) {
+fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NULL, zero=TRUE, width=c(), digits=0, C14.col=rgb(0,0,1,.5), Delta14C.col=rgb(0,.4,0,.4), ka=FALSE, legend.size=.7) {
   if(cc==2)
     Cc <- rintcal::ccurve(cc, postbomb=FALSE, cc.dir=cc.dir) else
       if(postbomb)
@@ -48,10 +48,10 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
     c14 <- calBPtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
     f14c <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
     pmc <- calBPtopMC(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
-    d14c <- calBPtoD14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
-    message(calbp, " cal BP equals ", round(bcad, digits), " BC/AD, ", round(c14, digits),
+    delta14c <- calBPtoDelta14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
+    message(calbp, " cal BP equals ", round(bcad, digits), " cal BC/AD, ", round(c14, digits),
       " 14C BP, ", round(f14c, digits+2), " F14C, ", round(pmc, digits+2),
-      " pMC, ", round(d14c, digits+2), " D14C (cc=", cc, ")\n")
+      " pMC, ", round(delta14c, digits+2), " Delta14C (cc=", cc, ")\n")
   } else
   
   if(grepl("bc", tolower(from))) { # BC/AD
@@ -64,10 +64,10 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
     c14 <- BCADtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
     f14c <- BCADtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
     pmc <- BCADtopMC(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
-    d14c <- BCADtoD14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
-    message(bcad, " BC/AD equals ", round(calbp, digits), " cal BP, ", round(c14, digits), 
+    delta14c <- BCADtoDelta14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
+    message(bcad, " cal BC/AD equals ", round(calbp, digits), " cal BP, ", round(c14, digits), 
       " 14C BP, ", round(f14c, digits+2), " F14C, ", round(pmc, digits+2),
-      " pMC, ", round(d14c, digits+2), " D14C (cc=", cc, ")\n")
+      " pMC, ", round(delta14c, digits+2), " Delta14C (cc=", cc, ")\n")
   } else
   
   if(grepl("c14", tolower(from))) { # C14
@@ -76,9 +76,9 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
     bcad <- calBPtoBCAD(calbp)
     f14c <- C14toF14C(x)[1]
     pmc <- C14topMC(x)[1]
-    d14c <- NA # do not calculate since no theta
+    delta14c <- NA # do not calculate since no theta
     message(c14, " 14C BP equals c. ", paste(round(calbp, digits), collapse="/"), " cal BP, c. ", 
-      paste(round(bcad, digits), collapse="/"), " BC/AD, ",
+      paste(round(bcad, digits), collapse="/"), " cal BC/AD, ",
       round(f14c, digits+2), " F14C, ", round(pmc, digits+2), " pMC\n")
   } else
   
@@ -88,11 +88,11 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
     calbp <- unique(C14tocalBP(c14))
     bcad <- calBPtoBCAD(calbp)
     pmc <- 100*x
-    d14c <- NA # do not calculate since no theta
+    delta14c <- NA # do not calculate since no theta
     message(f14c, " F14C equals ", round(pmc, digits+2), " pMC, ",
       round(c14, digits), " 14C BP, c. ",
       paste(round(calbp, digits), collapse="/"), " cal BP, c. ",
-      paste(round(bcad, digits), collapse="/"), " BC/AD\n")
+      paste(round(bcad, digits), collapse="/"), " cal BC/AD\n")
   } else
   
   if(grepl("p", tolower(from))) { # pMC
@@ -102,11 +102,11 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
     calbp <- unique(C14tocalBP(c14))
     bcad <- calBPtoBCAD(calbp)
     pmc <- 100*x
-    d14c <- NA # do not calculate since no theta
+    delta14c <- NA # do not calculate since no theta
     message(pmc, " pMC equals ", round(f14c, digits), " F14C, ",
       round(c14, digits), " 14C BP, c. ",
       paste(round(calbp, digits), collapse="/"), " cal BP, c. ",
-      paste(round(bcad, digits), collapse="/"), " BC/AD\n")
+      paste(round(bcad, digits), collapse="/"), " cal BC/AD\n")
   } else
       stop("Please provide a correct entry for parameter 'from'")
   
@@ -140,47 +140,47 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
   axis(3, pr, 100*pr, line=0)
   mtext("pMC", 3, 2)
 
-  values <- c(bcad, calbp, c14, f14c, pmc, d14c)
-  names(values) <- c("BC/AD", "cal BP", "C14", "F14C", "pMC", "D14C")
+  values <- c(bcad, calbp, c14, f14c, pmc, delta14c)
+  names(values) <- c("BC/AD", "cal BP", "C14", "F14C", "pMC", "Delta14C")
 
   if(length(calbp) == 1)
-    string1 <- paste0(round(calbp, digits), " cal BP\n", round(bcad, digits), " BC/AD") else
+    string1 <- paste0(round(calbp, digits), " cal BP\n", round(bcad, digits), " cal BC/AD") else
       string1 <- paste0(paste0(round(calbp, digits), collapse="/"), " cal BP\n",
-        paste0(round(bcad, digits), collapse="/"), " BC/AD")
+        paste0(round(bcad, digits), collapse="/"), " cal BC/AD")
   string2 <- paste0(round(c14, digits), " 14C BP\n",
     round(f14c, digits+2), " F14C\n", round(pmc, digits+1), " pMC")
-  string3 <- ifelse(is.na(d14c), "", paste0(round(d14c, digits+1), " D14C"))
+  string3 <- ifelse(is.na(delta14c), "", paste0(round(delta14c, digits+1), " Delta14C"))
   legend("topleft", legend=c(string1, string2, string3),
-    text.col=c(1, C14.col, D14C.col), bty="n", cex=legend.size, xjust=0)
+    text.col=c(1, C14.col, Delta14C.col), bty="n", cex=legend.size, xjust=0)
 
   par(mar=c(4,3,3,3))
   mincalbp <- min(calbp) - width
   maxcalbp <- max(calbp) + width
-  D14C.coors <- draw.ccurve(mincalbp, maxcalbp, cc1=cc, cc2=cc, cc1.postbomb=TRUE, cc2.postbomb=TRUE, timescale2="d", cc2.col=D14C.col, cc2.fill=D14C.col, add.yaxis=TRUE, cc.dir=cc.dir, ka=ka, bty="n", legend=NA, xaxs="i", yaxt="n", c14.lab="")
+  Delta14C.coors <- draw.ccurve(mincalbp, maxcalbp, cc1=cc, cc2=cc, cc1.postbomb=TRUE, cc2.postbomb=TRUE, timescale2="d", cc2.col=Delta14C.col, cc2.fill=Delta14C.col, add.yaxis=TRUE, cc.dir=cc.dir, ka=ka, bty="n", legend=NA, xaxs="i", yaxt="n", c14.lab="")
   C14.coors <- par("usr")
-  if(!is.na(d14c))
-    f.y <- as.numeric(((d14c-D14C.coors[3])/(D14C.coors[4] - D14C.coors[3])) * (C14.coors[4] - C14.coors[3]) + C14.coors[3])
+  if(!is.na(delta14c))
+    f.y <- as.numeric(((delta14c-Delta14C.coors[3])/(Delta14C.coors[4] - Delta14C.coors[3])) * (C14.coors[4] - C14.coors[3]) + C14.coors[3])
 
   pr <- pretty(seq(C14.coors[1], C14.coors[2], length=5))
   if(ka) {
-    mtext("k BC/AD", 3, 2)
+    mtext("k cal BC/AD", 3, 2)
     calbp <- calbp/1e3
     c14 <- c14/1e3
     axis(3, pr, calBPtoBCAD(1e3*pr)/1e3)
   } else {
-      mtext("BC/AD", 3, 2)
+      mtext("cal BC/AD", 3, 2)
       axis(3, pr, calBPtoBCAD(pr))
     }
   segments(C14.coors[1], C14.coors[3], C14.coors[2], C14.coors[3])
   axis(2, pretty(C14.coors[3:4]), col=C14.col, col.axis=C14.col)
   mtext(expression(""^14*"C BP"), 2, 2, col=C14.col)
-  abline(v=C14.coors[2], col=D14C.col)
-  mtext(expression(Delta^14*C), 4, 2, col=D14C.col)
+  abline(v=C14.coors[2], col=Delta14C.col)
+  mtext(expression(Delta^14*C), 4, 2, col=Delta14C.col)
 
   abline(v=calbp, lty=2)
   segments(C14.coors[1]-1e3, c14, calbp, c14, lty=2, col=C14.col)
-  if(!is.na(d14c))
-    segments(calbp, f.y, C14.coors[2]+1e3, f.y, lty=2, col=D14C.col)
+  if(!is.na(delta14c))
+    segments(calbp, f.y, C14.coors[2]+1e3, f.y, lty=2, col=Delta14C.col)
 
   invisible(values)
 }
@@ -188,11 +188,11 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
 
 
 #' @name calBPtoBCAD
-#' @title calculate BC/AD ages from cal BP ages
-#' @details Turn cal BP ages into BC/AD (or BCE/CE). Negative ages indicate BC, positive ages AD. Since the Gregorian and Julian calendars do not include 0 BCAD (i.e., 31 December of 1 BC is followed by 1 January of AD 1), zero can be omitted. The years then go from -1 (i.e., 1 BC) to 1 AD. Other calendars, such as the astronomical one, do include zero. The often-used BCE/CE ages are equivalent to BC/AD.
-#' @param x The calBP age(s) to be translated into BC/AD ages. 
+#' @title calculate cal BC/AD ages from cal BP ages
+#' @details Turn cal BP ages into cal BC/AD (equivalent to cal BCE/CE). Negative ages indicate cal BC, positive ages cal AD. Since the Gregorian and Julian calendars do not include 0 BCAD (i.e., 31 December of 1 BC is followed by 1 January of AD 1), zero can be omitted. The years then go from -1 (i.e., 1 BC) to 1 AD. Other calendars, such as the astronomical one, do include zero. 
+#' @param x The calBP age(s) to be translated into cal BC/AD ages. 
 #' @param zero Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.
-#' @return The BC/AD age(s). BC ages are negative, AD ages are positive.
+#' @return The cal BC/AD age(s). BC ages are negative, AD ages are positive.
 #' @examples
 #'  calBPtoBCAD(2024)
 #'  calBPtoBCAD(1945:1955, zero=TRUE)
@@ -306,11 +306,11 @@ calBPtopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=N
 
 
 
-#' @name calBPtoD14C
-#' @title Find the pMC and error belonging to a cal BP age.
-#' @description Given a calendar age, the calibration curve (default cc=1) is interpolated and the corresponding F14C value and error are returned.
+#' @name calBPtoDelta14C
+#' @title Find the Delta14C and error belonging to a cal BP age.
+#' @description Given a calendar age, the calibration curve (default cc=1) is interpolated and the corresponding Delta14C value and error are returned.
 #' @details Interpolation is used, and values outside the calibration curve are given as NA. For negative cal BP ages, a postbomb curve will have to be provided.
-#' @return The calibration-curve 14C year belonging to the entered cal BP age
+#' @return The calibration-curve Delta14C belonging to the entered cal BP age
 #' @param x The cal BP year.
 #' @param cc calibration curve for C14 (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
@@ -320,27 +320,27 @@ calBPtopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=N
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
-#'   calBPtoD14C(100)
+#'   calBPtoDelta14C(100)
 #' @export
-calBPtoD14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
+calBPtoDelta14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
   F <- calBPtoF14C(x, cc, postbomb, rule, cc.dir, thiscurve, roundby=NA)
-  Dmn <- F14CtoD14C(F[,1], t=x)
-  Dup <- F14CtoD14C(F[,1]+F[,2], t=x)
-  sdev <- Dup-Dmn
+  Deltamn <- F14CtoDelta14C(F[,1], t=x)
+  Deltaup <- F14CtoDelta14C(F[,1]+F[,2], t=x)
+  sdev <- Deltaup-Deltamn
 
   if(!is.na(roundby)) {
-    Dmn <- round(Dmn, roundby)
+    Deltamn <- round(Deltamn, roundby)
     sdev <- round(sdev, roundby)
   }
-  return(data.frame(D14C=Dmn, sd=sdev))
+  return(data.frame(Delta14C=Deltamn, sd=sdev))
 }
 
 
 
 #' @name BCADtocalBP
-#' @title calculate cal BP ages from BC/AD ages
-#' @details Turn BC/AD (or BCE/CE) ages into cal BP ages. Negative ages indicate BC, positive ages AD. Since the Gregorian and Julian calendars do not include 0 BC/AD (i.e., 31 December of 1 BC is followed by 1 January of AD 1), zero can be omitted. The years then go from -1 (i.e., 1 BC) to 1 AD. Other calendars, such as the astronomical one, do include zero. The often-used BCE/CE ages are equivalent to BC/AD.
-#' @param x The BCAD age(s) to be translated into cal BP age(s). BC ages are negative, AD ages are positive.
+#' @title calculate cal BP ages from cal BC/AD ages
+#' @details Turn cal BC/AD (or BCE/CE) ages into cal BP ages. Negative ages indicate BC, positive ages AD. Since the Gregorian and Julian calendars do not include 0 BC/AD (i.e., 31 December of 1 BC is followed by 1 January of AD 1), zero can be omitted. The years then go from -1 (i.e., 1 BC) to 1 AD. Other calendars, such as the astronomical one, do include zero. The often-used BCE/CE ages are equivalent to BC/AD.
+#' @param x The cal BCAD age(s) to be translated into cal BP age(s). BC ages are negative, AD ages are positive.
 #' @param zero Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.
 #' @return The cal BP age(s).
 #' @examples
@@ -361,8 +361,8 @@ BCADtocalBP <- function(x, zero=TRUE)
 
 
 #' @name BCADtob2k
-#' @title calculate b2k from BC/AD ages
-#' @details Turn BC/AD (or BCE/CE) ages into b2k ages. b2k ages are used frequently in the ice core community. Negative ages indicate BC, positive ages AD. Since the Gregorian and Julian calendars do not include 0 BC/AD (i.e., 31 December of 1 BC is followed by 1 January of AD 1), zero can be omitted. The years then go from -1 (i.e., 1 BC) to 1 AD. Other calendars, such as the astronomical one, do include zero. The often-used BCE/CE ages are equivalent to BC/AD.
+#' @title calculate b2k from cal BC/AD ages
+#' @details Turn cal BC/AD (or BCE/CE) ages into b2k ages. b2k ages are used frequently in the ice core community. Negative ages indicate BC, positive ages AD. Since the Gregorian and Julian calendars do not include 0 BC/AD (i.e., 31 December of 1 BC is followed by 1 January of AD 1), zero can be omitted. The years then go from -1 (i.e., 1 BC) to 1 AD. Other calendars, such as the astronomical one, do include zero. The often-used BCE/CE ages are equivalent to BC/AD.
 #' @param x The BCAD age(s) to be translated into b2k age(s). BC ages are negative, AD ages are positive.
 #' @param zero Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.
 #' @return The b2k age(s).
@@ -384,11 +384,11 @@ BCADtob2k <- function(x, zero=TRUE)
 
 
 #' @name BCADtoC14
-#' @title Find the 14C age and error belonging to a BC/AD age.
+#' @title Find the 14C age and error belonging to a cal BC/AD age.
 #' @description Given a calendar age, the calibration curve (default cc=1) is interpolated and the corresponding 14C age and error are returned. BC ages are negative. In this implementation, the year 0 BC/AD does exist.
 #' @details Interpolation is used, and values outside the calibration curve are given as NA. For ages younger than AD 1950, a postbomb curve will have to be provided.
 #' @return The calibration-curve 14C year belonging to the entered BC/AD age
-#' @param x The BC/AD year.
+#' @param x The cal BC/AD year.
 #' @param cc calibration curve for C14 (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
 #' @param zero Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.
@@ -407,11 +407,11 @@ BCADtoC14 <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, t
 
 
 #' @name BCADtoF14C
-#' @title Find the F14C and error belonging to a BC/AD age.
+#' @title Find the F14C and error belonging to a cal BC/AD age.
 #' @description Given a calendar age, the calibration curve (default cc=1) is interpolated and the corresponding F14C and error are returned. BC ages are negative.
 #' @details Interpolation is used, and values outside the calibration curve are given as NA. For ages younger than AD 1950, a postbomb curve will have to be provided.
 #' @return The calibration-curve F14C belonging to the entered BC/AD age
-#' @param x The BC/AD year.
+#' @param x The cal BC/AD year.
 #' @param cc calibration curve for C14 (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
 #' @param zero Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.
@@ -430,11 +430,11 @@ BCADtoF14C <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, 
 
 
 #' @name BCADtopMC
-#' @title Find the pMC and error belonging to a BC/AD age.
+#' @title Find the pMC and error belonging to a cal BC/AD age.
 #' @description Given a calendar age, the calibration curve (default cc=1) is interpolated and the corresponding pMC and error are returned. BC ages are negative.
 #' @details Interpolation is used, and values outside the calibration curve are given as NA. For ages younger than AD 1950, a postbomb curve will have to be provided.
-#' @return The calibration-curve F14C belonging to the entered BC/AD age
-#' @param x The BC/AD year.
+#' @return The calibration-curve F14C belonging to the entered cal BC/AD age
+#' @param x The cal BC/AD year.
 #' @param cc calibration curve for C14 (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
 #' @param zero Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.
@@ -452,14 +452,14 @@ BCADtopMC <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, t
 
 
 
-#' @name BCADtoD14C
-#' @title Find the pMC and error belonging to a cal BP age.
-#' @description Given a calendar age, the calibration curve (default cc=1) is interpolated and the corresponding F14C value and error are returned.
+#' @name BCADtoDelta14C
+#' @title Find the Delta14C and error belonging to a cal BC/AD age.
+#' @description Given a calendar age, the calibration curve (default cc=1) is interpolated and the corresponding Delta14C value and error are returned.
 #' @details Interpolation is used, and values outside the calibration curve are given as NA. For negative cal BP ages, a postbomb curve will have to be provided.
-#' @return The calibration-curve 14C year belonging to the entered cal BP age
-#' @param x The cal BP year.
+#' @return The calibration-curve 14C year belonging to the entered cal BC/AD age.
+#' @param x The cal BC/AD year.
 #' @param zero Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.
-#' @param cc calibration curve for C14 (see \code{caldist()}).
+#' @param cc calibration curve (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
@@ -467,17 +467,17 @@ BCADtopMC <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, t
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
-#'   BCADtoD14C(1900)
+#'   BCADtoDelta14C(1900)
 #' @export
-BCADtoD14C <- function(x, zero=TRUE, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
+BCADtoDelta14C <- function(x, zero=TRUE, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
   calBP <- BCADtocalBP(x, zero)
   Fres <- calBPtoF14C(calBP, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=NA)
-  Dmn <- F14CtoD14C(Fres[,1], t=calBP)
-  Dup <- F14CtoD14C(Fres[,1]+Fres[,2], t=calBP)
+  Deltamn <- F14CtoDelta14C(Fres[,1], t=calBP)
+  Deltaup <- F14CtoDelta14C(Fres[,1]+Fres[,2], t=calBP)
 
   if(is.na(roundby))
-    return(data.frame(D14C=Dmn, sd=Dup-Dmn)) else
-      return(data.frame(cbind(D14C=Dmn, sd=Dup-Dmn), roundby))
+    return(data.frame(Delta14C=Deltamn, sd=Deltaup-Deltamn)) else
+      return(data.frame(cbind(Delta14C=Deltamn, sd=Deltaup-Deltamn), roundby))
 }
 
 
@@ -496,11 +496,11 @@ b2ktocalBP <- function(x)
 
 
 #' @name b2ktoBCAD
-#' @title calculate BC/AD ages from b2k ages
-#' @details Turn b2k ages (popular in the ice core community) into BC/AD (or BCE/CE). Negative ages indicate BC, positive ages AD. Since the Gregorian and Julian calendars do not include 0 BCAD (i.e., 31 December of 1 BC is followed by 1 January of AD 1), zero can be omitted. The years then go from -1 (i.e., 1 BC) to 1 AD. Other calendars, such as the astronomical one, do include zero. The often-used BCE/CE ages are equivalent to BC/AD.
-#' @param x The b2k age(s) to be translated into BC/AD ages.
+#' @title calculate cal BC/AD ages from b2k ages
+#' @details Turn b2k ages (popular in the ice core community) into cal BC/AD (or cal BCE/CE). Negative ages indicate BC, positive ages AD. Since the Gregorian and Julian calendars do not include 0 BCAD (i.e., 31 December of 1 BC is followed by 1 January of AD 1), zero can be omitted. The years then go from -1 (i.e., 1 BC) to 1 AD. Other calendars, such as the astronomical one, do include zero. The often-used BCE/CE ages are equivalent to BC/AD.
+#' @param x The b2k age(s) to be translated into cal BC/AD ages.
 #' @param zero Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.
-#' @return The BC/AD age(s). BC ages are negative, AD ages are positive.
+#' @return The cal BC/AD age(s). BC ages are negative, AD ages are positive.
 #' @examples
 #'  b2ktoBCAD(0)
 #'  b2ktoBCAD(1990:2010, zero=TRUE)
@@ -585,13 +585,13 @@ b2ktopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NUL
 
 
 
-#' @name b2ktoD14C
-#' @title Find the pMC and error belonging to a b2k age.
-#' @description Given a b2k age (years before AD 2000, popular in the ice core community), the calibration curve (default cc=1) is interpolated and the corresponding F14C value and error are returned.
+#' @name b2ktoDelta14C
+#' @title Find the Delta14C and error belonging to a b2k age.
+#' @description Given a b2k age (years before AD 2000, popular in the ice core community), the calibration curve (default cc=1) is interpolated and the corresponding Delta14C value and error are returned.
 #' @details Interpolation is used, and values outside the calibration curve are given as NA. For b2k < 50, a postbomb curve will have to be provided.
 #' @return The calibration-curve 14C year belonging to the entered b2k age
 #' @param x The b2k year.
-#' @param cc calibration curve for C14 (see \code{caldist()}).
+#' @param cc calibration curve (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
@@ -599,17 +599,17 @@ b2ktopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NUL
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
-#'   b2ktoD14C(100)
+#'   b2ktoDelta14C(100)
 #' @export
-b2ktoD14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
+b2ktoDelta14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
   calBP <- b2ktocalBP(x)
   Fres <- calBPtoF14C(calBP, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=NA)
-  Dmn <- F14CtoD14C(Fres[,1], t=calBP)
-  Dup <- F14CtoD14C(Fres[,1]+Fres[,2], t=calBP)
+  Deltamn <- F14CtoDelta14C(Fres[,1], t=calBP)
+  Deltaup <- F14CtoDelta14C(Fres[,1]+Fres[,2], t=calBP)
 
   if(is.na(roundby))
-    return(data.frame(D14C=Dmn, sd=Dup-Dmn)) else
-      return(round(data.frame(D14C=Dmn, sd=Dup-Dmn), roundby))
+    return(data.frame(Delta14C=Deltamn, sd=Deltaup-Deltamn)) else
+      return(round(data.frame(Delta14C=Deltamn, sd=Deltaup-Deltamn), roundby))
 }
 
 
@@ -670,10 +670,10 @@ C14tocalBP <- function(y, cc=1, postbomb=FALSE, rule=2, cc.dir=NULL, thiscurve=N
 
 
 #' @name C14toBCAD
-#' @title Find the BCAD age(s) crossing a C14 age.
+#' @title Find the cal BCAD age(s) crossing a C14 age.
 #' @description Find the BCAD ages where the calibration curve crosses a given C14 age. This function is for illustration only and not to be used for, e.g., calibration, because intercept calibration is an outdated method.
-#' @return The BCAD age(s) belonging to the entered C14 age
-#' @details. Whereas each cal BP age will only have one single IntCal radiocarbon age (mu), the same cannot be said for the other way round. Recurring C14 ages do happen, especially during periods of plateaux and wiggles. Therefore, there can be multiple cal BP ages for a single C14 age. In the early days, radiocarbon calibration used an 'intercept method' to find possible calendar ages belonging to a radiocarbon age, but this is problematic since small deviations in the C14 age can easily cause more or fewer crossing cal BP ages (try for example C14tocalBP(130) vs C14tocalBP(129)), and moreover, this approach does not deal well with the errors in either a date of the calibration curve. Therefore, the probabilistic approach to radiocarbon calibration (which starts with a cal BP age and then looks up the corresponding C14 age) has taken over as the standard.
+#' @return The cal BCAD age(s) belonging to the entered C14 age
+#' @details. Whereas each cal BC/AD age will only have one single IntCal radiocarbon age (mu), the same cannot be said for the other way round. Recurring C14 ages do happen, especially during periods of plateaux and wiggles. Therefore, there can be multiple cal BC/AD ages for a single C14 age. In the early days, radiocarbon calibration used an 'intercept method' to find possible calendar ages belonging to a radiocarbon age, but this is problematic since small deviations in the C14 age can easily cause more or fewer crossing cal BC/AD ages (try for example C14toBCAD(130) vs C14toBCAD(129)), and moreover, this approach does not deal well with the errors in either a date of the calibration curve. Therefore, the probabilistic approach to radiocarbon calibration (which starts with a cal BC/AD age and then looks up the corresponding C14 age) has taken over as the standard.
 #' @param y The C14 age.
 #' @param cc calibration curve for C14 (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
@@ -814,36 +814,36 @@ C14topMC <- function(y, er=NULL, roundby=NA, lambda=8033) {
 
 
 
-#' @name C14toD14C
-#' @title Transform C14 age(s) into D14C
+#' @name C14toDelta14C
+#' @title Transform C14 age(s) into Delta14C
 #' @details As explained by Heaton et al. 2020 (Radiocarbon), 14C measurements are commonly expressed in
 #' three domains: Delta14C, F14C and the radiocarbon age. This function translates C14 ages into Delta14C, the historical level of Delta14C in the year t cal BP. Note that per convention, this function uses the Cambridge half-life, not the Libby half-life.
 #' @param y The C14 age to translate
 #' @param er Reported error of the C14 age. Returns just the mean if left empty.
 #' @param t the cal BP age
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
-#' @return The corresponding D14C value
+#' @return The corresponding Delta14C value
 #' @examples
-#'   C14toD14C(0.985, 20, 222)
+#'   C14toDelta14C(0.985, 20, 222)
 #' @export
-C14toD14C <- function(y, er=NULL, t, roundby=NA) {
+C14toDelta14C <- function(y, er=NULL, t, roundby=NA) {
   if(!length(y) == length(t))
     stop("inputs 'y' and 't' must have the same length")
   asF <- cbind(C14toF14C(cbind(y), cbind(er), roundby=NA))
-  Dmn <- 1000 * ((asF[,1] / exp(cbind(-1*t)/8267)) - 1)
+  Deltamn <- 1000 * ((asF[,1] / exp(cbind(-1*t)/8267)) - 1)
   if(is.null(er)) {
     if(is.na(roundby))
-      return(Dmn) else
-        return(round(Dmn, roundby))
+      return(Deltamn) else
+        return(round(Deltamn, roundby))
     } else {
       Fup <- asF[,1] + asF[,2]
       Fdown <- asF[,1] - asF[,2]
-      Dup <- 1000 * ((Fup / exp(-t / 8267)) - 1)
-      Ddown <- 1000 * ((Fdown / exp(-t / 8267)) - 1)
-      sdev <- pmax(abs(Dup - Dmn), abs(Ddown - Dmn))
+      Deltaup <- 1000 * ((Fup / exp(-t / 8267)) - 1)
+      Deltadown <- 1000 * ((Fdown / exp(-t / 8267)) - 1)
+      sdev <- pmax(abs(Deltaup - Deltamn), abs(Deltadown - Deltamn))
       if(is.na(roundby))
-        return(data.frame(Dmn, sdev)) else
-          return(data.frame(cbind(Dmn, sdev), roundby))
+        return(data.frame(Deltamn, sdev)) else
+          return(data.frame(cbind(Deltamn, sdev), roundby))
     }
 }
 
@@ -939,34 +939,32 @@ F14CtopMC <- function(F14C, er=NULL, roundby=NA)
 
 
 
-#' @name F14CtoD14C
-#' @title Transform F14C into D14C
+#' @name F14CtoDelta14C
+#' @title Transform F14C into Delta14C
 #' @details As explained by Heaton et al. 2020 (Radiocarbon), 14C measurements are commonly expressed in
 #' three domains: Delta14C, F14C and the radiocarbon age. This function translates F14C values into Delta14C, the historical level of Delta14C in the year t cal BP. Note that per convention, this function uses the Cambridge half-life, not the Libby half-life.
 #' @param F14C The F14C value to translate
 #' @param er Reported error of the F14C. Returns just the mean if left empty.
 #' @param t the cal BP age
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
-#' @return The corresponding D14C value
+#' @return The corresponding Delta14C value
 #' @examples
-#'   F14CtoD14C(0.89, .001, 900)
+#'   F14CtoDelta14C(0.89, .001, 900)
 #' @export
-F14CtoD14C <- function(F14C, er=NULL, t, roundby=NA) {
-  # If er is NULL, return the Dmn for F14C and t
-  Dmn <- 1000 * ((F14C / exp(-t / 8267)) - 1)
+F14CtoDelta14C <- function(F14C, er=NULL, t, roundby=NA) {
+  # If er is NULL, return the Deltamn for F14C and t
+  Deltamn <- 1000 * ((F14C / exp(-t / 8267)) - 1)
   if(is.null(er)) {
     if(is.na(roundby))
-      return(Dmn) else
-        return(round(Dmn, roundby))
+      return(Deltamn) else
+        return(round(Deltamn, roundby))
   } else {
-      Dup <- 1000 * (((F14C + er) / exp(-t / 8267)) - 1)
+      Deltaup <- 1000 * (((F14C + er) / exp(-t / 8267)) - 1)
       if(is.na(roundby))
-        return(data.frame(D14C=Dmn, sdev=Dup - Dmn)) else
-          return(round(data.frame(D14C=Dmn, sdev=Dup - Dmn), roundby))
+        return(data.frame(Delta14C=Deltamn, sdev=Deltaup - Deltamn)) else
+          return(round(data.frame(Delta14C=Dmn, sdev=Deltaup - Deltamn), roundby))
     }
 }
-
-
 
 
 
@@ -1020,41 +1018,41 @@ pMCtoF14C <- function(pMC, er=NULL, roundby=NA)
 
 
 
-#' @name pMCtoD14C
-#' @title Transform F14C into D14C
+#' @name pMCtoDelta14C
+#' @title Transform pMC into Delta14C
 #' @details As explained by Heaton et al. 2020 (Radiocarbon), 14C measurements are commonly expressed in
 #' three domains: Delta14C, F14C and the radiocarbon age. This function translates F14C values into Delta14C, the historical level of Delta14C in the year t cal BP. Note that per convention, this function uses the Cambridge half-life, not the Libby half-life.
 #' @param pMC The pMC value to translate
 #' @param er Reported error of the pMC value. Returns just the mean if left empty.
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
 #' @param t the cal BP age
-#' @return The corresponding D14C value
+#' @return The corresponding Delta14C value
 #' @examples
-#'   pMCtoD14C(0.985, .1, 222)
+#'   pMCtoDelta14C(0.985, .1, 222)
 #' @export
-pMCtoD14C <- function(pMC, er=NULL, t, roundby=NA) {
+pMCtoDelta14C <- function(pMC, er=NULL, t, roundby=NA) {
   asF <- pMCtoF14C(pMC, er, roundby=NA)
   if(is.na(roundby))
-    return(F14CtoD14C(asF[,1], asF[,2], t)) else
-      return(round(F14CtoD14C(asF[,1], asF[,2], t), roundby))
+    return(F14CtoDelta14C(asF[,1], asF[,2], t)) else
+      return(round(F14CtoDelta14C(asF[,1], asF[,2], t), roundby))
 }
 
 
 
-#' @name D14CtoC14
-#' @title Transform D14C into C14 age
+#' @name Delta14CtoC14
+#' @title Transform Delta14C into C14 age
 #' @details As explained by Heaton et al. 2020 (Radiocarbon), 14C measurements are commonly expressed in
 #' three domains: Delta14C, F14C and the radiocarbon age. This function translates Delta14C, the historical level of Delta14C in the year t cal BP, to C14 ages. Note that per convention, this function uses the Cambridge half-life, not the Libby half-life.
-#' @param D14C The Delta14C value to translate
-#' @param er Reported error of the D14C. Returns just the mean if left empty.
+#' @param Delta14C The Delta14C value to translate
+#' @param er Reported error of the Delta14C. Returns just the mean if left empty.
 #' @param t the cal BP age
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
 #' @return The corresponding C14 age
 #' @examples
-#'   D14CtoC14(-10, 1, 238)
+#'   Delta14CtoC14(-10, 1, 238)
 #' @export
-D14CtoC14 <- function(D14C, er=NULL, t, roundby=NA) {
-  toF <- D14CtoF14C(D14C=D14C, er=er, t=t, roundby=NA)
+Delta14CtoC14 <- function(Delta14C, er=NULL, t, roundby=NA) {
+  toF <- Delta14CtoF14C(Delta14C=Delta14C, er=er, t=t, roundby=NA)
   if(ncol(toF) == 1) {
     return(unlist(F14CtoC14(toF[1], c(), roundby=roundby)))
     } else {
@@ -1065,26 +1063,26 @@ D14CtoC14 <- function(D14C, er=NULL, t, roundby=NA) {
 
 
 
-#' @name D14CtoF14C
-#' @title Transform D14C into F14C
+#' @name Delta14CtoF14C
+#' @title Transform Delta14C into F14C
 #' @details As explained by Heaton et al. 2020 (Radiocarbon), 14C measurements are commonly expressed in
 #' three domains: Delta14C, F14C and the radiocarbon age. This function translates Delta14C, the historical level of Delta14C in the year t cal BP, to F14C values. Note that per convention, this function uses the Cambridge half-life, not the Libby half-life.
-#' @param D14C The Delta14C value to translate
-#' @param er Reported error of the D14C. Returns just the mean if left empty.
+#' @param Delta14C The Delta14C value to translate
+#' @param er Reported error of the Delta14C. Returns just the mean if left empty.
 #' @param t the cal BP age
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
 #' @return The corresponding F14C value
 #' @examples
-#'   D14CtoF14C(-10, 1, 238)
+#'   Delta14CtoF14C(-10, 1, 238)
 #' @export
-D14CtoF14C <- function(D14C, er=NULL, t, roundby=NA) {
-  asF <- ((D14C/1000)+1) * exp(-t/8267)
+Delta14CtoF14C <- function(Delta14C, er=NULL, t, roundby=NA) {
+  asF <- ((Delta14C/1000)+1) * exp(-t/8267)
   if(is.null(er)) {
     if(is.na(roundby))
       return(data.frame(F14C=asF)) else
         return(data.frame(F14C=round(asF, roundby)))
   } else {
-      Fup <- (((D14C+er)/1000)+1) * exp(-t/8267)
+      Fup <- (((Delta14C+er)/1000)+1) * exp(-t/8267)
       if(is.na(roundby))
         return(data.frame(F14C=asF, sdev=Fup-asF)) else
           return(round(data.frame(F14C=asF, sdev=Fup-asF), roundby))
@@ -1093,22 +1091,22 @@ D14CtoF14C <- function(D14C, er=NULL, t, roundby=NA) {
 
 
 
-#' @name D14CtopMC
-#' @title Transform D14C into pMC
+#' @name Delta14CtopMC
+#' @title Transform Delta14C into pMC
 #' @details As explained by Heaton et al. 2020 (Radiocarbon), 14C measurements are commonly expressed in
 #' three domains: Delta14C, F14C and the radiocarbon age. This function translates Delta14C, the historical level of Delta14C in the year t cal BP, to F14C values. Note that per convention, this function uses the Cambridge half-life, not the Libby half-life.
-#' @param D14C The Delta14C value to translate
-#' @param er Reported error of the D14C. Returns just the mean if left empty.
+#' @param Delta14C The Delta14C value to translate
+#' @param er Reported error of the Delta14C. Returns just the mean if left empty.
 #' @param t the cal BP age
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
 #' @return The corresponding F14C value
 #' @examples
-#'   D14CtoF14C(-10, 1, 238)
+#'   Delta14CtoF14C(-10, 1, 238)
 #' @export
-D14CtopMC <- function(D14C, er=NULL, t, roundby=NA)
+Delta14CtopMC <- function(Delta14C, er=NULL, t, roundby=NA)
   if(is.na(roundby))
-    return(D14CtoF14C(D14C, er, t)*100) else
-      return(round(D14CtoF14C(D14C, er, t)*100, roundby))
+    return(Delta14CtoF14C(Delta14C, er, t)*100) else
+      return(round(Delta14CtoF14C(Delta14C, er, t)*100, roundby))
 
 
 

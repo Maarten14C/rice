@@ -2,7 +2,7 @@
 % Please edit documentation in R/timescales.R
 \name{BCADtopMC}
 \alias{BCADtopMC}
-\title{Find the pMC and error belonging to a BC/AD age.}
+\title{Find the pMC and error belonging to a cal BC/AD age.}
 \usage{
 BCADtopMC(
   x,
@@ -16,7 +16,7 @@ BCADtopMC(
 )
 }
 \arguments{
-\item{x}{The BC/AD year.}
+\item{x}{The cal BC/AD year.}
 
 \item{cc}{calibration curve for C14 (see \code{caldist()}).}
 
@@ -33,7 +33,7 @@ BCADtopMC(
 \item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
 }
 \value{
-The calibration-curve F14C belonging to the entered BC/AD age
+The calibration-curve F14C belonging to the entered cal BC/AD age
 }
 \description{
 Given a calendar age, the calibration curve (default cc=1) is interpolated and the corresponding pMC and error are returned. BC ages are negative.

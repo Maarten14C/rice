@@ -16,6 +16,7 @@ map.shells(
   mapsize = "large",
   mincol = "yellow",
   maxcol = "red",
+  feeding = c(),
   symbol = "feeding",
   symbol.legend = TRUE,
   ocean.col = "aliceblue",
@@ -49,6 +50,8 @@ map.shells(
 \item{mincol}{Colour for minimum values.}
 
 \item{maxcol}{Colour for maximum values.}
+
+\item{feeding}{Optionally, the output of only specific types of feeding ecology (e.g., deposit, suspension, browser) can be selected. Defaults to returning all feeding ecologies.}
 
 \item{symbol}{The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'.}
 

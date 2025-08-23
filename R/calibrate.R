@@ -110,7 +110,7 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
     colnames(cal) <- c("cal BP", "prob")
     if(BCAD) {
       cal[,1] <- calBPtoBCAD(cal[,1])
-      colnames(cal)[1] <- "BC/AD"
+      colnames(cal)[1] <- "cal BC/AD"
     }
   } else
       if(!is.na(col.names[1]))

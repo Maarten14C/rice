@@ -65,7 +65,7 @@ pool <- function(y, er, deltaR=0, deltaSTD=0, threshold=.05, roundby=1, talk=TRU
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param age.lim Limits of the age axis. Calculated automatically by default.
-#' @param age.lab Label of the age axis. Defaults to cal BP or BC/AD.
+#' @param age.lab Label of the age axis. Defaults to cal BP or cal BC/AD.
 #' @param d.lim Limits of the depth/vertical axis. Calculated automatically by default.
 #' @param calib.col The colour of the individual calibrated ages. Defaults to semi-transparent grey.
 #' @param one.col The colour of the combined
@@ -107,7 +107,7 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE
   hpds <- draw.dist(as.dist, y.pos=max(d.lim), prob=prob, dist.col=one.col, fraction=one.height, as.unit=FALSE)
   if(talk) {
     as.points <- suppressWarnings(point.estimates(as.dist, rounded=roundby))
-    message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " BC/AD", " cal BP"))
+    message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " cal BC/AD", " cal BP"))
     myhpds <- paste0(100 * prob, "% hpd ranges: ", hpds[1, 1], "-", hpds[1, 2], " (", hpds[1, 3], "%)")
     if(nrow(hpds) > 1)
       for(i in 2:nrow(hpds))
@@ -188,7 +188,7 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
   
   if(talk) {
     as.points <- suppressWarnings(point.estimates(as.dist, rounded=roundby))
-    message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " BC/AD", " cal BP"))
+    message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " cal BC/AD", " cal BP"))
     myhpds <- paste0(100 * prob, "% hpd ranges: ", hpds[1, 1], "-", hpds[1, 2], " (", hpds[1, 3], "%)")
     if(nrow(hpds) > 1)
       for(i in 2:nrow(hpds))
@@ -379,7 +379,7 @@ overlap <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbomb=F
           xrng <- rev(range(xseq))
     if(length(xlab) == 0)
       if(BCAD)
-        xlab <- "BC/AD" else
+        xlab <- "cal BC/AD" else
           xlab <- "cal BP"
     plot(0, type="n", xlim=xrng, xlab=xlab, ylim=c(0, length(dists)+1), ylab="", bty=bty, yaxt=yaxt)
     for(i in 1:length(dists)) {

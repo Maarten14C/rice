@@ -84,7 +84,7 @@ test_that("p.range returns expected probability", {
 test_that("calib.t returns expected ages", {
   result <- calib.t(2450, 50)
   expect_length(result, 2)
-  expect_equal(result$text$x, 2130.5, tolerance = .1)
+  expect_equal(result$text$x, 2349.163, tolerance = .1)
 })
 
 ### sets

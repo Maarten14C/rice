@@ -68,7 +68,7 @@ as.one(
 
 \item{age.lim}{Limits of the age axis. Calculated automatically by default.}
 
-\item{age.lab}{Label of the age axis. Defaults to cal BP or BC/AD.}
+\item{age.lab}{Label of the age axis. Defaults to cal BP or cal BC/AD.}
 
 \item{d.lim}{Limits of the depth/vertical axis. Calculated automatically by default.}
 

@@ -216,6 +216,7 @@ hav.dist <- function(long1, lat1, long2, lat2) {
 #' @param mapsize Resolution of the map. Can be "small" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command remotes::install_github("ropensci/rnaturalearthhires")). Defaults to "small" if 'rnaturalearthhires' is not installed, and to "large" if it is installed.
 #' @param mincol Colour for minimum values.
 #' @param maxcol Colour for maximum values.
+#' @param feeding Optionally, the output of only specific types of feeding ecology (e.g., deposit, suspension, browser) can be selected. Defaults to returning all feeding ecologies.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'.
 #' @param symbol.legend Whether or not to plot the legend for the symbols.
 #' @param legend.loc Location of the legend, if using a basic plot. Defaults to the bottom right corner based on par("usr"), \code{legend.loc=c(0.95, 0.02)}
@@ -230,7 +231,7 @@ hav.dist <- function(long1, lat1, long2, lat2) {
 #'   mean(UK$dR)
 #'   Caribbean <- find.shells(-70, 20, 30, mapsize="small")
 #' @export
-find.shells <- function(longitude, latitude, nearest=50, browse=FALSE, colour="dR", rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol="feeding", symbol.legend=TRUE, legend.loc=c(0.95, 0.02), legend.size=c(0.05, 0.2), ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), padding=1, warn=TRUE, currents=TRUE) {
+find.shells <- function(longitude, latitude, nearest=50, browse=FALSE, colour="dR", rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", feeding=c(), symbol="feeding", symbol.legend=TRUE, legend.loc=c(0.95, 0.02), legend.size=c(0.05, 0.2), ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), padding=1, warn=TRUE, currents=TRUE) {
   lon <- lat <- NULL # to get rid of subsequent ggplot2-related warnings
   if(length(c(longitude,latitude)) != 2)
     stop("we need 1 entry for longitude, 1 for latitude")
@@ -239,7 +240,11 @@ find.shells <- function(longitude, latitude, nearest=50, browse=FALSE, colour="d
     stop("'currents' must be a single TRUE or FALSE")
   
   shells <- get("shells", envir = .GlobalEnv)
-  
+  if(length(feeding) > 0)
+    if(tolower(feeding) %in% c("suspension", "unknown", "carnivore", "browser", "deposit", "scavenger", "commensalism", "omnivore"))
+      shells <- shells[shells$feeding == feeding,] else
+        warning("cannot find this feeding ecology") 
+
   shell_coors <- data.frame(lon=shells$lon, lat=shells$lat)
   distances <- apply(shell_coors, 1, function(row) {
     hav.dist(longitude, latitude, row["lon"], row["lat"])})
@@ -301,6 +306,7 @@ find.shells <- function(longitude, latitude, nearest=50, browse=FALSE, colour="d
 #' @param mapsize Resolution of the map. Can be "small" or "large". If the latter, a high-resolution dataset will have to be downloaded using the R package 'rnaturalearthhires'. Since this package is on github but not on CRAN, you will have to download it yourself (using the command remotes::install_github("ropensci/rnaturalearthhires")). Defaults to "small" if 'rnaturalearthhires' is not installed, and to "large" if it is installed.
 #' @param mincol Colour for minimum values.
 #' @param maxcol Colour for maximum values.
+#' @param feeding Optionally, the output of only specific types of feeding ecology (e.g., deposit, suspension, browser) can be selected. Defaults to returning all feeding ecologies.
 #' @param symbol The variable to be plotted as symbol. Expects a categoric variable. Defaults to 'feeding'. 
 #' @param symbol.legend Whether or not to plot the legend for the symbols.
 #' @param ocean.col Colour for the oceans. Defaults to \code{ocean.col="aliceblue"}.
@@ -314,10 +320,15 @@ find.shells <- function(longitude, latitude, nearest=50, browse=FALSE, colour="d
 #'  N_UK <- map.shells(53, -11, 60, 2, mapsize="small")
 #'  mean(N_UK$dR)
 #' @export
-map.shells <- function(S=48, W=-15, N=62, E=5, browse=FALSE, colour="dR", rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", symbol="feeding", symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), legend.loc=c(.95, .02), legend.size=c(.05, .2), padding=0.1, warn=TRUE, currents=TRUE) {
+map.shells <- function(S=48, W=-15, N=62, E=5, browse=FALSE, colour="dR", rainbow=FALSE, size=2, mapsize="large", mincol="yellow", maxcol="red", feeding=c(), symbol="feeding", symbol.legend=TRUE, ocean.col="aliceblue", land.col=rgb(0, 0.5, 0., 0.6), legend.loc=c(.95, .02), legend.size=c(.05, .2), padding=0.1, warn=TRUE, currents=TRUE) {
   lon <- lat <- NULL # to get rid of subsequent ggplot2-related warnings
   shells <- get("shells", envir = asNamespace("rice")) # envir was .GlobalEnv
   shells[[symbol]] <- as.factor(shells[[symbol]])
+  if(length(feeding) > 0)
+    if(tolower(feeding) %in% c("suspension", "unknown", "carnivore", "browser", "deposit", "scavenger", "commensalism", "omnivore"))
+      shells <- shells[shells$feeding == feeding,] else
+        warning("cannot find this feeding ecology")
+
   sel <- shells[shells$lon>=W & shells$lon<=E & shells$lat>=S & shells$lat <= N,]
 
   if(!is.logical(currents) || length(currents) != 1)

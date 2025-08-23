@@ -2,7 +2,7 @@
 % Please edit documentation in R/timescales.R
 \name{BCADtoF14C}
 \alias{BCADtoF14C}
-\title{Find the F14C and error belonging to a BC/AD age.}
+\title{Find the F14C and error belonging to a cal BC/AD age.}
 \usage{
 BCADtoF14C(
   x,
@@ -16,7 +16,7 @@ BCADtoF14C(
 )
 }
 \arguments{
-\item{x}{The BC/AD year.}
+\item{x}{The cal BC/AD year.}
 
 \item{cc}{calibration curve for C14 (see \code{caldist()}).}
 

@@ -13,7 +13,7 @@ vignette: >
 
 # Introduction
 
-Radiocarbon dating requires a range of calculations, for example calibration[^1][^2][^3][^4], translations between pMC, F14C, C14 age and D14C, and assessing the impacts of contamination. This package provides functions to do so in R. 
+Radiocarbon dating requires a range of calculations, for example calibration[^1][^2][^3][^4], translations between pMC, $F^{14}\text{C}$, $\text{C}^{14}$ age and $\Delta{14}\text{C}$, and assessing the impacts of contamination. This package provides functions to do so in R. 
 
 # Installation
 
@@ -105,7 +105,7 @@ Since the postbomb curve dwarfs the IntCal20 curve, we could also plot both on s
 draw.ccurve(1600, 2020, BCAD=TRUE, cc2='nh1', add.yaxis=TRUE)
 ```
 
-The calibration curves can also be plotted in the timescales of F14C, pMC or D14C (see below), e.g.:
+The calibration curves can also be plotted in the timescales of F14C, pMC or $\Delta{14}\text{C}$ (see below), e.g.:
 
 ```{r, fig.width=4, fig.asp=.8}
 draw.ccurve(50000, 35000, timescale="D")
@@ -116,15 +116,15 @@ draw.ccurve(50000, 35000, timescale="D")
 
 This package provides functions to translate values between the radiocarbon-relevant timescales of cal BP (calendar years before AD 1950), BC/AD (here we mean cal BC/AD, but shorten this to BC/AD), b2k (years before AD 2000, popular in the ice core community), C14, F14C, pMC and D14C. The following Table lists the available functions:
 
-| from\\to  | calBP         | BCAD          |  b2k         | C14          | F14C         | pMC         | D14C         |
+| from\\to  | calBP         | BCAD          |  b2k         | C14          | F14C         | pMC         | Delta14C     |
 |-----------|---------------|---------------|--------------|--------------|--------------|-------------|--------------|
-| **calBP** | -             | `calBPtoBCAD` | `calBPtob2k` | `calBPtoC14` | `calBPtoF14C`| `calBPtopMC`| `calBPtoD14C`|
-| **BCAD**  | `BCADtocalBP` | -             | `BCADtob2k`  | `BCADtoC14`  | `BCADtoF14C` | `BCADtopMC` | `BCADtoD14C` |
-| **b2k**   | `b2ktocalBP`  | `b2ktoBCAD`   | -            | `b2ktoC14`   | `b2ktoF14C`  | `b2ktopMC`  | `b2ktoD14C`  |
-| **C14**   | `C14tocalBP`  | `C14toBCAD`   | `C14tob2k`   | -            | `C14toF14C`  | `C14topMC`  | `C14toD14C`  |
-| **F14C**  | NA            | NA            | NA           | `F14CtoC14`  | -            | `F14CtopMC` | `F14CtoD14C` |
-| **pMC**   | NA            | NA            | NA           | `pMCtoC14`   | `pMCtoF14C`  |  -          | `pMCtoD14C`  |
-| **D14C**  | NA            | NA            | NA           | `D14CtoC14`  | `D14CtoF14C` | `D14CtopMC` |  -           |
+| **calBP** | -             | `calBPtoBCAD` | `calBPtob2k` | `calBPtoC14` | `calBPtoF14C`| `calBPtopMC`| `calBPtoDelta14C`|
+| **BCAD**  | `BCADtocalBP` | -             | `BCADtob2k`  | `BCADtoC14`  | `BCADtoF14C` | `BCADtopMC` | `BCADtoDelta14C` |
+| **b2k**   | `b2ktocalBP`  | `b2ktoBCAD`   | -            | `b2ktoC14`   | `b2ktoF14C`  | `b2ktopMC`  | `b2ktoDelta14C`  |
+| **C14**   | `C14tocalBP`  | `C14toBCAD`   | `C14tob2k`   | -            | `C14toF14C`  | `C14topMC`  | `C14toDelta14C`  |
+| **F14C**  | NA            | NA            | NA           | `F14CtoC14`  | -            | `F14CtopMC` | `F14CtoDelta14C` |
+| **pMC**   | NA            | NA            | NA           | `pMCtoC14`   | `pMCtoF14C`  |  -          | `pMCtoDelta14C`  |
+| **Delta14C**  | NA        | NA            | NA           | `Delta14CtoC14` | `Delta14CtoF14C` | `Delta14CtopMC` |  -    |
 
 As an example of the above functions, the IntCal20 C14 age and error belonging to one or more cal BP or cal BCAD ages can be found (interpolating linearly where necessary):
 
@@ -141,18 +141,18 @@ BCADtocalBP(-1, zero=TRUE)
 BCADtocalBP(-1, zero=FALSE)
 ```
 
-D14C ($\Delta$^14^C, a proxy for atmospheric ^14^C concentration at *t* cal BP) can be transferred to F^14^C, and the other way around:
+Delta14C ($\Delta$^14^C, a proxy for atmospheric ^14^C concentration at *t* cal BP) can be transferred to F^14^C, and the other way around:
 
 ```{r}
-D14CtoF14C(152, t=4000)
-F14CtoD14C(0.71, t=4000)
+Delta14CtoF14C(152, t=4000)
+F14CtoDelta14C(0.71, t=4000)
 ```
 
 This can also be done with C14 ages:
 
 ```{r}
-C14toD14C(152, t=4000)
-D14CtoC14(592, t=4000)
+C14toDelta14C(152, t=4000)
+Delta14CtoC14(592, t=4000)
 ```
 
 Although ages are most often expressed as 14C BP, radiocarbon labs calculate these ages from the measured F14C values. Since 14C BP = -8033 * ln(F), the distributions of especially older 14C ages and those with large errors become skewed, sometimes with their tails extending into infinite ages:
@@ -171,12 +171,12 @@ fromto(100, "calBP")
 
 ---
 
-These functions can be used to investigate $\Delta^{14}C$ over time:
+These functions can be used to investigate $\Delta^{14}\text{C}$ over time:
 
 ```{r, fig.width=4, fig.asp=.8}
 x <- seq(0, 55e3, length=1e3)
 cc <- calBPtoC14(x)
-Dcc <- C14toD14C(cc[,1], cc[,2], x)
+Dcc <- C14toDelta14C(cc[,1], cc[,2], x)
 
 par(mar=c(4,3,1,3), bty="l")
 plot(x/1e3, Dcc[,1]+Dcc[,2], type="l", xlab="kcal BP", ylab="")
@@ -184,7 +184,7 @@ mtext(expression(paste(Delta, ""^{14}, "C")), 2, 1.7)
 lines(x/1e3, Dcc[,1]-Dcc[,2])
 ```
 
-We can also use draw.ccurve to plot the IntCal20 curve as both C-14 years and D14C:
+We can also use draw.ccurve to plot the IntCal20 curve as both C-14 years and $\Delta^{14}\text{C}$:
 
 ```{r, fig.width=6, fig.asp=.8}
 draw.ccurve(cc2="IntCal20", timescale2="D", add.yaxis=TRUE)

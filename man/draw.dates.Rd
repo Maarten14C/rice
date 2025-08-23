@@ -95,7 +95,7 @@ draw.dates(
 
 \item{threshold}{Report only values above a threshold. Defaults to \code{threshold=0.001}.}
 
-\item{BCAD}{Use BC/AD or cal BP scale (default cal BP).}
+\item{BCAD}{Use cal BC/AD or cal BP scale (default cal BP).}
 
 \item{draw.hpd}{Whether or not to draw the hpd ranges as a line}
 
