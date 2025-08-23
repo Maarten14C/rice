@@ -962,7 +962,7 @@ F14CtoDelta14C <- function(F14C, er=NULL, t, roundby=NA) {
       Deltaup <- 1000 * (((F14C + er) / exp(-t / 8267)) - 1)
       if(is.na(roundby))
         return(data.frame(Delta14C=Deltamn, sdev=Deltaup - Deltamn)) else
-          return(round(data.frame(Delta14C=Dmn, sdev=Deltaup - Deltamn), roundby))
+          return(round(data.frame(Delta14C=Deltamn, sdev=Deltaup - Deltamn), roundby))
     }
 }
 
