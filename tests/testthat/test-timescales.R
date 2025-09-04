@@ -37,7 +37,7 @@ test_that("calBPtopMC returns expected pMC values", {
 test_that("calBPtoDelta14C returns expected Delta14C values", {
   result <- unlist(unname(calBPtoDelta14C(1000)))
   expect_length(result, 2)
-  expect_equal(result, c(-19.025611, 1.588819), tolerance = 1e-5)
+  expect_equal(result, c(-19.020481, 1.588828), tolerance = 1e-5)
 })
 
 ###
@@ -75,7 +75,7 @@ test_that("BCADtopMC returns expected pMC value", {
 test_that("BCADtoDelta14C returns expected Delta14C value", {
   result <- unlist(unname(BCADtoDelta14C(1000)))
   expect_length(result, 2)
-  expect_equal(result, c(-12.9725, 1.2295), tolerance = 1e-5)
+  expect_equal(result, c(-12.967612, 1.229487), tolerance = 1e-5)
 })
 
 ###
@@ -151,13 +151,13 @@ test_that("F14CtoC14 returns expected C14 age", {
 test_that("F14CtoDelta14C returns expected Delta14C values", {
   result <- unname(F14CtoDelta14C(.5, .005, t=5500))
   expect_length(result, 2)
-  expect_equal(unlist(result), c(-27.467151, 9.725328), tolerance = 1e-5)
+  expect_equal(unlist(result), c(-27.43918, 9.72561), tolerance = 1e-5)
 })
 
 test_that("Delta14CtoC14 returns expected C14 ages", {
   result <- unname(Delta14CtoC14(20, .05, t=5500))
   expect_length(result, 2)
-  expect_equal(unlist(result), c(5185.2462885, 0.3937649), tolerance = 1e-5)
+  expect_equal(unlist(result), c(5185.477355, 0.393784), tolerance = 1e-5)
 })
 
 test_that("calBPtoF14C returns expected F14C values", {

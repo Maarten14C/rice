@@ -120,12 +120,9 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
 
   layout(matrix(1:2, nrow=1), widths=c(.5, .5))
   c14lim <- c(c14-width, c14+width) # hmmm
-  #message(c14lim[1], " ", c14lim[2])
   c14lim <- range(Cc[,2])
-  #message(c14lim[1], " ", c14lim[2])
   flim <- c(0, min(1.2*f14c,2))
-  #message(flim[1], " ", flim[2])
-  par(mar=c(4,3,3,1), mgp=c(2, .7, 0), yaxt="s")
+  par(mar=c(4,3.2,3,1), mgp=c(2, .7, 0), yaxt="s")
 
   calbp <- as.numeric(calbp)
   f14c <- as.numeric(f14c)
@@ -144,14 +141,21 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
   names(values) <- c("BC/AD", "cal BP", "C14", "F14C", "pMC", "Delta14C")
 
   if(length(calbp) == 1)
-    string1 <- paste0(round(calbp, digits), " cal BP\n", round(bcad, digits), " cal BC/AD") else
-      string1 <- paste0(paste0(round(calbp, digits), collapse="/"), " cal BP\n",
+    calstring <- paste0(round(calbp, digits), " cal BP\n", round(bcad, digits), " cal BC/AD") else
+      calstring <- paste0(paste0(round(calbp, digits), collapse="/"), " cal BP\n",
         paste0(round(bcad, digits), collapse="/"), " cal BC/AD")
-  string2 <- paste0(round(c14, digits), " 14C BP\n",
-    round(f14c, digits+2), " F14C\n", round(pmc, digits+1), " pMC")
-  string3 <- ifelse(is.na(delta14c), "", paste0(round(delta14c, digits+1), " Delta14C"))
-  legend("topleft", legend=c(string1, string2, string3),
-    text.col=c(1, C14.col, Delta14C.col), bty="n", cex=legend.size, xjust=0)
+  c14string <- bquote(.(paste0(round(c14, digits))) ~ {}^{14}*C)
+  f14cstring <- bquote(.(paste0(round(f14c, digits+2))) ~ F^{14}*C)
+  pmcstring <- paste(round(pmc, digits+1), "pMC")
+  delta14cstring <- bquote(.(paste0(round(delta14c, digits+2))) ~ Delta^{14}*C)
+
+  legend.coors <- legend("topleft", legend=1:6, ncol=1, cex=legend.size, xjust=1, plot=FALSE)$text # legend coordinates
+  text(legend.coors$x[1], legend.coors$y[1], calstring, col=1, cex=legend.size, adj=0)
+  text(legend.coors$x[1], legend.coors$y[3], c14string, col=C14.col, cex=legend.size, adj=0)
+  text(legend.coors$x[1], legend.coors$y[4], f14cstring, col=C14.col, cex=legend.size, adj=0)
+  text(legend.coors$x[1], legend.coors$y[5], pmcstring, col=C14.col, cex=legend.size, adj=0)
+  if(!is.na(delta14c))
+    text(legend.coors$x[1], legend.coors$y[6], delta14cstring, col=Delta14C.col, cex=legend.size, adj=0)
 
   par(mar=c(4,3,3,3))
   mincalbp <- min(calbp) - width
@@ -822,15 +826,16 @@ C14topMC <- function(y, er=NULL, roundby=NA, lambda=8033) {
 #' @param er Reported error of the C14 age. Returns just the mean if left empty.
 #' @param t the cal BP age
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param lambda Radiocarbon's mean-life, based on the Cambridge half-life
 #' @return The corresponding Delta14C value
 #' @examples
 #'   C14toDelta14C(0.985, 20, 222)
 #' @export
-C14toDelta14C <- function(y, er=NULL, t, roundby=NA) {
+C14toDelta14C <- function(y, er=NULL, t, roundby=NA, lambda=5730/log(2)) {
   if(!length(y) == length(t))
     stop("inputs 'y' and 't' must have the same length")
   asF <- cbind(C14toF14C(cbind(y), cbind(er), roundby=NA))
-  Deltamn <- 1000 * ((asF[,1] / exp(cbind(-1*t)/8267)) - 1)
+  Deltamn <- 1000 * ((asF[,1] / exp(cbind(-1*t)/lambda)) - 1)
   if(is.null(er)) {
     if(is.na(roundby))
       return(Deltamn) else
@@ -838,8 +843,8 @@ C14toDelta14C <- function(y, er=NULL, t, roundby=NA) {
     } else {
       Fup <- asF[,1] + asF[,2]
       Fdown <- asF[,1] - asF[,2]
-      Deltaup <- 1000 * ((Fup / exp(-t / 8267)) - 1)
-      Deltadown <- 1000 * ((Fdown / exp(-t / 8267)) - 1)
+      Deltaup <- 1000 * ((Fup / exp(-t / lambda)) - 1)
+      Deltadown <- 1000 * ((Fdown / exp(-t / lambda)) - 1)
       sdev <- pmax(abs(Deltaup - Deltamn), abs(Deltadown - Deltamn))
       if(is.na(roundby))
         return(data.frame(Deltamn, sdev)) else
@@ -947,19 +952,20 @@ F14CtopMC <- function(F14C, er=NULL, roundby=NA)
 #' @param er Reported error of the F14C. Returns just the mean if left empty.
 #' @param t the cal BP age
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param lambda Radiocarbon's mean-life, based on the Cambridge half-life
 #' @return The corresponding Delta14C value
 #' @examples
 #'   F14CtoDelta14C(0.89, .001, 900)
 #' @export
-F14CtoDelta14C <- function(F14C, er=NULL, t, roundby=NA) {
+F14CtoDelta14C <- function(F14C, er=NULL, t, roundby=NA, lambda=5730/log(2)) {
   # If er is NULL, return the Deltamn for F14C and t
-  Deltamn <- 1000 * ((F14C / exp(-t / 8267)) - 1)
+  Deltamn <- 1000 * ((F14C / exp(-t / lambda)) - 1)
   if(is.null(er)) {
     if(is.na(roundby))
       return(Deltamn) else
         return(round(Deltamn, roundby))
   } else {
-      Deltaup <- 1000 * (((F14C + er) / exp(-t / 8267)) - 1)
+      Deltaup <- 1000 * (((F14C + er) / exp(-t / lambda)) - 1)
       if(is.na(roundby))
         return(data.frame(Delta14C=Deltamn, sdev=Deltaup - Deltamn)) else
           return(round(data.frame(Delta14C=Deltamn, sdev=Deltaup - Deltamn), roundby))
@@ -1071,18 +1077,19 @@ Delta14CtoC14 <- function(Delta14C, er=NULL, t, roundby=NA) {
 #' @param er Reported error of the Delta14C. Returns just the mean if left empty.
 #' @param t the cal BP age
 #' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param lambda Radiocarbon's mean-life, based on the Cambridge half-life
 #' @return The corresponding F14C value
 #' @examples
 #'   Delta14CtoF14C(-10, 1, 238)
 #' @export
-Delta14CtoF14C <- function(Delta14C, er=NULL, t, roundby=NA) {
-  asF <- ((Delta14C/1000)+1) * exp(-t/8267)
+Delta14CtoF14C <- function(Delta14C, er=NULL, t, roundby=NA, lambda=5730/log(2)) {
+  asF <- ((Delta14C/1000)+1) * exp(-t/lambda)
   if(is.null(er)) {
     if(is.na(roundby))
       return(data.frame(F14C=asF)) else
         return(data.frame(F14C=round(asF, roundby)))
   } else {
-      Fup <- (((Delta14C+er)/1000)+1) * exp(-t/8267)
+      Fup <- (((Delta14C+er)/1000)+1) * exp(-t/lambda)
       if(is.na(roundby))
         return(data.frame(F14C=asF, sdev=Fup-asF)) else
           return(round(data.frame(F14C=asF, sdev=Fup-asF), roundby))
