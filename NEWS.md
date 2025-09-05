@@ -1,7 +1,7 @@
 # rice 1.4.0
 * renamed 'realm' to the more accurate term 'timescale' (and renamed BC/AD to cal BC/AD where relevant).
-* renamed D14C to the more correct Delta14C.
-* `BCADtoD14C` and `b2ktoD14C` now calculate Delta14C values correctly.
+* renamed D14C to the more correct Delta14C in functions such as `calBPtoDelta14C`.
+* `BCADtoDelta14C` and `b2ktoDelta14C` now calculate Delta14C values correctly.
 * The `map.shells` and `find.shells` functions have a new option `feeding` which can be used to limit the results to shells with a specific feeding ecology, e.g., `map.shells(53, -11, feeding="suspension")`.
 
 # rice 1.3.0

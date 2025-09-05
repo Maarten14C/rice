@@ -13,7 +13,7 @@ vignette: >
 
 # Introduction
 
-Radiocarbon dating requires a range of calculations, for example calibration[^1][^2][^3][^4], translations between pMC, $F^{14}\text{C}$, $\text{C}^{14}$ age and $\Delta{14}\text{C}$, and assessing the impacts of contamination. This package provides functions to do so in R. 
+Radiocarbon dating requires a range of calculations, for example calibration[^1][^2][^3][^4], translations between pMC, $\text{F}^{14}\text{C}$, $^{14}\text{C}$ age and $\Delta^{14}\text{C}$, and assessing the impacts of contamination. This package provides functions to do so in R.
 
 # Installation
 
@@ -114,7 +114,7 @@ draw.ccurve(50000, 35000, timescale="D")
 
 # Timescales
 
-This package provides functions to translate values between the radiocarbon-relevant timescales of cal BP (calendar years before AD 1950), BC/AD (here we mean cal BC/AD, but shorten this to BC/AD), b2k (years before AD 2000, popular in the ice core community), C14, F14C, pMC and D14C. The following Table lists the available functions:
+This package provides functions to translate values between the radiocarbon-relevant timescales of cal BP (calendar years before AD 1950), BC/AD (here we mean cal BC/AD, but shorten this to BC/AD), b2k (years before AD 2000, popular in the ice core community), C14, $\text{F} ^{14} \text{C}$, pMC and $\Delta ^{14} \text{C}$. The following Table lists the available functions:
 
 | from\\to  | calBP         | BCAD          |  b2k         | C14          | F14C         | pMC         | Delta14C     |
 |-----------|---------------|---------------|--------------|--------------|--------------|-------------|--------------|
