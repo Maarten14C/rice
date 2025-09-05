@@ -1,64 +1,22 @@
-# File: CITATION
+c(
+  bibentry(
+    bibtype = "Unpublished",
+    title = "Open-source equations for radiocarbon dating and calibration",
+    author = c(
+      person("Maarten", "Blaauw"),
+      person("Paula", "Reimer"),
+      person("Ron", "Reimer")
+    ),
+    journal = "Radiocarbon",
+    note = "Manuscript submitted",
+    textVersion = "Blaauw, M., Reimer, P.J., Reimer, R., submitted. Open-source equations for radiocarbon dating and calibration. Radiocarbon"
+  ),
 
-bibentry(
+  bibentry(
     bibtype = "Manual",
     title = "rice: Radiocarbon Equations",
     author = person("Maarten", "Blaauw"),
-    year = "2024",
+    year = "2025",
     url = "https://CRAN.R-project.org/package=rice"
   )
-
-
-  millard <- bibentry(
-    bibtype = "Article",
-    title = "Conventions for Reporting Radiocarbon Determinations",
-    author = c(person("Andrew R.", "Millard")),
-    journal = "Radiocarbon",
-    year = "2014",
-    volume = "56",
-    pages = "555-559",
-    doi = "10.2458/56.17455",
-    textVersion = "Millard, A.R., 2014. Conventions for reporting radiocarbon determinations. Radiocarbon 56, 555-559. doi:10.2458/56.17455"
-  )
-
-  reimer04 <- bibentry(
-    bibtype = "Article",
-    title = "Discussion: Reporting and calibration of post-bomb 14C Data",
-    author = c(person("Paula", "Reimer"),
-               person("Thomas A.", "Brown"),
-               person("Ron W.", "Reimer")
-               ),
-    journal = "Radiocarbon",
-    year = "2004",
-    volume = "46",
-    pages = "1299-1304",
-    doi = "10.1017/S0033822200033154",
-    textVersion = "Reimer, R., Brown, T.A., Reimer, R.W., 2004. Discussion: Reporting and calibration of post-bomb 14C Data. Radiocarbon 46, 1299-1304. doi:10.1017/S0033822200033154"
-  )
-
-  reimerreimer <- bibentry(
-     bibtype = "Article",
-    title = "A marine reservoir correction database and on-line interface",
-    author = c(person("Paula", "Reimer"),
-               person("Ron W.", "Reimer")),
-    journal = "Radiocarbon",
-    year = "2001",
-    volume = "43",
-    pages = "461-463",
-    doi = "10.1017/S0033822200038339",
-    textVersion = "Reimer, P.J., Reimer, R.W., 2001. A marine reservoir correction database and on-line interface. Radiocarbon 43:461-463. doi:10.1017/S0033822200038339"
-  )
-
-  stuiverpolach <- bibentry(
-    bibtype = "Article",
-    title = "Discussion: Reporting of 14C Data",
-    author = c(person("Minze", "Stuiver"),
-               person("Henry A.", "Polach")),
-    journal = "Radiocarbon",
-    year = "1977",
-    volume = "19",
-    pages = "355-363",
-    doi = "10.1017/S0033822200003672",
-    textVersion = "Stuiver, R., Polach, H.A., 1977. Discussion: Reporting of 14C Data. Radiocarbon 19, 355-363. doi:10.1017/S0033822200003672"
-  )
-
+)
