@@ -4,7 +4,7 @@
 \alias{pMCtoDelta14C}
 \title{Transform pMC into Delta14C}
 \usage{
-pMCtoDelta14C(pMC, er = NULL, t, roundby = NA)
+pMCtoDelta14C(pMC, er = NULL, t, roundby = Inf)
 }
 \arguments{
 \item{pMC}{The pMC value to translate}
@@ -13,7 +13,7 @@ pMCtoDelta14C(pMC, er = NULL, t, roundby = NA)
 
 \item{t}{the cal BP age}
 
-\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.}
 }
 \value{
 The corresponding Delta14C value
@@ -26,5 +26,5 @@ As explained by Heaton et al. 2020 (Radiocarbon), 14C measurements are commonly 
 three domains: Delta14C, F14C and the radiocarbon age. This function translates F14C values into Delta14C, the historical level of Delta14C in the year t cal BP. Note that per convention, this function uses the Cambridge half-life, not the Libby half-life.
 }
 \examples{
-  pMCtoDelta14C(0.985, .1, 222)
+  pMCtoDelta14C(98.5, 1, 222)
 }

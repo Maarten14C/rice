@@ -10,7 +10,7 @@
 
 
 
-#' @name fromto
+#' @name timescales
 #' @title translate between timescales
 #' @details Upon entering a value and its timescale, this function will find the corresponding values in the other timescales. Note that uncertainties are *not* taken into account, and especially going from C14 BP to cal BP and BC/AD ignores many calibration-related uncertainties. Delta14C values are only reported for entered values on the cal BP or BC/AD scale.
 #' @param x The value to be translated into other timescales
@@ -28,10 +28,10 @@
 #' @param legend.size Size of the font of the legend. Defaults to 0.7 of R's standard size. 
 #' @return A plot and output showing the translations into the different timescales.
 #' @examples
-#'   fromto(0, "BCAD")
-#'   fromto(2450, "C14")
+#'   timescales(0, "BCAD")
+#'   timescales(2450, "C14")
 #' @export
-fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NULL, zero=TRUE, width=c(), digits=0, C14.col=rgb(0,0,1,.5), Delta14C.col=rgb(0,.4,0,.4), ka=FALSE, legend.size=.7) {
+timescales <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NULL, zero=TRUE, width=c(), digits=0, C14.col=rgb(0,0,1,.5), Delta14C.col=rgb(0,.4,0,.4), ka=FALSE, legend.size=.7) {
   if(cc==2)
     Cc <- rintcal::ccurve(cc, postbomb=FALSE, cc.dir=cc.dir) else
       if(postbomb)
@@ -239,12 +239,12 @@ calBPtob2k <- function(x)
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #' calBPtoC14(100)
 #' @export
-calBPtoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
+calBPtoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf) {
   if(is.null(thiscurve)) {
     if(cc == 2) # Marine20 has no postbomb counterpart
       cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else
@@ -255,11 +255,8 @@ calBPtoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=N
         cc <- thiscurve
   mu <- approx(cc[,1], cc[,2], x, rule=rule)$y
   er <- approx(cc[,1], cc[,3], x, rule=rule)$y
-  if(!is.na(roundby)) {
-    mu <- round(mu, roundby)
-    er <- round(er, roundby)
-  }
-  return(data.frame(mu=mu, sd=er))
+
+  return(data.frame(mu=round(mu, roundby), sd=round(er, roundby)))
 }
 
 
@@ -275,13 +272,13 @@ calBPtoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=N
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   calBPtoF14C(100)
 #' @export
-calBPtoF14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
-  y <- calBPtoC14(x, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=NA)
+calBPtoF14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf) {
+  y <- calBPtoC14(x, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=Inf)
   return(C14toF14C(y[,1], y[,2], roundby=roundby)) # if rounding, only do so at the end
 }
 
@@ -298,13 +295,13 @@ calBPtoF14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   calBPtopMC(100)
 #' @export
-calBPtopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
-  y <- calBPtoC14(x, cc, postbomb, rule, cc.dir, thiscurve, roundby=NA)
+calBPtopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf) {
+  y <- calBPtoC14(x, cc, postbomb, rule, cc.dir, thiscurve, roundby=Inf)
   return(C14topMC(y[,1], y[,2], roundby=roundby)) # if rounding, only do so at the end
 }
 
@@ -321,22 +318,18 @@ calBPtopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=N
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   calBPtoDelta14C(100)
 #' @export
-calBPtoDelta14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
-  F <- calBPtoF14C(x, cc, postbomb, rule, cc.dir, thiscurve, roundby=NA)
+calBPtoDelta14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf) {
+  F <- calBPtoF14C(x, cc, postbomb, rule, cc.dir, thiscurve, roundby=Inf)
   Deltamn <- F14CtoDelta14C(F[,1], t=x)
   Deltaup <- F14CtoDelta14C(F[,1]+F[,2], t=x)
   sdev <- Deltaup-Deltamn
 
-  if(!is.na(roundby)) {
-    Deltamn <- round(Deltamn, roundby)
-    sdev <- round(sdev, roundby)
-  }
-  return(data.frame(Delta14C=Deltamn, sd=sdev))
+  return(data.frame(Delta14C=round(Deltamn, roundby), sd=round(sdev, roundby)))
 }
 
 
@@ -399,12 +392,12 @@ BCADtob2k <- function(x, zero=TRUE)
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   BCADtoC14(100)
 #' @export
-BCADtoC14 <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA)
+BCADtoC14 <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf)
   return(calBPtoC14(BCADtocalBP(x, zero=zero), 
     cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=roundby))
 
@@ -422,12 +415,12 @@ BCADtoC14 <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, t
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   BCADtoF14C(100)
 #' @export
-BCADtoF14C <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA)
+BCADtoF14C <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf)
   return(calBPtoF14C(BCADtocalBP(x, zero=zero), 
     cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=roundby))
 
@@ -445,12 +438,12 @@ BCADtoF14C <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, 
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   BCADtopMC(100)
 #' @export
-BCADtopMC <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA)
+BCADtopMC <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf)
   return(calBPtopMC(BCADtocalBP(x, zero=zero), 
     cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=roundby))
 
@@ -468,20 +461,18 @@ BCADtopMC <- function(x, cc=1, postbomb=FALSE, zero=TRUE, rule=1, cc.dir=NULL, t
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   BCADtoDelta14C(1900)
 #' @export
-BCADtoDelta14C <- function(x, zero=TRUE, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
+BCADtoDelta14C <- function(x, zero=TRUE, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf) {
   calBP <- BCADtocalBP(x, zero)
-  Fres <- calBPtoF14C(calBP, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=NA)
+  Fres <- calBPtoF14C(calBP, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=Inf)
   Deltamn <- F14CtoDelta14C(Fres[,1], t=calBP)
   Deltaup <- F14CtoDelta14C(Fres[,1]+Fres[,2], t=calBP)
 
-  if(is.na(roundby))
-    return(data.frame(Delta14C=Deltamn, sd=Deltaup-Deltamn)) else
-      return(data.frame(cbind(Delta14C=Deltamn, sd=Deltaup-Deltamn), roundby))
+  return(data.frame(Delta14C=round(Deltamn, roundby), sd=round(Deltaup-Deltamn, roundby)))
 }
 
 
@@ -534,12 +525,12 @@ b2ktoBCAD <- function(x, zero=TRUE) {
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   b2ktoC14(100)
 #' @export
-b2ktoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA)
+b2ktoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf)
   return(calBPtoC14(b2ktocalBP(x),
     cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=roundby))
 
@@ -556,12 +547,12 @@ b2ktoC14 <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NUL
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   b2ktoF14C(100)
 #' @export
-b2ktoF14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA)
+b2ktoF14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf)
   return(calBPtoF14C(b2ktocalBP(x),
     cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=roundby))
 
@@ -578,12 +569,12 @@ b2ktoF14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NU
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   b2ktopMC(100)
 #' @export
-b2ktopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA)
+b2ktopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf)
   return(calBPtopMC(b2ktocalBP(x),
     cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=roundby))
 
@@ -600,20 +591,18 @@ b2ktopMC <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NUL
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   b2ktoDelta14C(100)
 #' @export
-b2ktoDelta14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
+b2ktoDelta14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf) {
   calBP <- b2ktocalBP(x)
-  Fres <- calBPtoF14C(calBP, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=NA)
+  Fres <- calBPtoF14C(calBP, cc=cc, postbomb=postbomb, rule=rule, cc.dir=cc.dir, thiscurve=thiscurve, roundby=Inf)
   Deltamn <- F14CtoDelta14C(Fres[,1], t=calBP)
   Deltaup <- F14CtoDelta14C(Fres[,1]+Fres[,2], t=calBP)
 
-  if(is.na(roundby))
-    return(data.frame(Delta14C=Deltamn, sd=Deltaup-Deltamn)) else
-      return(round(data.frame(Delta14C=Deltamn, sd=Deltaup-Deltamn), roundby))
+  return(data.frame(Delta14C=round(Deltamn, roundby), sd=round(Deltaup-Deltamn, roundby)))
 }
 
 
@@ -629,7 +618,7 @@ b2ktoDelta14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurv
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   y <- 130
@@ -637,7 +626,7 @@ b2ktoDelta14C <- function(x, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurv
 #'   abline(h=y)
 #'   abline(v=C14tocalBP(y))
 #' @export
-C14tocalBP <- function(y, cc=1, postbomb=FALSE, rule=2, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
+C14tocalBP <- function(y, cc=1, postbomb=FALSE, rule=2, cc.dir=NULL, thiscurve=NULL, roundby=Inf) {
   if(is.null(thiscurve)) {
     if(cc == 2) # Marine20 has no postbomb counterpart
       cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else
@@ -666,9 +655,7 @@ C14tocalBP <- function(y, cc=1, postbomb=FALSE, rule=2, cc.dir=NULL, thiscurve=N
     mu1 <- mu[idx]; mu2 <- mu[idx + 1]
     intercepts[i] <- x1 + (x2 - x1) * (y - mu1) / (mu2 - mu1)
   }
-  if(!is.na(roundby))
-    intercepts <- round(intercepts, roundby)
-  return(intercepts)
+  return(round(intercepts, roundby))
 }
 
 
@@ -685,7 +672,7 @@ C14tocalBP <- function(y, cc=1, postbomb=FALSE, rule=2, cc.dir=NULL, thiscurve=N
 #' @param zero Whether or not to include 0 in BC/AD years. Defaults to TRUE.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'   y <- 130
@@ -693,7 +680,7 @@ C14tocalBP <- function(y, cc=1, postbomb=FALSE, rule=2, cc.dir=NULL, thiscurve=N
 #'   abline(h=y)
 #'   abline(v=C14toBCAD(y))
 #' @export
-C14toBCAD <- function(y, cc=1, postbomb=FALSE, rule=1, zero=TRUE, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
+C14toBCAD <- function(y, cc=1, postbomb=FALSE, rule=1, zero=TRUE, cc.dir=NULL, thiscurve=NULL, roundby=Inf) {
   x <- C14tocalBP(y, roundby=roundby)
   return(calBPtoBCAD(x, zero=zero))
 }
@@ -711,12 +698,12 @@ C14toBCAD <- function(y, cc=1, postbomb=FALSE, rule=1, zero=TRUE, cc.dir=NULL, t
 #' @param rule How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @author Maarten Blaauw
 #' @examples
 #'  C14tob2k(130,20)
 #' @export
-C14tob2k <- function(y, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=NA) {
+C14tob2k <- function(y, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf) {
   x <- C14tocalBP(y, roundby=roundby)
   return(calBPtob2k(x))
 }
@@ -730,14 +717,14 @@ C14tob2k <- function(y, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NUL
 #' this function can be used to calculate F14C values from radiocarbon ages. The reverse function of \link{F14C.age}.
 #' @param y Reported mean of the 14C age.
 #' @param er Reported error of the 14C age. If left empty, will translate y to F14C.
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years).
 #' @param botherrors Since going from C14 to F14C involves a logarithmic transformation (F=exp(-y/lambda)), errors that are symmetric on the C14 scale will become asymmetric on the F14C scale. By default, only the largest error is reported, but if \code{botherrors=TRUE}, both errors are reported.
 #' @return F14C values from C14 ages.
 #' @examples
 #'   C14toF14C(-2000, 20)
 #' @export
-C14toF14C <- function(y, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE) {
+C14toF14C <- function(y, er=NULL, roundby=Inf, lambda=8033, botherrors=FALSE) {
   y <- as.matrix(y)
 
   if(!is.null(er)) {
@@ -754,26 +741,18 @@ C14toF14C <- function(y, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE) {
 
   fy <- exp(-y / lambda)
 
-  if(is.null(er)) {
-    if(is.na(roundby))
-      return(data.frame(F14C=fy)) else
-        return(data.frame(F14C=round(fy, roundby)))
-  }
+  if(is.null(er))
+   return(data.frame(F14C=round(fy, roundby)))
 
   er1 <- abs(fy - exp(-(y - er) / lambda)) # younger error
   er2 <- abs(fy - exp(-(y + er) / lambda)) # older error
 
   if(botherrors) {
     result <- data.frame(F14C=as.vector(fy), sd1=as.vector(er1), sd2=as.vector(er2))
-    if(is.na(roundby))
-      return(result) else
-        return(round(result, roundby))
   } else {
-     result <- data.frame(F14C=as.vector(fy), sd=as.vector(pmax(er1, er2)))
-     if(is.na(roundby))
-       return(result) else
-         return(round(result, roundby))
-  }
+      result <- data.frame(F14C=as.vector(fy), sd=as.vector(pmax(er1, er2)))
+    }
+  return(round(result, roundby))
 }
 
 
@@ -785,14 +764,14 @@ C14toF14C <- function(y, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE) {
 #' this function can be used to calculate F14C values from radiocarbon ages. The reverse function of \link{F14C.age}. This function is a shortcut to C14toF14C.
 #' @param y Reported mean of the 14C age.
 #' @param er Reported error of the 14C age. If left empty, will translate y to F14C.
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years).
 #' @param botherrors Since going from C14 to F14C involves a logarithmic transformation (F=exp(-y/lambda)), errors that are symmetric on the C14 scale will become asymmetric on the F14C scale. By default, only the largest error is reported, but if \code{botherrors=TRUE}, both errors are reported.
 #' @return F14C values from C14 ages.
 #' @examples
 #'   CtoF(-2000, 20)
 #' @export
-CtoF <- function(y, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE)
+CtoF <- function(y, er=NULL, roundby=Inf, lambda=8033, botherrors=FALSE)
   C14toF14C(y=y, er=er, roundby=roundby, lambda=lambda, botherrors=botherrors)
 
 
@@ -805,16 +784,15 @@ CtoF <- function(y, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE)
 #' this function can be used to calculate pMC values from radiocarbon ages. The reverse function of \link{pMCtoC14}.
 #' @param y Reported mean of the C14 age.
 #' @param er Reported error of the C14 age.
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
 #' @return pMC values from C14 ages.
 #' @examples
 #'   C14topMC(-2000, 20)
 #'   C14topMC(-2000, 20, 1)
 #' @export
-C14topMC <- function(y, er=NULL, roundby=NA, lambda=8033) {
+C14topMC <- function(y, er=NULL, roundby=Inf, lambda=8033) 
   return(100*C14toF14C(y=y, er=er, roundby=roundby, lambda=lambda))
-}
 
 
 
@@ -825,30 +803,26 @@ C14topMC <- function(y, er=NULL, roundby=NA, lambda=8033) {
 #' @param y The C14 age to translate
 #' @param er Reported error of the C14 age. Returns just the mean if left empty.
 #' @param t the cal BP age
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @param lambda Radiocarbon's mean-life, based on the Cambridge half-life
 #' @return The corresponding Delta14C value
 #' @examples
 #'   C14toDelta14C(0.985, 20, 222)
 #' @export
-C14toDelta14C <- function(y, er=NULL, t, roundby=NA, lambda=5730/log(2)) {
+C14toDelta14C <- function(y, er=NULL, t, roundby=Inf, lambda=5730/log(2)) {
   if(!length(y) == length(t))
     stop("inputs 'y' and 't' must have the same length")
-  asF <- cbind(C14toF14C(cbind(y), cbind(er), roundby=NA))
+  asF <- cbind(C14toF14C(cbind(y), cbind(er), roundby=Inf))
   Deltamn <- 1000 * ((asF[,1] / exp(cbind(-1*t)/lambda)) - 1)
   if(is.null(er)) {
-    if(is.na(roundby))
-      return(Deltamn) else
-        return(round(Deltamn, roundby))
-    } else {
+    return(round(Deltamn, roundby))
+  } else {
       Fup <- asF[,1] + asF[,2]
       Fdown <- asF[,1] - asF[,2]
       Deltaup <- 1000 * ((Fup / exp(-t / lambda)) - 1)
       Deltadown <- 1000 * ((Fdown / exp(-t / lambda)) - 1)
       sdev <- pmax(abs(Deltaup - Deltamn), abs(Deltadown - Deltamn))
-      if(is.na(roundby))
-        return(data.frame(Deltamn, sdev)) else
-          return(data.frame(cbind(Deltamn, sdev), roundby))
+      return(data.frame(Deltamn=round(Deltamn, roundby), sdev=round(sdev, roundby)))
     }
 }
 
@@ -861,21 +835,19 @@ C14toDelta14C <- function(y, er=NULL, t, roundby=NA, lambda=5730/log(2)) {
 #'  this function can be used to calculate radiocarbon ages from F14C values. The reverse function is \link{age.F14C}.
 #' @param F14C Reported mean of the F14C
 #' @param er Reported error of the F14C. Returns just the mean if left empty.
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years).
 #' @param botherrors Since going from C14 to F14C involves a logarithmic transformation (F=exp(-y/lambda)), errors that are symmetric on the C14 scale will become asymmetric on the F14C scale. By default, only the largest error is reported, but if \code{reportbotherrors=TRUE}, both errors are reported. #' @return The radiocarbon ages from the F14C values. If F14C values are above 100\%, the resulting radiocarbon ages will be negative.
 #' @examples
 #'   F14CtoC14(1.10, 0.005) # a postbomb date, so with a negative C14 age
 #'   F14CtoC14(.80, 0.005) # prebomb dates can also be calculated
 #' @export
-F14CtoC14 <- function(F14C, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE) {
+F14CtoC14 <- function(F14C, er=NULL, roundby=Inf, lambda=8033, botherrors=FALSE) {
   y <- rep(NaN, length(F14C))
   if(is.null(er)) { # no errors
     valid <- which(F14C > 0)
-    y[valid] <- -lambda * log(F14C[valid])
-    if(is.na(roundby)) 
-      return(y) else
-        return(round(y, roundby))
+    y[valid] <- as.numeric(-lambda * log(F14C[valid]))
+    return(round(y, roundby))
     }
   
   if(min(er) < 0)
@@ -892,14 +864,10 @@ F14CtoC14 <- function(F14C, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE) 
     error.younger <- rep(NaN, length(error.older))  
     error.younger[valid] <- y - (-lambda * log(F14C[valid] + er[valid]))
     result <- data.frame(C14=y, error.younger=error.younger, error.older=error.older)
-    if(is.na(roundby))
-      return(result) else
-        return(round(result, roundby))
+    return(round(result, roundby))
   } else {
       result <- data.frame(C14=y, error=error.older)
-      if(is.na(roundby))
-        return(result) else
-          return(round(result, roundby))
+      return(round(result, roundby))
     }
 }
 
@@ -912,7 +880,7 @@ F14CtoC14 <- function(F14C, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE) 
 #'  this function can be used to calculate radiocarbon ages from F14C values. The reverse function is \link{age.F14C}.
 #' @param F14C Reported mean of the F14C
 #' @param er Reported error of the F14C. Returns just the mean if left empty.
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years).
 #' @param botherrors Since going from C14 to F14C involves a logarithmic transformation (F=exp(-y/lambda)), errors that are symmetric on the C14 scale will become asymmetric on the F14C scale. By default, only the largest error is reported, but if \code{reportbotherrors=TRUE}, both errors are reported. #' @return The radiocarbon ages from the F14C values. If F14C values are above 100\%, the resulting radiocarbon ages will be negative.
 #' @return The radiocarbon ages from the F14C values. If F14C values are above 100\%, the resulting radiocarbon ages will be negative.
@@ -920,7 +888,7 @@ F14CtoC14 <- function(F14C, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE) 
 #'   FtoC(1.10, 0.005) # a postbomb date, so with a negative C14 age
 #'   FtoC(.80, 0.005) # prebomb dates can also be calculated
 #' @export
-FtoC <- function(F14C, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE) 
+FtoC <- function(F14C, er=NULL, roundby=Inf, lambda=8033, botherrors=FALSE) 
   F14CtoC14(F14C=F14C, er=er, roundby=roundby, lambda=lambda, botherrors=botherrors)
 
 
@@ -932,15 +900,13 @@ FtoC <- function(F14C, er=NULL, roundby=NA, lambda=8033, botherrors=FALSE)
 #'  this function can be used to calculate radiocarbon ages from F14C values. The reverse function is \link{age.F14C}.
 #' @param F14C Reported mean of the F14C
 #' @param er Reported error of the F14C. Returns just the mean if left empty.
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @return The pMC values from the F14C values. Basically the original values multiplied by 100.
 #' @examples
 #'   F14CtopMC(1.10, 0.5)
 #' @export
-F14CtopMC <- function(F14C, er=NULL, roundby=NA)
-  if(is.na(roundby))
-    return(100*data.frame(F14C=F14C, er=er)) else
-      return(round(100*data.frame(F14C=F14C, er=er), roundby))
+F14CtopMC <- function(F14C, er=NULL, roundby=Inf)
+  return(round(100*data.frame(F14C=F14C, er=er), roundby))
 
 
 
@@ -951,24 +917,20 @@ F14CtopMC <- function(F14C, er=NULL, roundby=NA)
 #' @param F14C The F14C value to translate
 #' @param er Reported error of the F14C. Returns just the mean if left empty.
 #' @param t the cal BP age
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @param lambda Radiocarbon's mean-life, based on the Cambridge half-life
 #' @return The corresponding Delta14C value
 #' @examples
 #'   F14CtoDelta14C(0.89, .001, 900)
 #' @export
-F14CtoDelta14C <- function(F14C, er=NULL, t, roundby=NA, lambda=5730/log(2)) {
+F14CtoDelta14C <- function(F14C, er=NULL, t, roundby=Inf, lambda=5730/log(2)) {
   # If er is NULL, return the Deltamn for F14C and t
   Deltamn <- 1000 * ((F14C / exp(-t / lambda)) - 1)
   if(is.null(er)) {
-    if(is.na(roundby))
-      return(Deltamn) else
-        return(round(Deltamn, roundby))
+    return(round(Deltamn, roundby))
   } else {
       Deltaup <- 1000 * (((F14C + er) / exp(-t / lambda)) - 1)
-      if(is.na(roundby))
-        return(data.frame(Delta14C=Deltamn, sdev=Deltaup - Deltamn)) else
-          return(round(data.frame(Delta14C=Deltamn, sdev=Deltaup - Deltamn), roundby))
+      return(round(data.frame(Delta14C=Deltamn, sdev=Deltaup - Deltamn), roundby))
     }
 }
 
@@ -981,7 +943,7 @@ F14CtoDelta14C <- function(F14C, er=NULL, t, roundby=NA, lambda=5730/log(2)) {
 #'  this function can be used to calculate radiocarbon ages from pMC values. The reverse function is C14.pMC.
 #' @param pMC Reported mean of the pMC.
 #' @param er Reported error of the pMC.
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
 #' @return Radiocarbon ages from pMC values. If pMC values are above 100\%, the resulting radiocarbon ages will be negative.
 #' @examples
@@ -989,18 +951,14 @@ F14CtoDelta14C <- function(F14C, er=NULL, t, roundby=NA, lambda=5730/log(2)) {
 #'   pMCtoC14(80, 0.5) # prebomb dates can also be calculated
 #'   pMCtoC14(.8, 0.005) # throws a warning, use F14C.age instead
 #' @export
-pMCtoC14 <- function(pMC, er=NULL, roundby=NA, lambda=8033) {
+pMCtoC14 <- function(pMC, er=NULL, roundby=Inf, lambda=8033) {
   y <- -lambda * log(pMC/100)
-  if(is.null(er)) {
-    if(!is.na(roundby))
-      return(y) else
-      return(round(y, roundby))
-  } else {
-    sdev <- y - -lambda * log((pMC+er)/100)
-    if(is.na(roundby))
-      return(data.frame(C14=y, sdev=sdev)) else
-        return(round(data.frame(C14=y, sdev=sdev), roundby))
-  }
+  if(is.null(er)) 
+    return(round(y, roundby))
+    else {
+      sdev <- y - -lambda * log((pMC+er)/100)
+      return(round(data.frame(C14=y, sdev=sdev), roundby))
+    }
 }
 
 
@@ -1012,15 +970,13 @@ pMCtoC14 <- function(pMC, er=NULL, roundby=NA, lambda=8033) {
 #'  this function can be used to calculate radiocarbon ages from F14C values. The reverse function is \link{age.F14C}.
 #' @param pMC Reported mean of the F14C
 #' @param er Reported error of the pMC value. Returns just the mean if left empty.
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @return The F14C values from the pMC values. Basically the original values divided by 100.
 #' @examples
 #'   pMCtoF14C(110, 5)
 #' @export
-pMCtoF14C <- function(pMC, er=NULL, roundby=NA)
-  if(is.na(roundby))
-    return(cbind(F14C=pMC, sdev=er)/100) else
-      return(round(cbind(F14C=pMC, sdev=er)/100), roundby)
+pMCtoF14C <- function(pMC, er=NULL, roundby=Inf)
+  return(data.frame(F14C=round(pMC/100, roundby), sdev=round(er/100, roundby)))
 
 
 
@@ -1030,17 +986,15 @@ pMCtoF14C <- function(pMC, er=NULL, roundby=NA)
 #' three domains: Delta14C, F14C and the radiocarbon age. This function translates F14C values into Delta14C, the historical level of Delta14C in the year t cal BP. Note that per convention, this function uses the Cambridge half-life, not the Libby half-life.
 #' @param pMC The pMC value to translate
 #' @param er Reported error of the pMC value. Returns just the mean if left empty.
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @param t the cal BP age
 #' @return The corresponding Delta14C value
 #' @examples
-#'   pMCtoDelta14C(0.985, .1, 222)
+#'   pMCtoDelta14C(98.5, 1, 222)
 #' @export
-pMCtoDelta14C <- function(pMC, er=NULL, t, roundby=NA) {
-  asF <- pMCtoF14C(pMC, er, roundby=NA)
-  if(is.na(roundby))
-    return(F14CtoDelta14C(asF[,1], asF[,2], t)) else
-      return(round(F14CtoDelta14C(asF[,1], asF[,2], t), roundby))
+pMCtoDelta14C <- function(pMC, er=NULL, t, roundby=Inf) {
+  asF <- pMCtoF14C(pMC, er, roundby=Inf)
+  return(round(F14CtoDelta14C(asF[,1], asF[,2], t), roundby))
 }
 
 
@@ -1052,16 +1006,16 @@ pMCtoDelta14C <- function(pMC, er=NULL, t, roundby=NA) {
 #' @param Delta14C The Delta14C value to translate
 #' @param er Reported error of the Delta14C. Returns just the mean if left empty.
 #' @param t the cal BP age
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @return The corresponding C14 age
 #' @examples
 #'   Delta14CtoC14(-10, 1, 238)
 #' @export
-Delta14CtoC14 <- function(Delta14C, er=NULL, t, roundby=NA) {
-  toF <- Delta14CtoF14C(Delta14C=Delta14C, er=er, t=t, roundby=NA)
+Delta14CtoC14 <- function(Delta14C, er=NULL, t, roundby=Inf) {
+  toF <- Delta14CtoF14C(Delta14C=Delta14C, er=er, t=t, roundby=Inf)
   if(ncol(toF) == 1) {
     return(unlist(F14CtoC14(toF[1], c(), roundby=roundby)))
-    } else {
+  } else {
       toF <- as.matrix(toF, ncol=2)
       return(F14CtoC14(toF[,1], toF[,2], roundby=roundby))
     }
@@ -1076,23 +1030,19 @@ Delta14CtoC14 <- function(Delta14C, er=NULL, t, roundby=NA) {
 #' @param Delta14C The Delta14C value to translate
 #' @param er Reported error of the Delta14C. Returns just the mean if left empty.
 #' @param t the cal BP age
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @param lambda Radiocarbon's mean-life, based on the Cambridge half-life
 #' @return The corresponding F14C value
 #' @examples
 #'   Delta14CtoF14C(-10, 1, 238)
 #' @export
-Delta14CtoF14C <- function(Delta14C, er=NULL, t, roundby=NA, lambda=5730/log(2)) {
+Delta14CtoF14C <- function(Delta14C, er=NULL, t, roundby=Inf, lambda=5730/log(2)) {
   asF <- ((Delta14C/1000)+1) * exp(-t/lambda)
   if(is.null(er)) {
-    if(is.na(roundby))
-      return(data.frame(F14C=asF)) else
-        return(data.frame(F14C=round(asF, roundby)))
+    return(data.frame(F14C=round(asF, roundby))) 
   } else {
       Fup <- (((Delta14C+er)/1000)+1) * exp(-t/lambda)
-      if(is.na(roundby))
-        return(data.frame(F14C=asF, sdev=Fup-asF)) else
-          return(round(data.frame(F14C=asF, sdev=Fup-asF), roundby))
+      return(round(data.frame(F14C=asF, sdev=Fup-asF), roundby))
     }
 }
 
@@ -1105,15 +1055,13 @@ Delta14CtoF14C <- function(Delta14C, er=NULL, t, roundby=NA, lambda=5730/log(2))
 #' @param Delta14C The Delta14C value to translate
 #' @param er Reported error of the Delta14C. Returns just the mean if left empty.
 #' @param t the cal BP age
-#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.
+#' @param roundby Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.
 #' @return The corresponding F14C value
 #' @examples
 #'   Delta14CtoF14C(-10, 1, 238)
 #' @export
-Delta14CtopMC <- function(Delta14C, er=NULL, t, roundby=NA)
-  if(is.na(roundby))
-    return(Delta14CtoF14C(Delta14C, er, t)*100) else
-      return(round(Delta14CtoF14C(Delta14C, er, t)*100, roundby))
+Delta14CtopMC <- function(Delta14C, er=NULL, t, roundby=Inf)
+  return(round(Delta14CtoF14C(Delta14C, er, t)*100, roundby))
 
 
 

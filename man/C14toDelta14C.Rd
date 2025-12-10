@@ -4,7 +4,7 @@
 \alias{C14toDelta14C}
 \title{Transform C14 age(s) into Delta14C}
 \usage{
-C14toDelta14C(y, er = NULL, t, roundby = NA, lambda = 5730/log(2))
+C14toDelta14C(y, er = NULL, t, roundby = Inf, lambda = 5730/log(2))
 }
 \arguments{
 \item{y}{The C14 age to translate}
@@ -13,7 +13,7 @@ C14toDelta14C(y, er = NULL, t, roundby = NA, lambda = 5730/log(2))
 
 \item{t}{the cal BP age}
 
-\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.}
 
 \item{lambda}{Radiocarbon's mean-life, based on the Cambridge half-life}
 }

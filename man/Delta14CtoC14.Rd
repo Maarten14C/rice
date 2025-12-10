@@ -4,7 +4,7 @@
 \alias{Delta14CtoC14}
 \title{Transform Delta14C into C14 age}
 \usage{
-Delta14CtoC14(Delta14C, er = NULL, t, roundby = NA)
+Delta14CtoC14(Delta14C, er = NULL, t, roundby = Inf)
 }
 \arguments{
 \item{Delta14C}{The Delta14C value to translate}
@@ -13,7 +13,7 @@ Delta14CtoC14(Delta14C, er = NULL, t, roundby = NA)
 
 \item{t}{the cal BP age}
 
-\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.}
 }
 \value{
 The corresponding C14 age

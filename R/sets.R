@@ -382,13 +382,14 @@ overlap <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbomb=F
         xlab <- "cal BC/AD" else
           xlab <- "cal BP"
     plot(0, type="n", xlim=xrng, xlab=xlab, ylim=c(0, length(dists)+1), ylab="", bty=bty, yaxt=yaxt)
+		
     for(i in 1:length(dists)) {
-      draw.dist(dists[[i]], dist.col=dist.col[i], y.pos=i, dist.border=dist.col[i], prob=prob, mirror=FALSE, peak=TRUE, BCAD=BCAD)
+      draw.dist(dists[[i]], dist.col=dist.col[i], y.pos=i, dist.border=dist.col[i], prob=prob, mirror=FALSE, BCAD=BCAD)
       if(length(labels) > 0)
         text(max(dists[[i]][,1]), i, labels=labels[i], col=dist.col[i], adj=c(0,-1))
     }
     if(max(this.overlap) > 0)
-      draw.dist(cbind(xseq, this.overlap), dist.col=overlap.col, dist.border=overlap.col, prob=prob, y.pos=0, peak=TRUE, BCAD=BCAD, hpd=FALSE)
+      draw.dist(cbind(xseq, this.overlap), dist.col=overlap.col, dist.border=overlap.col, prob=prob, y.pos=0, BCAD=BCAD, hpd=FALSE)
   }
   
   if(talk)

@@ -4,14 +4,14 @@
 \alias{FtoC}
 \title{Calculate C14 ages from F14C values.}
 \usage{
-FtoC(F14C, er = NULL, roundby = NA, lambda = 8033, botherrors = FALSE)
+FtoC(F14C, er = NULL, roundby = Inf, lambda = 8033, botherrors = FALSE)
 }
 \arguments{
 \item{F14C}{Reported mean of the F14C}
 
 \item{er}{Reported error of the F14C. Returns just the mean if left empty.}
 
-\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.}
 
 \item{lambda}{The mean-life of radiocarbon (based on Libby half-life of 5568 years).}
 

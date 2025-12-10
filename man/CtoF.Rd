@@ -4,14 +4,14 @@
 \alias{CtoF}
 \title{Calculate F14C values from C14 ages}
 \usage{
-CtoF(y, er = NULL, roundby = NA, lambda = 8033, botherrors = FALSE)
+CtoF(y, er = NULL, roundby = Inf, lambda = 8033, botherrors = FALSE)
 }
 \arguments{
 \item{y}{Reported mean of the 14C age.}
 
 \item{er}{Reported error of the 14C age. If left empty, will translate y to F14C.}
 
-\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.}
 
 \item{lambda}{The mean-life of radiocarbon (based on Libby half-life of 5568 years).}
 

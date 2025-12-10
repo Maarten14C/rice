@@ -166,7 +166,7 @@ draw.CF(50000, 3000)
 Here's a function to transform values between multiple timescales and visualise them:
 
 ```{r, fig.width=8, fig.asp=.6}
-fromto(100, "calBP")
+timescales(100, "calBP")
 ```
 
 ---

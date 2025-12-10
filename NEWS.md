@@ -1,3 +1,9 @@
+# rice 1.5.0
+* TODO: ensure that e.g. draw.ccurve can be used to plot cc="arnold_libby_1951"
+* The heights and colours of the calibrated distributions in `draw.dates` should now be plotted more predictably.
+* renamed `fromto` to `timescales`
+* added `table.calibrate`...
+
 # rice 1.4.0
 * renamed 'realm' to the more accurate term 'timescale' (and renamed BC/AD to cal BC/AD where relevant).
 * renamed D14C to the more correct Delta14C in functions such as `calBPtoDelta14C`.

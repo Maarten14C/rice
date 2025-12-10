@@ -12,7 +12,7 @@ BCADtopMC(
   rule = 1,
   cc.dir = NULL,
   thiscurve = NULL,
-  roundby = NA
+  roundby = Inf
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ BCADtopMC(
 
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).}
 
-\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.}
 }
 \value{
 The calibration-curve F14C belonging to the entered cal BC/AD age

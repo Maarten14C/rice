@@ -11,7 +11,7 @@ C14tob2k(
   rule = 1,
   cc.dir = NULL,
   thiscurve = NULL,
-  roundby = NA
+  roundby = Inf
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ C14tob2k(
 
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).}
 
-\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.}
 }
 \value{
 The b2k age(s) belonging to the entered C14 age

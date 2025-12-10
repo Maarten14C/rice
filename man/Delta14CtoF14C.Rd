@@ -4,7 +4,7 @@
 \alias{Delta14CtoF14C}
 \title{Transform Delta14C into F14C}
 \usage{
-Delta14CtoF14C(Delta14C, er = NULL, t, roundby = NA, lambda = 5730/log(2))
+Delta14CtoF14C(Delta14C, er = NULL, t, roundby = Inf, lambda = 5730/log(2))
 }
 \arguments{
 \item{Delta14C}{The Delta14C value to translate}
@@ -13,7 +13,7 @@ Delta14CtoF14C(Delta14C, er = NULL, t, roundby = NA, lambda = 5730/log(2))
 
 \item{t}{the cal BP age}
 
-\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.}
 
 \item{lambda}{Radiocarbon's mean-life, based on the Cambridge half-life}
 }

@@ -43,16 +43,18 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
       xseq <- seq(y-4*er, y+4*er, length=cc0.res)
       this.cc <- cbind(xseq, xseq, rep(0, length(xseq)))
     } else
-    if(is.F)
-      this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample) else
-        if(min(y) < max(3*er) || postbomb) { # was y - er < 0
-          if(!postbomb)
-            if(!(cc %in% c("nh1", "nh2", "nh3", "sh1-2", "sh3")))
-              stop("This appears to be a postbomb age or close to being so. Please provide a postbomb curve")
+    if(is.F) {
+      this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample)
+    } else {
+       if(min(y) < max(3*er) || postbomb) {
+       # was y - er < 0
+        if(!postbomb)
+          if(!(cc %in% c("nh1", "nh2", "nh3", "sh1-2", "sh3")))
+            stop("This appears to be a postbomb age or close to being so. Please provide a postbomb curve")
           this.cc <- rintcal::glue.ccurves(cc, postbomb, cc.dir)
-
         } else
-          this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample)
+            this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir, resample=cc.resample)
+      }
     } else
       this.cc <- thiscurve
 
@@ -80,6 +82,14 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
   if(cc==0)
     this.cc[,2] <- this.cc[,1]
 
+  # warnings
+  if(any(is.na(this.cc[,3]))) cat("NA in curve SD\n")
+  #if(any(this.cc[,3] == 0)) cat("Zero SD in curve\n")
+  if(any(is.na(this.cc[,2]))) cat("NA in curve mu\n")
+  if(any(is.na(this.cc[,1]))) cat("NA in curve cal BP\n")
+  if(anyNA(y)) cat("NA in y\n")
+  if(anyNA(er)) cat("NA in er\n")
+
   # calibrate; find how far age (measurement) is from cc[,2] of calibration curve
   if(normal)
     cal <- cbind(this.cc[,1], dnorm(this.cc[,2], y, sqrt(er^2+this.cc[,3]^2))) else
@@ -90,7 +100,7 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALS
     if(!yrsteps)
       yrsteps <- 0.05 # enough detail to enable calculation of hpd ranges also for postbomb dates
   if(yrsteps)
-    yrseq <- seq(min(cal[,1]), max(cal[,1]), by=yrsteps) else
+    yrseq <- seq(min(cal[,1], na.rm=TRUE), max(cal[,1], na.rm=TRUE), by=yrsteps) else
       yrseq <- cal[,1]
  #     yrsteps <- seq(min(cal[,1]), max(cal[,1]), length=dist.res)
   cal <- approx(cal[,1], cal[,2], yrseq, rule=rule)
@@ -551,4 +561,141 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve
   if(save)
     write.table(Cc, file.path(cc.dir, name), row.names=FALSE, col.names=FALSE, sep=sep)
   invisible(Cc)
+}
+
+
+
+#' @name calibrate.table
+#' @title Make a table of calibrated dates
+#' @description Calibrate a number of radiocarbon dates and make a table containing the calibrated ranges.
+#' @details Calibration is done taking into account calibration curves and any age offsets (deltaR, deltaSTD). The table will be displayed in an Internet browser, from which it can be pased into a word processor such as MS-Word.
+#' @param y The radiocarbon dates
+#' @param er The laboratory errors of the radiocarbon dates
+#' @param lab The labels of the radiocarbon dates (if any)
+#' @param cc The calibration curve to smooth. Calibration curve for 14C dates: 'cc=1' for IntCal20 (northern hemisphere terrestrial), 'cc=2' for Marine20 (marine), 'cc=3' for SHCal20 (southern hemisphere terrestrial). Alternatively, one can also write, e.g., "IntCal20", "Marine13". One can also make a custom-built calibration curve, e.g. using 'mix.ccurves()', and load this using 'cc=4'. In this case, it is recommended to place the custom calibration curve in its own directory, using 'cc.dir' (see below). Explanations of the numbers are provided in the table footer. If there is more than one cc provided, they will be printed in an extra table column.
+#' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}. For the BCAD scale, BC ages are negative.
+#' @param postbomb Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'ccurve("sh1-2_monthly")'
+#' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., 'cc.dir="ccurves"'.
+#' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
+#' @param is.F Set this to TRUE if the provided age and error are in the F14C timescale.
+#' @param is.pMC Set this to TRUE if the provided age and error are in the pMC timescale.
+#' @param deltaR Age offset (e.g. for marine samples). If provided, the deltaR and deltaSTD values will be provided as an extra table column.
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation). If provided, the deltaR and deltaSTD values will be provided as an extra table column.
+#' @param prob Probability range which should be calculated. Default \code{prob=0.95}.
+#' @param age.round Rounding for ages. Defaults to 0 decimals.
+#' @param prob.round Rounding for reported probabilities. Defaults to 1 decimal.
+#' @author Maarten Blaauw
+#' @examples
+#'  data(shroud)
+#'  calibrate.table(shroud$y, shroud$er, shroud$ID)
+#' @export
+calibrate.table <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, cc.dir=c(), thiscurve=c(), is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, prob=0.95, prob.round=1, age.round=0) {
+
+  if(!requireNamespace("flextable", quietly = TRUE))
+    stop("Package 'flextable' is required. Install with install.packages('flextable').")
+
+  if(length(cc) == 1)
+    cc <- rep(cc, length(y))
+  if(length(er) != length(y))
+    stop("er needs to be of the same length as y")
+  if(length(cc) != length(y))
+    stop("cc needs to be of the same length as y")
+  if(length(lab) == 0)
+    lab <- 1:length(y) else
+      if(length(lab) != length(y))
+        stop("lab (labels) needs to be of the same length as y")
+
+  # to be filled later on
+  labs <- c(); ys <- c(); ers <- c(); froms <- c(); tos <- c(); percs <- c()
+  ccs <- c(); grp_idx <- c()
+
+  hasdeltaR <- FALSE
+  if(length(deltaR) == 1)
+    deltaR <- rep(deltaR, length(y))
+  if(length(deltaR) != length(y))
+    stop("deltaR needs to be of length 1 or the same length as y")
+  if(length(deltaSTD) == 1)
+    deltaSTD <- rep(deltaSTD, length(y))
+  if(any(deltaR != 0)) {
+    hasdeltaR <- TRUE
+    deltaRs <- c()
+    deltaSTDs <- c()
+  }
+
+  for(i in 1:length(y)) {
+    this.hpd <- hpd(
+      caldist(y[i], er[i], cc=cc[i], BCAD=BCAD, postbomb=postbomb, thiscurve=thiscurve, cc.dir=cc.dir,
+        deltaR=deltaR[i], deltaSTD=deltaSTD[i], is.F=is.F, is.pMC=is.pMC),
+      prob.round=prob.round, age.round=age.round)
+    n <- length(this.hpd$from)
+    froms <- c(froms, as.numeric(this.hpd$from))
+    tos <- c(tos, as.numeric(this.hpd$to))
+    percs <- c(percs, as.numeric(this.hpd$perc))
+    labs <- c(labs, rep(lab[i], n))
+    ys <- c(ys, rep(y[i], n))
+    ers <- c(ers, rep(er[i], n))
+    ccs <- c(ccs, rep(cc[i], n))
+    grp_idx <- c(grp_idx, rep(i, n))
+    if(hasdeltaR) {
+      deltaRs <- c(deltaRs, rep(deltaR[i], n))
+      deltaSTDs <- c(deltaSTDs, rep(deltaSTD[i], n))
+    }
+  }
+
+  # format the values
+  C14_sd <- paste(ys, "±", ers)
+  hpd_str <- paste0(froms, "–", tos, " (", percs, "%)")
+  if(hasdeltaR)
+    deltaR_str <- paste(deltaRs, "±", deltaSTDs)
+
+  collapse_idx <- split(seq_along(grp_idx), grp_idx)
+  lab_one <- sapply(collapse_idx, function(idx) labs[idx][1])
+  C14_one <- sapply(collapse_idx, function(idx) C14_sd[idx][1])
+  cc_one <- sapply(collapse_idx, function(idx) ccs[idx][1])
+  hpd_mult <- sapply(collapse_idx, function(idx) paste(hpd_str[idx], collapse = "\n"))
+  if(hasdeltaR)
+    deltaR_one <- sapply(collapse_idx, function(idx) deltaR_str[idx][1])
+
+  # make table labels
+  ylab <- if(is.F) "F14C (± sd)" else
+    if(is.pMC) "pMC (± sd)" else
+      "14C BP (± sd)"
+  cc_labels = setNames(c("IntCal20", "Marine20", "SHCal20", "mixed"), c(1, 2, 3, 4))
+  cc_map <- function(v)
+    unname(ifelse(as.character(v) %in% names(cc_labels),
+      cc_labels[as.character(v)], as.character(v)))
+  uniq_cc <- unique(cc)
+  if(length(uniq_cc) > 1) {
+    pairs <- paste0(uniq_cc, " = ", cc_map(uniq_cc))
+    legend_text <- paste0("cc legend: ", paste(pairs, collapse = "; "))
+  } else
+      legend_text <- paste("Calibration curve:", cc_map(uniq_cc))
+
+ # Assemble table with one row per date
+  astable <- data.frame(labID=lab_one, C14=C14_one, stringsAsFactors=FALSE)
+  if(hasdeltaR)
+    astable <- data.frame(astable, deltaR=deltaR_one, stringsAsFactors=FALSE)
+  if(length(unique(cc)) > 1)
+    astable <- data.frame(astable, cc=cc_one, stringsAsFactors=FALSE)
+
+  tbl <- data.frame(astable, hpd=hpd_mult, stringsAsFactors=FALSE)
+  ft <- flextable(tbl)
+  ft <- flextable::set_header_labels(ft, C14=ylab,
+    hpd=ifelse(BCAD, paste0(100*prob, "% hpd ranges (cal BC/AD)"),
+      paste0(100*prob, "% hpd ranges (cal BP)")))
+
+  # alignment (only include columns that actually exist)
+  cols_to_align <- c("labID", "C14", "hpd")
+  if("deltaR" %in% names(tbl))
+    cols_to_align <- c(cols_to_align, "deltaR")
+  if("cc" %in% names(tbl))
+    cols_to_align <- c(cols_to_align, "cc")
+  ft <- flextable::align(ft, j=cols_to_align, align="right", part="body")
+  ft <- flextable::valign(ft, j=intersect(cols_to_align, c("labID", "C14", "deltaR", "cc")),
+    valign="top", part="body")
+  ft <- flextable::autofit(ft)
+
+  # add footer and return the table
+  ft <- flextable::add_footer_lines(ft, values = legend_text)
+  ft
 }

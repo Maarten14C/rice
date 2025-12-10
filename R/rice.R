@@ -1,5 +1,11 @@
 # make calcs of a 14C-free Earth. How long before we've reached equilibrium between production and decay? What is the equilibrium level? Now add oceans, etc.  
 
+# ensure that e.g. draw.ccurve can be used to plot cc="arnold_libby_1951"
+
+# check that smooth works in calibrate 
+
+# function table.calibrations to make a table of calibrated dates. As F14C, pMC, C14, cal BP, BCAD, 95% ranges, perhaps individual calibrated graphs, deltaR. Save as pdf, xlsx, docx, ...
+
 # add sample weight functions (per Philippa Ascough's suggestion). Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
 # prepare a function to redo deltaR calcs when new Marine curves come out. Using BCADtocalBP(shells$collected), calBPto14C(cc=2) and shells$C14, shells$er. Unclear how the dR errors are obtained.
@@ -8,7 +14,7 @@
 
 # error multipliers, rounding. Could add procedures for different labs, e.g. QUB_bg, etc. This would be useful for reasons of transparency and community standards. Add data from historical UBA standards/backgrounds?
 
-#' @name howmanyC14
+#' @name howmuchC14
 #' @title Amount of C14 particles in a sample
 #' @description Find the amount of remaining C14 atoms in a sample, given its weight and age.
 #' @details The number of carbon atoms in the sample is estimated. Given the known C14/C ratio at F=1, and given the sample's age, we can estimate the number of remaining C14 atoms.
@@ -27,11 +33,11 @@
 #' @param decimals Number of decimals to be returned for F and atom counts.
 #' @author Maarten Blaauw
 #' @examples
-#'   howmanyC14(0) # recent sample
-#'   howmanyC14(55e3) # at dating limit
-#'   howmanyC14(145e3) # way beyond the dating limit, 1 C14 atom per mg remains
+#'   howmuchC14(0) # recent sample
+#'   howmuchC14(55e3) # at dating limit
+#'   howmuchC14(145e3) # way beyond the dating limit, 1 C14 atom per mg remains
 #' @export
-howmanyC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.ratio=1.176e-12, format="g", cc=1, postbomb=FALSE, cc.dir=NULL, thiscurve=NULL, talk=TRUE, decimals=3) {
+howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.ratio=1.176e-12, format="g", cc=1, postbomb=FALSE, cc.dir=NULL, thiscurve=NULL, talk=TRUE, decimals=3) {
 
   if(use.cc) {
     F <- calBPtoF14C(age, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]

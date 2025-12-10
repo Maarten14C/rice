@@ -4,7 +4,7 @@
 \alias{Delta14CtopMC}
 \title{Transform Delta14C into pMC}
 \usage{
-Delta14CtopMC(Delta14C, er = NULL, t, roundby = NA)
+Delta14CtopMC(Delta14C, er = NULL, t, roundby = Inf)
 }
 \arguments{
 \item{Delta14C}{The Delta14C value to translate}
@@ -13,7 +13,7 @@ Delta14CtopMC(Delta14C, er = NULL, t, roundby = NA)
 
 \item{t}{the cal BP age}
 
-\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=NA}, no rounding.}
+\item{roundby}{Amount of decimals required for the output. Defaults to \code{roundby=Inf}, no rounding.}
 }
 \value{
 The corresponding F14C value
