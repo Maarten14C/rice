@@ -22,6 +22,7 @@ overlap(
   cc.dir = NULL,
   threshold = 0,
   xlim = c(),
+  cal.rev = TRUE,
   xlab = c(),
   yrby = 1,
   dist.col = rgb(0, 0, 0, 0.2),
@@ -70,6 +71,8 @@ overlap(
 \item{threshold}{Report only values above a threshold. Defaults to \code{threshold=1e-6}.}
 
 \item{xlim}{Age limits of the x-axis. Calculated automatically by default.}
+
+\item{cal.rev}{Reverse the calendar axis. Defaults to TRUE.}
 
 \item{xlab}{Label of the calendar age, defaults to BCAD or cal BP.}
 

@@ -39,7 +39,7 @@ hpd(
 The highest posterior density ranges, as three columns: from age, to age, and the corresponding percentage(s) of the range(s)
 }
 \description{
-Calculate highest posterior density ranges of calibrated distribution
+Calculate highest posterior density ranges of a calibrated distribution
 }
 \examples{
 hpd(caldist(130,20))

@@ -26,6 +26,7 @@ push.gamma(
   t.b = 4,
   BCAD = FALSE,
   cal.lim = c(),
+  cal.rev = TRUE,
   calib.col = rgb(0, 0, 0, 0.25),
   pushed.col = rgb(0, 0, 1, 0.4),
   heights = 0.3,
@@ -78,6 +79,8 @@ push.gamma(
 \item{BCAD}{Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.}
 
 \item{cal.lim}{Calendar axis limits. Calculated automatically by default.}
+
+\item{cal.rev}{Reverse the calendar axis. Defaults to TRUE.}
 
 \item{calib.col}{Colour of the calibrated distribution (defaults to semi-transparent light grey).}
 

@@ -65,7 +65,7 @@ draw.ccurve(
 
 \item{cal.lab}{The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}), or to \code{age.lab="kcal BP"} etc. if ka=TRUE.}
 
-\item{cal.rev}{Reverse the calendar axis.}
+\item{cal.rev}{Reverse the calendar axis. Defaults to FALSE.}
 
 \item{c14.lab}{Label for the C-14 axis. Defaults to 14C BP (or 14C kBP if ka=TRUE).}
 

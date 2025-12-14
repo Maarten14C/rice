@@ -8,7 +8,7 @@ BCADtoF14C(
   x,
   cc = 1,
   postbomb = FALSE,
-  zero = TRUE,
+  zero = FALSE,
   rule = 1,
   cc.dir = NULL,
   thiscurve = NULL,
@@ -22,7 +22,7 @@ BCADtoF14C(
 
 \item{postbomb}{Whether or not to use a postbomb curve (see \code{caldist()}).}
 
-\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.}
+\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=FALSE}.}
 
 \item{rule}{How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.}
 

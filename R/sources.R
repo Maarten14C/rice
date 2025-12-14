@@ -603,6 +603,7 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
 #' @param cal.lim Calendar axis limits. Calculated automatically by default.
+#' @param cal.rev Reverse the calendar axis. Defaults to TRUE.
 #' @param calib.col Colour of the calibrated distribution (defaults to semi-transparent light grey).
 #' @param pushed.col Colour of the pushed distribution (defaults to semi-transparent blue).
 #' @param heights Heights of the calibrated and 'pushed' distributions. Defaults to 0.3 of the device's height.
@@ -614,7 +615,7 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
 #' @examples
 #'   push.normal(250, 25, 50, 10)
 #' @export
-push.normal <- function(y, er, mean, sdev, add=TRUE, subtract=FALSE, seed=NA, n=1e6, prob=0.95, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, cc.dir=NULL, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cal.lim=c(), calib.col=rgb(0,0,0,.25), pushed.col=rgb(0,0,1,.4), heights=.3, inset=TRUE, inset.col="darkgreen", inset.loc=c(0.6, 0.97, 0.6, 0.97), inset.mar=c(3, 0.5, 0.5, 0.5), inset.mgp=c(2,1,0)) {
+push.normal <- function(y, er, mean, sdev, add=TRUE, subtract=FALSE, seed=NA, n=1e6, prob=0.95, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, cc.dir=NULL, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cal.lim=c(), cal.rev=TRUE, calib.col=rgb(0,0,0,.25), pushed.col=rgb(0,0,1,.4), heights=.3, inset=TRUE, inset.col="darkgreen", inset.loc=c(0.6, 0.97, 0.6, 0.97), inset.mar=c(3, 0.5, 0.5, 0.5), inset.mgp=c(2,1,0)) {
   if(length(y) != 1 || length(er) != 1)
     stop("Please provide one value for both y and er")
   if(length(mean) != 1 || length(sdev) != 1)
@@ -644,12 +645,14 @@ push.normal <- function(y, er, mean, sdev, add=TRUE, subtract=FALSE, seed=NA, n=
    
   if(length(cal.lim) == 0) {
     cal.lim <- range(calib[,1], shifted$x)
-    if(!BCAD) cal.lim <- rev(cal.lim)
+    if(BCAD) cal.lim <- rev(cal.lim)
   }
+  if(cal.rev)
+    cal.lim <- rev(cal.lim)
   
   plot(0, type="n", xlim=cal.lim, ylim=c(0, 1.5), bty="l", ylab="", yaxt="s", xlab=ifelse(BCAD, "BC/AD", "cal BP"))
-  draw.dist(cbind(calib), dist.col=calib.col, dist.border=calib.col, y.pos=0, fraction=heights)
-  hpds <- draw.dist(cbind(shifted$x, shifted$y), prob=prob, y.pos=0, fraction=heights)
+  draw.dist(cbind(calib[,1], .6*calib[,2]/max(calib[,2])), dist.col=calib.col, dist.border=calib.col, y.pos=0, fraction=heights)
+  hpds <- draw.dist(cbind(shifted$x, .6*shifted$y/max(shifted$y)), prob=prob, y.pos=0, fraction=heights)
 
   # inset graph
   if(inset) {
@@ -694,6 +697,7 @@ push.normal <- function(y, er, mean, sdev, add=TRUE, subtract=FALSE, seed=NA, n=
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
 #' @param cal.lim Calendar axis limits. Calculated automatically by default.
+#' @param cal.rev Reverse the calendar axis. Defaults to TRUE.
 #' @param calib.col Colour of the calibrated distribution (defaults to semi-transparent light grey).
 #' @param pushed.col Colour of the pushed distribution (defaults to semi-transparent blue).
 #' @param heights Heights of the calibrated and 'pushed' distributions. Defaults to 0.3 of the device's height.
@@ -705,7 +709,7 @@ push.normal <- function(y, er, mean, sdev, add=TRUE, subtract=FALSE, seed=NA, n=
 #' @examples
 #'   push.gamma(250, 25, 50, 2, add=FALSE) # subtract a gamma distribution
 #' @export
-push.gamma <- function(y, er, mean, shape, add=TRUE, subtract=FALSE, seed=NA, n=1e6, prob=0.95, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, cc.dir=NULL, is.F=FALSE, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cal.lim=c(), calib.col=rgb(0,0,0,.25), pushed.col=rgb(0,0,1,.4), heights=0.3, inset=TRUE, inset.col="darkgreen", inset.loc=c(0.6, 0.97, 0.6, 0.97), inset.mar=c(3, 0.5, 0.5, 0.5), inset.mgp=c(2,1,0)) {
+push.gamma <- function(y, er, mean, shape, add=TRUE, subtract=FALSE, seed=NA, n=1e6, prob=0.95, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, cc.dir=NULL, is.F=FALSE, normal=TRUE, t.a=3, t.b=4, BCAD=FALSE, cal.lim=c(), cal.rev=TRUE, calib.col=rgb(0,0,0,.25), pushed.col=rgb(0,0,1,.4), heights=0.3, inset=TRUE, inset.col="darkgreen", inset.loc=c(0.6, 0.97, 0.6, 0.97), inset.mar=c(3, 0.5, 0.5, 0.5), inset.mgp=c(2,1,0)) {
   if(length(y) != 1 || length(er) != 1)
     stop("Please provide one value for both y and er")
   if(length(mean) != 1 || length(shape) != 1)
@@ -733,17 +737,19 @@ push.gamma <- function(y, er, mean, shape, add=TRUE, subtract=FALSE, seed=NA, n=
    }
   shifted <- density(shifted)
    
-  calpol <- cbind(c(calib[,1], rev(calib[,1])), c(calib[,2]/max(calib[,2]), rep(0, nrow(calib))))
-  shiftpol <- cbind(c(min(shifted$x), shifted$x, max(shifted$x)), c(0, shifted$y/max(shifted$y), 0))
+ # calpol <- cbind(c(calib[,1], rev(calib[,1])), c(calib[,2]/max(calib[,2]), rep(0, nrow(calib))))
+#  shiftpol <- cbind(c(min(shifted$x), shifted$x, max(shifted$x)), c(0, shifted$y/max(shifted$y), 0))
 
   if(length(cal.lim) == 0) {
     cal.lim <- range(calib[,1], shifted$x)
-    if(!BCAD) cal.lim <- rev(cal.lim)
+    if(BCAD) cal.lim <- rev(cal.lim)
   }
+  if(cal.rev)
+    cal.lim <- rev(cal.lim)
   
   plot(0, type="n", xlim=cal.lim, ylim=c(0, 1.5), bty="l", ylab="", yaxt="s", xlab=ifelse(BCAD, "BC/AD", "cal BP"))
-  draw.dist(cbind(calib), dist.col=calib.col, dist.border=calib.col, y.pos=0, fraction=heights)
-  hpds <- draw.dist(cbind(shifted$x, shifted$y), prob=prob, y.pos=0, fraction=heights)
+  draw.dist(cbind(calib[,1], .6*calib[,2]/max(calib[,2])), dist.col=calib.col, dist.border=calib.col, y.pos=0, fraction=heights)
+  hpds <- draw.dist(cbind(shifted$x, .6*shifted$y/max(shifted$y)), prob=prob, y.pos=0, fraction=heights)
  
   # inset graph
   if(inset) {

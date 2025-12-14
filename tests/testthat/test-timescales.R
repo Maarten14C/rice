@@ -1,7 +1,7 @@
 test_that("calBPtoBCAD returns expected BC/AD value", {
   result <- calBPtoBCAD(2000)
   expect_length(result, 1)
-  expect_equal(result, -50, tolerance = 1e-5)
+  expect_equal(result, -51, tolerance = 1e-5)
 })
 
 test_that("calBPtoBCAD returns expected cal BC/AD values (multiple)", {
@@ -87,9 +87,9 @@ test_that("b2ktocalBP returns expected calBP value", {
 })
 
 test_that("b2ktoBCAD returns expected BC/AD value", {
-  result <- unlist(unname(b2ktoBCAD(5000)))
+  result <- b2ktoBCAD(5000)
   expect_length(result, 1)
-  expect_equal(result, c(-3000), tolerance = 1e-5)
+  expect_equal(result, c(-3001), tolerance = 1e-5)
 })
 
 test_that("b2ktoC14 returns expected C14 age", {
@@ -125,7 +125,8 @@ test_that("C14tocalBP returns expected cal BP values", {
 })
 
 test_that("C14toF14C returns expected F14C value", {
-  result <- unlist(unname(C14toF14C(8000)))
+  result <- C14toF14C(8000)[[1]]
+  expect_type(result, "double")
   expect_length(result, 1)
   expect_equal(result, c(0.3693938), tolerance = 1e-5)
 })

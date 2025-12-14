@@ -229,65 +229,6 @@ hpd.overlap <- function(distA, distB, prob=.95) {
 
 
 
-#' @name coverage
-#' @title coverage of one distribution by another
-#' @description Samples n random points from distribution A (with higher likelihoods proportionally more likely to be sampled), and for each point checks whether distribution B covers that point. Then the proportion of points where A is covered by B is returned. Can also calculate the coverage of distribution B by distribution A (if both=TRUE). The value of the coverage can range between 0 (distribution A is not covered by distribution B) to 1 (B covers A completely).
-#' @return The coverage of distribution A within distribution B. 
-#' @param distA Distribution A. Expects two columns: values and their probabilities (e.g., caldist(130,10, cc=1)).
-#' @param distB Distribution B. Expects two columns: values and their probabilities (e.g., caldist(130,10, cc=1)).
-#' @param n The number of random points to be sampled (proportionally to the density of distribution A).
-#' @param k The number of points to be sampled for each iteration n from distribution B. After this, the range of these samples values is calculated to obtain a width of distribution B within which the sampled values of distribution could fall (the more, the higher the coverage).
-#' @param nameA The name of distribution A (for the plot's legend).
-#' @param nameB The name of distribution B (for the plot's legend).
-#' @param decimals Number of decimals to report - rounding is to 4 decimals by default.
-#' @param seed For reproducibility, a seed can be set (e.g., \code{seed=123}). Defaults to NA, no seed set.
-#' @param visualise Whether or not to plot the distributions. Defaults to TRUE.
-#' @param xlab Label of the horizontal axis. Defaults to \code{xlab="cal BP"}.
-#' @examples
-#'   distA <- caldist(130, 20, cc=0) # normal distribution
-#'   distB <- caldist(130, 20, cc=1) # calibrated distribution
-#'   plot(distB, type="l")
-#'   lines(distA, col=2)
-#'   coverage(distA, distB)
-#' @export
-coverage <- function(distA, distB, n=1e4, k=10, nameA="A", nameB="B", decimals=4, seed=NA, visualise=TRUE, xlab="cal BP") {
-  if(ncol(distA) != 2 || ncol(distB) != 2)
-    stop("unexpected format of the distributions. For both distributions, I expect two columns, the first one with the values and the second one their probabilities.")
-  
-  xseq <- range(distA[,1], distB[,1])
-  xseq <- seq(xseq[1], xseq[2], length=1e3)
-  densA <- approx(distA[,1], distA[,2]/sum(distA[,2]), xseq, yleft=0, yright=0)$y
-  densB <- approx(distB[,1], distB[,2]/sum(distB[,2]), xseq, yleft=0, yright=0)$y  
-  
-  if(visualise) {
-    plot(xseq, densA, type='l', ylim=c(0, max(densA, densB)), xlab=xlab, ylab="density")
-    lines(xseq, densB, col=4)
-	legend("topright", legend=c(nameA, nameB), text.col=c(1,4), bty="n")	
-  }
-
-  if(!is.na(seed))
-    if(is.numeric(seed))
-      set.seed(seed) else
-        message("seed has to be numeric")
-
-  # sample 1 random values from distA, proportional to its probability distribution		
-  rA <- approx(cumsum(distA[,2]) / sum(distA[,2]), distA[,1], runif(n), yleft=1, yright=1)$y
-
-  # Sample k proportional values from B (to later build a range)
-  cdfB <- cumsum(distB[,2]) / sum(distB[,2])
-  rB_matrix <- matrix(approx(cdfB, distB[,1], runif(n * k), rule=2)$y, nrow=n, ncol=k)
-  minB <- apply(rB_matrix, 1, min)
-  maxB <- apply(rB_matrix, 1, max)
-
-  # Check if rA is within the range spanned by rB1 and rB2
-  covered <- (rA >= minB) & (rA <= maxB)
-  
-  # Proportion of A samples within the B bounds
-  return(coverage=mean(covered))
-}
-
-
-
 #' @name overlap
 #' @title The overlap between calibrated C14 dates
 #' @description Calculates the amount of overlap (as percentage) between two or more calibrated radiocarbon dates. It does this by taking a sequence of calendar dates 'x' and for each calendar date find the calibrated distribution with the minimum height - this minimum height is taken as the overlap between the dates for that age. This is repeated for all 'x'. The sum of these heights is the overlap, which can reach values from 0 to 100\%. 
@@ -309,6 +250,7 @@ coverage <- function(distA, distB, n=1e4, k=10, nameA="A", nameB="B", decimals=4
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param threshold Report only values above a threshold. Defaults to \code{threshold=1e-6}.
 #' @param xlim Age limits of the x-axis. Calculated automatically by default.  
+#' @param cal.rev Reverse the calendar axis. Defaults to TRUE.
 #' @param xlab Label of the calendar age, defaults to BCAD or cal BP.
 #' @param yrby Resolution in years. Defaults to \code{by=1}.
 #' @param dist.col The colour of the individual (calibrated) distributions. Defaults to semi-transparent grey. Different colours can also be provided for the individual distributions.
@@ -328,7 +270,7 @@ coverage <- function(distA, distB, n=1e4, k=10, nameA="A", nameB="B", decimals=4
 #'   mydists <- list(caldist(130,20, cc=1), caldist(150,20, cc=0))
 #'   overlap(mydists)
 #' @export
-overlap <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, BCAD=FALSE, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, threshold=0, xlim=c(), xlab=c(), yrby=1, dist.col=rgb(0,0,0,.2), overlap.col=rgb(0,0,1,.4), overlap.border=NA, overlap.height=1, talk=TRUE, visualise=TRUE, prob=0.95, roundby=1, bty="n", yaxt="n") {
+overlap <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, BCAD=FALSE, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, threshold=0, xlim=c(), cal.rev=TRUE, xlab=c(), yrby=1, dist.col=rgb(0,0,0,.2), overlap.col=rgb(0,0,1,.4), overlap.border=NA, overlap.height=1, talk=TRUE, visualise=TRUE, prob=0.95, roundby=1, bty="n", yaxt="n") {
   if(length(cc) == 1)
     cc <- rep(cc,length(y))
   if(length(deltaR) == 1)
@@ -377,24 +319,27 @@ overlap <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbomb=F
       if(BCAD)
         xrng <- range(xseq) else
           xrng <- rev(range(xseq))
+    if(!cal.rev)
+      xrng <- rev(xrng)	  
     if(length(xlab) == 0)
       if(BCAD)
         xlab <- "cal BC/AD" else
           xlab <- "cal BP"
     plot(0, type="n", xlim=xrng, xlab=xlab, ylim=c(0, length(dists)+1), ylab="", bty=bty, yaxt=yaxt)
-		
+
     for(i in 1:length(dists)) {
-      draw.dist(dists[[i]], dist.col=dist.col[i], y.pos=i, dist.border=dist.col[i], prob=prob, mirror=FALSE, BCAD=BCAD)
+      thisdist <- cbind(dists[[i]][,1], .8*dists[[i]][,2]/max(dists[[i]][,2]))
+      draw.dist(thisdist, dist.col=dist.col[i], y.pos=i, dist.border=dist.col[i], prob=prob, mirror=FALSE, BCAD=BCAD)
       if(length(labels) > 0)
         text(max(dists[[i]][,1]), i, labels=labels[i], col=dist.col[i], adj=c(0,-1))
     }
     if(max(this.overlap) > 0)
-      draw.dist(cbind(xseq, this.overlap), dist.col=overlap.col, dist.border=overlap.col, prob=prob, y.pos=0, BCAD=BCAD, hpd=FALSE)
+      draw.dist(cbind(xseq, .8*this.overlap/max(this.overlap)), dist.col=overlap.col, dist.border=overlap.col, prob=prob, y.pos=0, BCAD=BCAD, hpd=FALSE)
   }
   
   if(talk)
-    message("overlap: ", round(100*sum(this.overlap), roundby), "%")
-  invisible(100*sum(this.overlap))
+    message("overlap: ", round(100*sum(this.overlap)*yrby, roundby), "%")
+  invisible(100*sum(this.overlap)*yrby)
 }
 
 

@@ -4,12 +4,12 @@
 \alias{b2ktoBCAD}
 \title{calculate cal BC/AD ages from b2k ages}
 \usage{
-b2ktoBCAD(x, zero = TRUE)
+b2ktoBCAD(x, zero = FALSE)
 }
 \arguments{
 \item{x}{The b2k age(s) to be translated into cal BC/AD ages.}
 
-\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.}
+\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=FALSE}.}
 }
 \value{
 The cal BC/AD age(s). BC ages are negative, AD ages are positive.

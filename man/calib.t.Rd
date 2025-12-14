@@ -16,6 +16,7 @@ calib.t(
   as.F = FALSE,
   is.F = FALSE,
   BCAD = FALSE,
+  cal.rev = TRUE,
   cc.dir = c(),
   normal.col = "red",
   normal.lwd = 1.5,
@@ -47,6 +48,8 @@ calib.t(
 \item{is.F}{Use this if the provided date is in the F14C timescale.}
 
 \item{BCAD}{Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.}
+
+\item{cal.rev}{Reverse the calendar age axis. Defaults to TRUE}
 
 \item{cc.dir}{Directory where the calibration curves for C14 dates \code{cc} are allocated. By default \code{cc.dir=c()}.
 Use \code{cc.dir="."} to choose current working directory. Use \code{cc.dir="Curves/"} to choose sub-folder \code{Curves/}.}

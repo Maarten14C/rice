@@ -15,7 +15,7 @@ C14tocalBP(
 )
 }
 \arguments{
-\item{y}{The C14 age. No errors are assumed.}
+\item{y}{The C14 age. No errors are assumed. Can only deal with one C14 age at a time.}
 
 \item{cc}{calibration curve for C14 (see \code{caldist()}).}
 

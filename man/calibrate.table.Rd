@@ -19,7 +19,8 @@ calibrate.table(
   deltaSTD = 0,
   prob = 0.95,
   prob.round = 1,
-  age.round = 0
+  age.round = 0,
+  docx = c()
 )
 }
 \arguments{
@@ -52,14 +53,17 @@ calibrate.table(
 \item{prob.round}{Rounding for reported probabilities. Defaults to 1 decimal.}
 
 \item{age.round}{Rounding for ages. Defaults to 0 decimals.}
+
+\item{docx}{By default, the table is written to your web browser. If you wish to write it to a MS-Word document instead, provide the file (with .docx extension) and its location here, e.g., \code{docx="C14_table.docx"}.}
 }
 \description{
-Calibrate a number of radiocarbon dates and make a table containing the calibrated ranges.
+Calibrate a number of radiocarbon dates and make a table containing the calibrated ranges (both highest posterior densities and quantiles).
 }
 \details{
-Calibration is done taking into account calibration curves and any age offsets (deltaR, deltaSTD). The table will be displayed in an Internet browser, from which it can be pased into a word processor such as MS-Word.
+Calibration is done taking into account calibration curves and any age offsets (deltaR, deltaSTD). The table will be displayed in an Internet browser, or alternatively saved to a .docx file.
 }
 \examples{
+ calibrate.table(130, 20)
  data(shroud)
  calibrate.table(shroud$y, shroud$er, shroud$ID)
 }

@@ -9,7 +9,7 @@
 #' @author Maarten Blaauw <maarten.blaauw@qub.ac.uk>
 #' @description Provides equations for the handling of radiocarbon dates, for example to calculate different radiocarbon timescales (C14 age, F14C, pMC, Delta14C), for their calibration, and estimating the effects of contamination. This package accompanies the data package rintcal.
 #' @importFrom utils read.table write.table packageName data installed.packages browseURL download.file read.csv head tail
-#' @importFrom stats approx dnorm median weighted.mean runif pchisq density quantile dgamma rgamma rnorm rbeta sd
+#' @importFrom stats approx dnorm median weighted.mean runif pchisq density quantile dgamma rgamma rnorm rbeta sd setNames
 #' @importFrom grDevices rgb extendrange grey rainbow colorRampPalette 
 #' @importFrom graphics axis par legend lines points polygon segments text mtext abline image rect curve arrows strwidth layout
 #' @importFrom rlang sym

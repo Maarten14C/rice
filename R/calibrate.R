@@ -184,7 +184,7 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 
 #' @name hpd
 #' @title Calculate highest posterior density
-#' @description Calculate highest posterior density ranges of calibrated distribution
+#' @description Calculate highest posterior density ranges of a calibrated distribution
 #' @return The highest posterior density ranges, as three columns: from age, to age, and the corresponding percentage(s) of the range(s)
 #' @param calib The calibrated distribution, as returned from caldist()
 #' @param prob Probability range which should be calculated. Default \code{prob=0.95}.
@@ -225,12 +225,20 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
 
   # find the outer ages of the calibrated ranges
   if(BCAD) {
-    from <- sort(calib[which( diff(c(calib[,4], 0)) == -1),1])
-    to <- sort(calib[which( diff(c(0, calib[,4])) == 1),1])
-  } else {
-      from <- sort(calib[which( diff(c(0, calib[,4])) == 1),1])
-      to <- sort(calib[which( diff(c(calib[,4], 0)) == -1),1])
+    from <- sort(calib[which(diff(c(calib[,4], 0)) == -1), 1])
+    to <- sort(calib[which(diff(c(0, calib[,4])) == 1), 1])
+
+    # swap order when the range is in AD or crosses BC/AD
+    swap <- which( (pmax(from, to) > 0) & (from > to) )
+    if(length(swap) > 0) {
+      tmp <- from[swap]
+      from[swap] <- to[swap]
+      to[swap] <- tmp
     }
+  } else {
+    from <- sort(calib[which(diff(c(0, calib[,4])) == 1), 1])
+    to <- sort(calib[which(diff(c(calib[,4], 0)) == -1), 1])
+  }
 
   # find the year and probability within each range (as %)
   perc <- 0
@@ -254,6 +262,33 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
       return(data.frame(hpds))
 }
 
+
+
+
+#' @name age.range
+#' @title Calculate age ranges
+#' @description Calculate the quantile age ranges of a calibrated distribution
+#' @return The highest posterior density ranges, as three columns: from age, to age, and the corresponding percentage(s) of the range(s)
+#' @param calib The calibrated distribution, as returned from caldist()
+#' @param prob Probability range which should be calculated. Default \code{prob=0.95}.
+#' @param roundby Rounding. Defaults to 0 decimals.
+#' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @examples
+#' age.range(caldist(130,20))
+#' @export
+age.range <- function(calib, prob=0.95, roundby=0, BCAD=FALSE) {
+  if(NCOL(calib) == 1) { # then it's NOT a 'calib' and we assume it's a vector
+    rng <- quantile(calib, c((1-prob)/2, 1 - (1-prob)/2))
+  }	else {
+    cdf <- cumsum(calib[,2] / sum(calib[,2]))
+    rng <- approx(cdf, calib[,1],
+      c((1-prob)/2, 1 - (1-prob)/2))$y
+    }
+  rng <- rev(rng)	
+  if(BCAD && max(rng) > 0) 	
+    rev(rng)
+  return(round(rng, roundby))
+}
 
 
 #  find the calibrated probability of a calendar age for a 14C date
@@ -488,6 +523,7 @@ p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, n
 #' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
 #' @param is.F Use this if the provided date is in the F14C timescale.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param cal.rev Reverse the calendar age axis. Defaults to TRUE
 #' @param cc.dir Directory where the calibration curves for C14 dates \code{cc} are allocated. By default \code{cc.dir=c()}.
 #' Use \code{cc.dir="."} to choose current working directory. Use \code{cc.dir="Curves/"} to choose sub-folder \code{Curves/}.
 #' @param normal.col Colour of the normal curve
@@ -501,7 +537,7 @@ p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, n
 #' calib.t()
 #'
 #' @export
-calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, BCAD=FALSE, cc.dir=c(), normal.col="red", normal.lwd=1.5, t.col=rgb(0,0,0,0.25), t.border=rgb(0,0,0,0,0.25), xlim=c(), ylim=c()) {
+calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, BCAD=FALSE, cal.rev=TRUE, cc.dir=c(), normal.col="red", normal.lwd=1.5, t.col=rgb(0,0,0,0.25), t.border=rgb(0,0,0,0,0.25), xlim=c(), ylim=c()) {
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
@@ -513,7 +549,9 @@ calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, deltaR=0,
   xlab <- ifelse(BCAD, "BC/AD", "cal BP")
   if(length(xlim) == 0)
     xlim <- range(c(tpol[,1], normalcal[, 1]))
-  if(!BCAD)
+  if(cal.rev)
+    xlim <- rev(xlim)
+  if(BCAD)
     xlim <- rev(xlim)
   if(length(ylim) == 0)
     ylim <- c(0, max(tcal[,2], normalcal[, 2]))
@@ -567,8 +605,8 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve
 
 #' @name calibrate.table
 #' @title Make a table of calibrated dates
-#' @description Calibrate a number of radiocarbon dates and make a table containing the calibrated ranges.
-#' @details Calibration is done taking into account calibration curves and any age offsets (deltaR, deltaSTD). The table will be displayed in an Internet browser, from which it can be pased into a word processor such as MS-Word.
+#' @description Calibrate a number of radiocarbon dates and make a table containing the calibrated ranges (both highest posterior densities and quantiles).
+#' @details Calibration is done taking into account calibration curves and any age offsets (deltaR, deltaSTD). The table will be displayed in an Internet browser, or alternatively saved to a .docx file.
 #' @param y The radiocarbon dates
 #' @param er The laboratory errors of the radiocarbon dates
 #' @param lab The labels of the radiocarbon dates (if any)
@@ -584,12 +622,14 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve
 #' @param prob Probability range which should be calculated. Default \code{prob=0.95}.
 #' @param age.round Rounding for ages. Defaults to 0 decimals.
 #' @param prob.round Rounding for reported probabilities. Defaults to 1 decimal.
+#' @param docx By default, the table is written to your web browser. If you wish to write it to a MS-Word document instead, provide the file (with .docx extension) and its location here, e.g., \code{docx="C14_table.docx"}.
 #' @author Maarten Blaauw
 #' @examples
+#'  calibrate.table(130, 20)
 #'  data(shroud)
 #'  calibrate.table(shroud$y, shroud$er, shroud$ID)
 #' @export
-calibrate.table <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, cc.dir=c(), thiscurve=c(), is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, prob=0.95, prob.round=1, age.round=0) {
+calibrate.table <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, cc.dir=c(), thiscurve=c(), is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, prob=0.95, prob.round=1, age.round=0, docx=c()) {
 
   if(!requireNamespace("flextable", quietly = TRUE))
     stop("Package 'flextable' is required. Install with install.packages('flextable').")
@@ -607,7 +647,7 @@ calibrate.table <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, cc
 
   # to be filled later on
   labs <- c(); ys <- c(); ers <- c(); froms <- c(); tos <- c(); percs <- c()
-  ccs <- c(); grp_idx <- c()
+  ccs <- c(); min.rngs <- c(); max.rngs <- c(); grp_idx <- c()
 
   hasdeltaR <- FALSE
   if(length(deltaR) == 1)
@@ -623,10 +663,25 @@ calibrate.table <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, cc
   }
 
   for(i in 1:length(y)) {
-    this.hpd <- hpd(
-      caldist(y[i], er[i], cc=cc[i], BCAD=BCAD, postbomb=postbomb, thiscurve=thiscurve, cc.dir=cc.dir,
-        deltaR=deltaR[i], deltaSTD=deltaSTD[i], is.F=is.F, is.pMC=is.pMC),
+    this.cal <- caldist(y[i], er[i], cc=cc[i], BCAD=BCAD, postbomb=postbomb,
+      thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
+      deltaR=deltaR[i], deltaSTD=deltaSTD[i])
+    this.cal <- this.cal[order(this.cal[,1]), ]
+    this.hpd <- hpd(this.cal, BCAD=BCAD,
       prob.round=prob.round, age.round=age.round)
+
+    cdf <- cumsum(this.cal[,2] / sum(this.cal[,2]))
+    rng <- approx(cdf, this.cal[,1],
+      c((1-prob)/2, 1 - (1-prob)/2))$y
+
+    min.rng <- round(min(rng), age.round)
+    max.rng <- round(max(rng), age.round)
+	    
+	if(BCAD) { # report ranges in chronological order
+        max.rng <- round(min(rng), age.round)
+        min.rng <- round(max(rng), age.round)
+      }
+
     n <- length(this.hpd$from)
     froms <- c(froms, as.numeric(this.hpd$from))
     tos <- c(tos, as.numeric(this.hpd$to))
@@ -635,6 +690,8 @@ calibrate.table <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, cc
     ys <- c(ys, rep(y[i], n))
     ers <- c(ers, rep(er[i], n))
     ccs <- c(ccs, rep(cc[i], n))
+    min.rngs <- c(min.rngs, rep(min.rng, n))
+    max.rngs <- c(max.rngs, rep(max.rng, n))
     grp_idx <- c(grp_idx, rep(i, n))
     if(hasdeltaR) {
       deltaRs <- c(deltaRs, rep(deltaR[i], n))
@@ -643,59 +700,72 @@ calibrate.table <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, cc
   }
 
   # format the values
-  C14_sd <- paste(ys, "±", ers)
-  hpd_str <- paste0(froms, "–", tos, " (", percs, "%)")
+  C14_sd <- paste(ys, " \u00b1 ", ers)
+  hpd_str <- paste0(froms, " \u2013 ", tos, " (", percs, "%)")
+  rng_str <- paste0(max.rngs, " \u2013 ", min.rngs)
+  
   if(hasdeltaR)
-    deltaR_str <- paste(deltaRs, "±", deltaSTDs)
+    deltaR_str <- paste(deltaRs, "\u00b1", deltaSTDs)
 
   collapse_idx <- split(seq_along(grp_idx), grp_idx)
   lab_one <- sapply(collapse_idx, function(idx) labs[idx][1])
   C14_one <- sapply(collapse_idx, function(idx) C14_sd[idx][1])
   cc_one <- sapply(collapse_idx, function(idx) ccs[idx][1])
+  rng_one <- sapply(collapse_idx, function(idx) rng_str[idx][1])
   hpd_mult <- sapply(collapse_idx, function(idx) paste(hpd_str[idx], collapse = "\n"))
   if(hasdeltaR)
     deltaR_one <- sapply(collapse_idx, function(idx) deltaR_str[idx][1])
-
+  
   # make table labels
-  ylab <- if(is.F) "F14C (± sd)" else
-    if(is.pMC) "pMC (± sd)" else
-      "14C BP (± sd)"
-  cc_labels = setNames(c("IntCal20", "Marine20", "SHCal20", "mixed"), c(1, 2, 3, 4))
+  ylab <- if(is.F) "F14C (\u00b1 sd)" else
+    if(is.pMC) "pMC (\u00b1 sd)" else
+      "14C BP (\u00b1 sd)"
+  cc_labels = setNames(c("IntCal20 (Reimer et al. 2020)", "Marine20 (Heaton et al. 2020)", "SHCal20 (Hogg et al. 2020)", "mixed"), c(1, 2, 3, 4))
   cc_map <- function(v)
     unname(ifelse(as.character(v) %in% names(cc_labels),
       cc_labels[as.character(v)], as.character(v)))
   uniq_cc <- unique(cc)
   if(length(uniq_cc) > 1) {
     pairs <- paste0(uniq_cc, " = ", cc_map(uniq_cc))
-    legend_text <- paste0("cc legend: ", paste(pairs, collapse = "; "))
+    legend_text <- paste0("cc (calibration curve) legend: ", paste(pairs, collapse = "; "))
   } else
       legend_text <- paste("Calibration curve:", cc_map(uniq_cc))
+  if(BCAD)
+    if(min(min.rngs) < 0)
+      legend_text <- paste0(legend_text, ". BC ages are negative")
+  hpd.label <- ifelse(BCAD, paste0(100*prob, "% hpd ranges (cal BC/AD)"),
+    paste0(100*prob, "% hpd ranges (cal BP)"))
+  rng.label <- ifelse(BCAD, paste0(100*prob, "% range (cal BC/AD)"),
+    paste0(100*prob, "% range (cal BP)"))
 
- # Assemble table with one row per date
-  astable <- data.frame(labID=lab_one, C14=C14_one, stringsAsFactors=FALSE)
+  # Assemble table with one row per date
+  astable <- data.frame(labID=lab_one, C14=C14_one, rng=rng_one, stringsAsFactors=FALSE)
   if(hasdeltaR)
     astable <- data.frame(astable, deltaR=deltaR_one, stringsAsFactors=FALSE)
   if(length(unique(cc)) > 1)
     astable <- data.frame(astable, cc=cc_one, stringsAsFactors=FALSE)
 
   tbl <- data.frame(astable, hpd=hpd_mult, stringsAsFactors=FALSE)
-  ft <- flextable(tbl)
-  ft <- flextable::set_header_labels(ft, C14=ylab,
-    hpd=ifelse(BCAD, paste0(100*prob, "% hpd ranges (cal BC/AD)"),
-      paste0(100*prob, "% hpd ranges (cal BP)")))
-
+  ft <- flextable::flextable(tbl)
+  ft <- flextable::set_header_labels(ft, labID="Lab ID", C14=ylab, rng=rng.label, hpd=hpd.label)
+  
   # alignment (only include columns that actually exist)
-  cols_to_align <- c("labID", "C14", "hpd")
+  cols_to_align <- c("labID", "C14", "rng", "hpd")
   if("deltaR" %in% names(tbl))
     cols_to_align <- c(cols_to_align, "deltaR")
   if("cc" %in% names(tbl))
     cols_to_align <- c(cols_to_align, "cc")
   ft <- flextable::align(ft, j=cols_to_align, align="right", part="body")
-  ft <- flextable::valign(ft, j=intersect(cols_to_align, c("labID", "C14", "deltaR", "cc")),
-    valign="top", part="body")
+  ft <- flextable::align(ft, j=cols_to_align, align="right", part="header")
+
+  ft <- flextable::valign(ft, j=intersect(cols_to_align, c("labID", "C14", "deltaR", "cc", "rng")), valign="top", part="body")
   ft <- flextable::autofit(ft)
 
   # add footer and return the table
-  ft <- flextable::add_footer_lines(ft, values = legend_text)
-  ft
+  ft <- flextable::add_footer_lines(ft, values=legend_text)
+  
+  # save as docx, or to the web browser (default)
+  if(length(docx) > 0)
+    flextable::save_as_docx(ft, path=file.path(docx)) else
+      return(ft)
 }

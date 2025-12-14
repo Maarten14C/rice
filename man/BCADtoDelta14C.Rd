@@ -6,7 +6,7 @@
 \usage{
 BCADtoDelta14C(
   x,
-  zero = TRUE,
+  zero = FALSE,
   cc = 1,
   postbomb = FALSE,
   rule = 1,
@@ -18,7 +18,7 @@ BCADtoDelta14C(
 \arguments{
 \item{x}{The cal BC/AD year.}
 
-\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.}
+\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=FALSE}.}
 
 \item{cc}{calibration curve (see \code{caldist()}).}
 

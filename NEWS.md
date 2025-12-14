@@ -1,11 +1,14 @@
 # rice 1.5.0
-* TODO: ensure that e.g. draw.ccurve can be used to plot cc="arnold_libby_1951"
+* new function `calibrate.table` which produces a table with the hpd calibrated ranges of radiocarbon dates, together with any aspects such as age offsets or different calibration curves. This table is produced as a web-page which can then be copied into e.g. an MS-Word document (inspired by comments from Vegard Martinsen, NMBU, Norway).
 * The heights and colours of the calibrated distributions in `draw.dates` should now be plotted more predictably.
-* renamed `fromto` to `timescales`
-* added `table.calibrate`...
+* smoothing now works as expected when doing `mycc <- smooth.ccurve(smooth=50); calibrate(thiscurve=mycc)`.
+* removed the `coverage` function since the `overlap` and `hpd.overlap` functions already calculate similar estimates. 
+* hpd ranges are now reported forward in time, also when the ages are in AD.
+* new function `age.range` which calculates quantile age ranges (e.g., for 95\%, it'll report the range between 2.5\% and 97.5\%).
+* added option to reverse calendar axis for functions where this is relevant (`cal.rev`).
 
 # rice 1.4.0
-* renamed 'realm' to the more accurate term 'timescale' (and renamed BC/AD to cal BC/AD where relevant).
+* renamed `realm` to the more accurate term `timescale` (and renamed BC/AD to cal BC/AD where relevant).
 * renamed D14C to the more correct Delta14C in functions such as `calBPtoDelta14C`.
 * `BCADtoDelta14C` and `b2ktoDelta14C` now calculate Delta14C values correctly.
 * The `map.shells` and `find.shells` functions have a new option `feeding` which can be used to limit the results to shells with a specific feeding ecology, e.g., `map.shells(53, -11, feeding="suspension")`.

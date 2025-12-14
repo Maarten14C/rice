@@ -18,6 +18,7 @@ draw.dates(
   reservoir = c(),
   normal = TRUE,
   peak = 1,
+  ex = c(),
   as.unit = FALSE,
   t.a = 3,
   t.b = 4,
@@ -47,6 +48,7 @@ draw.dates(
   age.lab = c(),
   age.lim = c(),
   age.rev = FALSE,
+  cal.rev = FALSE,
   d.lab = c(),
   d.lim = c(),
   d.rev = TRUE,
@@ -89,6 +91,8 @@ draw.dates(
 \item{normal}{Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2009).}
 
 \item{peak}{Height multiplier for the distributions. Defaults to \code{peak=1}.}
+
+\item{ex}{synonym for peak}
 
 \item{as.unit}{If set to TRUE, the peak of the highest distribution is set to 1. Otherwise, it is set to a fraction of the axis limits (default, see 'fraction')}
 
@@ -147,6 +151,8 @@ draw.dates(
 \item{age.lim}{Limits of the calendar axis (if present)}
 
 \item{age.rev}{Reverse the age axis. Defaults to TRUE}
+
+\item{cal.rev}{Synonym for age.rev}
 
 \item{d.lab}{Title of the vertical axis (if present)}
 

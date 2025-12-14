@@ -33,7 +33,7 @@ calibrate(
   hpd.fill = rgb(0, 0, 0, 0.3),
   dist.height = 0.3,
   dist.float = c(0.01, 0.01),
-  cal.rev = FALSE,
+  cal.rev = TRUE,
   yr.steps = FALSE,
   cc.resample = 5,
   threshold = 5e-04,
@@ -120,7 +120,7 @@ calibrate(
 
 \item{dist.float}{The probability distributions float a bit above the axes by default. Can be set to distinct heights of the axes, e.g.: \code{dist.float=c(0.05, 0.1)}, or to \code{dist.float=0}.}
 
-\item{cal.rev}{Whether or not to reverse the direction of the calendar axis.}
+\item{cal.rev}{Whether or not to reverse the direction of the calendar axis. Defaults to \code{cal.rev=TRUE}.}
 
 \item{yr.steps}{Temporal resolution at which C-14 ages are calibrated (in calendar years). By default follows the spacing in the calibration curve.}
 

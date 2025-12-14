@@ -42,10 +42,10 @@ library(rice)
 C-14, or radiocarbon, is a radioactive isotope that decays with a half-life of around 5730 years, and which is commonly used to date organic material back to around 50,000 years ago. Given a starting concentration $A_0$ of some organic material that we want to find the age of, the remaining amount of radiocarbon at time $t$ can be found as $A_t = A_0 e^{-\lambda t}$:
 
 ```{r, fig.width=4, fig.asp=.8}
-howmanyC14(0)
-howmanyC14(55e3)
+howmuchC14(0)
+howmuchC14(55e3)
 x <- seq(0, 55e3, length=100) # a sequence of ages
-y <- sapply(x, function(x) howmanyC14(x, talk=FALSE))
+y <- sapply(x, function(x) howmuchC14(x, talk=FALSE))
 plot(x, y, type="l", xlab="time (cal BP)", ylab="C-14 remaining")
 ```
 
@@ -89,7 +89,7 @@ Let's add these values to the previous plot:
 
 ```{r, fig.width=4, fig.asp=.8}
 draw.ccurve(1600, 1950, BCAD=TRUE)
-abline(h=BCADtoC14(1694)[1], lty=3) 
+abline(h=BCADtoC14(1694), lty=3)
 abline(v=C14toBCAD(129), lty=3)
 ```
 
@@ -109,6 +109,12 @@ The calibration curves can also be plotted in the timescales of F14C, pMC or $\D
 
 ```{r, fig.width=4, fig.asp=.8}
 draw.ccurve(50000, 35000, timescale="D")
+```
+
+Some older calibration curves are also available for historical interest, e.g.:
+
+```{r, fig.width=4, fig.asp=.8}
+draw.ccurve(cc1="stuiver_suess_1966", cc2="pearson_stuiver_1986")
 ```
 
 
@@ -166,7 +172,7 @@ draw.CF(50000, 3000)
 Here's a function to transform values between multiple timescales and visualise them:
 
 ```{r, fig.width=8, fig.asp=.6}
-timescales(100, "calBP")
+fromto(100, "calBP")
 ```
 
 ---
@@ -196,7 +202,12 @@ Sometimes, the same material is measured using multiple radiocarbon dates. If we
 
 ```{r}
 data(shroud)
-shroud
+calibrate.table(shroud$y, shroud$er, shroud$ID)
+```
+
+Let's check if we can pool the dates:
+
+```{r}
 pool(shroud$y,shroud$er) 
 Zu <- grep("ETH", shroud$ID) # Zurich lab only
 pool(shroud$y[Zu],shroud$er[Zu])
@@ -452,7 +463,7 @@ par(bg="black", mar=rep(1, 4))
 n <- 50; set.seed(1)
 draw.dates(rnorm(n, 2450, 30), rep(25, n), 1:n,
   mirror=FALSE, draw.base=FALSE, draw.hpd=FALSE, col="white",
-  threshold=1e-28, age.lim=c(2250, 2800), up=TRUE, ex=-20)
+  threshold=1e-28, age.lim=c(2250, 2800), up=TRUE, peak=30)
 ```
 
 

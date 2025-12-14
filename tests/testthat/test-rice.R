@@ -1,5 +1,5 @@
-test_that("howmanyC14 returns expected C14 atoms", {
-  result <- howmanyC14(55e3, talk=FALSE)
+test_that("howmuchC14 returns expected C14 atoms", {
+  result <- howmuchC14(55e3, talk=FALSE)
   expect_length(result, 1)
   expect_equal(unname(result), 115446, tolerance = 1e-5)
 })

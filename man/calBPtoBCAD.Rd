@@ -4,12 +4,12 @@
 \alias{calBPtoBCAD}
 \title{calculate cal BC/AD ages from cal BP ages}
 \usage{
-calBPtoBCAD(x, zero = TRUE)
+calBPtoBCAD(x, zero = FALSE)
 }
 \arguments{
 \item{x}{The calBP age(s) to be translated into cal BC/AD ages.}
 
-\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=TRUE}.}
+\item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=FALSE}.}
 }
 \value{
 The cal BC/AD age(s). BC ages are negative, AD ages are positive.
@@ -22,6 +22,6 @@ Turn cal BP ages into cal BC/AD (equivalent to cal BCE/CE). Negative ages indica
 }
 \examples{
  calBPtoBCAD(2024)
- calBPtoBCAD(1945:1955, zero=TRUE)
  calBPtoBCAD(1945:1955, zero=FALSE)
+ calBPtoBCAD(1945:1955, zero=TRUE)
 }

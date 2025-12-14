@@ -48,7 +48,7 @@ howmuchC14(
 The estimated number of C14 atoms.
 }
 \description{
-Find the amount of remaining C14 atoms in a sample, given its weight and age.
+Calculate the expected amount of remaining C14 atoms in a sample, given its weight and age.
 }
 \details{
 The number of carbon atoms in the sample is estimated. Given the known C14/C ratio at F=1, and given the sample's age, we can estimate the number of remaining C14 atoms.
