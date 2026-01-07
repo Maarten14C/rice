@@ -1,5 +1,5 @@
 # rice 1.6.0
-* updated the download from the calib.org marine database.
+* updated the download from the calib.org marine database (which was last updated 8 November 2025).
 * Changed the `positive` option's default within the `span` function to TRUE.
 * `calibrate(1.5, .025, is.F=TRUE, postbomb=1, thiscurve=glue.ccurves(, postbomb="NH1_monthly"), BCAD=TRUE)` no longer throws an error.
 * `F14CtoC14` now deals better with low F14C values (i.e., smaller than their lab errors).
