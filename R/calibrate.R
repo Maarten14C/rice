@@ -28,11 +28,11 @@
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param col.names Names for the output columns. Defaults to calBP/BCAD and probs, respectively (depending on the value of BCAD).
 #' @examples
-#' calib <- caldist(130,10)
+#' calib <- caldist(130,10, bombalert=FALSE)
 #' plot(calib, type="l")
 #' postbomb <- caldist(-3030, 20, postbomb=1, BCAD=TRUE)
 #' @export
-caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, talk=TRUE, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, pb.steps=0.05, cc0.res=5e3, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL, col.names=NULL) {
+caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, pb.steps=0.05, cc0.res=5e3, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL, col.names=NULL) {
 
   if(is.F && is.pMC)
     stop("cannot have both is.F=TRUE and is.pMC=TRUE")
@@ -70,7 +70,7 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, talk=TRUE, delt
                         stop("please provide a postbomb curve, e.g. postbomb=1")
                 } 
             } else
-                this.cc <- rintcal::glue.ccurves(cc, postbomb=bombglue, cc.dir, as.F=is.F, as.pMC=is.pMC)	
+                this.cc <- rintcal::glue.ccurves(cc, postbomb=postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)
           }
       }
     }
@@ -143,7 +143,7 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, talk=TRUE, delt
 #' @param rounded Rounding for reported probabilities. Defaults to 1 decimal.
 #' @param every Yearly precision (defaults to \code{every=1}).
 #' @examples
-#' point.estimates(caldist(130,20))
+#' point.estimates(caldist(130,20, bombalert=FALSE))
 #' plot(tmp <- caldist(2450,50), type='l')
 #' abline(v=point.estimates(tmp), col=1:4)
 #' @export
@@ -194,7 +194,7 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 #' @param every Yearly precision (defaults to 0.1, as a compromise between speed and accuracy).
 #' @param bins The number of bins required. Any distribution with fewer bins gets recalculated using 100 narrower bins.
 #' @examples
-#' hpd(caldist(130,20))
+#' hpd(caldist(130,20, bombalert=FALSE))
 #' plot(tmp <- caldist(2450,50), type='l')
 #' myhpds <- hpd(tmp)
 #' abline(v=unlist(myhpds[,1:2]), col=4)
@@ -272,7 +272,7 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
 #' @param roundby Rounding. Defaults to 0 decimals.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
 #' @examples
-#' age.range(caldist(130,20))
+#' age.range(caldist(130,20, bombalert=FALSE))
 #' @export
 age.range <- function(calib, prob=0.95, roundby=0, BCAD=FALSE) {
   if(NCOL(calib) == 1) { # then it's NOT a 'calib' and we assume it's a vector
@@ -300,7 +300,7 @@ age.range <- function(calib, prob=0.95, roundby=0, BCAD=FALSE) {
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
-#' @param bombalert Warn if a date is close to the lower limit of the calibration curve. Defaults to \code{postbomb=TRUE}.
+#' @param deltaR Age offset (e.g. for marine samples). This assumes that the radiocarbon age is provided as 14C BP (not F14C or pMC).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
@@ -383,7 +383,7 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
 #' @param seed For reproducibility, a seed can be set (e.g., \code{seed=123}). Defaults to NA, no seed set.
 #' @author Maarten Blaauw
 #' @examples
-#'   r.calib(10,130,20) # 10 random cal BP ages
+#'   r.calib(10,130,20, bombalert=FALSE) # 10 random cal BP ages
 #'   plot(density(r.calib(1e6, 2450, 20)))
 #' @export
 r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=2, cc.dir=NULL, seed=NA) {
@@ -628,6 +628,7 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve
 #' @param cc The calibration curve to smooth. Calibration curve for 14C dates: 'cc=1' for IntCal20 (northern hemisphere terrestrial), 'cc=2' for Marine20 (marine), 'cc=3' for SHCal20 (southern hemisphere terrestrial). Alternatively, one can also write, e.g., "IntCal20", "Marine13". One can also make a custom-built calibration curve, e.g. using 'mix.ccurves()', and load this using 'cc=4'. In this case, it is recommended to place the custom calibration curve in its own directory, using 'cc.dir' (see below). Explanations of the numbers are provided in the table footer. If there is more than one cc provided, they will be printed in an extra table column.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}. For the BCAD scale, BC ages are negative.
 #' @param postbomb Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'ccurve("sh1-2_monthly")'
+#' @param bombalert Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., 'cc.dir="ccurves"'.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
 #' @param is.F Set this to TRUE if the provided age and error are in the F14C timescale.
@@ -640,11 +641,11 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve
 #' @param docx By default, the table is written to your web browser. If you wish to write it to a MS-Word document instead, provide the file (with .docx extension) and its location here, e.g., \code{docx="C14_table.docx"}.
 #' @author Maarten Blaauw
 #' @examples
-#'  calibratable(130, 20)
+#'  calibratable(130, 20, bombalert=FALSE)
 #'  data(shroud)
 #'  calibratable(shroud$y, shroud$er, shroud$ID)
 #' @export
-calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, cc.dir=c(), thiscurve=c(), is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, prob=0.95, prob.round=1, age.round=0, docx=c()) {
+calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bombalert=TRUE, cc.dir=c(), thiscurve=c(), is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, prob=0.95, prob.round=1, age.round=0, docx=c()) {
 
   if(!requireNamespace("flextable", quietly = TRUE))
     stop("Package 'flextable' is required. Install with install.packages('flextable').")
@@ -678,7 +679,7 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, cc.di
   }
 
   for(i in 1:length(y)) {
-    this.cal <- caldist(y[i], er[i], cc=cc[i], BCAD=BCAD, postbomb=postbomb,
+    this.cal <- caldist(y[i], er[i], cc=cc[i], BCAD=BCAD, postbomb=postbomb, bombalert=bombalert,
       thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
       deltaR=deltaR[i], deltaSTD=deltaSTD[i])
     this.cal <- this.cal[order(this.cal[,1]), ]

@@ -62,10 +62,10 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
     message(wght, " mg carbon contains ", atoms, " C atoms")
     message("14C atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk)
     message(decays, " 14C atoms in the sample will decay each day")
-	message(paste0("For a 12C current of ", current*1e6, " micro-ampere (", i12, 
-	  " 12C/second) at the AMS detector,\n  ",
-	  persecond, " 14C particles would be counted per second (", 
-	  60*persecond, " per minute)" ))  
+    message(paste0("For a 12C current of ", current*1e6, " micro-ampere (", i12,
+      " 12C/second) at the AMS detector,\n  ",
+      persecond, " 14C particles would be counted per second (",
+      60*persecond, " per minute)" ))
   }
 
   invisible(C14)

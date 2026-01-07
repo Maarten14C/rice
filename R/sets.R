@@ -209,7 +209,7 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #' @param prob The probability of the highest posterior densities. Defaults to 95\%.
 #' @examples
 #'   distA <- caldist(130, 20, cc=0) # normal distribution
-#'   distB <- caldist(130, 20, cc=1) # calibrated distribution
+#'   distB <- caldist(130, 20, cc=1, bombalert=FALSE) # calibrated distribution
 #'   plot(distB, type="l")
 #'   lines(distA, col=2)
 #'   hpd.overlap(distA, distB)
@@ -267,7 +267,7 @@ hpd.overlap <- function(distA, distB, prob=.95) {
 #'   y <- c(3820, 4430) # the C14 ages of a twig and a marine shell from a single layer
 #'   er <- c(40, 40) # their lab errors
 #'   overlap(y, er, cc=1:2, dist.col=3:4, labels=c("twig", "shell"))
-#'   mydists <- list(caldist(130,20, cc=1), caldist(150,20, cc=0))
+#'   mydists <- list(caldist(130,20, cc=1, bombalert=FALSE), caldist(150, 20, cc=0))
 #'   overlap(mydists)
 #' @export
 overlap <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=NULL, BCAD=FALSE, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, threshold=0, xlim=c(), cal.rev=TRUE, xlab=c(), yrby=1, dist.col=rgb(0,0,0,.2), overlap.col=rgb(0,0,1,.4), overlap.border=NA, overlap.height=1, talk=TRUE, visualise=TRUE, prob=0.95, roundby=1, bty="n", yaxt="n") {

@@ -1,4 +1,4 @@
-# rice 1.5.1
+# rice 1.6.0
 * updated the download from the calib.org marine database.
 * Changed the `positive` option's default within the `span` function to TRUE.
 * `calibrate(1.5, .025, is.F=TRUE, postbomb=1, thiscurve=glue.ccurves(, postbomb="NH1_monthly"), BCAD=TRUE)` no longer throws an error.

@@ -39,7 +39,7 @@ The chosen point estimates
 Calculate a point estimate of a calibrated distribution - either the weighted mean, the median or the mode (maximum). Note that point estimates often tend to be very poor representations of entire calibrated distributions, so please be careful and do not reduce entire calibrated distributions to just 1 point value.
 }
 \examples{
-point.estimates(caldist(130,20))
+point.estimates(caldist(130,20, bombalert=FALSE))
 plot(tmp <- caldist(2450,50), type='l')
 abline(v=point.estimates(tmp), col=1:4)
 }

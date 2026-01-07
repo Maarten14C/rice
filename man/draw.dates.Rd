@@ -10,6 +10,7 @@ draw.dates(
   depth = c(),
   cc = 1,
   postbomb = FALSE,
+  bombalert = TRUE,
   deltaR = 0,
   deltaSTD = 0,
   thiscurve = c(),
@@ -75,6 +76,8 @@ draw.dates(
 \item{cc}{Calibration curve for C-14 dates (1, 2, 3, or 4, or, e.g., "IntCal20", "Marine20", "SHCal20", "nh1", "sh3", or "mixed"). If there are multiple dates but all use the same calibration curve, one value can be provided.}
 
 \item{postbomb}{Whether or not this is a postbomb age. Defaults to FALSE.}
+
+\item{bombalert}{Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.}
 
 \item{deltaR}{Age offset (e.g. for marine samples). Can also be provided as option 'reservoir'.}
 
@@ -190,13 +193,13 @@ Add individual or multiple calibrated dates to a plot.
 }
 \examples{
   plot(0, xlim=c(500,0), ylim=c(0, 2))
-  draw.dates(130, 20, depth=1) 
+  draw.dates(130, 20, depth=1, bombalert=FALSE)
   x <- sort(runif(10, 1000, 10000)) # draw 10 random calendar ages
   cc <- rintcal::ccurve() # get the calibration curve
   y <- approx(cc[,1], cc[,2], x)$y # find the IntCal 14C ages
   er <- .01 * y
-  draw.dates(y, er, 1:length(x))
+  draw.dates(y, er, 1:length(x), bombalert=FALSE)
   # or draw on the calibration curve
-  draw.dates(y, er, y, d.lab="Radiocarbon age (BP)")
+  draw.dates(y, er, y, d.lab="Radiocarbon age (BP)", bombalert=FALSE)
   draw.ccurve(add=TRUE, cc1.col=rgb(0,.5,0,.5))
 }

@@ -10,6 +10,7 @@ r.calib(
   er,
   cc = 1,
   postbomb = FALSE,
+  bombalert = TRUE,
   deltaR = 0,
   deltaSTD = 0,
   as.F = FALSE,
@@ -39,6 +40,8 @@ r.calib(
 \item{cc}{Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).}
 
 \item{postbomb}{Whether or not to use a postbomb curve. Required for negative radiocarbon ages.}
+
+\item{bombalert}{Warn if a date is close to the lower limit of the calibration curve. Defaults to \code{postbomb=TRUE}.}
 
 \item{deltaR}{Age offset (e.g. for marine samples).}
 
@@ -81,7 +84,7 @@ n randomly sampled calendar ages
 Calculate the cumulative calibrated distribution, then sample n random uniform values between 0 and 1 and find the corresponding calendar ages through interpolation. Calendar ages with higher calibrated probabilities will be proportionally more likely to be sampled.
 }
 \examples{
-  r.calib(10,130,20) # 10 random cal BP ages
+  r.calib(10,130,20, bombalert=FALSE) # 10 random cal BP ages
   plot(density(r.calib(1e6, 2450, 20)))
 }
 \author{

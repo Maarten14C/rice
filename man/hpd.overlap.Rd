@@ -21,7 +21,7 @@ Checks whether any of the highest posterior densities (hpds) of two distribution
 }
 \examples{
   distA <- caldist(130, 20, cc=0) # normal distribution
-  distB <- caldist(130, 20, cc=1) # calibrated distribution
+  distB <- caldist(130, 20, cc=1, bombalert=FALSE) # calibrated distribution
   plot(distB, type="l")
   lines(distA, col=2)
   hpd.overlap(distA, distB)

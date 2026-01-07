@@ -252,7 +252,7 @@ cc <- c(1,2)
 overlap(y, er, cc=cc)
 ```
 
-The calibrated ranges of radiocarbon dates can also be displayed in table (either on a webbrowser or as Word document):
+The calibrated ranges of radiocarbon dates can also be displayed in a table (either on a webbrowser or as Word document):
 
 ```{r, fig.width=4, fig.asp=1}
 data(shroud)
@@ -261,10 +261,10 @@ calibratable(shroud$y, shroud$er, shroud$ID)
 
 # Contamination
 
-To calculate the effect of contamination on radiocarbon ages, e.g. what age would be observed if material with a "true" radiocarbon age of 5000 &pm; 20 ^14^C BP would be contaminated with 10\% (&pm; 0\%) of modern carbon (F^14^C=1)?
+To calculate the effect of contamination on radiocarbon ages, e.g. what age would be observed if material with a "true" radiocarbon age of 5000 &pm; 20 ^14^C BP would be contaminated with 10\% of modern carbon (F^14^C=1)?
 
 ```{r, fig.width=5, fig.asp=.8}
-contaminate(5000, 20, 10, 0, 1)
+contaminate(5000, 20, 10, F.contam=1)
 ```
 
 Or imagine that you measured a dinosaur bone, dating to far beyond the limit of radiocarbon dating, and the sample is very clean as it contains only 0.5\% &pm; 0.1\% modern contamination:
@@ -285,11 +285,11 @@ We can also calculate the amount of contamination, or muck, required to 'explain
 muck(591, 30, BCADtoC14(40)[,1], 0, 1)
 ```
 
-So we'd require the sample to have been contaminated by 67% modern carbon to still date to around AD 40. But what if the sample had been repaired in, say, AD 1400, thus adding material of an not-entirely-modern F14C value (i.e., taking into account both the atmospheric C-14 concentrations in AD 1400 and the fact that some of the C14 will have decayed since then)?
+So we'd require the sample to have been contaminated by 67% modern carbon to still date to around AD 40. But what if the sample had been repaired in, say, the AD 1532 fire, thus adding material of an not-entirely-modern F14C value (i.e., taking into account both the atmospheric C-14 concentrations in AD 1532 and the fact that some of the C14 will have decayed since then)?
 
 ```{r, fig.width=5, fig.asp=.8}
 perFaith <- BCADtoC14(40)
-repairF <- BCADtoF14C(1400)
+repairF <- BCADtoF14C(1532)
 muck(591, 30, perFaith[,1], perFaith[,2], repairF[,1], repairF[,2])
 ```
 

@@ -42,7 +42,7 @@ The highest posterior density ranges, as three columns: from age, to age, and th
 Calculate highest posterior density ranges of a calibrated distribution
 }
 \examples{
-hpd(caldist(130,20))
+hpd(caldist(130,20, bombalert=FALSE))
 plot(tmp <- caldist(2450,50), type='l')
 myhpds <- hpd(tmp)
 abline(v=unlist(myhpds[,1:2]), col=4)

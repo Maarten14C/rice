@@ -32,7 +32,7 @@ l.calib(
 
 \item{postbomb}{Whether or not to use a postbomb curve. Required for negative radiocarbon ages.}
 
-\item{deltaR}{Age offset (e.g. for marine samples).}
+\item{deltaR}{Age offset (e.g. for marine samples). This assumes that the radiocarbon age is provided as 14C BP (not F14C or pMC).}
 
 \item{deltaSTD}{Uncertainty of the age offset (1 standard deviation).}
 

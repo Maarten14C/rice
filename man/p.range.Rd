@@ -11,6 +11,7 @@ p.range(
   er,
   cc = 1,
   postbomb = FALSE,
+  bombalert = TRUE,
   deltaR = 0,
   deltaSTD = 0,
   normal = TRUE,
@@ -34,6 +35,8 @@ p.range(
 \item{cc}{calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).}
 
 \item{postbomb}{Whether or not to use a postbomb curve (see \code{caldist()}).}
+
+\item{bombalert}{Warn if a date is close to the lower limit of the calibration curve. Defaults to \code{postbomb=TRUE}.}
 
 \item{deltaR}{Age offset (e.g. for marine samples).}
 

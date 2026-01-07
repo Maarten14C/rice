@@ -9,9 +9,9 @@ calibrate(
   error = 50,
   cc = 1,
   postbomb = FALSE,
+  bombalert = TRUE,
   deltaR = 0,
   deltaSTD = 0,
-  bombalert = TRUE,
   thiscurve = c(),
   as.F = TRUE,
   is.F = FALSE,
@@ -72,11 +72,11 @@ calibrate(
 
 \item{postbomb}{Whether or not this is a postbomb age. Defaults to FALSE.}
 
+\item{bombalert}{Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.}
+
 \item{deltaR}{Age offset (e.g. for marine samples). Can also be provided as option 'reservoir'.}
 
 \item{deltaSTD}{Uncertainty of the age offset (1 standard deviation). Can also be provided within option 'reservoir'.}
-
-\item{bombalert}{Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.}
 
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().}
 
@@ -240,10 +240,10 @@ such as postscript are unable to use transparency; in that case provide differen
 }
 \examples{
 calibrate()
-calibrate(130, 10)
+calibrate(130, 10, bombalert=FALSE)
 cal <- calibrate(2550, 20, reservoir=100)
 cal; plot(cal[[1]])
-calibrate(130, 10, prob=0.68)
-calibrate(age=130, error=10, BCAD=TRUE)
+calibrate(130, 10, prob=0.68, bombalert=FALSE)
+calibrate(age=130, error=10, BCAD=TRUE, bombalert=FALSE)
 calibrate(4450, 40, reservoir=c(100, 50))
 }

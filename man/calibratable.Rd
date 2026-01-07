@@ -11,6 +11,7 @@ calibratable(
   cc = 1,
   BCAD = FALSE,
   postbomb = FALSE,
+  bombalert = TRUE,
   cc.dir = c(),
   thiscurve = c(),
   is.F = FALSE,
@@ -35,6 +36,8 @@ calibratable(
 \item{BCAD}{Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}. For the BCAD scale, BC ages are negative.}
 
 \item{postbomb}{Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'ccurve("sh1-2_monthly")'}
+
+\item{bombalert}{Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.}
 
 \item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., 'cc.dir="ccurves"'.}
 
@@ -66,7 +69,7 @@ y <- c(.9, .8, 1.5); er <- rep(.01, 3)
 calibrate.table(y, er, is.F=T, thiscurve=glue.ccurves(,1), BCAD=T)
 }
 \examples{
- calibratable(130, 20)
+ calibratable(130, 20, bombalert=FALSE)
  data(shroud)
  calibratable(shroud$y, shroud$er, shroud$ID)
 }

@@ -10,7 +10,6 @@ caldist(
   cc = 1,
   postbomb = FALSE,
   bombalert = TRUE,
-  talk = TRUE,
   deltaR = 0,
   deltaSTD = 0,
   is.F = FALSE,
@@ -91,7 +90,7 @@ The probability distribution(s) as two columns: cal BP ages and their associated
 Calculate the calibrated distribution of a radiocarbon date.
 }
 \examples{
-calib <- caldist(130,10)
+calib <- caldist(130,10, bombalert=FALSE)
 plot(calib, type="l")
 postbomb <- caldist(-3030, 20, postbomb=1, BCAD=TRUE)
 }

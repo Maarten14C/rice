@@ -22,5 +22,5 @@ The highest posterior density ranges, as three columns: from age, to age, and th
 Calculate the quantile age ranges of a calibrated distribution
 }
 \examples{
-age.range(caldist(130,20))
+age.range(caldist(130,20, bombalert=FALSE))
 }

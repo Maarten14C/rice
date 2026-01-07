@@ -108,6 +108,6 @@ Calculates the amount of overlap (as percentage) between two or more calibrated 
   y <- c(3820, 4430) # the C14 ages of a twig and a marine shell from a single layer
   er <- c(40, 40) # their lab errors
   overlap(y, er, cc=1:2, dist.col=3:4, labels=c("twig", "shell"))
-  mydists <- list(caldist(130,20, cc=1), caldist(150,20, cc=0))
+  mydists <- list(caldist(130,20, cc=1, bombalert=FALSE), caldist(150, 20, cc=0))
   overlap(mydists)
 }
