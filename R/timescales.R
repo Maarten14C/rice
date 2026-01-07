@@ -859,31 +859,30 @@ C14toDelta14C <- function(y, er=NULL, t, roundby=Inf, lambda=5730/log(2)) {
 #' @export
 F14CtoC14 <- function(F14C, er=NULL, roundby=Inf, lambda=8033, botherrors=FALSE) {
   y <- rep(NaN, length(F14C))
-  if(is.null(er)) { # no errors
-    valid <- which(F14C > 0)
-    y[valid] <- as.numeric(-lambda * log(F14C[valid]))
+  valid.y <- which(F14C > 0)
+  y[valid.y] <- -lambda * log(F14C[valid.y])
+  y[F14C == 0] <- Inf
+
+  if(is.null(er)) # no errors
     return(round(y, roundby))
-    }
   
   if(min(er) < 0)
     stop("cannot have negative errors")
   
-  negative <- which(F14C-er < 0) # can't calculate log of negative values
-  valid <- setdiff(seq_along(F14C), negative)
-  
-  y[valid] <- -lambda * log(F14C[valid])
-  y[F14C==0] <- Inf
+  # report the older (=larger) error if only reporting one
+  valid.er <- which(F14C - er > 0)
+  error.older <- rep(NaN, length(y))
+  error.older[valid.er] <-
+    abs(y[valid.er] - (-lambda * log(F14C[valid.er] - er[valid.er])))
 
-  error.older <- abs(y - (-lambda * log(F14C - er)))
   if(botherrors) {
-    error.younger <- rep(NaN, length(error.older))  
-    error.younger[valid] <- y - (-lambda * log(F14C[valid] + er[valid]))
+    error.younger <- rep(NaN, length(y))
+    error.younger[valid.y] <- y[valid.y] - (-lambda * log(F14C[valid.y] + er[valid.y]))
     result <- data.frame(C14=y, er.younger=error.younger, er.older=error.older)
-    return(round(result, roundby))
-  } else {
+  } else
       result <- data.frame(C14=y, er=error.older)
-      return(round(result, roundby))
-    }
+
+  return(round(result, roundby))
 }
 
 

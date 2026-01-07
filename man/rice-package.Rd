@@ -10,4 +10,10 @@ Provides functions for the calibration of radiocarbon dates, as well as options 
 \author{
 \strong{Maintainer}: Maarten Blaauw \email{maarten.blaauw@qub.ac.uk} (\href{https://orcid.org/0000-0002-5680-1515}{ORCID})
 
+Other contributors:
+\itemize{
+  \item Paula Reimer \email{p.j.reimer@qub.ac.uk} (\href{https://orcid.org/0000-0001-9238-2146}{ORCID}) [contributor]
+  \item Vegard Martinsen \email{vegard.martinsen@nmbu.no} (\href{https://orcid.org/0000-0002-7096-1806}{ORCID}) [contributor]
+}
+
 }

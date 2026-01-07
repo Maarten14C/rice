@@ -41,17 +41,17 @@ test_that("shells.mean returns expected mean of shells", {
 ### calibrate
 
 test_that("point.estimates returns expected point estimates", {
-  result <- unname(point.estimates(caldist(130,20)))
+  result <- unname(point.estimates(caldist(130,20, bombalert=FALSE)))
 
   expect_length(result, 4)
-  expect_equal(result, c(128.2, 105.8, 76.0, 139.5), tolerance = 1e-5)
+  expect_equal(result, c(128.0, 105.7, 76.0, 140.0), tolerance = 1e-5)
 })
 
 
 test_that("point.estimates returns expected point estimates", {
-  result <- hpd(caldist(130,20))
+  result <- hpd(caldist(130,20, bombalert=FALSE))
   expect_length(result, 3)
-  expect_equal(result[,3], c(68.7, 1.9, 24.5), tolerance = 1e-5)
+  expect_equal(result[,3], c(68.6, 1.9, 24.5), tolerance = 1e-5)
 })
 
 
@@ -63,21 +63,21 @@ test_that("l.calib returns expected likelihood", {
 
 test_that("r.calib returns expected random points", {
   set.seed(123)
-  result <- r.calib(10, 130, 20)
+  result <- r.calib(10, 130, 20, bombalert=FALSE)
   expect_length(result, 10)
-  expect_equal(result[1], 74.31000, tolerance = 1e-5)
+  expect_equal(result[1], 74.13498, tolerance = 1e-5)
 })
 
 test_that("older returns expected probability", {
   result <- older(2500, 2450, 20)
   expect_length(result, 1)
-  expect_equal(result, 0.5302995, tolerance = 1e-5)
+  expect_equal(result, 0.5315318, tolerance = 1e-5)
 })
 
 test_that("p.range returns expected probability", {
   result <- p.range(2800, 2400, 2450, 20)
   expect_length(result, 1)
-  expect_equal(result, 0.9127575, tolerance = 1e-5)
+  expect_equal(result, 0.9134676, tolerance = 1e-5)
 })
 
 

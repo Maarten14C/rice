@@ -33,10 +33,10 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
             if(!hiresmaps)
               if(remotes)
                 message("For detailed maps, install rnaturalearthhires from GitHub:\n",
-                  "remotes::install_github('ropensci/rnaturalearthhires')\n") else
+                  "`remotes::install_github('ropensci/rnaturalearthhires')`") else
                     message("Install first remotes and then rnaturalearthhires:\n",
                       "install.packages(\"remotes\")\n",
-                      "remotes::install_github(\"ropensci/rnaturalearthhires\"")
+                      "`remotes::install_github(\"ropensci/rnaturalearthhires\")`")
           }
         }
       }

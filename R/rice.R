@@ -1,6 +1,5 @@
-# make calcs of a 14C-free Earth. How long before we've reached equilibrium between production and decay? What is the equilibrium level? Now add oceans, etc.  
 
-# add sample weight functions (per Philippa Ascough's suggestion). Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
+# sample weight functions (per Philippa Ascough's suggestion). Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
 # prepare a function to redo deltaR calcs when new Marine curves come out. Using BCADtocalBP(shells$collected), calBPto14C(cc=2) and shells$C14, shells$er. Unclear how the dR errors are obtained.
 
@@ -11,13 +10,15 @@
 #' @name howmuchC14
 #' @title Amount of C14 particles in a sample
 #' @description Calculate the expected amount of remaining C14 atoms in a sample, given its weight and age.
-#' @details The number of carbon atoms in the sample is estimated. Given the known C14/C ratio at F=1, and given the sample's age, we can estimate the number of remaining C14 atoms.
+#' @details The number of carbon atoms in the sample is estimated. Given the known C14/C ratio at F=1, and given the sample's age, we can estimate the number of remaining C14 atoms. Given a 12C current at the detector end of an AMS, we can then also calculate how many 14C ions would be counted per second and minute. 
+#' Note that backgrounds are not modelled (but could be investigated by e.g. typing \code{howmuchC14(45e3)} which gives as c. 1 background count per second).  
 #' @return The estimated number of C14 atoms.
 #' @param age The age of the sample (in cal BP per default, or in C14 BP is use.cc=FALSE).
 #' @param wght The weight of the sample (in mg). Defaults to 1 mg.
 #' @param use.cc Whether or not to use the calibration curve. If set to \code{use.cc=FALSE}, then we assume that the age is the radiocarbon age (this enables ages beyond the reach of the calibration curves to be used).
 #' @param Av Avogadro's number, used to calculate the number of carbon atoms in the sample.
-#' @param C14.ratio The 14C/C ratio at F=1 (AD 1950).
+#' @param C14.1950 The standard 14C/C ratio back in AD 1950 (1.176e-12, so around 1 in 1 trillion carbon atoms was a 14C atom at that moment in time.
+#' @param current The current of 12C+ ions arriving at the Faraday counter. Defaults to \code{current=25e-6}, 25 micro-Ampere.
 #' @param format The format of the printed numbers. Defaults to either scientific (for large numbers) or as fixed-point, depending on the size of the number.
 #' @param cc calibration curve for C14 (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
@@ -31,31 +32,40 @@
 #'   howmuchC14(55e3) # at dating limit
 #'   howmuchC14(145e3) # way beyond the dating limit, 1 C14 atom per mg remains
 #' @export
-howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.ratio=1.176e-12, format="g", cc=1, postbomb=FALSE, cc.dir=NULL, thiscurve=NULL, talk=TRUE, decimals=3) {
+howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.176e-12, current=25e-6, format="g", cc=1, postbomb=FALSE, cc.dir=NULL, thiscurve=NULL, talk=TRUE, decimals=3) {
 
   if(use.cc) {
     F <- calBPtoF14C(age, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
     if(is.na(F)) {
       message("Cannot use calibration curve for this age, assuming C14 age")
       F <- C14toF14C(age)
-  }} else
-      F <- C14toF14C(age) # then t is on the C14 scale
+    }
+  } else
+       F <- C14toF14C(age) # then t is on the C14 scale
 
   F <- as.numeric(F)
   atoms <- (wght/1e3)*Av/12 # number of C atoms in a mg
-  C14 <- as.numeric(round(F * C14.ratio * atoms, 0)) # C14 atoms roundest to nearest number
-  perminute <- round(C14/wght/30,0)
-  persecond <- round(perminute/60,0)
+  C14 <- as.numeric(round(F * C14.1950 * atoms, 0)) # C14 atoms roundest to nearest number
+  
+  # from the current, calculate amount of ions ending up at the C12 Faraday cup:
+  i12 <- current/1.602e-19 # e, electric charge for a single proton, in coulomb
+  # from this, we can model the numbers of C14 atoms arriving at the C14 detector:
+  i14 <- C14.1950 * i12 * F # charge in A = protons arriving per second
+  persecond <- round(i14, decimals)
+  i12 <- formatC(i12, format=format, digits=decimals)
+  
   atoms <- formatC(atoms, format=format, digits=decimals)
   C14.talk <- formatC(C14, format=format, digits=decimals)
-  decays <- round(C14 * log(2) / (5730 * 365.25), decimals)
- decays <- formatC(decays, format=format, digits=decimals)
+  decays <- formatC(C14 * log(2) / (5730 * 365.25), format=format, digits=decimals)
 
   if(talk) {
     message(wght, " mg carbon contains ", atoms, " C atoms")
-    message("C14 atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk)
-    message(decays, " C-14 atoms in the sample will decay each day")
-    message("For a 1 mg AMS target, assuming a 100% efficiency, ", perminute, " particles would be counted per minute, or ", persecond, " per second")
+    message("14C atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk)
+    message(decays, " 14C atoms in the sample will decay each day")
+	message(paste0("For a 12C current of ", current*1e6, " micro-ampere (", i12, 
+	  " 12C/second) at the AMS detector,\n  ",
+	  persecond, " 14C particles would be counted per second (", 
+	  60*persecond, " per minute)" ))  
   }
 
   invisible(C14)

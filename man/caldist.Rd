@@ -9,6 +9,8 @@ caldist(
   er,
   cc = 1,
   postbomb = FALSE,
+  bombalert = TRUE,
+  talk = TRUE,
   deltaR = 0,
   deltaSTD = 0,
   is.F = FALSE,
@@ -18,6 +20,7 @@ caldist(
   yrsteps = FALSE,
   cc.resample = FALSE,
   dist.res = 200,
+  pb.steps = 0.05,
   cc0.res = 5000,
   threshold = 0.001,
   normal = TRUE,
@@ -39,7 +42,9 @@ caldist(
 
 \item{postbomb}{Whether or not to use a postbomb curve. Required for negative radiocarbon ages.}
 
-\item{deltaR}{Age offset (e.g. for marine samples).}
+\item{bombalert}{Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.}
+
+\item{deltaR}{Age offset (e.g. for marine samples). This assumes that the radiocarbon age is provided as 14C BP (not F14C or pMC).}
 
 \item{deltaSTD}{Uncertainty of the age offset (1 standard deviation).}
 
@@ -56,6 +61,8 @@ caldist(
 \item{cc.resample}{The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespans.}
 
 \item{dist.res}{As an alternative to yrsteps, provide the amount of 'bins' in the distribution.}
+
+\item{pb.steps}{Yearly steps for postbomb curves. Defaults to 20 steps per year, \code{pb.steps=0.05}.}
 
 \item{cc0.res}{Length of 'curve' when cc=0 (no calibration curve). Defaults to 5000, in order to provide enough points for detailed distributions.}
 

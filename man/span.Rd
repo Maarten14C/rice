@@ -10,7 +10,7 @@ span(
   y2,
   er2,
   n = 1e+05,
-  positive = FALSE,
+  positive = TRUE,
   cc = 1,
   postbomb = FALSE,
   deltaR = 0,
@@ -42,7 +42,7 @@ span(
 
 \item{n}{The number of iterations to base the calculations on. Defaults to 100,000. Different values for n could significantly alter performance and accuracy.}
 
-\item{positive}{Whether or not to enforce the span to be positive. If set to TRUE, then negative span values are removed. Defaults to FALSE.}
+\item{positive}{Whether or not to enforce the span to be positive. If set to TRUE, then negative span values are removed. Defaults to TRUE.}
 
 \item{cc}{Calibration curve(s) to use. Defaults to IntCal20 (\code{cc=1}). Can be a vector of length 2.}
 

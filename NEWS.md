@@ -1,3 +1,12 @@
+# rice 1.5.1
+* updated the download from the calib.org marine database.
+* Changed the `positive` option's default within the `span` function to TRUE.
+* `calibrate(1.5, .025, is.F=TRUE, postbomb=1, thiscurve=glue.ccurves(, postbomb="NH1_monthly"), BCAD=TRUE)` no longer throws an error.
+* `F14CtoC14` now deals better with low F14C values (i.e., smaller than their lab errors).
+* Added Paula Reimer and Vegard Martinsen as package contributors.
+* howmuchC14 now calculates more realistic estimates of AMS counts. 
+* renamed `calibrate.table` to `calibratable`.
+
 # rice 1.5.0
 * new function `calibrate.table` which produces a table with the hpd calibrated ranges of radiocarbon dates, together with any aspects such as age offsets or different calibration curves. This table is produced as a web-page which can then be copied into e.g. an MS-Word document (inspired by comments from Vegard Martinsen, NMBU, Norway).
 * The heights and colours of the calibrated distributions in `draw.dates` should now be plotted more predictably.

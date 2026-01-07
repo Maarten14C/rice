@@ -86,7 +86,7 @@ calibrate(
 
 \item{is.pMC}{Use \code{is.pMC=TRUE} if the date and error are entered as pMC.}
 
-\item{reservoir}{Reservoir age, or reservoir age and age offset as two values (e.g., \code{reservoir=c(100,10)}).}
+\item{reservoir}{Reservoir age, or reservoir age and age offset as two values (e.g., \code{reservoir=c(100,10)}). This is an alternative to using deltaR and deltaSTD.}
 
 \item{prob}{Probability confidence intervals (between 0 and 1).}
 

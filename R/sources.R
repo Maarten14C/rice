@@ -49,7 +49,7 @@ fractions <- function(bulk_age=NULL, bulk_er=NULL, fractions_percC=NULL, fractio
 
     # Calculate the remaining fraction's F14C value and age
     unknown_F <- bulk_F[1] - sum(fractions_cF)
-    unknown_age_estimated <- F14CtoC14(unknown_F / totC[unknown_age])
+    unknown_age_estimated <- F14CtoC14(unlist(unknown_F) / totC[unknown_age])
     unknown_age <- unlist(c(unknown_age_estimated[1], overall_uncertainty))
 
     if(talk)

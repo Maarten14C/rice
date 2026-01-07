@@ -9,7 +9,8 @@ howmuchC14(
   wght = 1,
   use.cc = TRUE,
   Av = 6.02214076e+23,
-  C14.ratio = 1.176e-12,
+  C14.1950 = 1.176e-12,
+  current = 2.5e-05,
   format = "g",
   cc = 1,
   postbomb = FALSE,
@@ -28,7 +29,9 @@ howmuchC14(
 
 \item{Av}{Avogadro's number, used to calculate the number of carbon atoms in the sample.}
 
-\item{C14.ratio}{The 14C/C ratio at F=1 (AD 1950).}
+\item{C14.1950}{The standard 14C/C ratio back in AD 1950 (1.176e-12, so around 1 in 1 trillion carbon atoms was a 14C atom at that moment in time.}
+
+\item{current}{The current of 12C+ ions arriving at the Faraday counter. Defaults to \code{current=25e-6}, 25 micro-Ampere.}
 
 \item{format}{The format of the printed numbers. Defaults to either scientific (for large numbers) or as fixed-point, depending on the size of the number.}
 
@@ -51,7 +54,8 @@ The estimated number of C14 atoms.
 Calculate the expected amount of remaining C14 atoms in a sample, given its weight and age.
 }
 \details{
-The number of carbon atoms in the sample is estimated. Given the known C14/C ratio at F=1, and given the sample's age, we can estimate the number of remaining C14 atoms.
+The number of carbon atoms in the sample is estimated. Given the known C14/C ratio at F=1, and given the sample's age, we can estimate the number of remaining C14 atoms. Given a 12C current at the detector end of an AMS, we can then also calculate how many 14C ions would be counted per second and minute. 
+Note that backgrounds are not modelled (but could be investigated by e.g. typing \code{howmuchC14(45e3)} which gives as c. 1 background count per second).
 }
 \examples{
   howmuchC14(0) # recent sample

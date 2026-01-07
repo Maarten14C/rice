@@ -202,7 +202,7 @@ Sometimes, the same material is measured using multiple radiocarbon dates. If we
 
 ```{r}
 data(shroud)
-calibrate.table(shroud$y, shroud$er, shroud$ID)
+shroud
 ```
 
 Let's check if we can pool the dates:
@@ -250,6 +250,13 @@ y <- c(3820, 4430+90)
 er <- c(40, sqrt(40^2 + 25^2)) 
 cc <- c(1,2)
 overlap(y, er, cc=cc)
+```
+
+The calibrated ranges of radiocarbon dates can also be displayed in table (either on a webbrowser or as Word document):
+
+```{r, fig.width=4, fig.asp=1}
+data(shroud)
+calibratable(shroud$y, shroud$er, shroud$ID)
 ```
 
 # Contamination
@@ -342,7 +349,7 @@ It is also possible to find the likelihood of a single calendar year for our rad
 l.calib(145, 130, 10)
 ```
 
-To sample n=10 random values from a calibrated distribution (where the probability of a year being sampled is proportional to its calibrated height):
+To sample n=100 random values from a calibrated distribution (where the probability of a year being sampled is proportional to its calibrated height):
 
 ```{r, fig.width=4, fig.asp=.8}
 dice <- r.calib(100, 130, 10)

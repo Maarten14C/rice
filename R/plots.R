@@ -6,6 +6,7 @@
 #' @param cal2 Last calendar year for the plot. Defaults to 55,000 cal BP.
 #' @param cc1 Name of the calibration curve. Can be "IntCal20", "Marine20", "SHCal20", or for the previous curves "IntCal13", "Marine13" or "SHCal13". Can also be "nh1", "nh2", "nh3", "sh1-2", "sh3", "nh1_monthly", "nh1_monthly", "nh2_monthly", "nh3_monthly", "sh1-2_monthly", "sh3_monthly", "Kure", "LevinKromer" or "Santos" for postbomb curves.
 #' @param cc2 Optional second calibration curve to plot. Can be "IntCal20", "Marine20", "SHCal20", or for the previous curves "IntCal13", "Marine13" or "SHCal13". Defaults to nothing, NA.
+#' @param cc synonym for cc1.
 #' @param cc1.postbomb Use \code{postbomb=TRUE} to get a postbomb calibration curve for cc1 (default \code{cc1.postbomb=FALSE}).
 #' @param cc2.postbomb Use \code{postbomb=TRUE} to get a postbomb calibration curve for cc2 (default \code{cc2.postbomb=FALSE}).
 #' @param BCAD The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to cal BC/AD using \code{BCAD=TRUE}.
@@ -39,7 +40,7 @@
 #' draw.ccurve(1800, 2020, BCAD=TRUE, cc2="nh1", cc2.postbomb=TRUE)
 #' draw.ccurve(1800, 2010, BCAD=TRUE, cc2="nh1", add.yaxis=TRUE)
 #' @export
-draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb=FALSE, cc2.postbomb=FALSE, BCAD=FALSE, timescale="C14", as.F=FALSE, as.pMC=FALSE, as.Delta=FALSE, timescale2=c(), cal.lab=c(), cal.rev=FALSE, c14.lab=c(), cc2.lab=c(), c14.lim=c(), c14.rev=FALSE, ka=FALSE, add.yaxis=FALSE, cc1.col=rgb(0,0,1,.5), cc1.fill=rgb(0,0,1,.2), cc2.col=rgb(0,.5,0,.5), cc2.fill=rgb(0,.5,0,.2), add=FALSE, bty="l", mar=c(), mgp=c(), cc.dir=NULL, legend="topleft", ...) {
+draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.postbomb=FALSE, cc2.postbomb=FALSE, BCAD=FALSE, timescale="C14", as.F=FALSE, as.pMC=FALSE, as.Delta=FALSE, timescale2=c(), cal.lab=c(), cal.rev=FALSE, c14.lab=c(), cc2.lab=c(), c14.lim=c(), c14.rev=FALSE, ka=FALSE, add.yaxis=FALSE, cc1.col=rgb(0,0,1,.5), cc1.fill=rgb(0,0,1,.2), cc2.col=rgb(0,.5,0,.5), cc2.fill=rgb(0,.5,0,.2), add=FALSE, bty="l", mar=c(), mgp=c(), cc.dir=NULL, legend="topleft", ...) {
 
   # checking timescale
   if(sum(as.F, as.pMC, as.Delta) > 1)
@@ -53,6 +54,9 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
     if(grepl("^p", tolower(timescale))) as.pMC <- TRUE
     if(grepl("^d", tolower(timescale))) as.Delta <- TRUE
   }
+
+  if(length(cc) > 0 && is.na(cc2)) # the user supplied just one curve
+    cc1 <- cc
 
   # read and narrow down the calibration curve(s)
   if(cc1 %in% c(2, "Marine20")) # then no postbomb curve available
@@ -72,8 +76,8 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
   if(length(cal2) == 0)
     cal2 <- cc.1[nrow(cc.1),cc.cal]
   
-  mindat <- cc.1[,cc.cal] >= min(cal1, cal2)
-  maxdat <- cc.1[,cc.cal] <= max(cal1, cal2)
+  mindat <- cc.1[,cc.cal] >= .9*min(cal1, cal2)
+  maxdat <- cc.1[,cc.cal] <= 1.1*max(cal1, cal2)
   cc.1 <- cc.1[which(mindat * maxdat == 1),]
 
   if(ka) {
@@ -279,7 +283,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc1="IntCal20", cc2=NA, cc1.postbomb
 #' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=TRUE}, since it takes better care of asymmetric distributions and older dates close to the dating limit. If set as \code{as.F=FALSE}, the C14 timescale will be used.
 #' @param is.F Use \code{is.F=TRUE} if the date and error are entered as F14C.
 #' @param is.pMC Use \code{is.pMC=TRUE} if the date and error are entered as pMC.
-#' @param reservoir Reservoir age, or reservoir age and age offset as two values (e.g., \code{reservoir=c(100,10)}).
+#' @param reservoir Reservoir age, or reservoir age and age offset as two values (e.g., \code{reservoir=c(100,10)}). This is an alternative to using deltaR and deltaSTD.
 #' @param prob Probability confidence intervals (between 0 and 1).
 #' @param BCAD Use BC/AD or cal BP scale (default cal BP).
 #' @param ka Use thousands of years instead of years in the plots and hpd ranges. Defaults to FALSE. 
@@ -346,46 +350,47 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
   age <- age-reservoir[1]
   if(length(reservoir) > 1)
     error <- sqrt(error^2 + reservoir[2]^2)
-   
-  # check if the date is covered by the curve
-  beyond <- FALSE
-  youngest.cc <- c(95,603,118,0,0) # youngest C14 ages of, respectively, IntCal20, Marine20, SHCal20, and extra entries
-  if(any(cc %in% 1:4)) {
-    if(is.F) {
-      beyond <- (age + (3*error)) > C14toF14C(youngest.cc[cc])
-    } else 
-        if(is.pMC) {
-          beyond <- (age + (3*error)) > C14topMC(youngest.cc[cc])
-        } else
-      beyond <- (age - (3*error)) < youngest.cc[cc]
-  }
 
-  if(bombalert) {
-    #edge <- FALSE
-    if(beyond) { # at or beyond younger IntCal limit
-      if(!postbomb) # note that there are no postbomb curves for Marine20
-        if(!(cc %in% c("nh1", "nh2", "nh3", "sh1-2", "sh3", "nh1_monthly", "nh2_monthly", "nh3_monthly", "sh1-2_monthly", "sh3_monthly")))
-          stop("This appears to be a postbomb age (or is close to being one). Please provide a postbomb curve")
-    Cc <- rintcal::glue.ccurves(cc, postbomb, cc.dir) # doesn't do resample
-  } else {
-      if(postbomb > 0) # postbomb has been defined
-        Cc <- rintcal::glue.ccurves(cc, postbomb, cc.dir) else
-          Cc <- rintcal::ccurve(cc, postbomb=FALSE, cc.dir)
+  if(length(thiscurve) > 0)
+    Cc <- thiscurve else {
+      if(cc == 0) { # no ccurve needed
+        xseq <- seq(y-4*er, y+4*er, length=cc0.res)
+        Cc <- cbind(xseq, xseq, rep(0, length(xseq)))
+      } else {
+          Cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir, 
+            resample=cc.resample, as.F=is.F, as.pMC=is.pMC)
+        
+		  # check if any dates lie at the younger edge of this.cc
+          young <- FALSE
+          if(is.F || is.pMC) {
+            if(max(age+(3*error)) > max(Cc[,2]))
+              young <- TRUE
+          } else 
+              if(min(age-(3*error)) < min(Cc[,2]))
+                young <- TRUE 
+
+          if(young) {
+            if(postbomb == FALSE) {
+              if(bombalert)
+                stop("please provide a postbomb curve") else { 
+                  # no postbomb has been defined, but we need to add one 
+	              if(cc==1) # then assume we need NH1
+                    Cc <- rintcal::glue.ccurves(cc, postbomb=1, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                    if(cc==3) # then assume we need SH1-2
+                      Cc <- rintcal::glue.ccurves(cc, postbomb=4, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                        stop("please provide a postbomb curve, e.g. postbomb=1")
+                } 
+			} else
+                Cc <- rintcal::glue.ccurves(cc, postbomb=bombglue, cc.dir, as.F=is.F, as.pMC=is.pMC)	
+          }
+	  }
     }
-  } else
-    Cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir)
-  cc.cal <- 1
-  if(BCAD) {
-    Cc[,4] <- calBPtoBCAD(Cc[,1])
-    cc.cal <- 4
-  }
-  if(length(thiscurve) > 0) # then forget the above
-    Cc <- thiscurve
 
-  if(is.F) # then also put Cc on the F scale
-    Cc <- cbind(Cc[,1], C14toF14C(Cc[,2], Cc[,3]), Cc[,cc.cal])
-  if(is.pMC) # then also put Cc on the F scale
-    Cc <- cbind(Cc[,1], C14topMC(Cc[,2], Cc[,3]), Cc[,cc.cal])
+  if(BCAD) {
+    Cc <- cbind(Cc, calBPtoBCAD(Cc[,1]))
+    cc.cal <- 4
+  } else
+      cc.cal <- 1
 
   # warn/stop if the date lies (partly) beyond the calibration curve
   if(is.pMC)
@@ -427,14 +432,14 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
   if(!is.F && !is.pMC)
     if(asymmetric) { # then calculate in F, followed by translation into C14
       redo.as.F <- as.numeric(C14toF14C(age, error)) # not taking into account cc's errors
-      F.dist <- caldist(redo.as.F[1], redo.as.F[2], cc=0, BCAD=FALSE, postbomb=FALSE)
+      F.dist <- caldist(redo.as.F[1], redo.as.F[2], cc=0, BCAD=FALSE, postbomb=FALSE, bombalert=bombalert)
       F.dist <- F.dist[!is.nan(F.dist[,1]),] # remove non-numbers
       F.dist <- F.dist[F.dist[,1]>=0,] # also remove F < 0
       C14.dist <- cbind(F14CtoC14(F.dist[,1], c()), F.dist[,2])
   }
-
   cal.dist <- caldist(age, error, cc=cc, yrsteps=yr.steps, threshold=threshold,
-  normal=normal, is.F=is.F, is.pMC=is.pMC, as.F=as.F, t.a=t.a, t.b=t.b, postbomb=postbomb, thiscurve=thiscurve, cc.dir=cc.dir, BCAD=BCAD)
+    normal=normal, is.F=is.F, is.pMC=is.pMC, as.F=as.F, t.a=t.a, t.b=t.b,
+    postbomb=postbomb, bombalert=bombalert, thiscurve=thiscurve, cc.dir=cc.dir, BCAD=BCAD)
 
   # copy entries at edges of calibrated hpds, to ensure rectangular polygons
   if(draw) {
@@ -459,6 +464,9 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
         }
       # don't draw the entire calibration curve
       Cc <- Cc[cc.min:cc.max,]
+
+
+
       if(BCAD)
         cc.lim <- extendrange(c(Cc[,2]-Cc[,3], Cc[,2]+Cc[,3]), f=extend.range) else
           cc.lim <- extendrange(c(Cc[,2]-Cc[,3], Cc[,2]+Cc[,3], C14.dist[,1]), f=extend.range)
@@ -468,6 +476,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, deltaR=0, deltaS
        Cc <- Cc[cc.min:cc.max,]
        cc.lim <- range(C14.lim)
     }
+
     ccpol <- cbind(c(Cc[,cc.cal], rev(Cc[,cc.cal])), c(Cc[,2]-Cc[,3], rev(Cc[,2]+Cc[,3])))
 
     if(length(dist.float) == 1)

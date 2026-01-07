@@ -419,7 +419,7 @@ spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.
 #' @param y2 The second radiocarbon date.
 #' @param er2 The lab error of the second radiocarbon date.
 #' @param n The number of iterations to base the calculations on. Defaults to 100,000. Different values for n could significantly alter performance and accuracy.
-#' @param positive Whether or not to enforce the span to be positive. If set to TRUE, then negative span values are removed. Defaults to FALSE.
+#' @param positive Whether or not to enforce the span to be positive. If set to TRUE, then negative span values are removed. Defaults to TRUE.
 #' @param cc Calibration curve(s) to use. Defaults to IntCal20 (\code{cc=1}). Can be a vector of length 2.
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
 #' @param deltaR Age offset (e.g. for marine samples). Can be a vector of length 2.
@@ -441,7 +441,7 @@ spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.
 #' @examples
 #'   span(2300, 20, 2350, 20)
 #' @export
-span <- function(y1, er1, y2, er2, n=1e5, positive=FALSE, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, thiscurve=NULL, yrsteps=1, cc.resample=FALSE, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, visualise=TRUE, talk=TRUE, prob=0.95, roundby=1, bty="l") {
+span <- function(y1, er1, y2, er2, n=1e5, positive=TRUE, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, thiscurve=NULL, yrsteps=1, cc.resample=FALSE, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, cc.dir=NULL, visualise=TRUE, talk=TRUE, prob=0.95, roundby=1, bty="l") {
 
   if(!length(y1) == 1)
     stop("y1 must be of length 1")
