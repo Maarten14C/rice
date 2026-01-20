@@ -91,7 +91,7 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, delta
   # calibrate; find how far age (measurement) is from cc[,2] of calibration curve
   if(normal)
     cal <- cbind(this.cc[,1], dnorm(this.cc[,2], y, sqrt(er^2+this.cc[,3]^2))) else
-      cal <- cbind(this.cc[,1], (t.b + ((y-this.cc[,2])^2) / (2*(this.cc[,3]^2 + er^2))) ^ (-1*(t.a+0.5)))
+      cal <- cbind(this.cc[,1], ((t.b + ((y-this.cc[,2])^2) / (2*(this.cc[,3]^2 + er^2))) ^ (-1*(t.a+0.5)))/sqrt(this.cc[,3]^2 + er^2) ) # corrected 13 Jan 2026
 
   # interpolate and normalise calibrated distribution to 1
   if(postbomb)
@@ -331,7 +331,7 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
   if(cc == 0) { # June 2025
     if(normal)
       prob <- dnorm(x, y, er) else 
-        prob <- (t.b + ((x - y)^2) / (2 * er^2)) ^ (-1 * (t.a + 0.5))
+        prob <- ( (t.b + ((x - y)^2) / (2 * er^2)) ^ (-1 * (t.a + 0.5))) /er
     prob[is.na(prob)] <- 0
     return(prob)	
   } else {
@@ -346,7 +346,7 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
           mu <- calBPtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
     if(normal)
       prob <- dnorm(y, mu[,1], sqrt(mu[,2]^2 + er^2)) else
-        prob <- (t.b + ((y-mu[,1])^2) / (2*(sqrt(er^2+mu[,2]^2)^2))) ^ (-1*(t.a+0.5))
+        prob <- ((t.b + ((y-mu[,1])^2) / (2*(sqrt(er^2+mu[,2]^2)^2))) ^ (-1*(t.a+0.5))) / sqrt(er^2+mu[,2]^2)
     prob[is.na(prob)] <- 0
     return(prob)
   }

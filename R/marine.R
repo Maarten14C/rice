@@ -8,7 +8,12 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
   remotes <- requireNamespace("remotes", quietly=TRUE)
   lflt <- requireNamespace("leaflet", quietly=TRUE)
   coper <- requireNamespace("CopernicusMarine", quietly=TRUE)
-  hiresmaps <- "rnaturalearthhires" %in% installed.packages() # TRUE or FALSE
+  hiresmaps <- requireNamespace("rnaturalearthhires", quietly = TRUE)
+
+  if(!hiresmaps && warn && mapsize == "large") {
+    message("High-resolution maps not available; using standard resolution.")
+	mapsize <- "medium"
+  }
 
   if(warn) {
     if(browse) {
@@ -107,24 +112,14 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
     return() # plotted basic map, end of function
   }
 
-  #shells <- shells[, !duplicated(names(shells))]
-
-  # if more high-res map packages are installed:
-  if(mapsize == "small") {
-    world <- sf::st_as_sf(maps::map("world", fill = TRUE, plot = FALSE))
-  } else if(mapsize == "large") {
-    if(hiresmaps) {
-      if(rne)
-        world <- rnaturalearth::ne_countries(scale = "large", returnclass = "sf") else {
-          world <- sf::st_as_sf(maps::map("world", fill = TRUE, plot = FALSE))
-        }
-    } else if(rnedata) {
-        world <- rnaturalearthdata::countries50
-    } else {
-        world <- sf::st_as_sf(maps::map("world", fill = TRUE, plot = FALSE))
-    }
-  } else
-      stop("what mapsize is this? Either provide mapsize=\"small\" or mapsize=\"large\"")
+  if (!hassf || !rne) {
+    world <- sf::st_as_sf(maps::map("world", fill=TRUE, plot=FALSE))
+  } else {
+    if(mapsize=="large") # this is not working as expected, find.shells(0, 55, mapsize="large")
+      if(!hiresmaps)
+        mapsize <- "medium"
+    world <- rnaturalearth::ne_countries(scale=mapsize, returnclass="sf")
+  } 
 
   p <- ggplot(data = world) +
     geom_sf(fill = land.col) +
@@ -150,39 +145,6 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
 
   print(p)
 }
-
-
-
-# none of the below attempts to plot currents in a map together with the shell coordinates work
-#     map <- CopernicusMarine::addCmsWMTSTiles(map,
-#       product = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
-#       layer = "cmems_mod_glo_phy-cur_anfc_0.083deg_PT6H-i",
-#       variable = "cur",
-#       tilematrixset = "EPSG:3857",
-#       options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
-#       group = "Sea water velocity"
-#     )
-#
-# map <- CopernicusMarine::addCmsWMTSTiles(map,
-#  product = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
-#  layer = "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202406",
-#  tilematrixset = "EPSG:3857",
-#  style = "boxfill/linear",
-#  options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
-#  group = "Sea Water Velocity Magnitude"
-# )
-
-
-
-# map <- CopernicusMarine::addCmsWMTSTiles(
-#  map,
-#  product = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
-#  layer = "cmems_mod_glo_phy-cur_anfc_0.083deg_P1D-m_202406",
-#  tilematrixset = "EPSG:3857",
-#  style = "vector",
-#  options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
-#  group = "Sea water velocity magnitude"
-# )
 
 
 
@@ -361,25 +323,6 @@ map.shells <- function(S=48, W=-15, N=62, E=5, browse=FALSE, colour="dR", rainbo
   invisible(sel)
 }  
 
-
-
-#points_df <- data.frame(
-#  name = c("Sample A", "Sample B", "Sample C"),
-#  lat = c(50.5, 51.2, 49.8),
-#  lon = c(-4.0, -3.5, -5.2)
-#)
-
-# Leaflet map with Esri Ocean Basemap (bathymetry)
-#leaflet() %>%
-#  addProviderTiles(providers$Esri.OceanBasemap, group = "Esri Ocean") %>%
-#  addCircleMarkers(data = points_df,
-#                   lng = ~lon, lat = ~lat,
-#                   label = ~name,
-#                   color = "red", radius = 5, fillOpacity = 0.8) %>%
-#  addLayersControl(baseGroups = c("Esri Ocean", "OpenTopoMap", "CartoDB.Positron"),
-#                   options = layersControlOptions(collapsed = FALSE)) %>%
-#  addProviderTiles(providers$OpenTopoMap, group = "OpenTopoMap") %>%
-#  addProviderTiles(providers$CartoDB.Positron, group = "CartoDB.Positron")
 
 
 #' @name weighted_means

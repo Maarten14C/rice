@@ -16,16 +16,23 @@ for(i in 1:nrow(refs)) {
 }
 
 # cleaning up
-taxa[which(taxa[,4] == "Suspension"),4] <- "suspension"
 taxa[which(taxa[,4] == "Deposit"),4] <- "deposit"
-taxa[which(taxa[,4] == " deposit"),4] <- "deposit"
-taxa[which(taxa[,4] == "Deposit feeder o"),4] <- "deposit"
 taxa[which(taxa[,4] == "Carnivore"),4] <- "carnivore"
-taxa[which(taxa[,4] == "Algal Grazer"),4] <- "algal grazer"
+taxa[which(taxa[,4] == "Scavenger"),4] <- "scavenger"
+taxa[which(taxa[,4] == "Herbivore"),4] <- "herbivore"
+taxa[which(taxa[,4] == "Omnivore"),4] <- "omnivore"
+taxa[which(taxa[,4] == "Deposit feeder o"),4] <- "deposit"
+taxa[which(taxa[,4] == "Deposit or suspe"),4] <- "deposit/suspension"
 taxa[which(taxa[,4] == "NULL"),4] <- "unknown"
+taxa[which(taxa[,4] == "Unknown"),4] <- "unknown"
+taxa[which(taxa[,4] == "Carnivore/scaven"),4] <- "carnivore/scavenger"
+taxa[which(taxa[,4] == " deposit"),4] <- "deposit"
+taxa[which(taxa[,4] == "Suspension"),4] <- "suspension"
+taxa[which(taxa[,4] == "Algal Grazer"),4] <- "algal grazer"
+taxa[which(taxa[,4] == "Suspension/Depos"),4] <- "deposit/suspension"
+taxa[which(taxa[,4] == "Herbivore/Deposi"),4] <- "deposit/herbivore"
 taxa[which(is.na(taxa[,4])),4] <- "unknown"
 taxa[which(taxa[,4] == ""),4] <- "unknown"
-taxa[which(taxa[,4] == "Unknown"),4] <- "unknown"
 
 for(i in 1:nrow(taxa)) {
   these <- which(marinedata$RefNo == taxa[i,1])	

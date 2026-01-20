@@ -5,7 +5,7 @@
 4,Acanthocardia,tuberculata,unknown,15
 5,Acmaea,mitra,Deposit,18
 6,Adamussium,colbecki,suspension,15
-s,Aequipecten,opercularis,suspension,15
+7,Aequipecten,opercularis,suspension,15
 8,Alcithoe,arabica,Carnivore,18
 9,Amiantis,purpurata,unknown,15
 11,Anadara,grandis,unknown,15
@@ -712,3 +712,16 @@ s,Aequipecten,opercularis,suspension,15
 741,Thyasira,sp.,unknown,15
 742,Volutomitra,groenlandica,predator,18
 743,Yoldiella,solidula,Deposit,18
+744,Orbicella,faveolata,suspension,4
+745,Siderastrea,radians,suspension,4
+746,Tellina,radiate,suspension,15
+747,Eurytellina,lineata,suspension,15
+748,Eurytellina,angulosa,suspension,15
+749,Solecurtus,sanctaemarthae,suspension,15
+750,Sinum,perspectivum,predator,18
+751,Ficus,papyraceus,predator,18
+752,Macron,lividus,suspension,15
+753,Mazatlania,fulgurita,Carnivore,18
+754,Amiantis,callosa,suspension,15
+755,Ceratostoma,nuttalli,predator,18
+756,Leptopecten,latiauratus,suspension,15

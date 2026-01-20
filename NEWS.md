@@ -1,3 +1,6 @@
+# rice 1.99.99
+* caldist now calculates values better when `student.t=TRUE`. 
+
 # rice 1.6.0
 * updated the download from the calib.org marine database (which was last updated 8 November 2025).
 * Changed the `positive` option's default within the `span` function to TRUE.

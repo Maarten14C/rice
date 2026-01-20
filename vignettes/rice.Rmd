@@ -417,9 +417,21 @@ push.normal(2450,40, 400,20)
 
 Dates on marine material will often have to be calibrated with the Marine20 calibration curve[^7], and many coastal locations will have an additional regional reservoir offset (deltaR) (Reimer and Reimer 2006)[^8]. The on-line database at <http://calib.org/marine/> is very useful for this; it features the radiocarbon ages and deltaR of many shells of known collection date. The data from this database were downloaded (in August 2024) and can be queried. For example, a map can be drawn with all shell data within certain coordinates:
 
-```{r, fig.width=5, fig.asp=1}
+
+```{r, eval=FALSE}
 myshells <- map.shells(S=54, W=-8, N=61, E=0) # the northern part of the UK
 ```
+
+```{r, fig.width=5, fig.asp=1, echo=FALSE}
+if(requireNamespace("sf", quietly = TRUE) &&
+  requireNamespace("rnaturalearth", quietly = TRUE) &&
+  requireNamespace("rnaturalearthdata", quietly = TRUE)) {
+    myshells <- map.shells(S = 54, W = -8, N = 61, E = 0, mapsize = "medium")
+  } else 
+    message("Mapping dependencies not available; skipping map in vignette.")
+myshells <- map.shells(S=54, W=-8, N=61, E=0, mapsize="medium") # the northern part of the UK
+```
+
 
 If you don't have the R package 'rnaturalearth' installed, you will be suggested to install it if possible, because the resulting maps will look much nicer. 
 
