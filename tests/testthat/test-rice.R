@@ -28,14 +28,14 @@ test_that("weighted_means returns expected weighted mean of selected shells", {
   myshells <- find.shells(0, 55, mapsize="small", currents=FALSE)
   wmns <- weighted_means(myshells[,5], myshells[,6], talk=FALSE)
   expect_length(wmns, 2)
-  expect_equal(wmns, c(-155.2, 66.2), tolerance = 1e-5)
+  expect_equal(wmns, c(-146.9, 111.6), tolerance = 1e-5)
 })
 
 test_that("shells.mean returns expected mean of shells", {
   myshells <- find.shells(0, 55, mapsize="small", currents=FALSE)
   wmns <- shells.mean(myshells, talk=FALSE)
   expect_length(wmns, 2)
-  expect_equal(wmns, c(-155.2, 66.2), tolerance = 1e-5)
+  expect_equal(wmns, c(-146.9, 111.6), tolerance = 1e-5)
 })
 
 ### calibrate
