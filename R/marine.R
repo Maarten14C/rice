@@ -8,7 +8,10 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
   lflt <- requireNamespace("leaflet", quietly=TRUE)
   coper <- requireNamespace("CopernicusMarine", quietly=TRUE)
 
-  if(identical(mapsize, "large") && !.has_hires()) {
+  # fedora-gcc on github does not like requireNamespace rnaturalearthhires
+  has_hires <- nzchar(system.file(package=paste0("rnaturalearth", "hires")))
+  
+  if(identical(mapsize, "large") && !has_hires) {
     if(warn) 
       message("High-resolution 'large' maps require the github package 'rnaturalearthhires'. Falling back to 'medium'.")
     mapsize <- "medium"
@@ -33,8 +36,9 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
               message("Please install the rnaturalearthdata package:",
                 "\ninstall.packages(\"rnaturalearthdata\")")
 
-            # rnaturalearthhires is nice but has to be installed from github
-            if(!.has_hires())
+            # rnaturalearthhires plots detailed maps, but is too large to be on CRAN (c. 20 MB)
+			# so it has to be installed from github
+            if(!has_hires)
               message("For detailed maps, install rnaturalearthhires:\n",
                 "'https://github.com/ropensci/rnaturalearthhires'") 
           }
@@ -57,19 +61,18 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
     map <- leaflet::leaflet()
     map <- leaflet::addProviderTiles(map, leaflet::providers$Esri.WorldImagery, group = "Esri Satellite")
     map <- leaflet::addLayersControl(map,
-      baseGroups = c("Esri Satellite", "Positron", "Sea Water Potential Temperature"),
-      options = leaflet::layersControlOptions(collapsed = FALSE))
+      baseGroups=c("Esri Satellite", "Positron", "Sea Water Potential Temperature"),
+      options=leaflet::layersControlOptions(collapsed = FALSE))
     map <- CopernicusMarine::addCmsWMTSTiles(map,
-      product = "GLOBAL_ANALYSISFORECAST_PHY_001_024",
-      layer = "cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
-      variable = "thetao",
-      tilematrixset = "EPSG:3857",
-      options = leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
-      group = "Sea Water Potential Temperature"
+      product="GLOBAL_ANALYSISFORECAST_PHY_001_024",
+      layer="cmems_mod_glo_phy-thetao_anfc_0.083deg_P1D-m",
+      variable="thetao", tilematrixset="EPSG:3857",
+      options=leaflet::WMSTileOptions(format = "image/png", transparent = TRUE),
+      group="Sea Water Potential Temperature"
     )
     map <- leaflet::addLayersControl(map,
-      baseGroups = c("ESRI Satellite", "Sea Water Potential Temperature"),
-      options = leaflet::layersControlOptions(collapsed = FALSE)
+      baseGroups=c("ESRI Satellite", "Sea Water Potential Temperature"),
+      options=leaflet::layersControlOptions(collapsed = FALSE)
     )
     map <- leaflet::addCircleMarkers(map, data=shells, lng=~lon, lat=~lat,
       color=cols, radius=5, fillOpacity=0.8,
@@ -85,17 +88,17 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
     width <- abs(E-W); height <- abs(N-S)
     par(mar=rep(1,4))
     maps::map(xlim=c(W-(padding*width), E+(padding*width)), ylim=c(S-(padding*height), N+(padding*height)),
-      fill = TRUE, col = land.col, bg = ocean.col)
-    cols <- color_scale[as.numeric(cut(shells[,5], breaks = 100))]
+      fill=TRUE, col=land.col, bg=ocean.col)
+    cols <- color_scale[as.numeric(cut(shells[,5], breaks=100))]
     points(shells[,1], shells[,2], col=cols, pch=20)
 
     value_range <- range(shells[, 5], na.rm = TRUE)
 
     coors <- par("usr")
     xmin <- coors[1] + legend.loc[1] * (coors[2] - coors[1])
-    xmax <- coors[1] + (legend.loc[1]+legend.size[1]) * (coors[2] - coors[1])
+    xmax <- coors[1] + (legend.loc[1]+legend.size[1]) * (coors[2]-coors[1])
     ymin <- coors[3] + legend.loc[2] * (coors[4] - coors[3])
-    ymax <- coors[3] + (legend.loc[2]+legend.size[2]) * (coors[4] - coors[3])
+    ymax <- coors[3] + (legend.loc[2]+legend.size[2]) * (coors[4]-coors[3])
 
     yticks <- seq(ymin, ymax, length.out=4)
     vals <- round(seq(min(shells[,5]), max(shells[,5]), length=length(yticks)), 0)
@@ -110,20 +113,19 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
   if (!hassf || !rne) {
     world <- sf::st_as_sf(maps::map("world", fill=TRUE, plot=FALSE))
   } else {
-    if(mapsize=="large") # this is not working as expected, find.shells(0, 55, mapsize="large")
-      if(!hiresmaps)
-        mapsize <- "medium"
+    if(mapsize=="large" && !has_hires)
+      mapsize <- "medium"
     world <- rnaturalearth::ne_countries(scale=mapsize, returnclass="sf")
   } 
 
   p <- ggplot(data = world) +
     geom_sf(fill = land.col) +
-    coord_sf(xlim = c(W, E), ylim = c(S, N), expand = TRUE) +
+    coord_sf(xlim=c(W, E), ylim=c(S, N), expand=TRUE) +
       theme(
-        panel.grid.major = element_line(color = rgb(0, 0, 0, 0.5), linetype = 2, linewidth = 0.1),
-        panel.background = element_rect(fill = ocean.col),
-        legend.background = element_rect(fill = "transparent"),
-        legend.key = element_rect(fill = "transparent")
+        panel.grid.major=element_line(color=rgb(0, 0, 0, 0.5), linetype=2, linewidth=0.1),
+        panel.background=element_rect(fill=ocean.col),
+        legend.background=element_rect(fill="transparent"),
+        legend.key=element_rect(fill="transparent")
       )
 
   lon_col <- sym("lon")
@@ -143,20 +145,13 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
 
 
 
-# avoid fedora-gcc github error owing to this platform not liking requireNamespace rnaturalearthhires
-.has_hires <- function() {
-  pkg <- paste0("rnaturalearth", "hires")
-  nzchar(system.file(package=pkg))
-}
-
-
 # from https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
 hav.dist <- function(long1, lat1, long2, lat2) {
   R <- 6371 # Earth's diameter in km
   p <- pi/180
   diff.long <- (long2 - long1) * p
   diff.lat <- (lat2 - lat1) * p
-  a <- sin(diff.lat/2)^2 + cos(lat1 * p) * cos(lat2 * p) * sin(diff.long/2)^2
+  a <- sin(diff.lat/2)^2 + cos(lat1*p) * cos(lat2*p) * sin(diff.long/2)^2
   b <- 2 * asin(pmin(1, sqrt(a)))
   return(R * b)
 }

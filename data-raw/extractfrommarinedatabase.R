@@ -26,7 +26,7 @@ taxa[which(taxa[,4] == "Deposit or suspe"),4] <- "deposit/suspension"
 taxa[which(taxa[,4] == "NULL"),4] <- "unknown"
 taxa[which(taxa[,4] == "Unknown"),4] <- "unknown"
 taxa[which(taxa[,4] == "Carnivore/scaven"),4] <- "carnivore/scavenger"
-taxa[which(taxa[,4] == " deposit"),4] <- "deposit"
+taxa[which(taxa[,4] == " deposit"),4] <- "deposit"
 taxa[which(taxa[,4] == "Suspension"),4] <- "suspension"
 taxa[which(taxa[,4] == "Algal Grazer"),4] <- "algal grazer"
 taxa[which(taxa[,4] == "Suspension/Depos"),4] <- "deposit/suspension"
@@ -35,7 +35,7 @@ taxa[which(is.na(taxa[,4])),4] <- "unknown"
 taxa[which(taxa[,4] == ""),4] <- "unknown"
 
 for(i in 1:nrow(taxa)) {
-  these <- which(marinedata$RefNo == taxa[i,1])	
+  these <- which(marinedata$TaxaNo == taxa[i,1])	
   marinedata[these,22] <- paste(taxa[i,2], taxa[i,3])
   marinedata[these,23] <- tolower(taxa[i,4])	
 }
@@ -59,4 +59,4 @@ shells <- data.frame(
   feeding = marinedata[,23]
 )
 
-save(shells, file = "../data/shells.rda", compress = "bzip2")
+save(shells, file = "shells.rda", compress = "bzip2")
