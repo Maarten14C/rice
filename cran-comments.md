@@ -5,6 +5,6 @@
 
 ## R CMD check results
 
-The error on fedora-gcc related to the github package rnaturalearthhires has been resolved by no longer suggesting its installation using R commands. Users are now directed to the relevant github page instead.
+The error on fedora-gcc related to the github package rnaturalearthhires has been resolved by no longer suggesting its installation using R commands. Instead, users are now directed to the relevant github page.
 
 No notes, warnings or errors. No revdep changes to worse (coffee, rbacon, rplum, clam).
