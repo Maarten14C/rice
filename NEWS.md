@@ -1,3 +1,6 @@
+# rice 1.6.2
+* updated the test-rice R file to reflect the correct find.shells results.
+
 # rice 1.6.1
 * changes to mentions of `rnaturalearthhires` for high-resolution maps, as per CRAN request.
 * caldist now calculates values better when `student.t=TRUE`. 
