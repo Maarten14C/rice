@@ -17,9 +17,4 @@ draw.contamination()
 
 # Installation
 
-To use high-resolution maps, install the `rnaturalearthhires` package from GitHub (also install `remotes` if you haven't already):
-
-```{r}
-install.packages("remotes")
-remotes::install_github("ropensci/rnaturalearthhires")
-```
+To use high-resolution maps, install the `rnaturalearthhires` package from GitHub (see `https://github.com/ropensci/rnaturalearthhires`).

@@ -1,5 +1,6 @@
-# rice 1.99.99
+# rice 1.6.1
 * caldist now calculates values better when `student.t=TRUE`. 
+* further changes to how to install `rnaturalearthhires` for high-resolution maps.
 
 # rice 1.6.0
 * updated the download from the calib.org marine database (which was last updated 8 November 2025).

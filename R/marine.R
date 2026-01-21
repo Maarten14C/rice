@@ -5,14 +5,13 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
   hassf <- requireNamespace("sf", quietly=TRUE)
   rne <- requireNamespace("rnaturalearth", quietly=TRUE)
   rnedata <- requireNamespace("rnaturalearthdata", quietly=TRUE)
-  remotes <- requireNamespace("remotes", quietly=TRUE)
   lflt <- requireNamespace("leaflet", quietly=TRUE)
   coper <- requireNamespace("CopernicusMarine", quietly=TRUE)
-  hiresmaps <- requireNamespace("rnaturalearthhires", quietly = TRUE)
 
-  if(!hiresmaps && warn && mapsize == "large") {
-    message("High-resolution maps not available; using standard resolution.")
-	mapsize <- "medium"
+  if(identical(mapsize, "large") && !.has_hires()) {
+    if(warn) 
+      message("High-resolution 'large' maps require the github package 'rnaturalearthhires'. Falling back to 'medium'.")
+    mapsize <- "medium"
   }
 
   if(warn) {
@@ -35,13 +34,9 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
                 "\ninstall.packages(\"rnaturalearthdata\")")
 
             # rnaturalearthhires is nice but has to be installed from github
-            if(!hiresmaps)
-              if(remotes)
-                message("For detailed maps, install rnaturalearthhires from GitHub:\n",
-                  "`remotes::install_github('ropensci/rnaturalearthhires')`") else
-                    message("Install first remotes and then rnaturalearthhires:\n",
-                      "install.packages(\"remotes\")\n",
-                      "`remotes::install_github(\"ropensci/rnaturalearthhires\")`")
+            if(!.has_hires())
+              message("For detailed maps, install rnaturalearthhires:\n",
+                "'https://github.com/ropensci/rnaturalearthhires'") 
           }
         }
       }
@@ -146,6 +141,13 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
   print(p)
 }
 
+
+
+# avoid fedora-gcc github error owing to this platform not liking requireNamespace rnaturalearthhires
+.has_hires <- function() {
+  pkg <- paste0("rnaturalearth", "hires")
+  nzchar(system.file(package=pkg))
+}
 
 
 # from https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
