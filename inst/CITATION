@@ -1,15 +1,14 @@
 c(
   bibentry(
-    bibtype = "Unpublished",
-    title = "Open-source equations for radiocarbon dating and calibration",
+    bibtype = "accepted (minor corrections)",
+    title = "An open-source toolkit for radiocarbon dating and calibration",
     author = c(
       person("Maarten", "Blaauw"),
-      person("Paula", "Reimer"),
-      person("Ron", "Reimer")
+      person("Paula", "Reimer")
     ),
     journal = "Radiocarbon",
-    note = "Manuscript submitted",
-    textVersion = "Blaauw, M., Reimer, P.J., Reimer, R., submitted. Open-source equations for radiocarbon dating and calibration. Radiocarbon"
+    note = "Manuscript accepted",
+    textVersion = "Blaauw, M., Reimer, P.J., accepted. An open-source toolkit for radiocarbon dating and calibration. Radiocarbon"
   ),
 
   bibentry(

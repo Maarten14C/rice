@@ -1,3 +1,7 @@
+# rice 1.6.3
+* updated the documentation of `caldist` for the option `bombalert`. 
+* added a reference to `rice`: Blaauw, M., Reimer, P.J., accepted (pending minor revisions). An open-source toolkit for radiocarbon dating and calibration. Radiocarbon. 
+
 # rice 1.6.2
 * updated the test-rice R file to reflect the correct find.shells results.
 
