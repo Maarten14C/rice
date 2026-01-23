@@ -6,7 +6,7 @@
 #' @param er Lab error of the radiocarbon age
 #' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
-#' @param bombalert Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{bombalert=TRUE}.
+#' @param bombalert Stop if a date is overly close to the younger limit of the IntCal curve. Defaults to \code{bombalert=TRUE}. This error can be avoided by either providing a postbomb curve (e.g., \code{postbomb=1}) or typing \code{bombalert=FALSE} (in this case, part of the date will be truncated).
 #' @param deltaR Age offset (e.g. for marine samples). This assumes that the radiocarbon age is provided as 14C BP (not F14C or pMC).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param is.F Set this to TRUE if the provided age and error are in the F14C timescale.
