@@ -1086,74 +1086,40 @@ Delta14CtopMC <- function(Delta14C, er=NULL, t, roundby=Inf)
 ### functions to be retired below here
 
 #' @name pMC.age
-#' @title To be deprecated. Use pMCtoC14 instead.
-#' @description Will be deprecated. Use pMCtoC14 instead.
-#' @details Post-bomb dates are often reported as pMC or percent modern carbon. Since Bacon expects radiocarbon ages,
-#'  this function can be used to calculate radiocarbon ages from pMC values. The reverse function is C14.pMC.
-#' @param mn Reported mean of the pMC.
-#' @param sdev Reported error of the pMC.
-#' @param ratio Most modern-date values are reported against \code{100}. If it is against \code{1} instead, use \code{1} here.
-#' @param decimals Amount of decimals required for the radiocarbon age.
-#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
-#' @return Radiocarbon ages from pMC values. If pMC values are above 100\%, the resulting radiocarbon ages will be negative.
+#' @title Deprecated. Use pMCtoC14 instead.
+#' @return A deprecation message
 #' @export
-pMC.age <- function(mn, sdev=c(), ratio=100, decimals=0, lambda=8033) {
-  message("pMC.age will be deprecated. Use pMCtoC14 instead") 
-  pMCtoC14(mn, sdev, decimals, lambda)
+pMC.age <- function() {
+  message("pMC.age has been deprecated. Use pMCtoC14 instead") 
 }
 
 
 
 #' @name age.pMC
-#' @title To be deprecated. Use C14topMC instead.
-#' @description Calculate pMC values from radiocarbon ages
-#' @details Post-bomb dates are often reported as pMC or percent modern carbon. Since Bacon expects radiocarbon ages,
-#' this function can be used to calculate pMC values from radiocarbon ages. The reverse function of pMC.C14.
-#' @param mn Reported mean of the 14C age.
-#' @param sdev Reported error of the 14C age.
-#' @param ratio Most modern-date values are reported against \code{100}. If it is against \code{1} instead, a warning is provided; use \code{age.F14C}.
-#' @param decimals Amount of decimals required for the pMC value. Defaults to 5.
-#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
-#' @return pMC values from C14 ages.
+#' @title Deprecated. Use C14topMC instead.
+#' @return A deprecation message
 #' @export
-age.pMC <- function(mn, sdev=c(), ratio=100, decimals=5, lambda=8033) {
-  message("age.pMC will be deprecated. Use C14topMC instead") 	
-  C14topMC(mn, sdev, decimals, lambda)
+age.pMC <- function() {
+  message("age.pMC has been deprecated. Use C14topMC instead") 	
 }
 
 
 
 #' @name F14C.age
-#' @title To be deprecated. Calculate C14 ages from F14C values.
-#' @description Calculate C14 ages from F14C values of radiocarbon dates.
-#' @details Post-bomb dates are often reported as F14C or fraction modern carbon. Since Bacon expects radiocarbon ages,
-#'  this function can be used to calculate radiocarbon ages from F14C values. The reverse function is \link{age.F14C}.
-#' @param mn Reported mean of the F14C
-#' @param sdev Reported error of the F14C. Returns just the mean if left empty.
-#' @param decimals Amount of decimals required for the radiocarbon age. Quite sensitive, defaults to 5.
-#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
-#' @return Radiocarbon ages from F14C values. If F14C values are above 100\%, the resulting radiocarbon ages will be negative.
+#' @title Deprecated. Use F14CtoC14instead
+#' @return A deprecation message
 #' @export
-F14C.age <- function(mn, sdev=c(), decimals=5, lambda=8033) {
-  message("F14C.age will be deprecated. Use F14CtoC14 instead")
-  F14CtoC14(mn, sdev, decimals, lambda)
+F14C.age <- function() {
+  message("F14C.age has been deprecated. Use F14CtoC14 instead")
 }
 
 
 
 #' @name age.F14C
-#' @title To be deprecated. Use C14.F14C instead
-#' @description Calculate F14C values from radiocarbon ages
-#' @details Post-bomb dates are often reported as F14C or fraction modern carbon. Since Bacon expects radiocarbon ages,
-#' this function can be used to calculate F14C values from radiocarbon ages. The reverse function of \link{F14CtoC14}.
-#' @param mn Reported mean of the 14C age.
-#' @param sdev Reported error of the 14C age. If left empty, will translate mn to F14C.
-#' @param decimals Amount of decimals required for the F14C value. Defaults to 5.
-#' @param lambda The mean-life of radiocarbon (based on Libby half-life of 5568 years)
-#' @return F14C values from C14 ages.
+#' @title Deprecated. Use C14toF14C instead
+#' @return A deprecation message
 #' @export
-age.F14C <- function(mn, sdev=c(), decimals=5, lambda=8033) {
-  message("age.F14C will be deprecated. Use C14toF14C instead") 	
-  C14toF14C(mn, sdev, decimals, lambda)
+age.F14C <- function() {
+  message("age.F14C has been deprecated. Use C14toF14C instead") 	
 }
 

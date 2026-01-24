@@ -1,6 +1,7 @@
 # rice 1.6.3
 * updated the documentation of `caldist` for the option `bombalert`. 
 * added a reference to `rice`: Blaauw, M., Reimer, P.J., accepted (pending minor revisions). An open-source toolkit for radiocarbon dating and calibration. Radiocarbon. 
+* Deprecated pMC.age, age.pMC, F14C.age and age.F14C (instead, please use pMCtoC14, C14topMC, F14CtoC14, respectively C14toF14C).
 
 # rice 1.6.2
 * updated the test-rice R file to reflect the correct find.shells results.
