@@ -657,7 +657,6 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve
 #'  calibratable(shroud$y, shroud$er, shroud$ID)
 #' @export
 calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bombalert=TRUE, glue=0, cc.dir=c(), thiscurve=c(), is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, prob=0.95, prob.round=1, age.round=0, docx=c()) {
-
   if(!requireNamespace("flextable", quietly = TRUE))
     stop("Package 'flextable' is required. Install with install.packages('flextable').")
 
@@ -697,17 +696,26 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
     this.hpd <- hpd(this.cal, BCAD=BCAD,
       prob.round=prob.round, age.round=age.round)
 
-    cdf <- cumsum(this.cal[,2] / sum(this.cal[,2]))
-    rng <- approx(cdf, this.cal[,1],
-      c((1-prob)/2, 1 - (1-prob)/2))$y
+#    cdf <- cumsum(this.cal[,2] / sum(this.cal[,2]))
+    
+#	q <- approx(cdf, this.cal[,1],
+#	            c((1-prob)/2, 1 - (1-prob)/2))$y
+				
+	cdf <- cumsum(this.cal[,2] / sum(this.cal[,2]))
+	qtarget <- c((1-prob)/2, 1 - (1-prob)/2)
 
-    min.rng <- round(min(rng), age.round)
-    max.rng <- round(max(rng), age.round)
-
-    if(BCAD) { # report ranges in chronological order
-        max.rng <- round(min(rng), age.round)
-        min.rng <- round(max(rng), age.round)
-      }
+	# clamp into numerical CDF range
+	qtarget[1] <- max(qtarget[1], min(cdf))
+	qtarget[2] <- min(qtarget[2], max(cdf))
+	q <- approx(cdf, this.cal[,1], qtarget)$y				
+				
+	if(BCAD && min(q) > 0) {
+	  min.rng <- round(q[2], age.round)
+	  max.rng <- round(q[1], age.round)
+	} else {
+  	  min.rng <- round(q[1], age.round)
+  	  max.rng <- round(q[2], age.round)
+	}
 
     n <- length(this.hpd$from)
     froms <- c(froms, as.numeric(this.hpd$from))

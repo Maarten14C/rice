@@ -1,8 +1,8 @@
-# rice 1.6.3
+# rice 2.0.0
+* now cites the accompanying publication, Blaauw M & Reimer PJ (accepted) An open-source toolkit for radiocarbon dating and calibration. Radiocarbon
 * updated the documentation of `caldist` for the option `bombalert`. 
-* new option `glue` in `caldist` and derivatives `calibrate` and `calibratable`. This enables users to combine e.g. IntCal20 and postbomb-curve NH1, NH2 or NH3, or SHCal20 and SH1-2 or SH3 (glue=1, 2, 3, 4 or 5, respectively). The default is 'glue=0', or no glueing of prebomb and postbomb calibration curves. 
-* added a reference to `rice`: Blaauw, M., Reimer, P.J., accepted (pending minor revisions). An open-source toolkit for radiocarbon dating and calibration. Radiocarbon. 
-* Deprecated pMC.age, age.pMC, F14C.age and age.F14C (instead, please use pMCtoC14, C14topMC, F14CtoC14, respectively C14toF14C).
+* new option `glue` in `caldist` and derivatives `calibrate` and `calibratable`. This enables users to combine e.g. IntCal20 and postbomb-curve NH1, NH2 or NH3, or SHCal20 and SH1-2 or SH3 (glue=1, 2, 3, 4 or 5, respectively). The default is 'glue=0', i.e., no glueing of prebomb and postbomb calibration curves. 
+* Deprecated pMC.age, age.pMC, F14C.age and age.F14C (instead, please use pMCtoC14, C14topMC, F14CtoC14, or C14toF14C respectively).
 
 # rice 1.6.2
 * updated the test-rice R file to reflect the correct find.shells results.
