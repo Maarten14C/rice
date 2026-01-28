@@ -4,15 +4,16 @@
 #' @return The probability distribution(s) as two columns: cal BP ages and their associated probabilities
 #' @param y Uncalibrated radiocarbon age
 #' @param er Lab error of the radiocarbon age
-#' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
+#' @param cc Calibration curve to use. Defaults to IntCal20 (cc=1), can be Marine20 (cc=2), SHCal20 (cc=3), or if postbomb=TRUE, NH1 (cc=1), NH2 (cc=2), NH3 (cc=3), SH1-2 (cc=4) or SH3 (cc=5).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
 #' @param bombalert Stop if a date is overly close to the younger limit of the IntCal curve. Defaults to \code{bombalert=TRUE}. This error can be avoided by either providing a postbomb curve (e.g., \code{postbomb=1}) or typing \code{bombalert=FALSE} (in this case, part of the date will be truncated).
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
 #' @param deltaR Age offset (e.g. for marine samples). This assumes that the radiocarbon age is provided as 14C BP (not F14C or pMC).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param is.F Set this to TRUE if the provided age and error are in the F14C timescale.
 #' @param is.pMC Set this to TRUE if the provided age and error are in the pMC timescale.
 #' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
-#' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
+#' @param thiscurve As an alternative to providing cc and/or postbomb/glue, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespans.
 #' @param dist.res As an alternative to yrsteps, provide the amount of 'bins' in the distribution.
@@ -32,7 +33,7 @@
 #' plot(calib, type="l")
 #' postbomb <- caldist(-3030, 20, postbomb=1, BCAD=TRUE)
 #' @export
-caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, pb.steps=0.05, cc0.res=5e3, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL, col.names=NULL) {
+caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, pb.steps=0.05, cc0.res=5e3, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL, col.names=NULL) {
 
   if(is.F && is.pMC)
     stop("cannot have both is.F=TRUE and is.pMC=TRUE")
@@ -46,33 +47,42 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, delta
         xseq <- seq(y-4*er, y+4*er, length=cc0.res)
         this.cc <- cbind(xseq, xseq, rep(0, length(xseq)))
       } else {
-          this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir, 
-            resample=cc.resample, as.F=is.F, as.pMC=is.pMC)
-        
-          # check if any dates lie at the younger edge of this.cc
-          young <- FALSE
-          if(is.F || is.pMC) {
-            if(max(y+(3*er)) > max(this.cc[,2]))
-              young <- TRUE
-          } else 
-              if(min(y-(3*er)) < min(this.cc[,2]))
-                young <- TRUE 
+          if(glue>0) {
+            if(glue %in% 1:3)
+              this.cc <- rintcal::glue.ccurves(1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                if(glue %in% 4:5)			
+                  this.cc <- rintcal::glue.ccurves(3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                    stop("please provide an integer for glue between 0 and 5")
+		  } else {
+		  
+            this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir, 
+              resample=cc.resample, as.F=is.F, as.pMC=is.pMC)
+         
+            # check if any dates lie at the younger edge of this.cc
+            young <- FALSE
+            if(is.F || is.pMC) {
+              if(max(y+(3*er)) > max(this.cc[,2]))
+                young <- TRUE
+            } else 
+                if(min(y-(3*er)) < min(this.cc[,2]))
+                  young <- TRUE 
 
-          if(young) {
-            if(postbomb == FALSE) {
-              if(bombalert)
-                stop("please provide a postbomb curve") else { 
-                  # no postbomb has been defined, but we need to add one 
-                  if(cc==1) # then assume we need NH1
-                    this.cc <- rintcal::glue.ccurves(cc, postbomb=1, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                    if(cc==3) # then assume we need SH1-2
-                      this.cc <- rintcal::glue.ccurves(cc, postbomb=4, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                        stop("please provide a postbomb curve, e.g. postbomb=1")
+            if(young) {
+              if(postbomb == FALSE) {
+                if(bombalert)
+                  stop("please provide a postbomb curve") else { 
+                    # no postbomb has been defined, but we need to add one 
+                    if(cc==1) # then assume we need NH1
+                      this.cc <- rintcal::glue.ccurves(cc, postbomb=1, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                      if(cc==3) # then assume we need SH1-2
+                        this.cc <- rintcal::glue.ccurves(cc, postbomb=4, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                          stop("please provide a postbomb curve, e.g. postbomb=1")
                 } 
-            } else
-                this.cc <- rintcal::glue.ccurves(cc, postbomb=postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)
+              } else
+                  this.cc <- rintcal::glue.ccurves(cc, postbomb=postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)
+            }
           }
-      }
+		}  
     }
 
   if(postbomb) {
@@ -629,6 +639,7 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}. For the BCAD scale, BC ages are negative.
 #' @param postbomb Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'ccurve("sh1-2_monthly")'
 #' @param bombalert Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., 'cc.dir="ccurves"'.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
 #' @param is.F Set this to TRUE if the provided age and error are in the F14C timescale.
@@ -645,7 +656,7 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve
 #'  data(shroud)
 #'  calibratable(shroud$y, shroud$er, shroud$ID)
 #' @export
-calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bombalert=TRUE, cc.dir=c(), thiscurve=c(), is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, prob=0.95, prob.round=1, age.round=0, docx=c()) {
+calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bombalert=TRUE, glue=0, cc.dir=c(), thiscurve=c(), is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, prob=0.95, prob.round=1, age.round=0, docx=c()) {
 
   if(!requireNamespace("flextable", quietly = TRUE))
     stop("Package 'flextable' is required. Install with install.packages('flextable').")
@@ -680,7 +691,7 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
 
   for(i in 1:length(y)) {
     this.cal <- caldist(y[i], er[i], cc=cc[i], BCAD=BCAD, postbomb=postbomb, bombalert=bombalert,
-      thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
+      glue=glue, thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
       deltaR=deltaR[i], deltaSTD=deltaSTD[i])
     this.cal <- this.cal[order(this.cal[,1]), ]
     this.hpd <- hpd(this.cal, BCAD=BCAD,
@@ -736,7 +747,19 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
   ylab <- if(is.F) "F14C (\u00b1 sd)" else
     if(is.pMC) "pMC (\u00b1 sd)" else
       "14C BP (\u00b1 sd)"
-  cc_labels = setNames(c("IntCal20 (Reimer et al. 2020)", "Marine20 (Heaton et al. 2020)", "SHCal20 (Hogg et al. 2020)", "mixed"), c(1, 2, 3, 4))
+
+  if(glue==0)
+    cc_labels <- setNames(c("IntCal20 (Reimer et al. 2020)", "Marine20 (Heaton et al. 2020)", "SHCal20 (Hogg et al. 2020)", "mixed"), 1:3) else
+    if(glue %in% 1:3)
+	  cc_labels <- setNames(c("IntCal20 (Reimer et al. 2020) & NH1 (Hua et al. 2022)", "IntCal20 (Reimer et al. 2020) & NH2 (Hua et al. 2022)", "IntCal20 (Reimer et al. 2020) & NH3 (Hua et al. 2022)"), 1:3) else
+        if(glue %in% 4:5)
+          cc_labels <- setNames(c("SHCal20 (Hogg et al. 2020) & SH1-2 (Hua et al. 2022)", "SHCal20 (Hogg et al. 2020) & SH3 (Hua et al. 2022)"), 1:2) else
+            stop("I don't understand the value of 'glue'")		 
+
+  # but forget the above if a user-defined curve is used:
+  if(length(thiscurve) > 0)
+    cc_labels <- "custom curve"    
+	
   cc_map <- function(v)
     unname(ifelse(as.character(v) %in% names(cc_labels),
       cc_labels[as.character(v)], as.character(v)))

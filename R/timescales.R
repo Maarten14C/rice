@@ -693,7 +693,7 @@ C14tocalBP <- function(y, cc=1, postbomb=FALSE, rule=2, cc.dir=NULL, thiscurve=N
 #'   abline(v=C14toBCAD(y))
 #' @export
 C14toBCAD <- function(y, cc=1, postbomb=FALSE, rule=1, zero=FALSE, cc.dir=NULL, thiscurve=NULL, roundby=Inf) {
-  x <- C14tocalBP(y, roundby=Inf)
+  x <- C14tocalBP(y, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve, roundby=Inf)
   return(round(calBPtoBCAD(x, zero=zero), roundby))
 }
 
@@ -716,7 +716,7 @@ C14toBCAD <- function(y, cc=1, postbomb=FALSE, rule=1, zero=FALSE, cc.dir=NULL, 
 #'  C14tob2k(130, 20)
 #' @export
 C14tob2k <- function(y, cc=1, postbomb=FALSE, rule=1, cc.dir=NULL, thiscurve=NULL, roundby=Inf) {
-  x <- C14tocalBP(y, roundby=Inf)
+  x <- C14tocalBP(y, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve, roundby=Inf)
   return(round(calBPtob2k(x),roundby))
 }
 

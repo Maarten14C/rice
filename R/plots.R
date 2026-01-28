@@ -277,6 +277,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
 #' @param cc Calibration curve for C-14 dates (1, 2, 3, or 4, or, e.g., "IntCal20", "Marine20", "SHCal20", "nh1", "sh3", or "mixed").
 #' @param postbomb Whether or not this is a postbomb age. Defaults to FALSE. 
 #' @param bombalert Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
 #' @param deltaR Age offset (e.g. for marine samples). Can also be provided as option 'reservoir'.
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation). Can also be provided within option 'reservoir'.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
@@ -338,7 +339,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
 #' calibrate(age=130, error=10, BCAD=TRUE, bombalert=FALSE)
 #' calibrate(4450, 40, reservoir=c(100, 50))
 #' @export
-calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, deltaSTD=0, thiscurve=c(), as.F=TRUE, is.F=FALSE, is.pMC=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, draw=TRUE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.3), dist.fill=rgb(0,0,0,0.3), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=TRUE, yr.steps=FALSE, cc.resample=5, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, round.age=c(), round.hpd.ages=0, round.hpd.probs=1, every=NA, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", warning.loc="right", print.truncate.warning=TRUE, mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, cc.er=0, asymmetric=TRUE, ...) {
+calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, thiscurve=c(), as.F=TRUE, is.F=FALSE, is.pMC=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, draw=TRUE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.3), dist.fill=rgb(0,0,0,0.3), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=TRUE, yr.steps=FALSE, cc.resample=5, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, round.age=c(), round.hpd.ages=0, round.hpd.probs=1, every=NA, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", warning.loc="right", print.truncate.warning=TRUE, mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, cc.er=0, asymmetric=TRUE, ...) {
   
   if(is.F && is.pMC)
     stop("Cannot have both is.F=TRUE and is.PMC=TRUE.")
@@ -369,6 +370,13 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
               if(min(age-(3*error)) < min(Cc[,2]))
                 young <- TRUE 
 
+        if(glue>0) {
+          if(glue %in% 1:3)
+             Cc <- rintcal::glue.ccurves(1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+               if(glue %in% 4:5)			
+                 Cc <- rintcal::glue.ccurves(3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                   stop("please provide an integer for glue between 0 and 5")
+        } else 
           if(young) {
             if(postbomb == FALSE) {
               if(bombalert)
@@ -439,7 +447,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
   }
   cal.dist <- caldist(age, error, cc=cc, yrsteps=yr.steps, threshold=threshold,
     normal=normal, is.F=is.F, is.pMC=is.pMC, as.F=as.F, t.a=t.a, t.b=t.b,
-    postbomb=postbomb, bombalert=bombalert, thiscurve=thiscurve, cc.dir=cc.dir, BCAD=BCAD)
+    postbomb=postbomb, bombalert=bombalert, glue=glue, thiscurve=thiscurve, cc.dir=cc.dir, BCAD=BCAD)
 
   # copy entries at edges of calibrated hpds, to ensure rectangular polygons
   if(draw) {
