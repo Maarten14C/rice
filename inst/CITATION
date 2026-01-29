@@ -1,6 +1,6 @@
 c(
   bibentry(
-    bibtype = "accepted (minor corrections)",
+    bibtype = "accepted",
     title = "An open-source toolkit for radiocarbon dating and calibration",
     author = c(
       person("Maarten", "Blaauw"),
