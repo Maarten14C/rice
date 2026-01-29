@@ -109,7 +109,7 @@ test_that("overlapping returns percentage", {
   y <- c(3820, 4430)
   er <- c(40, 40)
   result <- overlap(y, er, cc=1:2, talk=FALSE)
-  expect_equal(result, 30.46924, tolerance=1e-5)
+  expect_equal(result, 30.75944, tolerance=1e-5)
 })
 
 ### sources

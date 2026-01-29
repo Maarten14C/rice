@@ -12,7 +12,7 @@
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param is.F Set this to TRUE if the provided age and error are in the F14C timescale.
 #' @param is.pMC Set this to TRUE if the provided age and error are in the pMC timescale.
-#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=TRUE}, so not using the C14 timescale (will be more accurate especially for dates with larger errors, e.g., older ones).
 #' @param thiscurve As an alternative to providing cc and/or postbomb/glue, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespans.
@@ -33,7 +33,7 @@
 #' plot(calib, type="l")
 #' postbomb <- caldist(-3030, 20, postbomb=1, BCAD=TRUE)
 #' @export
-caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, pb.steps=0.05, cc0.res=5e3, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL, col.names=NULL) {
+caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=TRUE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, pb.steps=0.05, cc0.res=5e3, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL, col.names=NULL) {
 
   if(is.F && is.pMC)
     stop("cannot have both is.F=TRUE and is.pMC=TRUE")
@@ -696,26 +696,24 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
     this.hpd <- hpd(this.cal, BCAD=BCAD,
       prob.round=prob.round, age.round=age.round)
 
-#    cdf <- cumsum(this.cal[,2] / sum(this.cal[,2]))
-    
-#	q <- approx(cdf, this.cal[,1],
-#	            c((1-prob)/2, 1 - (1-prob)/2))$y
-				
-	cdf <- cumsum(this.cal[,2] / sum(this.cal[,2]))
-	qtarget <- c((1-prob)/2, 1 - (1-prob)/2)
+    cdf <- cumsum(this.cal[,2] / sum(this.cal[,2])) # ensure it sums to 1
+   # p <- this.cal[,2] / sum(this.cal[,2])
+   # keep <- p > 0
+   # cdf <- cumsum(p[keep])
+   # ages <- this.cal[keep, 1]
 
-	# clamp into numerical CDF range
-	qtarget[1] <- max(qtarget[1], min(cdf))
-	qtarget[2] <- min(qtarget[2], max(cdf))
-	q <- approx(cdf, this.cal[,1], qtarget)$y				
-				
-	if(BCAD && min(q) > 0) {
-	  min.rng <- round(q[2], age.round)
-	  max.rng <- round(q[1], age.round)
-	} else {
-  	  min.rng <- round(q[1], age.round)
-  	  max.rng <- round(q[2], age.round)
-	}
+    qtarget <- c((1-prob)/2, 1-(1-prob)/2) # eat into both edges
+    qtarget[1] <- max(qtarget[1], min(cdf))
+    qtarget[2] <- min(qtarget[2], max(cdf))
+    q <- suppressWarnings(approx(cdf, this.cal[,1], qtarget, rule=2)$y)
+
+   if(BCAD && min(q) > 0) {
+     min.rng <- round(q[2], age.round)
+     max.rng <- round(q[1], age.round)
+   } else {
+      min.rng <- round(q[1], age.round)
+      max.rng <- round(q[2], age.round)
+     }
 
     n <- length(this.hpd$from)
     froms <- c(froms, as.numeric(this.hpd$from))
@@ -756,28 +754,51 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
     if(is.pMC) "pMC (\u00b1 sd)" else
       "14C BP (\u00b1 sd)"
 
-  if(glue==0)
-    cc_labels <- setNames(c("IntCal20 (Reimer et al. 2020)", "Marine20 (Heaton et al. 2020)", "SHCal20 (Hogg et al. 2020)", "mixed"), 1:3) else
-    if(glue %in% 1:3)
-	  cc_labels <- setNames(c("IntCal20 (Reimer et al. 2020) & NH1 (Hua et al. 2022)", "IntCal20 (Reimer et al. 2020) & NH2 (Hua et al. 2022)", "IntCal20 (Reimer et al. 2020) & NH3 (Hua et al. 2022)"), 1:3) else
-        if(glue %in% 4:5)
-          cc_labels <- setNames(c("SHCal20 (Hogg et al. 2020) & SH1-2 (Hua et al. 2022)", "SHCal20 (Hogg et al. 2020) & SH3 (Hua et al. 2022)"), 1:2) else
-            stop("I don't understand the value of 'glue'")		 
+  if(length(thiscurve) > 0) 
+    legend_text <- "Custom calibration curve" else
+    if(glue > 0) {
+      if(glue %in% 1:3) {
+        bomb <- c("NH1", "NH2", "NH3")[glue]
+        legend_text <- paste0("Calibration curve: IntCal20 (Reimer et al. 2020) & ",
+          bomb, " (Hua et al. 2022)")
+      } else if(glue %in% 4:5) {
+          bomb <- c("SH1–2", "SH3")[glue - 3]
+          legend_text <- paste0("Calibration curve: SHCal20 (Hogg et al. 2020) & ",
+            bomb, " (Hua et al. 2022)")
+        }
+    } else {
+      if(postbomb)  {
+        cc_labels <- c( 
+          "1" = "NH1 (Hua et al. 2022)",
+          "2" = "NH2 (Hua et al. 2022)",
+          "3" = "NH3 (Hua et al. 2022)",
+          "4" = "SH1-2 (Hua et al. 2022)",
+          "5" = "SH3 (Hua et al. 2022)")			
+	  } else
+          cc_labels <- c(
+            "1" = "IntCal20 (Reimer et al. 2020)",
+            "2" = "Marine20 (Heaton et al. 2020)",
+           "3" = "SHCal20 (Hogg et al. 2020)")
 
-  # but forget the above if a user-defined curve is used:
-  if(length(thiscurve) > 0)
-    cc_labels <- "custom curve"    
+      uniq_cc <- unique(cc)
+      if(length(uniq_cc) > 1) {
+        pairs <- paste0(uniq_cc, " = ", cc_labels[as.character(uniq_cc)])
+        legend_text <- paste("cc (calibration curve) legend:",
+          paste(pairs, collapse = "; "))
+      } else
+          legend_text <- paste("Calibration curve:", cc_labels[as.character(uniq_cc)])
+
+      cc_map <- function(v)
+        unname(ifelse(as.character(v) %in% names(cc_labels),
+          cc_labels[as.character(v)], as.character(v)))
+      uniq_cc <- unique(cc)
+      if(length(uniq_cc) > 1) {
+        pairs <- paste0(uniq_cc, " = ", cc_map(uniq_cc))
+        legend_text <- paste0("cc (calibration curve) legend: ", paste(pairs, collapse = "; "))
+      } else
+        legend_text <- paste("Calibration curve:", cc_map(uniq_cc))
+    }
 	
-  cc_map <- function(v)
-    unname(ifelse(as.character(v) %in% names(cc_labels),
-      cc_labels[as.character(v)], as.character(v)))
-  uniq_cc <- unique(cc)
-  if(length(uniq_cc) > 1) {
-    pairs <- paste0(uniq_cc, " = ", cc_map(uniq_cc))
-    legend_text <- paste0("cc (calibration curve) legend: ", paste(pairs, collapse = "; "))
-  } else
-      legend_text <- paste("Calibration curve:", cc_map(uniq_cc))
-
   if(BCAD)
     if(min(min.rngs, na.rm=TRUE) < 0)
       legend_text <- paste0(legend_text, ". BC ages are negative")

@@ -344,10 +344,9 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
   if(is.F && is.pMC)
     stop("Cannot have both is.F=TRUE and is.PMC=TRUE.")
   
+  # read the data, taking into account offsets
   age <- age - deltaR
   error <- sqrt(error^2 + deltaSTD^2)
-  
-  # read the data
   age <- age-reservoir[1]
   if(length(reservoir) > 1)
     error <- sqrt(error^2 + reservoir[2]^2)
@@ -358,6 +357,13 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
         xseq <- seq(age-4*error, age+4*error, length=5e3)
         Cc <- cbind(xseq, xseq, rep(0, length(xseq)))
       } else {
+          if(glue>0) {
+            if(glue %in% 1:3)
+               Cc <- rintcal::glue.ccurves(1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                 if(glue %in% 4:5)			
+                   Cc <- rintcal::glue.ccurves(3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                     stop("please provide an integer for glue between 0 and 5")
+          } else {
           Cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir, 
             resample=cc.resample, as.F=is.F, as.pMC=is.pMC)
         
@@ -370,13 +376,6 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
               if(min(age-(3*error)) < min(Cc[,2]))
                 young <- TRUE 
 
-        if(glue>0) {
-          if(glue %in% 1:3)
-             Cc <- rintcal::glue.ccurves(1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-               if(glue %in% 4:5)			
-                 Cc <- rintcal::glue.ccurves(3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                   stop("please provide an integer for glue between 0 and 5")
-        } else 
           if(young) {
             if(postbomb == FALSE) {
               if(bombalert)
@@ -391,6 +390,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
             } else
                 Cc <- rintcal::glue.ccurves(cc, postbomb=postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)
           }
+		}  
       }
     }
 
@@ -440,14 +440,14 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
   if(!is.F && !is.pMC)
     if(asymmetric) { # then calculate in F, followed by translation into C14
       redo.as.F <- as.numeric(C14toF14C(age, error)) # not taking into account cc's errors
-      F.dist <- caldist(redo.as.F[1], redo.as.F[2], cc=0, BCAD=FALSE, postbomb=FALSE, bombalert=bombalert)
+      F.dist <- caldist(redo.as.F[1], redo.as.F[2], cc=0, BCAD=FALSE, postbomb=FALSE, bombalert=bombalert, glue=glue)
       F.dist <- F.dist[!is.nan(F.dist[,1]),] # remove non-numbers
-      F.dist <- F.dist[F.dist[,1]>=0,] # also remove F < 0
+      #F.dist <- F.dist[F.dist[,1]>=0,] # also remove F < 0
       C14.dist <- cbind(F14CtoC14(F.dist[,1], c()), F.dist[,2])
   }
   cal.dist <- caldist(age, error, cc=cc, yrsteps=yr.steps, threshold=threshold,
     normal=normal, is.F=is.F, is.pMC=is.pMC, as.F=as.F, t.a=t.a, t.b=t.b,
-    postbomb=postbomb, bombalert=bombalert, glue=glue, thiscurve=thiscurve, cc.dir=cc.dir, BCAD=BCAD)
+    thiscurve=Cc, cc.dir=cc.dir, BCAD=BCAD)
 
   # copy entries at edges of calibrated hpds, to ensure rectangular polygons
   if(draw) {
@@ -472,8 +472,6 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
         }
       # don't draw the entire calibration curve
       Cc <- Cc[cc.min:cc.max,]
-
-
 
       if(BCAD)
         cc.lim <- extendrange(c(Cc[,2]-Cc[,3], Cc[,2]+Cc[,3]), f=extend.range) else
