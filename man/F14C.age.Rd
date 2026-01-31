@@ -2,26 +2,13 @@
 % Please edit documentation in R/timescales.R
 \name{F14C.age}
 \alias{F14C.age}
-\title{To be deprecated. Calculate C14 ages from F14C values.}
+\title{Deprecated. Use F14CtoC14instead}
 \usage{
-F14C.age(mn, sdev = c(), decimals = 5, lambda = 8033)
-}
-\arguments{
-\item{mn}{Reported mean of the F14C}
-
-\item{sdev}{Reported error of the F14C. Returns just the mean if left empty.}
-
-\item{decimals}{Amount of decimals required for the radiocarbon age. Quite sensitive, defaults to 5.}
-
-\item{lambda}{The mean-life of radiocarbon (based on Libby half-life of 5568 years)}
+F14C.age()
 }
 \value{
-Radiocarbon ages from F14C values. If F14C values are above 100\%, the resulting radiocarbon ages will be negative.
+A deprecation message
 }
 \description{
-Calculate C14 ages from F14C values of radiocarbon dates.
-}
-\details{
-Post-bomb dates are often reported as F14C or fraction modern carbon. Since Bacon expects radiocarbon ages,
- this function can be used to calculate radiocarbon ages from F14C values. The reverse function is \link{age.F14C}.
+Deprecated. Use F14CtoC14instead
 }

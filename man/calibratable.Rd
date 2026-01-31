@@ -12,6 +12,7 @@ calibratable(
   BCAD = FALSE,
   postbomb = FALSE,
   bombalert = TRUE,
+  glue = 0,
   cc.dir = c(),
   thiscurve = c(),
   is.F = FALSE,
@@ -38,6 +39,8 @@ calibratable(
 \item{postbomb}{Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'ccurve("sh1-2_monthly")'}
 
 \item{bombalert}{Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.}
+
+\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.}
 
 \item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., 'cc.dir="ccurves"'.}
 

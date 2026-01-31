@@ -71,19 +71,23 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
     cc.cal <- 4 # ... and use it
   }
 
+  # draw the entire curve if cal1 and cal2 are not provided
   if(length(cal1) == 0)
     cal1 <- cc.1[1,cc.cal]
   if(length(cal2) == 0)
     cal2 <- cc.1[nrow(cc.1),cc.cal]
-  
-  mindat <- cc.1[,cc.cal] >= .9*min(cal1, cal2)
-  maxdat <- cc.1[,cc.cal] <= 1.1*max(cal1, cal2)
-  cc.1 <- cc.1[which(mindat * maxdat == 1),]
+
+  # find y-axis limits
+  y1 <- approx(cc.1[,cc.cal], cc.1[,2], seq(cal1, cal2, length=100))$y
+  er1 <- approx(cc.1[,cc.cal], cc.1[,3], seq(cal1, cal2, length=100))$y
+  cc1.yrng <- range(y1-er1, y1+er1, na.rm=TRUE)
 
   if(ka) {
-    cc.1[,1] <- cc.1[,1]/1e3
-    if(grepl("c", tolower(timescale)) && sum(as.F, as.pMC, as.Delta) == 0)  # ka doesn't make sense for F14C, pMC, or Delta14C
+    cc.1[,cc.cal] <- cc.1[,cc.cal]/1e3
+    if(grepl("c", tolower(timescale)) && sum(as.F, as.pMC, as.Delta) == 0) { # ka doesn't make sense for F14C, pMC, or Delta14C
       cc.1[,2:3] <- cc.1[,2:3]/1e3
+      cc1.yrng <- cc1.yrng/1e3 
+    }
   }
 
   cc1.pol <- cbind(c(cc.1[,cc.cal], rev(cc.1[,cc.cal])), c(cc.1[,2]-cc.1[,3], rev(cc.1[,2]+cc.1[,3])))
@@ -105,14 +109,12 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
         cc.2 <- rintcal::ccurve(cc2, cc2.postbomb, cc.dir)
     if(BCAD) 
       cc.2[,4] <- 1950 - cc.2[,1] 
-    mindat <- cc.2[,cc.cal] >= .9*min(cal1, cal2)
-    maxdat <- cc.2[,cc.cal] <= 1.1*max(cal1, cal2)
 
     if(grepl("c", tolower(timescale2)))
       if(length(cc2.lab) == 0)
         cc2.lab <- expression(""^14*C~BP)
     if(ka) {
-      cc.2[,1] <- cc.2[,1]/1e3
+      cc.2[,cc.cal] <- cc.2[,cc.cal]/1e3
       if(grepl("c", tolower(timescale2))) # ka doesn't make sense for F14C, pMC, or Delta14C
         cc.2[,2:3] <- cc.2[,2:3]/1e3
       if(length(cc2.lab) == 0)
@@ -139,7 +141,13 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
         cc2.lab <- expression(Delta^14*C)
     }
 
-    cc.2 <- cc.2[which(mindat * maxdat == 1),] # limit to the relevant part of the cc only
+    #cc.2 <- cc.2[which(mindat * maxdat == 1),] # limit to the relevant part of the cc only
+    y2 <- approx(cc.2[,cc.cal], cc.2[,2], seq(cal1, cal2, length=100))$y
+    er2 <- approx(cc.2[,cc.cal], cc.2[,3], seq(cal1, cal2, length=100))$y
+    cc2.yrng <- range(y2-er2, y2+er2, na.rm=TRUE)
+    if(ka)
+      cc2.yrng <- cc2.yrng/1e3
+	
     if(ka)
       if(grepl("c", tolower(timescale2)))
         cc.2 <- cc.2/1e3
@@ -173,14 +181,13 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
                   if(ka)
                     c14.lab <- expression(""^14*C~kBP) else
                       c14.lab <- expression(""^14*C~BP)
-    if(length(c14.lim) == 0)
-      if(is.na(cc2))
-        c14.lim <- range(cc1.pol[,2]) else
-          if(add.yaxis)
-            c14.lim <- range(cc1.pol[,2]) else
-              c14.lim <- range(cc1.pol[,2], cc2.pol[,2])
-    if(c14.rev)
-      c14.lim <- rev(c14.lim)
+    if(length(c14.lim) == 0) {
+      c14.lim <- cc1.yrng
+      if(!is.na(cc2) && !add.yaxis)
+        c14.lim <- range(c14.lim, cc2.yrng)
+      if(c14.rev)
+        c14.lim <- rev(c14.lim)
+    }
 
     # draw the graph and data
     plot(0, type="n", xlim=cal.lim, xlab=cal.lab, ylim=c14.lim, ylab=c14.lab, mar=mar, mgp=mgp, bty=bty, ...)
@@ -197,7 +204,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
       oldpar <- par(no.readonly = TRUE)
       on.exit(par(oldpar))
       par(new=TRUE)
-      plot(cc2.pol, type="n", xlim=cal.lim, xlab="", ylab="", bty="n", xaxt="n", yaxt="n")
+      plot(cc2.pol, type="n", xlim=cal.lim, ylim=cc2.yrng, xlab="", ylab="", bty="n", xaxt="n", yaxt="n")
 	  mtext(cc2.lab, 4, par('mgp')[1], col=cc2.col)
     }
     polygon(cc2.pol, col=cc2.fill, border=NA) # calibration curve
@@ -941,6 +948,7 @@ draw.CF <- function(y, er, normal=TRUE, t.a=3, t.b=4, height=1, extend.axes=.1, 
   F.dist <- caldist(y.as.F[1], y.as.F[2], cc=0, normal=normal, t.a=t.a, t.b=t.b, cc0.res=dist.res)
   F.dist <- F.dist[!is.nan(F.dist[,1]),] # remove non-numbers
   F.dist <- F.dist[F.dist[,1]>=0,] # also remove F < 0
+  F.dist[,2] <- F.dist[,2] / max(F.dist[,2])
   C14.dist <- cbind(F14CtoC14(F.dist[,1], c()), F.dist[,2])
   C14.dist[,2] <- C14.dist[,2]/max(C14.dist[,2])
 
@@ -965,8 +973,8 @@ draw.CF <- function(y, er, normal=TRUE, t.a=3, t.b=4, height=1, extend.axes=.1, 
     points(xpos, y, pch=19, col=date.col)
   }
 
-  F.hpds <- draw.dist(F.dist, y.pos=y.pos, dist.col=F.col, dist.border=F.col, prob=.68, hpd=F)
-  C.hpds <- draw.dist(C14.dist, on.y=TRUE, x.pos=x.pos, dist.col=C14.col, dist.border=C14.col, prob=.68, hpd=F)
+  F.hpds <- draw.dist(F.dist, y.pos=y.pos, dist.col=F.col, ex=height, dist.border=F.col, prob=.68, hpd=F)
+  C.hpds <- draw.dist(C14.dist, on.y=TRUE, ex=height, x.pos=x.pos, dist.col=C14.col, dist.border=C14.col, prob=.68, hpd=F)
   x <- seq(1e-6, coors[2], length=1e3)
   lines(x, -8033 * log(x), lwd=2, col=grey(.3)) # the relation between F and C
   Fplus <- y.as.F[1]+y.as.F[2]

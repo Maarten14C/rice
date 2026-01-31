@@ -1,7 +1,7 @@
 Package: rice
 Type: Package
 Title: Radiocarbon Equations
-Version: 1.6.2
+Version: 2.0.0
 Authors@R: c(
   person("Maarten", "Blaauw", email="maarten.blaauw@qub.ac.uk", role=c("aut", "cre"),
     comment=c(ORCID="0000-0002-5680-1515")),

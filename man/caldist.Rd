@@ -10,11 +10,12 @@ caldist(
   cc = 1,
   postbomb = FALSE,
   bombalert = TRUE,
+  glue = 0,
   deltaR = 0,
   deltaSTD = 0,
   is.F = FALSE,
   is.pMC = FALSE,
-  as.F = FALSE,
+  as.F = TRUE,
   thiscurve = NULL,
   yrsteps = FALSE,
   cc.resample = FALSE,
@@ -37,11 +38,13 @@ caldist(
 
 \item{er}{Lab error of the radiocarbon age}
 
-\item{cc}{Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).}
+\item{cc}{Calibration curve to use. Defaults to IntCal20 (cc=1), can be Marine20 (cc=2), SHCal20 (cc=3), or if postbomb=TRUE, NH1 (cc=1), NH2 (cc=2), NH3 (cc=3), SH1-2 (cc=4) or SH3 (cc=5).}
 
 \item{postbomb}{Whether or not to use a postbomb curve. Required for negative radiocarbon ages.}
 
-\item{bombalert}{Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.}
+\item{bombalert}{Stop if a date is overly close to the younger limit of the IntCal curve. Defaults to \code{bombalert=TRUE}. This error can be avoided by either providing a postbomb curve (e.g., \code{postbomb=1}) or typing \code{bombalert=FALSE} (in this case, part of the date will be truncated).}
+
+\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.}
 
 \item{deltaR}{Age offset (e.g. for marine samples). This assumes that the radiocarbon age is provided as 14C BP (not F14C or pMC).}
 
@@ -51,9 +54,9 @@ caldist(
 
 \item{is.pMC}{Set this to TRUE if the provided age and error are in the pMC timescale.}
 
-\item{as.F}{Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.}
+\item{as.F}{Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=TRUE}, so not using the C14 timescale (will be more accurate especially for dates with larger errors, e.g., older ones).}
 
-\item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).}
+\item{thiscurve}{As an alternative to providing cc and/or postbomb/glue, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).}
 
 \item{yrsteps}{Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve}
 

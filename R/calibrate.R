@@ -697,11 +697,6 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
       prob.round=prob.round, age.round=age.round)
 
     cdf <- cumsum(this.cal[,2] / sum(this.cal[,2])) # ensure it sums to 1
-   # p <- this.cal[,2] / sum(this.cal[,2])
-   # keep <- p > 0
-   # cdf <- cumsum(p[keep])
-   # ages <- this.cal[keep, 1]
-
     qtarget <- c((1-prob)/2, 1-(1-prob)/2) # eat into both edges
     qtarget[1] <- max(qtarget[1], min(cdf))
     qtarget[2] <- min(qtarget[2], max(cdf))
@@ -762,7 +757,7 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
         legend_text <- paste0("Calibration curve: IntCal20 (Reimer et al. 2020) & ",
           bomb, " (Hua et al. 2022)")
       } else if(glue %in% 4:5) {
-          bomb <- c("SH1–2", "SH3")[glue - 3]
+          bomb <- c("SH1-2", "SH3")[glue - 3]
           legend_text <- paste0("Calibration curve: SHCal20 (Hogg et al. 2020) & ",
             bomb, " (Hua et al. 2022)")
         }
@@ -778,7 +773,7 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
           cc_labels <- c(
             "1" = "IntCal20 (Reimer et al. 2020)",
             "2" = "Marine20 (Heaton et al. 2020)",
-           "3" = "SHCal20 (Hogg et al. 2020)")
+            "3" = "SHCal20 (Hogg et al. 2020)")
 
       uniq_cc <- unique(cc)
       if(length(uniq_cc) > 1) {

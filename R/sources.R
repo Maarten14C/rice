@@ -525,9 +525,9 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
         contamination.col=contamination.col, true.pch=target.pch, true.name=true.name,
         observed.pch=observed.pch, contamination.pch=contamination.pch, ylab=ylab, bty=bty, C14.axis=C14.axis)
       if(is.na(perc.contam)) {
-        txt <- c("contam", " = (", round(F.obs[,1], decimals), "-", 
+        txt <- c("contam", " = (", round(F.obs[,1], decimals), "- ", 
           round(F.target[,1], decimals), ") / (",
-          round(F.contam, decimals), "-",  round(F.target[,1], decimals), ") = ", 
+          round(F.contam, decimals), "- ",  round(F.target[,1], decimals), ") = ", 
           round(median(frac), decimals)) 
           colours <- c(contamination.col, 1, observed.col, 1, target.col, 1,
             contamination.col, 1, target.col, 1, contamination.col)
