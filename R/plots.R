@@ -990,7 +990,8 @@ draw.CF <- function(y, er, normal=TRUE, t.a=3, t.b=4, height=1, extend.axes=.1, 
   erplus <- round(back.to.y[1]-back.to.y[2], roundby)
   ermin <- round(back.to.y[2]-back.to.y[3], roundby)
 
-  y.as.F <- round(y.as.F, roundby+4)
+  y.as.F <- format(round(y.as.F, roundby+4), scientific=FALSE)
+  y.as.F <<- y.as.F
   if(!is.na(legend.pos)) {
     txt <- c(bquote(""*.(y) %+-% .(er) ~ "BP"),  
       bquote(""%->%.(y.as.F[1]) %+-% .(y.as.F[2]) ~ F^{14}*C),
