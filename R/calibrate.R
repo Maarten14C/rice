@@ -16,7 +16,6 @@
 #' @param thiscurve As an alternative to providing cc and/or postbomb/glue, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespans.
-#' @param dist.res As an alternative to yrsteps, provide the amount of 'bins' in the distribution.
 #' @param pb.steps Yearly steps for postbomb curves. Defaults to 20 steps per year, \code{pb.steps=0.05}.
 #' @param cc0.res Length of 'curve' when cc=0 (no calibration curve). Defaults to 5000, in order to provide enough points for detailed distributions.  
 #' @param threshold Report only values above a threshold. Defaults to \code{threshold=1e-6}.
@@ -33,7 +32,7 @@
 #' plot(calib, type="l")
 #' postbomb <- caldist(-3030, 20, postbomb=1, BCAD=TRUE)
 #' @export
-caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=TRUE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, pb.steps=0.05, cc0.res=5e3, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL, col.names=NULL) {
+caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=TRUE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, pb.steps=0.05, cc0.res=5e3, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL, col.names=NULL) {
 
   if(is.F && is.pMC)
     stop("cannot have both is.F=TRUE and is.pMC=TRUE")
@@ -50,11 +49,11 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=
           if(glue>0) {
             if(glue %in% 1:3)
               this.cc <- rintcal::glue.ccurves(1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                if(glue %in% 4:5)			
+                if(glue %in% 4:5)
                   this.cc <- rintcal::glue.ccurves(3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
                     stop("please provide an integer for glue between 0 and 5")
-		  } else {
-		  
+          } else {
+
             this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir, 
               resample=cc.resample, as.F=is.F, as.pMC=is.pMC)
          
@@ -82,11 +81,11 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=
                   this.cc <- rintcal::glue.ccurves(cc, postbomb=postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)
             }
           }
-		}  
+        }
     }
 
-  if(postbomb) {
-    xseq <- seq(min(this.cc[,1]), max(this.cc[,1]), by=pb.steps)
+  if(postbomb || (glue > 1)) {
+    xseq <- seq(this.cc[1,1], this.cc[nrow(this.cc),1], by=pb.steps)
     ccmu <- approx(this.cc[,1], this.cc[,2], xseq)$y
     ccsd <- approx(this.cc[,1], this.cc[,3], xseq)$y
     this.cc <- cbind(xseq, ccmu, ccsd)
@@ -381,7 +380,6 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
 #' @param yrsteps Steps to use for interpolation. Defaults to the cal BP steps in the calibration curve
 #' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespans.
-#' @param dist.res As an alternative to yrsteps, provide the amount of 'bins' in the distribution
 #' @param threshold Report only values above a threshold. Defaults to \code{threshold=0}.
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
 #' @param t.a Value a of the t distribution (defaults to 3).
@@ -396,7 +394,7 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
 #'   r.calib(10,130,20, bombalert=FALSE) # 10 random cal BP ages
 #'   plot(density(r.calib(1e6, 2450, 20)))
 #' @export
-r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, dist.res=200, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=2, cc.dir=NULL, seed=NA) {
+r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=2, cc.dir=NULL, seed=NA) {
   if(length(n) == 0 || n<1)
     stop("n needs to be a value >0")
   if(!length(y) == 1 || !length(er) == 1)
@@ -769,7 +767,7 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
           "3" = "NH3 (Hua et al. 2022)",
           "4" = "SH1-2 (Hua et al. 2022)",
           "5" = "SH3 (Hua et al. 2022)")			
-	  } else
+      } else
           cc_labels <- c(
             "1" = "IntCal20 (Reimer et al. 2020)",
             "2" = "Marine20 (Heaton et al. 2020)",
@@ -793,7 +791,7 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
       } else
         legend_text <- paste("Calibration curve:", cc_map(uniq_cc))
     }
-	
+
   if(BCAD)
     if(min(min.rngs, na.rm=TRUE) < 0)
       legend_text <- paste0(legend_text, ". BC ages are negative")

@@ -1,4 +1,4 @@
-﻿TaxaNo,Genus,Species,Feeding,ClassNo
+TaxaNo,Genus,Species,Feeding,ClassNo
 1,Abra,alba,Deposit,15
 2,Abra,nitida,Deposit,15
 3,Acanthocardia,echinata,suspension,15
@@ -301,18 +301,18 @@
 306,Pagophilus,groenlandicus,migratory,12
 307,Leptonychotes,weddellii,migratory,12
 308,Pygoscelis,adeliae,unknown,13
-309,Aptenodytes,forsteri,unknown,13
+309,Aptenodytes,forsteri,Carnivore,13
 310,Sibbaldus,muscul,migratory,10
 311,Orcinus,orca,migratory,10
 312,Homo,sapiens,unknown,11
 313,Cirriped,Crustacea,unknown,3
 314,Chara,aspera,unknown,5
-315,,sp.,unknown,1
-316,,sp.,unknown,18
-317,,,suspension,4
-318,,sp.,migratory,9
-319,,sp.,unknown,13
-320,,sp.,unknown,15
+315, ,sp.,unknown,1
+316, ,sp.,unknown,18
+317, , ,suspension,4
+318, ,sp.,migratory,9
+319, ,sp.,unknown,13
+320, ,sp.,unknown,15
 321,Strombus,gibberulus,unknown,18
 322,Clausinella,Fasciata,suspension,15
 323,Pseudocardium,sybillae,suspension,15
@@ -345,7 +345,6 @@
 350,varved sediment,sp.,unknown,20
 351,biological limestone,sp.,unknown,20
 352,mew of prey flesh,sp.,unknown,20
-353,emperor penguin coll,sp.,unknown,20
 354,Aquipectens,commutatus,suspension,15
 355,Cardita,senegalensis,suspension,15
 356,Crassatella,contraria,suspension,15
@@ -447,7 +446,7 @@
 468,Placamen,tiara,suspension,15
 469,Mimachlamys,punctata,suspension,15
 470,Placuna,ephippium,suspension,15
-471,,sp.,migratory,10
+471, ,sp.,migratory,10
 472,Callista,brevisiphonata,NULL,15
 474,Nuculana,pernula,Deposit,15
 475,Leionucula,bellotii,unknown,15

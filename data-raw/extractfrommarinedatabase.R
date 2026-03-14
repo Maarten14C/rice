@@ -1,9 +1,11 @@
 # R has to be within the working directory of this file
 
-# extracted from calib marine database on 14 December 2025:
+# extracted from calib marine database on 12 March 2026
 # http://calib.org/marine/query select * from details
-# 2054 records
+# 2053 records
 marinedata <- read.csv("marinedatabase.csv") # 290 kB
+
+# replaced any empty dSTD values with NA
 
 # references: downloaded results of 'select * from refs' and saved as .csv file
 refs <- read.csv("refs.csv")
@@ -27,6 +29,7 @@ taxa[which(taxa[,4] == "NULL"),4] <- "unknown"
 taxa[which(taxa[,4] == "Unknown"),4] <- "unknown"
 taxa[which(taxa[,4] == "Carnivore/scaven"),4] <- "carnivore/scavenger"
 taxa[which(taxa[,4] == " deposit"),4] <- "deposit"
+taxa[which(taxa[,4] == " deposit"),4] <- "deposit"
 taxa[which(taxa[,4] == "Suspension"),4] <- "suspension"
 taxa[which(taxa[,4] == "Algal Grazer"),4] <- "algal grazer"
 taxa[which(taxa[,4] == "Suspension/Depos"),4] <- "deposit/suspension"
@@ -56,7 +59,9 @@ shells <- data.frame(
   lab = marinedata$LabID,
   ref = marinedata[,21],
   taxon = marinedata[,22],
-  feeding = marinedata[,23]
+  feeding = marinedata[,23],
+  locality = marinedata$Locality # new
 )
 
 save(shells, file = "shells.rda", compress = "bzip2")
+# after saving shells in the folder data-raw, put them in the folder data

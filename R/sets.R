@@ -498,3 +498,63 @@ span <- function(y1, er1, y2, er2, n=1e5, positive=TRUE, cc=1, postbomb=FALSE, d
 
   invisible(diffs)
 }
+
+
+
+# will be retired as soon as rbacon stops being dependent on it
+#' @name coverage
+#' @title To be retired - coverage of one distribution by another.
+#' @description To be retired - Samples n random points from distribution A (with higher likelihoods proportionally more likely to be sampled), and for each point checks whether distribution B covers that point. Then the proportion of points where A is covered by B is returned. Can also calculate the coverage of distribution B by distribution A (if both=TRUE). The value of the coverage can range between 0 (distribution A is not covered by distribution B) to 1 (B covers A completely).
+#' @return The coverage of distribution A within distribution B.
+#' @param distA Distribution A. Expects two columns: values and their probabilities (e.g., caldist(130,10, cc=1)).
+#' @param distB Distribution B. Expects two columns: values and their probabilities (e.g., caldist(130,10, cc=1)).
+#' @param n The number of random points to be sampled (proportionally to the density of distribution A).
+#' @param k The number of points to be sampled for each iteration n from distribution B. After this, the range of these samples values is calculated to obtain a width of distribution B within which the sampled values of distribution could fall (the more, the higher the coverage).
+#' @param nameA The name of distribution A (for the plot's legend).
+#' @param nameB The name of distribution B (for the plot's legend).
+#' @param decimals Number of decimals to report - rounding is to 4 decimals by default.
+#' @param seed For reproducibility, a seed can be set (e.g., \code{seed=123}). Defaults to NA, no seed set.
+#' @param visualise Whether or not to plot the distributions. Defaults to TRUE.
+#' @param xlab Label of the horizontal axis. Defaults to \code{xlab="cal BP"}.
+#' @examples
+#'   distA <- caldist(130, 20, cc=0) # normal distribution
+#'   distB <- caldist(130, 20, glue=1) # calibrated distribution
+#'   plot(distB, type="l")
+#'   lines(distA, col=2)
+#'   coverage(distA, distB)
+#' @export
+coverage <- function(distA, distB, n=1e4, k=10, nameA="A", nameB="B", decimals=4, seed=NA, visualise=TRUE, xlab="cal BP") {
+  if(ncol(distA) != 2 || ncol(distB) != 2)
+    stop("unexpected format of the distributions. For both distributions, I expect two columns, the first one with the values and the second one their probabilities.")
+
+  xseq <- range(distA[,1], distB[,1])
+  xseq <- seq(xseq[1], xseq[2], length=1e3)
+  densA <- approx(distA[,1], distA[,2]/sum(distA[,2]), xseq, yleft=0, yright=0)$y
+  densB <- approx(distB[,1], distB[,2]/sum(distB[,2]), xseq, yleft=0, yright=0)$y
+
+  if(visualise) {
+    plot(xseq, densA, type='l', ylim=c(0, max(densA, densB)), xlab=xlab, ylab="density")
+    lines(xseq, densB, col=4)
+    legend("topright", legend=c(nameA, nameB), text.col=c(1,4), bty="n")
+  }
+
+  if(!is.na(seed))
+    if(is.numeric(seed))
+      set.seed(seed) else
+        message("seed has to be numeric")
+
+  # sample 1 random values from distA, proportional to its probability distribution
+  rA <- approx(cumsum(distA[,2]) / sum(distA[,2]), distA[,1], runif(n), yleft=1, yright=1)$y
+
+  # Sample k proportional values from B (to later build a range)
+  cdfB <- cumsum(distB[,2]) / sum(distB[,2])
+  rB_matrix <- matrix(approx(cdfB, distB[,1], runif(n * k), rule=2)$y, nrow=n, ncol=k)
+  minB <- apply(rB_matrix, 1, min)
+  maxB <- apply(rB_matrix, 1, max)
+
+  # Check if rA is within the range spanned by rB1 and rB2
+  covered <- (rA >= minB) & (rA <= maxB)
+
+  # Proportion of A samples within the B bounds
+  return(coverage=mean(covered))
+}

@@ -310,7 +310,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
 #' @param dist.float The probability distributions float a bit above the axes by default. Can be set to distinct heights of the axes, e.g.: \code{dist.float=c(0.05, 0.1)}, or to \code{dist.float=0}.
 #' @param cal.rev Whether or not to reverse the direction of the calendar axis. Defaults to \code{cal.rev=TRUE}.
 #' @param yr.steps Temporal resolution at which C-14 ages are calibrated (in calendar years). By default follows the spacing in the calibration curve.
-#' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., cc.resample=5 for 5-yr timespans.
+#' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., cc.resample=5 for 5-yr timespans. Defaults to no resampling (cc.resample=NA).
 #' @param threshold Below which value should probabilities be excluded from calculations.
 #' @param edge How to treat dates are at or beyond the edge of the calibration curve. If dates are truncated, a warning is given. If they lie beyond the calibration curve, an error is given.
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2016).
@@ -346,7 +346,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
 #' calibrate(age=130, error=10, BCAD=TRUE, bombalert=FALSE)
 #' calibrate(4450, 40, reservoir=c(100, 50))
 #' @export
-calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, thiscurve=c(), as.F=TRUE, is.F=FALSE, is.pMC=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, draw=TRUE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.3), dist.fill=rgb(0,0,0,0.3), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=TRUE, yr.steps=FALSE, cc.resample=5, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, round.age=c(), round.hpd.ages=0, round.hpd.probs=1, every=NA, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", warning.loc="right", print.truncate.warning=TRUE, mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, cc.er=0, asymmetric=TRUE, ...) {
+calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, thiscurve=c(), as.F=TRUE, is.F=FALSE, is.pMC=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, draw=TRUE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.3), dist.fill=rgb(0,0,0,0.3), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=TRUE, yr.steps=FALSE, cc.resample=NA, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, round.age=c(), round.hpd.ages=c(), round.hpd.probs=1, every=NA, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", warning.loc="right", print.truncate.warning=TRUE, mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, cc.er=0, asymmetric=TRUE, ...) {
   
   if(is.F && is.pMC)
     stop("Cannot have both is.F=TRUE and is.PMC=TRUE.")
@@ -358,6 +358,16 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
   if(length(reservoir) > 1)
     error <- sqrt(error^2 + reservoir[2]^2)
 
+  # deal with postbomb ages
+  is.postbomb <- FALSE
+  if(glue>1 || postbomb || (is.F && age >1) || (is.pMC && age >100) || (!is.F && !is.pMC && age < 50)) {
+    is.postbomb <- TRUE
+    if(is.na(cc.resample))
+      cc.resample <- 1/12
+  } else
+      if(is.na(cc.resample))
+        cc.resample <- 1
+
   if(length(thiscurve) > 0)
     Cc <- thiscurve else {
       if(cc == 0) { # no ccurve needed
@@ -367,7 +377,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
           if(glue>0) {
             if(glue %in% 1:3)
                Cc <- rintcal::glue.ccurves(1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                 if(glue %in% 4:5)			
+                 if(glue %in% 4:5)
                    Cc <- rintcal::glue.ccurves(3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
                      stop("please provide an integer for glue between 0 and 5")
           } else {
@@ -397,7 +407,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
             } else
                 Cc <- rintcal::glue.ccurves(cc, postbomb=postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)
           }
-		}  
+        }
       }
     }
 
@@ -532,6 +542,12 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
     points(dot, age, col=date.col, pch=20)
     segments(dot, age-error, dot, age+error, col=date.col)
 
+    if(length(round.hpd.ages) == 0) {
+      if(is.postbomb)
+        round.hpd.ages <- 2 else
+          round.hpd.ages <- 0
+    }
+
     hpds <- draw.dist(cbind(cal.dist[,1], cal.dist[,2]/max(cal.dist[,2])),
       on.y=FALSE, y.pos=cclim, as.unit=FALSE, fraction=dist.height, mirror=FALSE, up=TRUE, prob=prob, BCAD=BCAD,
       hpd.border=NA, hpd.col=hpd.fill, dist.col=dist.fill, dist.border=dist.col, age.round=round.hpd.ages, prob.round=round.hpd.probs)
@@ -540,13 +556,12 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
     if(cc %in% 0:4)
       cc.name <- switch(cc, "IntCal20", "Marine20", "SHCal20") else
         cc.name <- cc
-    if(length(round.age)==0)
+    if(length(round.age) == 0)
       if(is.F)
         round.age <- 4 else
          round.age <- 0
-    if(length(round.hpd.ages)==0)
-      round.hpd.ages <- 0
-    if(length(round.hpd.probs)==0)
+
+    if(length(round.hpd.probs) == 0)
       round.hpd.probs <- 1
 
     C14.label <- c(cc.name, 

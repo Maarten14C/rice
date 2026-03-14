@@ -36,7 +36,7 @@ calibrate(
   dist.float = c(0.01, 0.01),
   cal.rev = TRUE,
   yr.steps = FALSE,
-  cc.resample = 5,
+  cc.resample = NA,
   threshold = 5e-04,
   edge = TRUE,
   normal = TRUE,
@@ -44,7 +44,7 @@ calibrate(
   t.b = 4,
   rounded = 1,
   round.age = c(),
-  round.hpd.ages = 0,
+  round.hpd.ages = c(),
   round.hpd.probs = 1,
   every = NA,
   extend.range = 0.05,
@@ -127,7 +127,7 @@ calibrate(
 
 \item{yr.steps}{Temporal resolution at which C-14 ages are calibrated (in calendar years). By default follows the spacing in the calibration curve.}
 
-\item{cc.resample}{The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., cc.resample=5 for 5-yr timespans.}
+\item{cc.resample}{The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., cc.resample=5 for 5-yr timespans. Defaults to no resampling (cc.resample=NA).}
 
 \item{threshold}{Below which value should probabilities be excluded from calculations.}
 
