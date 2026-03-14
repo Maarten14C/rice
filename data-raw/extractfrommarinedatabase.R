@@ -59,8 +59,7 @@ shells <- data.frame(
   lab = marinedata$LabID,
   ref = marinedata[,21],
   taxon = marinedata[,22],
-  feeding = marinedata[,23],
-  locality = marinedata$Locality # new
+  feeding = marinedata[,23]
 )
 
 save(shells, file = "shells.rda", compress = "bzip2")

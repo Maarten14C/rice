@@ -9,7 +9,6 @@ A data frame with 1968 rows and 15 variables.
 \describe{
   \item{lon}{Longitude of the datapoint}
   \item{lat}{Latitude of the datapoint}
-  \item{locality}{placename of the datapoint}
   \item{no}{Map or ID number of the datapoint}
   \item{taxonN}{Taxon number of the datapoint}
   \item{dR}{calculated deltaR of the datapoint}
