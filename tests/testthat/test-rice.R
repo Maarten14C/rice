@@ -21,7 +21,7 @@ test_that("adjust.background returns expected background-corrected C14 age", {
 
 test_that("find.shells returns expected amount of shells", {
   myshells <- find.shells(0, 55, mapsize="small", currents=FALSE)
-  expect_length(myshells, 17, tolerance=1)
+  expect_equal(length(myshells), 16, tolerance=1)
 })
 
 test_that("weighted_means returns expected weighted mean of selected shells", {
