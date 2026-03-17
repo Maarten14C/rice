@@ -27,11 +27,11 @@ calibrate(
   cal.lim = c(),
   C14.lim = c(),
   cc.col = rgb(0, 0.5, 0, 0.7),
-  cc.fill = rgb(0, 0.5, 0, 0.7),
+  cc.border = cc.col,
   date.col = "red",
   dist.col = rgb(0, 0, 0, 0.3),
-  dist.fill = rgb(0, 0, 0, 0.3),
-  hpd.fill = rgb(0, 0, 0, 0.3),
+  dist.border = dist.col,
+  hpd.col = dist.col,
   dist.height = 0.3,
   dist.float = c(0.01, 0.01),
   cal.rev = TRUE,
@@ -107,17 +107,17 @@ calibrate(
 
 \item{C14.lim}{Minimum and maximum of C-14 axis (default calculated automatically).}
 
-\item{cc.col}{Colour of the lines of the calibration curve. Defaults to semi-transparent dark green; \code{cc.col=rgb(0,.5,0,0.7)}.}
+\item{cc.col}{Colour of the calibration curve. Defaults to semi-transparent dark green; \code{cc.col=rgb(0,.5,0,0.7)}.}
 
-\item{cc.fill}{Colour of the inner part of the calibration curve. Defaults to semi-transparent dark green; \code{cc.col=rgb(0,.5,0,0.7)}.}
+\item{cc.border}{Colour of the borders of the calibration curve. Defaults to cc.col.}
 
 \item{date.col}{Colour of the "dot-bar" plot of the C14 date. Defaults to \code{date.col="red"}.}
 
-\item{dist.col}{Colour of the outer lines of the distributions. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.2)}.}
+\item{dist.col}{Colour of the distributions. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.2)}.}
 
-\item{dist.fill}{Colour of the inner part of the distributions. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.2)}.}
+\item{dist.border}{Colour of the borders of the distributions. Defaults to that of dist.col.}
 
-\item{hpd.fill}{Colour of the highest posterior density. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.3)}.}
+\item{hpd.col}{Colour of the highest posterior density. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.3)}.}
 
 \item{dist.height}{Maximum height of the C14 and calibrated distributions (as proportion of the invisible secondary axes). Defaults to 1.8.}
 

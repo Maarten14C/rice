@@ -56,11 +56,11 @@ draw.ccurve(
 
 \item{BCAD}{The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to cal BC/AD using \code{BCAD=TRUE}.}
 
-\item{timescale}{Which timescale of radiocarbon to use. Defaults to \code{timescale="C14"} but can also be set to \code{timescale="F14C"}, \code{timescale="pMC"} or \code{timescale="Delta14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents). Alternatively, the timescale can be defined using `as.F=TRUE`, `as.pMC=TRUE` or `as.Delta=TRUE`.}
+\item{timescale}{Which timescale of radiocarbon to use. Defaults to \code{timescale="C14"} but can also be set to \code{timescale="F14C"}, \code{timescale="pMC"} or \code{timescale="Delta14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents). Alternatively, the timescale can be defined using `as.F=TRUE` or `as.pMC=TRUE`.}
 
-\item{as.F}{Plot as F14C values. Defaults to \code{as.F=FALSE}.}
+\item{as.F}{Plot as F14C values. Defaults to \code{as.F=FALSE}. Alternative to `timescale`.}
 
-\item{as.pMC}{Plot as pMC values. Defaults to \code{as.pMC=FALSE}.}
+\item{as.pMC}{Plot as pMC values. Defaults to \code{as.pMC=FALSE}. Alternative to `timescale`.}
 
 \item{as.Delta}{Plot as Delta14C values. Defaults to \code{as.Delta=FALSE}.}
 
