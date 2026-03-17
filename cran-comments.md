@@ -1,7 +1,7 @@
 ## Test environments
-* local Mac install, R 4.5.2
+* local Mac install, R 4.5.3
 * local fedora install, R 4.5.2
-* rhub (R-devel, release and patch): windows, linux, mac-arm
+* rhub (R-devel, release and patch): windows, linux, mac-arm64
 
 ## R CMD check results
 

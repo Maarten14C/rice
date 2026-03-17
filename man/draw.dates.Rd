@@ -12,6 +12,7 @@ draw.dates(
   postbomb = FALSE,
   bombalert = TRUE,
   glue = 1,
+  as.F = TRUE,
   is.F = FALSE,
   is.pMC = FALSE,
   deltaR = 0,
@@ -83,6 +84,8 @@ draw.dates(
 \item{bombalert}{Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.}
 
 \item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.}
+
+\item{as.F}{Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=TRUE}, since it takes better care of asymmetric distributions and older dates close to the dating limit. If set as \code{as.F=FALSE}, the C14 timescale will be used.}
 
 \item{is.F}{Use \code{is.F=TRUE} if the date and error are entered as F14C.}
 
@@ -193,8 +196,6 @@ draw.dates(
 \item{dist.res}{Resolution of the distribution polygons. Defaults to \code{dist.res=100}.}
 
 \item{...}{Additional plotting options}
-
-\item{as.F}{Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=TRUE}, since it takes better care of asymmetric distributions and older dates close to the dating limit. If set as \code{as.F=FALSE}, the C14 timescale will be used.}
 }
 \value{
 A plot of the (calibrated) dates
