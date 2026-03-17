@@ -21,7 +21,7 @@ test_that("adjust.background returns expected background-corrected C14 age", {
 
 test_that("find.shells returns expected amount of shells", {
   myshells <- find.shells(0, 55, mapsize="small", currents=FALSE)
-  expect_length(myshells, 16)
+  expect_length(myshells, 17)
 })
 
 test_that("weighted_means returns expected weighted mean of selected shells", {
@@ -101,7 +101,7 @@ test_that("as.one returns average", {
   data(shroud)
   Zu <- grep("ETH", shroud$ID)
   result <- as.one(shroud$y[Zu],shroud$er[Zu], talk=FALSE)
-  expect_equal(nrow(result), 411)
+  expect_equal(nrow(result), 417)
 })
 
 

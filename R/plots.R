@@ -10,9 +10,9 @@
 #' @param cc1.postbomb Use \code{postbomb=TRUE} to get a postbomb calibration curve for cc1 (default \code{cc1.postbomb=FALSE}).
 #' @param cc2.postbomb Use \code{postbomb=TRUE} to get a postbomb calibration curve for cc2 (default \code{cc2.postbomb=FALSE}).
 #' @param BCAD The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to cal BC/AD using \code{BCAD=TRUE}.
-#' @param timescale Which timescale of radiocarbon to use. Defaults to \code{timescale="C14"} but can also be set to \code{timescale="F14C"}, \code{timescale="pMC"} or \code{timescale="Delta14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents). Alternatively, the timescale can be defined using `as.F=TRUE`, `as.pMC=TRUE` or `as.Delta=TRUE`.
-#' @param as.F Plot as F14C values. Defaults to \code{as.F=FALSE}.
-#' @param as.pMC Plot as pMC values. Defaults to \code{as.pMC=FALSE}.
+#' @param timescale Which timescale of radiocarbon to use. Defaults to \code{timescale="C14"} but can also be set to \code{timescale="F14C"}, \code{timescale="pMC"} or \code{timescale="Delta14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents). Alternatively, the timescale can be defined using `as.F=TRUE` or `as.pMC=TRUE`.
+#' @param as.F Plot as F14C values. Defaults to \code{as.F=FALSE}. Alternative to `timescale`.
+#' @param as.pMC Plot as pMC values. Defaults to \code{as.pMC=FALSE}. Alternative to `timescale`.
 #' @param as.Delta Plot as Delta14C values. Defaults to \code{as.Delta=FALSE}.
 #' @param timescale2 Which timescale to use for the second calibration curve (if used). Defaults to \code{timescale2="C14"} but can also be set to \code{timescale2="F14C"}, \code{timescale2="pMC"} or \code{timescale2="Delta14C"}. Can be shorted to, respectively, "C", "F", "P" or "D" (or their lower-case equivalents).
 #' @param cal.lab The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}), or to \code{age.lab="kcal BP"} etc. if ka=TRUE.
@@ -300,12 +300,12 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
 #' @param C14.lab Label of the C-14/vertical axis. Defaults to the 14C scale, but alternative names can be provided.
 #' @param cal.lim Minimum and maximum of calendar axis (default calculated automatically).
 #' @param C14.lim Minimum and maximum of C-14 axis (default calculated automatically).
-#' @param cc.col Colour of the lines of the calibration curve. Defaults to semi-transparent dark green; \code{cc.col=rgb(0,.5,0,0.7)}.
-#' @param cc.fill Colour of the inner part of the calibration curve. Defaults to semi-transparent dark green; \code{cc.col=rgb(0,.5,0,0.7)}.
+#' @param cc.col Colour of the calibration curve. Defaults to semi-transparent dark green; \code{cc.col=rgb(0,.5,0,0.7)}.
+#' @param cc.border Colour of the borders of the calibration curve. Defaults to cc.col.
 #' @param date.col Colour of the "dot-bar" plot of the C14 date. Defaults to \code{date.col="red"}.
-#' @param dist.col Colour of the outer lines of the distributions. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.2)}.
-#' @param dist.fill Colour of the inner part of the distributions. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.2)}.
-#' @param hpd.fill Colour of the highest posterior density. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.3)}.
+#' @param dist.col Colour of the distributions. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.2)}.
+#' @param dist.border Colour of the borders of the distributions. Defaults to that of dist.col.
+#' @param hpd.col Colour of the highest posterior density. Defaults to semi-transparent grey, \code{dist.col=rgb(0,0,0,0.3)}.
 #' @param dist.height Maximum height of the C14 and calibrated distributions (as proportion of the invisible secondary axes). Defaults to 1.8.
 #' @param dist.float The probability distributions float a bit above the axes by default. Can be set to distinct heights of the axes, e.g.: \code{dist.float=c(0.05, 0.1)}, or to \code{dist.float=0}.
 #' @param cal.rev Whether or not to reverse the direction of the calendar axis. Defaults to \code{cal.rev=TRUE}.
@@ -346,7 +346,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
 #' calibrate(age=130, error=10, BCAD=TRUE, bombalert=FALSE)
 #' calibrate(4450, 40, reservoir=c(100, 50))
 #' @export
-calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, thiscurve=c(), as.F=TRUE, is.F=FALSE, is.pMC=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, draw=TRUE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.fill=rgb(0,.5,0,0.7), date.col="red", dist.col=rgb(0,0,0,0.3), dist.fill=rgb(0,0,0,0.3), hpd.fill=rgb(0,0,0,0.3), dist.height=0.3, dist.float=c(.01, .01), cal.rev=TRUE, yr.steps=FALSE, cc.resample=NA, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, round.age=c(), round.hpd.ages=c(), round.hpd.probs=1, every=NA, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", warning.loc="right", print.truncate.warning=TRUE, mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, cc.er=0, asymmetric=TRUE, ...) {
+calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, thiscurve=c(), as.F=TRUE, is.F=FALSE, is.pMC=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, draw=TRUE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.border=cc.col, date.col="red", dist.col=rgb(0,0,0,0.3), dist.border=dist.col, hpd.col=dist.col, dist.height=0.3, dist.float=c(.01, .01), cal.rev=TRUE, yr.steps=FALSE, cc.resample=NA, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, round.age=c(), round.hpd.ages=c(), round.hpd.probs=1, every=NA, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", warning.loc="right", print.truncate.warning=TRUE, mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, cc.er=0, asymmetric=TRUE, ...) {
   
   if(is.F && is.pMC)
     stop("Cannot have both is.F=TRUE and is.PMC=TRUE.")
@@ -533,11 +533,11 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
     }
     # draw the data
     coors <- par('usr')
-    polygon(ccpol, border=cc.col, col=cc.fill)
+    polygon(ccpol, border=cc.border, col=cc.col)
 
     C14.hpds <- draw.dist(cbind(C14.dist[,1], C14.dist[,2]/max(C14.dist[,2])),
       on.y=TRUE, x.pos=callim, as.unit=FALSE, fraction=dist.height, mirror=FALSE, up=TRUE,
-      prob=prob, BCAD=BCAD, hpd.border=NA, hpd.col=hpd.fill, dist.col=dist.fill, dist.border=dist.col)
+      prob=prob, BCAD=BCAD, hpd.border=NA, hpd.col=hpd.col, dist.col=dist.col, dist.border=dist.border)
     dot <- ifelse(cal.rev, callim, min(lims))
     points(dot, age, col=date.col, pch=20)
     segments(dot, age-error, dot, age+error, col=date.col)
@@ -550,7 +550,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
 
     hpds <- draw.dist(cbind(cal.dist[,1], cal.dist[,2]/max(cal.dist[,2])),
       on.y=FALSE, y.pos=cclim, as.unit=FALSE, fraction=dist.height, mirror=FALSE, up=TRUE, prob=prob, BCAD=BCAD,
-      hpd.border=NA, hpd.col=hpd.fill, dist.col=dist.fill, dist.border=dist.col, age.round=round.hpd.ages, prob.round=round.hpd.probs)
+      hpd.border=NA, hpd.col=hpd.col, dist.col=dist.col, dist.border=dist.border, age.round=round.hpd.ages, prob.round=round.hpd.probs)
 
     # legends
     if(cc %in% 0:4)
@@ -587,7 +587,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
 
 
 # internal function to draw distributions
-draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE, hpd=TRUE, ka=FALSE, prob=0.95, age.round=0, prob.round=1, BCAD=FALSE, x.pos=c(), y.pos=c(), ex=1, normalise=TRUE, as.unit=FALSE, fraction=0.1, dist.col=rgb(0,0,1,0.3), dist.border=rgb(0,0,1,0.3), hpd.col=rgb(0,0,1,0.3), hpd.border=rgb(0,0,1,0.3)) {
+draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE, hpd=TRUE, ka=FALSE, prob=0.95, age.round=0, prob.round=1, BCAD=FALSE, x.pos=c(), y.pos=c(), ex=1, normalise=TRUE, as.unit=FALSE, fraction=0.1, dist.col=rgb(0,0,1,0.3), dist.border=dist.col, hpd.col=dist.col, hpd.border=dist.col) {
   ages0 <- c(dist[1,1], dist[,1], dist[nrow(dist),1])
   agesmirror <- c(dist[,1], rev(dist[,1]))
   #if(!normalise) # then set peak height to 1
@@ -658,7 +658,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
           pol <- cbind(agesmirror, y.pos+distmirror) else
             pol <- cbind(ages0, y.pos+add*dist0)
       }
-    polygon(pol, col=dist.col, border=dist.border)
+    polygon(pol, col=hpd.col, border=hpd.border)
     }
   invisible(hpds)
   }
@@ -676,6 +676,10 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
 #' @param cc Calibration curve for C-14 dates (1, 2, 3, or 4, or, e.g., "IntCal20", "Marine20", "SHCal20", "nh1", "sh3", or "mixed"). If there are multiple dates but all use the same calibration curve, one value can be provided. 
 #' @param postbomb Whether or not this is a postbomb age. Defaults to FALSE.
 #' @param bombalert Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
+#' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=TRUE}, since it takes better care of asymmetric distributions and older dates close to the dating limit. If set as \code{as.F=FALSE}, the C14 timescale will be used.
+#' @param is.F Use \code{is.F=TRUE} if the date and error are entered as F14C.
+#' @param is.pMC Use \code{is.pMC=TRUE} if the date and error are entered as pMC.
 #' @param deltaR Age offset (e.g. for marine samples). Can also be provided as option 'reservoir'.
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation). Can also be provided within option 'reservoir'.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
@@ -692,18 +696,18 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
 #' @param threshold Report only values above a threshold. Defaults to \code{threshold=0.001}.
 #' @param BCAD Use cal BC/AD or cal BP scale (default cal BP).
 #' @param draw.hpd Whether or not to draw the hpd ranges as a line
-#' @param hpd.col Colour of the hpd rectangle for all dates or radiocarbon dates
-#' @param hpd.border Colour of the border of the hpd intervals. Not drawn by default.
-#' @param cal.hpd.col Colour of the hpd rectangle for cal BP dates
+#' @param hpd.col Colour of the hpd rectangle for all dates or radiocarbon dates. Defaults to the colour of `col`.
+#' @param hpd.border Colour of the border of the hpd intervals. Not drawn by default. Defaults to the colour of `col`.
+#' @param cal.hpd.col Colour of the hpd rectangle for cal BP dates. Defaults to the colour of `cal.col`.
 #' @param rounded Rounding for probabilities of reported hpd ranges. Defaults to 1 decimal.
 #' @param every Yearly precision of hpds (defaults to \code{every=1}).
 #' @param mirror Plot distributions mirrored, a bit like a swan. Confuses some people but looks nice to the author so is the default.
 #' @param up If mirror is set to FALSE, the distribution can be plotted facing upwards or downwards.
 #' @param draw.base By default, the base of the calibrated distributions is plotted. This can be avoided by supplying \code{draw.base=FALSE} as an option.
 #' @param col Colour of the inside of the distribution
-#' @param border Colour of the border of the distribution
+#' @param border Colour of the border of the distribution. Defaults to the colour of `col`.
 #' @param cal.col Colour of the inside of distribution of non-radiocarbon dates that didn't need calibration
-#' @param cal.border Colour of the border of the distribution of non-radiocarbon dates that didn't need calibration
+#' @param cal.border Colour of the border of the distribution of non-radiocarbon dates that didn't need calibration. Defaults to the colour of `cal.col`.
 #' @param add Whether or not to add the dates to an existing plot. If set to FALSE (default), a plot will be set up.
 #' @param ka Whether or not to plot ages as thousands of years. Defaults to \code{ka=FALSE}.
 #' @param rotate.axes By default, the calendar age axis is plotted on the horizontal axis, and depth/position on the vertical one. Use \code{rotate.axes=TRUE} to rotate the axes.
@@ -723,7 +727,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
 #' @param label.y Vertical positions of the depths/labels. Defaults to 0 (or 1 if label.x is 3 or 4).
 #' @param label.offset Offsets of the positions of the depths/labels, giving the x and y offsets. Defaults to c(0,0).
 #' @param label.cex Size of labels. 
-#' @param label.col Colour of the labels. Defaults to the colour given to the borders of the dates.
+#' @param label.col Colour of the labels. Defaults to the colour given to that of the dates.
 #' @param label.adj  Justification of the labels. Follows R's adj option: A value of "0" produces left-justified text, "0.5" (the default) centered text and "1" right-justified text.
 #' @param label.rot Rotation of the label. 0 by default (horizontal).
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
@@ -741,7 +745,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
 #'   draw.dates(y, er, y, d.lab="Radiocarbon age (BP)", bombalert=FALSE)
 #'   draw.ccurve(add=TRUE, cc1.col=rgb(0,.5,0,.5))
 #' @export
-draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, deltaSTD=0, thiscurve=c(), oncurve=FALSE, timescale="C", reservoir=c(), normal=TRUE, peak=1, ex=c(), as.unit=FALSE, t.a=3, t.b=4, prob=0.95, threshold=.001, BCAD=FALSE, draw.hpd=TRUE, hpd.border=NA, hpd.col=rgb(0,0,1,.7), cal.hpd.col=rgb(0, 0.5, 0.5, 0.35), rounded=0.1, every=1, mirror=TRUE, up=TRUE, draw.base=TRUE, col=rgb(0,0,1,.3), border=rgb(0,0,1,.5), cal.col=rgb(0, 0.5, 0.5, 0.35), cal.border=rgb(0, 0.5, 0.5, 0.35), add=FALSE, ka=FALSE, rotate.axes=FALSE, normalise=TRUE, cc.col=rgb(0,.5,0,.5), cc.border=rgb(0,.5,0,.5), cc.resample=5, age.lab=c(), age.lim=c(), age.rev=FALSE, cal.rev=FALSE, d.lab=c(), d.lim=c(), d.rev=TRUE, labels=c(), label.x=1, label.y=c(), label.cex=0.8, label.col=border, label.offset=c(0,0), label.adj=c(1,0), label.rot=0, cc.dir=NULL, dist.res=100, ...) {
+draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TRUE, glue=1, is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, thiscurve=c(), oncurve=FALSE, timescale="C", reservoir=c(), normal=TRUE, peak=1, ex=c(), as.unit=FALSE, t.a=3, t.b=4, prob=0.95, threshold=.001, BCAD=FALSE, draw.hpd=TRUE, hpd.border=NA, rounded=0.1, every=1, mirror=TRUE, up=TRUE, draw.base=TRUE, col=rgb(0,0,1,.3), border=col, hpd.col=col, cal.col=rgb(0, 0.5, 0.5, 0.35), cal.border=cal.col, cal.hpd.col=cal.col, add=FALSE, ka=FALSE, rotate.axes=FALSE, normalise=TRUE, cc.col=rgb(0,.5,0,.5), cc.border=cc.col, cc.resample=5, age.lab=c(), age.lim=c(), age.rev=FALSE, cal.rev=FALSE, d.lab=c(), d.lim=c(), d.rev=TRUE, labels=c(), label.x=1, label.y=c(), label.cex=0.8, label.col=col, label.offset=c(0,0), label.adj=c(1,0), label.rot=0, cc.dir=NULL, dist.res=100, ...) {
 
   age <- age - deltaR
   error <- sqrt(error^2 + deltaSTD^2)
@@ -783,7 +787,7 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TR
   max_y <- numeric(length(age)) # track peak of each distribution
   hpds <- list()
   for(i in 1:length(age)) {
-    tmp <- caldist(age[i], error[i], cc=cc[i], postbomb=postbomb[i], bombalert=bombalert, normal=normal, t.a=t.a, t.b=t.b, normalise=FALSE, thiscurve=thiscurve, cc.resample=cc.resample, threshold=threshold, BCAD=BCAD, cc.dir=cc.dir)
+    tmp <- caldist(age[i], error[i], cc=cc[i], postbomb=postbomb[i], is.F=is.F, is.pMC=is.pMC, glue=glue, bombalert=bombalert, normal=normal, t.a=t.a, t.b=t.b, normalise=FALSE, thiscurve=thiscurve, cc.resample=cc.resample, threshold=threshold, BCAD=BCAD, cc.dir=cc.dir)
 
     xgrid <- seq(min(tmp[,1]), max(tmp[,1]), length.out=dist.res) # regular bins
     tmp_i <- approx(tmp[,1], tmp[,2], xgrid)

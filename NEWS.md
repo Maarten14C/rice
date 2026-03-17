@@ -5,7 +5,8 @@
 * `caldist` now uses the F14C timescale by default (more accurate for dates with large errors, e.g. old dates).
 * new option `glue` in `caldist` and derivatives `calibrate` and `calibratable`. This enables users to combine e.g. IntCal20 and postbomb-curve NH1, NH2 or NH3, or SHCal20 and SH1-2 or SH3 (glue=1, 2, 3, 4 or 5, respectively). The default is 'glue=0', i.e., no glueing of prebomb and postbomb calibration curves. 
 * Deprecated pMC.age, age.pMC, F14C.age and age.F14C (instead, please use pMCtoC14, C14topMC, F14CtoC14, or C14toF14C respectively).
-* `draw.ccurve` now has more predictable vertical axis limits when `BCAD=TRUE`.
+* `draw.ccurve` now has more predictable vertical axis limits when `BCAD=TRUE`, and can now deal with options `is.F`, `is.pMC` and `glue`.
+* colour options in `calibrate` and `draw.dates` have been changed to refer to e.g. `dist.col` for the filling colour of the distribution, and `dist.border` for the colour of its border. The border colours default to whatever the main colour (i.e. of the filling) is.
 
 # rice 1.6.2
 * updated the test-rice R file to reflect the correct find.shells results.
