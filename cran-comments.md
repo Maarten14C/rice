@@ -5,4 +5,4 @@
 
 ## R CMD check results
 
-No notes, warnings or errors. No revdep changes to worse (coffee, rbacon, rplum, clam).
+The doi's in DESCRIPTION are now surrounded by angle brackets as per CRAN request.
