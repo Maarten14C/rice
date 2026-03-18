@@ -426,25 +426,35 @@ myshells <- map.shells(S=54, W=-8, N=61, E=0) # the northern part of the UK
 if(requireNamespace("sf", quietly = TRUE) &&
   requireNamespace("rnaturalearth", quietly = TRUE) &&
   requireNamespace("rnaturalearthdata", quietly = TRUE)) {
-    myshells <- map.shells(S = 54, W = -8, N = 61, E = 0, mapsize = "medium")
+    myshells <- map.shells(S = 54, W = -8, N = 61, E = 0, mapsize = "large", currents=FALSE)
   } else {
-      message("Mapping dependencies not available; skipping map in vignette.")
-      myshells <- NULL
-	}
+      myshells <- map.shells(S = 54, W = -8, N = 61, E = 0, mapsize = "small", currents=FALSE)
+    }
 ```
 
 If you don't have the R package 'rnaturalearth' installed, you will be asked to install it if possible, because the resulting maps will look much nicer. Same for the github package 'rnaturalearthhires', which produces more detailed maps.
 
 The output can also be queried:
 
-```{r, fig.width=5, fig.asp=1}
+```{r, eval=FALSE}
+head(myshells)
+shells.mean(myshells)
+```
+
+```{r, fig.width=5, fig.asp=1, echo=FALSE}
+myshells <- map.shells(S=54, W=-8, N=61, E=0, currents=FALSE) # the northern part of the UK
 head(myshells)
 shells.mean(myshells)
 ```
 
 You can also extract say the 20 shells closest to a coordinate, e.g., 20 East and 30 South:
-```{r, fig.width=5, fig.asp=1}
+```{r, eval=FALSE}
 myshells <- find.shells(20, -30, 20)
+shells.mean(myshells, distance=TRUE)
+```
+
+```{r, fig.width=5, fig.asp=1, echo=FALSE}
+myshells <- find.shells(20, -30, 20, currents=FALSE)
 shells.mean(myshells, distance=TRUE)
 ```
 

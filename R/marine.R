@@ -388,6 +388,7 @@ shells.mean <- function(dat, feeding=c(), draw=TRUE, distance=FALSE, pch=20, col
     for(i in 1:length(allfood))
       dye[which(food==allfood[i])] <- i
     rng <- range(dat$dR-dat$dSTD, dat$dR+dat$dSTD)
+    dat <<- dat
     if(distance)
       yvals <- dat[,ncol(dat)] else
         yvals <- 1:nrow(dat)

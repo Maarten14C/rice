@@ -1,3 +1,6 @@
+# rice 2.0.1
+* placed angle brackets around dois in DESCRIPTION as per CRAN request.
+
 # rice 2.0.0
 * now cites the accompanying publication, Blaauw M & Reimer PJ (in press) An open-source toolkit for radiocarbon dating and calibration. Radiocarbon
 * re-downloaded the data from the calib.org/marine database after corrections were released on 12 March 2026.
