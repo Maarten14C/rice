@@ -19,10 +19,7 @@ Imports: rlang, ggplot2, maps (>= 3.4.2.1)
 Suggests:
   knitr, rmarkdown, utf8, remotes, sf, flextable,
   rnaturalearthdata, rnaturalearth (>= 1.0.1),
-  leaflet, htmltools, CopernicusMarine, testthat (>= 3.0.0), 
-  p3k14c (>= 2022.06)
-Note:
-  The package 'p3k14c' is not available from CRAN or Bioconductor and is used only for optional functionality.
+  leaflet, htmltools, CopernicusMarine, testthat (>= 3.0.0)
 Language: en-GB
 VignetteBuilder: knitr
 NeedsCompilation: no

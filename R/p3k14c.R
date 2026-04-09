@@ -25,7 +25,6 @@
 map.dates <- function(S=48, W=-15, N=62, E=5, download=FALSE, rainbow=FALSE, mincol="yellow", maxcol="red", size=1.5, legend.loc="topright") {
 
   # if p3k14c is installed, take the data from there. If not, suggest to install it, or download data from p3k14c.org
-  #p3k14c <- requireNamespace("p3k14c", quietly=TRUE)
   remotes <- requireNamespace("remotes", quietly=TRUE)
   if(getRversion() < "4.0.0")
     stop("R version 4.0.0 or higher is required for this function. Please upgrade R.")
