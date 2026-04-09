@@ -4,7 +4,7 @@
 \alias{hpd.overlap}
 \title{Check whether hpds of two distributions overlap}
 \usage{
-hpd.overlap(distA, distB, prob = 0.95)
+hpd.overlap(distA, distB, prob = 0.95, add.zeros = FALSE)
 }
 \arguments{
 \item{distA}{Distribution A. Expects two columns: values and their probabilities (e.g., caldist(130,10, cc=1)).}
@@ -12,6 +12,8 @@ hpd.overlap(distA, distB, prob = 0.95)
 \item{distB}{Distribution B. Expects two columns: values and their probabilities (e.g., caldist(130,10, cc=1)).}
 
 \item{prob}{The probability of the highest posterior densities. Defaults to 95\%.}
+
+\item{add.zeros}{Pad the distribution with zeros at both extremes. Can be useful for distributions with 'open endings'. Defaults to FALSE}
 }
 \value{
 TRUE if at least one of the hpds of distA overlaps with that of distB.

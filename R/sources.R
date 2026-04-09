@@ -80,7 +80,7 @@ plot_contamination <- function(true.F, true.er, obs.F, obs.er, perc, perc.er, co
     ylim <- sort(extendrange(c(obs.F, true.F, contam.F)))
   ylim[ylim < 0] <- 0 # F cannot be negative
 
-  op <- par(bty=bty, mar=c(5,4,4,4)) # hard-coded
+  par(bty=bty, mar=c(5,4,4,4)) # hard-coded
   plot(0, type="n", xlim=c(0, 100), ylim=ylim, xlab=xlab, ylab=ylab)
   abline(h=true.F, lty=3, col=true.col) # horizontal to target
   segments(0, -1, 0, true.F, lty=3, col=true.col) # vertical to target
@@ -228,10 +228,10 @@ contaminate <- function(y, er=0, percentage, percentage.error=0.001, F.contam=1,
       if(length(eq.y) == 0)
         eq.y <- coors[4] - .05*(coors[4]-coors[3])
 
-      op <- par(xpd=TRUE) # to avoid truncated printing
+      par(xpd=TRUE) # to avoid truncated printing
       for(i in seq_along(txt))
         text(x = xpos[i], y = eq.y, labels = txt[i], col = colours[i], adj = c(0, 0), font=fnt[i], cex=eq.size/1.32)
-      op <- par(xpd=FALSE)
+      par(xpd=FALSE)
     }
 
   C14.obs <- round(C14.obs, roundby)
@@ -656,14 +656,14 @@ push.normal <- function(y, er, mean, sdev, add=TRUE, subtract=FALSE, seed=NA, n=
 
   # inset graph
   if(inset) {
-    op <- par(fig=inset.loc, new=TRUE, mar=inset.mar, mgp=inset.mgp, bty="n")
+    par(fig=inset.loc, new=TRUE, mar=inset.mar, mgp=inset.mgp, bty="n")
     xseq <- seq(mean-(3*sdev), mean+(3*sdev), length=200)
     if(isTRUE(add)) xlim <- rev(range(xseq)) else xlim <- range(xseq)
 
     plot(xseq, dnorm(xseq, mean, sdev), type="l", xlim=xlim, col=inset.col, xlab="", ylab="", yaxt="n", yaxs="r")
     end <- mean+sdev
     arrows(mean, 0, end, 0, col=inset.col, lwd=2, length=.05)
-    op <- par(fig=c(0,1,0,1), mar=c(5,4,4,2), mgp=c(3,1,0))
+    par(fig=c(0,1,0,1), mar=c(5,4,4,2), mgp=c(3,1,0))
   }
   print(hpds)
   invisible(list(shifted=shifted, hpds=hpds))
@@ -753,14 +753,14 @@ push.gamma <- function(y, er, mean, shape, add=TRUE, subtract=FALSE, seed=NA, n=
  
   # inset graph
   if(inset) {
-    op <- par(fig=inset.loc, new=TRUE, mar=inset.mar, mgp=inset.mgp, bty="n")
+    par(fig=inset.loc, new=TRUE, mar=inset.mar, mgp=inset.mgp, bty="n")
     xseq <- seq(0, mean*(1+4/sqrt(shape)), length=200)
     if(isTRUE(add)) xlim <- rev(range(xseq)) else xlim <- range(xseq)
 
     plot(xseq, dgamma(xseq, shape, shape/mean), type="l", xlim=xlim, col=inset.col, xlab="", ylab="", yaxt="n", yaxs="r")
     end <- mean+(mean/3)
     arrows(mean, 0, end, 0, col=inset.col, lwd=2, length=.05)
-    op <- par(fig=c(0,1,0,1), mar=c(5,4,4,2), mgp=c(3,1,0))
+    par(fig=c(0,1,0,1), mar=c(5,4,4,2), mgp=c(3,1,0))
   }
   print(hpds)
   invisible(list(shifted=shifted, hpds=hpds))

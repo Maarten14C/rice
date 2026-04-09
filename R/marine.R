@@ -92,7 +92,7 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
     cols <- color_scale[as.numeric(cut(shells[,5], breaks=100))]
     points(shells[,1], shells[,2], col=cols, pch=20)
 
-    value_range <- range(shells[, 5], na.rm = TRUE)
+    # value_range <- range(shells[, 5], na.rm = TRUE)
 
     coors <- par("usr")
     xmin <- coors[1] + legend.loc[1] * (coors[2] - coors[1])

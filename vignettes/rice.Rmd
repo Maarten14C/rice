@@ -465,6 +465,17 @@ find.shells(120, 10, 50, browse=TRUE)
 ```
 <img src="./findshells_browse.png" width="600" />
 
+# More maps
+
+The p3k14c R package[^9] contains over 175,000 radiocarbon dates (!) and is available on github[^10]. The data from this package can be downloaded (around 25 MB) and plotted and browsed as follows:
+
+```{r, fig.width=5, fig.asp=1, eval=FALSE}
+p3k14c <- map.dates()
+```
+<img src="./p3k14c.png" width="600" />
+
+For another "database of databases", have a look at c14bazAAR[^11] which is also on github. For a table of the available databases, type `c14bazAAR::db_info_table`.
+
 # Multiple calibrations
 
 It is also possible to draw multiple calibrated distributions:
@@ -485,7 +496,7 @@ plot(250*1:5, 5:1, xlim=c(0, 1800), ylim=c(5,0), xlab="AD", ylab="dates")
 draw.dates(dates, errors, depths, BCAD=TRUE, add=TRUE, labels=my.labels, mirror=FALSE)
 ```
 
-or get creative (inspired by Jocelyn Bell Burnell[^9], Joy Division[^10] and the Hallstatt Plateau[^11]):
+or get creative (inspired by Jocelyn Bell Burnell[^12], Joy Division[^13] and the Hallstatt Plateau[^14]):
 
 ```{r, fig.width=4, fig.asp=1}
 par(bg="black", mar=rep(1, 4))
@@ -514,8 +525,14 @@ and calibration of post-bomb 14C Data. *Radiocarbon* 46, 1299-1304 <http://dx.do
 
 [^8]: Reimer, P.J., Reimer, R.W., 2006. A marine reservoir correction database and on-line interface. *Radiocarbon* 43, 461-463. <http://dx.doi.org/10.1017/S0033822200038339>
 
-[^9]: https://www.cam.ac.uk/stories/journeysofdiscovery-pulsars
+[^9]: Bird, D., Miranda, L., Vander Linden, M. et al., 2022. p3k14c, a synthetic global database of archaeological radiocarbon dates. *Scientific Data* 9, 27. <https://doi.org/10.1038/s41597-022-01118-7>
 
-[^10]: https://www.radiox.co.uk/artists/joy-division/unknown-pleasures-album-cover-meaning/
+[^10]: https://github.com/people3k/p3k14c
 
-[^11]: https://en.wikipedia.org/wiki/Hallstatt_plateau
+[^11]: https://github.com/ropensci/c14bazAAR
+
+[^12]: https://www.cam.ac.uk/stories/journeysofdiscovery-pulsars
+
+[^13]: https://www.radiox.co.uk/artists/joy-division/unknown-pleasures-album-cover-meaning/
+
+[^14]: https://en.wikipedia.org/wiki/Hallstatt_plateau

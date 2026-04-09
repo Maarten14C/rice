@@ -202,13 +202,14 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 #' @param prob.round Rounding for reported probabilities. Defaults to 1 decimal.
 #' @param every Yearly precision (defaults to 0.1, as a compromise between speed and accuracy).
 #' @param bins The number of bins required. Any distribution with fewer bins gets recalculated using 100 narrower bins.
+#' @param add.zeros Pad the distribution with zeros at both extremes. Can be useful for distributions with 'open endings'. Defaults to FALSE
 #' @examples
 #' hpd(caldist(130,20, bombalert=FALSE))
 #' plot(tmp <- caldist(2450,50), type='l')
 #' myhpds <- hpd(tmp)
 #' abline(v=unlist(myhpds[,1:2]), col=4)
 #' @export
-hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.round=0, prob.round=1, every=0.1, bins=20) {
+hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.round=0, prob.round=1, every=0.1, bins=20, add.zeros=FALSE) {
 
   # re-interpolate to desired precision
   if(ka) {
@@ -217,7 +218,11 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
   }
 
   calib <- calib[order(calib[,1]),] # ensure calendar ages are in increasing order
-  steppies <- diff(unique(calib[,1]))
+
+  dx <- min(diff(unique(calib[,1])))
+  if(add.zeros) # pad the extremes with 0s
+    calib <- rbind(c(calib[1,1]-dx, 0), calib, c(calib[nrow(calib),1]+dx, 0))
+
   tmpcalib <- approx(calib[,1], calib[,2], seq(min(calib[,1]), max(calib[,1]), by=every))
   if(length(tmpcalib$x) >= bins) # then the distribution is not very narrow
     calib <- tmpcalib else
@@ -229,7 +234,7 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
   calib <- cbind(calib[o,], cumsum(calib[o,2]) / sum(calib[,2]))
   calib <- cbind(calib, calib[,3] <= prob) # yr, probs, cumprobs, within/outside ranges (T/F)
   calib <- calib[order(calib[,1], decreasing=TRUE),] # put ages in order again
-
+  
   # find the outer ages of the calibrated ranges
   if(BCAD) {
     from <- sort(calib[which(diff(c(calib[,4], 0)) == -1), 1])
@@ -248,13 +253,20 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
   }
 
   # find the year and probability within each range (as %)
-  perc <- 0
-  for(i in 1:length(from))
-    if(from[i] == to[i])
-      perc[i] <- calib[which(calib[,1] == from[i]),2] else {
-        fromto <- calib[which(calib[,1] == from[i])[1] : which(calib[,1]== to[i])[1],1:2]
-        perc[i] <- round(100*sum(fromto[,2]), prob.round)
-      }
+  perc <- numeric(length(from))
+  for(i in seq_along(from)) {
+    if(is.na(from[i]) || is.na(to[i])) {
+      perc[i] <- 0
+    } else 
+      if(from[i] == to[i]) {
+        perc[i] <- calib[which(calib[,1] == from[i])[1], 2]
+      } else {
+          idx1 <- which(calib[,1] == from[i])[1]
+          idx2 <- which(calib[,1] == to[i])[1]
+          fromto <- calib[idx1:idx2, 1:2]
+          perc[i] <- round(100 * sum(fromto[,2]), prob.round)
+        }
+  }
 
   mindiff <- min(abs(diff(calib[,1])))
   if(mindiff < 0.01) # very small values require different rounding

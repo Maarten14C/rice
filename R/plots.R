@@ -523,7 +523,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
     xaxt <- ifelse(BCAD || ka, "n", "s")
     yaxt <- ifelse(ka, "n", "s")
 
-    plot(0, type="n", xlim=cal.lim, ylim=cc.lim, xlab=cal.lab, ylab=C14.lab, xaxt="n", yaxt="n", xaxs=xaxs, yaxs=yaxs, bty=bty, mgp=mgp, mar=mar)
+    plot(0, type="n", xlim=cal.lim, ylim=cc.lim, xlab=cal.lab, ylab=C14.lab, xaxt=xaxt, yaxt=yaxt, xaxs=xaxs, yaxs=yaxs, bty=bty, mgp=mgp, mar=mar)
     if(ka) {
       axis(1, pretty(cal.lim), labels=pretty(cal.lim)/1e3)
       axis(2, pretty(cc.lim), labels=pretty(cc.lim)/1e3)
@@ -535,7 +535,8 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
     coors <- par('usr')
     polygon(ccpol, border=cc.border, col=cc.col)
 
-    C14.hpds <- draw.dist(cbind(C14.dist[,1], C14.dist[,2]/max(C14.dist[,2])),
+    # C14.hpds <- 
+    draw.dist(cbind(C14.dist[,1], C14.dist[,2]/max(C14.dist[,2])),
       on.y=TRUE, x.pos=callim, as.unit=FALSE, fraction=dist.height, mirror=FALSE, up=TRUE,
       prob=prob, BCAD=BCAD, hpd.border=NA, hpd.col=hpd.col, dist.col=dist.col, dist.border=dist.border)
     dot <- ifelse(cal.rev, callim, min(lims))
@@ -628,7 +629,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
 
   if(hpd) {
     hpds <- hpd(dist, return.raw=TRUE, BCAD=BCAD, prob=prob, age.round=age.round, prob.round=prob.round, ka=ka)
-    hpds.raw <- hpds$calib
+    # hpds.raw <- hpds$calib
     hpds <- hpds$hpds
 
     for(i in 1:nrow(hpds)) {
@@ -783,9 +784,9 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TR
 
   ages <- array(NA, dim=c(dist.res, length(age))) # later fill with years
   probs <- ages # later fill with probs
-  mx <- rep(0, length(age))
+  # mx <- rep(0, length(age))
   max_y <- numeric(length(age)) # track peak of each distribution
-  hpds <- list()
+  # hpds <- list()
   for(i in 1:length(age)) {
     tmp <- caldist(age[i], error[i], cc=cc[i], postbomb=postbomb[i], as.F=as.F, is.F=is.F, is.pMC=is.pMC, glue=glue, bombalert=bombalert, normal=normal, t.a=t.a, t.b=t.b, normalise=FALSE, thiscurve=thiscurve, cc.resample=cc.resample, threshold=threshold, BCAD=BCAD, cc.dir=cc.dir)
 
@@ -992,8 +993,8 @@ draw.CF <- function(y, er, normal=TRUE, t.a=3, t.b=4, height=1, extend.axes=.1, 
     points(xpos, y, pch=19, col=date.col)
   }
 
-  F.hpds <- draw.dist(F.dist, y.pos=y.pos, dist.col=F.col, ex=height, dist.border=F.col, prob=.68, hpd=F)
-  C.hpds <- draw.dist(C14.dist, on.y=TRUE, ex=height, x.pos=x.pos, dist.col=C14.col, dist.border=C14.col, prob=.68, hpd=F)
+  draw.dist(F.dist, y.pos=y.pos, dist.col=F.col, ex=height, dist.border=F.col, prob=.68, hpd=F)
+  draw.dist(C14.dist, on.y=TRUE, ex=height, x.pos=x.pos, dist.col=C14.col, dist.border=C14.col, prob=.68, hpd=F)
   x <- seq(1e-6, coors[2], length=1e3)
   lines(x, -8033 * log(x), lwd=2, col=grey(.3)) # the relation between F and C
   Fplus <- y.as.F[1]+y.as.F[2]
@@ -1010,7 +1011,7 @@ draw.CF <- function(y, er, normal=TRUE, t.a=3, t.b=4, height=1, extend.axes=.1, 
   ermin <- round(back.to.y[2]-back.to.y[3], roundby)
 
   y.as.F <- format(round(y.as.F, roundby+4), scientific=FALSE)
-  y.as.F <<- y.as.F
+  #  y.as.F <<- y.as.F
   if(!is.na(legend.pos)) {
     txt <- c(bquote(""*.(y) %+-% .(er) ~ "BP"),  
       bquote(""%->%.(y.as.F[1]) %+-% .(y.as.F[2]) ~ F^{14}*C),

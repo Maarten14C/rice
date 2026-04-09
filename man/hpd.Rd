@@ -13,7 +13,8 @@ hpd(
   age.round = 0,
   prob.round = 1,
   every = 0.1,
-  bins = 20
+  bins = 20,
+  add.zeros = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ hpd(
 \item{every}{Yearly precision (defaults to 0.1, as a compromise between speed and accuracy).}
 
 \item{bins}{The number of bins required. Any distribution with fewer bins gets recalculated using 100 narrower bins.}
+
+\item{add.zeros}{Pad the distribution with zeros at both extremes. Can be useful for distributions with 'open endings'. Defaults to FALSE}
 }
 \value{
 The highest posterior density ranges, as three columns: from age, to age, and the corresponding percentage(s) of the range(s)

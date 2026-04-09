@@ -207,6 +207,7 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #' @param distA Distribution A. Expects two columns: values and their probabilities (e.g., caldist(130,10, cc=1)).
 #' @param distB Distribution B. Expects two columns: values and their probabilities (e.g., caldist(130,10, cc=1)).
 #' @param prob The probability of the highest posterior densities. Defaults to 95\%.
+#' @param add.zeros Pad the distribution with zeros at both extremes. Can be useful for distributions with 'open endings'. Defaults to FALSE
 #' @examples
 #'   distA <- caldist(130, 20, cc=0) # normal distribution
 #'   distB <- caldist(130, 20, cc=1, bombalert=FALSE) # calibrated distribution
@@ -214,9 +215,17 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #'   lines(distA, col=2)
 #'   hpd.overlap(distA, distB)
 #' @export
-hpd.overlap <- function(distA, distB, prob=.95) {
-  hpdA <- hpd(distA, prob=prob)	
-  hpdB <- hpd(distB, prob=prob)	
+hpd.overlap <- function(distA, distB, prob=.95, add.zeros=FALSE) {
+  hpdA <- hpd(distA, prob=prob, add.zeros=add.zeros)	
+  hpdB <- hpd(distB, prob=prob, add.zeros=add.zeros)	
+  
+  # keep only valid intervals
+  hpdA <- hpdA[complete.cases(hpdA[, 1:2]) & is.finite(hpdA[,1]) & is.finite(hpdA[,2]), , drop = FALSE]
+  hpdB <- hpdB[complete.cases(hpdB[, 1:2]) & is.finite(hpdB[,1]) & is.finite(hpdB[,2]), , drop = FALSE]
+
+  # if either has no valid HPD intervals, there is no overlap
+  if(nrow(hpdA) == 0 || nrow(hpdB) == 0)
+    return(FALSE)
 
   for(i in 1:nrow(hpdA)) 
     for(j in 1:nrow(hpdB)) 
@@ -389,7 +398,7 @@ spread <- function(y, er, n=1e5, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.
   for(i in 1:n)
     diffs[i,] <- abs(xs[i,ns[i]] - xs[i,-ns[i]])
   as.dens <- density(diffs)
-  as.hpd <- hpd(diffs, every=min(diff(as.dens$x)))
+  hpd(diffs, every=min(diff(as.dens$x)))
   aspoints <- round(point.estimates(cbind(as.dens$x, as.dens$y)), roundby)
   oneprob <- (1-prob)/2
   minmax <- round(quantile(diffs, probs=c(oneprob, .5, 1-oneprob)), roundby)
@@ -480,7 +489,7 @@ span <- function(y1, er1, y2, er2, n=1e5, positive=TRUE, cc=1, postbomb=FALSE, d
     } else
       as.dens <- density(diffs)
 
-  as.hpd <- hpd(cbind(as.dens$x, as.dens$y))
+  hpd(cbind(as.dens$x, as.dens$y))
   aspoints <- round(point.estimates(cbind(as.dens$x, as.dens$y)), roundby)
   oneprob <- (1-prob)/2
   minmax <- round(quantile(diffs, probs=c(oneprob, .5, 1-oneprob)), roundby)
