@@ -1,7 +1,7 @@
 ---
 title: "Introduction to the rice package"
 output:
-  html_vignette:
+  rmarkdown::html_vignette:
     toc: true
     toc_depth: 3
     number_sections: true
@@ -467,14 +467,14 @@ find.shells(120, 10, 50, browse=TRUE)
 
 # More maps
 
-The p3k14c R package[^9] contains over 175,000 radiocarbon dates (!) and is available on github[^10]. The data from this package can be downloaded (around 25 MB) and plotted and browsed as follows:
+The `p3k14c` R package[^9] contains over 175,000 radiocarbon dates (!) and is available on github[^10] (at c. 25 MB it's too big for CRAN). Within `rice`, the data from `p13k14c` can be downloaded, plotted and browsed as follows:
 
 ```{r, fig.width=5, fig.asp=1, eval=FALSE}
 p3k14c <- map.dates()
 ```
 <img src="./p3k14c.png" width="600" />
 
-For another "database of databases", have a look at c14bazAAR[^11] which is also on github. For a table of the available databases, type `c14bazAAR::db_info_table`.
+For another "database of databases", have a look at c14bazAAR[^11] which is also on github (and too big for CRAN). After installing that package from github, type `c14bazAAR::db_info_table` to see a table of available databases.
 
 # Multiple calibrations
 
