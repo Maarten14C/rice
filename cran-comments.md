@@ -6,3 +6,5 @@
 ## R CMD check results
 
 No changes to worse with rev. depends clam coffee rbacon rplum (I maintain these packages)
+
+The package now suggests p3k14c, a GitHub‑only package which provides optional archaeological radiocarbon datasets. All examples, tests and vignettes run without p3k14c installed. Its use is optional and guarded by availability checks.
