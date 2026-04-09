@@ -36,7 +36,7 @@ map.dates <- function(S=48, W=-15, N=62, E=5, download=FALSE, rainbow=FALSE, min
   p3k14c <- nzchar(system.file(package="p3k14c"))
 
   if(p3k14c)
-    dates <- p3k14c::p3k14c_data else
+    dates <- get("p3k14c_data", envir=asNamespace("p3k14c")) else
       if(download) { # then download from the p3k14c.org site and store in rice's data directory
         dir <- tools::R_user_dir("rice", "data")
         if(!dir.exists(dir))
