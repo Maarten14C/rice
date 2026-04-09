@@ -5,4 +5,4 @@
 
 ## R CMD check results
 
-The doi's in DESCRIPTION are now surrounded by angle brackets as per CRAN request.
+No changes to worse with rev. depends clam coffee rbacon rplum (I maintain these packages)
