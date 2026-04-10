@@ -452,7 +452,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
   if(border > 0)
     truncate.warning <- TRUE
   C14.dist <- caldist(age, sqrt(error^2 + cc.er^2), cc=0, BCAD=FALSE, postbomb=FALSE, is.F=is.F, is.pMC=is.pMC, as.F=as.F, normal=normal, t.a=t.a, t.b=t.b)
-  C14.dist
+ # C14.dist
 
   if(!is.F && !is.pMC)
     if(asymmetric) { # then calculate in F, followed by translation into C14
@@ -462,7 +462,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
       #F.dist <- F.dist[F.dist[,1]>=0,] # also remove F < 0
       C14.dist <- cbind(F14CtoC14(F.dist[,1], c()), F.dist[,2])
   }
-  cal.dist <- caldist(age, error, cc=cc, yrsteps=yr.steps, threshold=threshold,
+  cal.dist <- caldist(age, error, cc=cc, glue=glue, yrsteps=yr.steps, threshold=threshold,
     normal=normal, is.F=is.F, is.pMC=is.pMC, as.F=as.F, t.a=t.a, t.b=t.b,
     thiscurve=Cc, cc.dir=cc.dir, BCAD=BCAD)
 
