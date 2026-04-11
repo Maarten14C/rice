@@ -670,11 +670,20 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
   if(!requireNamespace("flextable", quietly = TRUE))
     stop("Package 'flextable' is required. Install with install.packages('flextable').")
 
-  if(length(cc) == 1)
-    cc <- rep(cc, length(y))
+  if(length(cc) == 1 || glue > 0) { # then no need to read same curve multiple times
+	one.cc <- TRUE  
+    if(glue>0) {
+      if(glue %in% 1:3)
+        this.cc <- rintcal::glue.ccurves(1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+          if(glue %in% 4:5)
+            this.cc <- rintcal::glue.ccurves(3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+              stop("please provide an integer for glue between 0 and 5")
+    } else this.cc <- rintcal::ccurve(cc, postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)
+  }	else one.cc <- FALSE
+  
   if(length(er) != length(y))
     stop("er needs to be of the same length as y")
-  if(length(cc) != length(y))
+  if(length(cc) != length(y) && !one.cc)
     stop("cc needs to be of the same length as y")
   if(length(lab) == 0)
     lab <- 1:length(y) else
@@ -699,9 +708,12 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
   }
 
   for(i in 1:length(y)) {
-    this.cal <- caldist(y[i], er[i], cc=cc[i], BCAD=BCAD, postbomb=postbomb, bombalert=bombalert,
-      glue=glue, thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
-      deltaR=deltaR[i], deltaSTD=deltaSTD[i])
+	if(one.cc)  
+      this.cal <- caldist(y[i], er[i], cc=cc, BCAD=BCAD, thiscurve=this.cc, 
+        deltaR=deltaR[i], deltaSTD=deltaSTD[i]) else
+          this.cal <- caldist(y[i], er[i], cc=cc[i], BCAD=BCAD, postbomb=postbomb, bombalert=bombalert,
+            glue=glue, thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
+            deltaR=deltaR[i], deltaSTD=deltaSTD[i])
     this.cal <- this.cal[order(this.cal[,1]), ]
     this.hpd <- hpd(this.cal, BCAD=BCAD,
       prob.round=prob.round, age.round=age.round)
