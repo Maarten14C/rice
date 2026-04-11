@@ -659,7 +659,7 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve
 #' @param prob Probability range which should be calculated. Default \code{prob=0.95}.
 #' @param age.round Rounding for ages. Defaults to 0 decimals.
 #' @param prob.round Rounding for reported probabilities. Defaults to 1 decimal.
-#' @param docx By default, the table is written to your web browser. If you wish to write it to a MS-Word document instead, provide the file (with .docx extension) and its location here, e.g., \code{docx="C14_table.docx"}.
+#' @param docx By default, the table is written to your web browser. If you wish to write it to a MS-Word document instead, provide the file (with .docx extension) and its location here, e.g., \code{docx="myC14_table.docx"}.
 #' @author Maarten Blaauw
 #' @examples
 #'  calibratable(130, 20, bombalert=FALSE)
@@ -669,8 +669,17 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve
 calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bombalert=TRUE, glue=0, cc.dir=c(), thiscurve=c(), is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, prob=0.95, prob.round=1, age.round=0, docx=c()) {
   if(!requireNamespace("flextable", quietly = TRUE))
     stop("Package 'flextable' is required. Install with install.packages('flextable').")
-
-  if(length(cc) == 1 || glue > 0) { # then no need to read same curve multiple times
+  
+  if(is.numeric(cc) && any(cc %% 1 != 0))
+    stop("cc should be 0 (no calibration), 1 (IntCal20), 2 (Marine20) or 3 (SHCal20)") 
+  if(is.numeric(cc) && any(cc > 3))
+    stop("cc should be 0 (no calibration), 1 (IntCal20), 2 (Marine20) or 3 (SHCal20)")
+  if(length(cc) > 1)
+    if(length(cc) != length(y))
+      stop("cc needs to be of length 1 or the same length as y")
+   
+  one.cc <- FALSE
+  if(length(cc) == 1 || glue > 0) { # then no need to read the same curve multiple times
 	one.cc <- TRUE  
     if(glue>0) {
       if(glue %in% 1:3)
@@ -679,12 +688,10 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
             this.cc <- rintcal::glue.ccurves(3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
               stop("please provide an integer for glue between 0 and 5")
     } else this.cc <- rintcal::ccurve(cc, postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)
-  }	else one.cc <- FALSE
+  }
   
   if(length(er) != length(y))
     stop("er needs to be of the same length as y")
-  if(length(cc) != length(y) && !one.cc)
-    stop("cc needs to be of the same length as y")
   if(length(lab) == 0)
     lab <- 1:length(y) else
       if(length(lab) != length(y))
@@ -711,7 +718,7 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
 	if(one.cc)  
       this.cal <- caldist(y[i], er[i], cc=cc, BCAD=BCAD, thiscurve=this.cc, 
         deltaR=deltaR[i], deltaSTD=deltaSTD[i]) else
-          this.cal <- caldist(y[i], er[i], cc=cc[i], BCAD=BCAD, postbomb=postbomb, bombalert=bombalert,
+          this.cal <- caldist(y[i], er[i], cc=thiscc[i], BCAD=BCAD, postbomb=postbomb, bombalert=bombalert,
             glue=glue, thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
             deltaR=deltaR[i], deltaSTD=deltaSTD[i])
     this.cal <- this.cal[order(this.cal[,1]), ]
