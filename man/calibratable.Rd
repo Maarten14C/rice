@@ -60,7 +60,7 @@ calibratable(
 
 \item{age.round}{Rounding for ages. Defaults to 0 decimals.}
 
-\item{docx}{By default, the table is written to your web browser. If you wish to write it to a MS-Word document instead, provide the file (with .docx extension) and its location here, e.g., \code{docx="C14_table.docx"}.}
+\item{docx}{By default, the table is written to your web browser. If you wish to write it to a MS-Word document instead, provide the file (with .docx extension) and its location here, e.g., \code{docx="myC14_table.docx"}.}
 }
 \description{
 Calibrate a number of radiocarbon dates and make a table containing the calibrated ranges (both highest posterior densities and quantiles).

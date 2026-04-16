@@ -9,6 +9,13 @@ Provides functions for the calibration of radiocarbon dates, as well as options 
 
 Provides equations for the handling of radiocarbon dates, for example to calculate different radiocarbon timescales (C14 age, F14C, pMC, Delta14C), for their calibration, and estimating the effects of contamination. This package accompanies the data package rintcal.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/Maarten14C/rice}
+}
+
+}
 \author{
 \strong{Maintainer}: Maarten Blaauw \email{maarten.blaauw@qub.ac.uk} (\href{https://orcid.org/0000-0002-5680-1515}{ORCID})
 

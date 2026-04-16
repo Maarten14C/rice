@@ -1,6 +1,7 @@
 # rice 2.1.1
 * postbomb dates are now plotted better in the `calibrate` function when using the option `glue`.
 * the `calibratable` function now calibrates dates faster by avoiding reading in the same curve multiple times.
+* CHECK does draw.dates plot dates at the right peak height? ********
 
 # rice 2.1.0
 * added a function to plot the c. 175k dates available within the p3k14c github R package (Bird et al. 2022). Note that p3k14c is not available on CRAN (it's too large) but it's on github. 
