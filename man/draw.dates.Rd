@@ -66,8 +66,7 @@ draw.dates(
   label.adj = c(1, 0),
   label.rot = 0,
   cc.dir = NULL,
-  dist.res = 100,
-  age.res = 1000,
+  dist.res = 1000,
   ...
 )
 }
@@ -194,9 +193,7 @@ draw.dates(
 
 \item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.}
 
-\item{dist.res}{Resolution of the distribution polygons. Defaults to \code{dist.res=100}.}
-
-\item{age.res}{Age resolution of all distribution polygons. Defaults to \code{dist.res=1000} bins.}
+\item{dist.res}{Resolution of the age range capturing all distributions. Defaults to \code{dist.res=1000}.}
 
 \item{...}{Additional plotting options}
 }

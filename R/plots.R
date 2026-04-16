@@ -784,7 +784,7 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TR
   age.range <- range(vapply(calibs, function(z) range(z[,1]), numeric(2)))
   age.seq <- seq(age.range[1], age.range[2], length=dist.res)
 
-  probs <- array(NA, dim=c(age.res, length(age))) # fill later
+  probs <- array(NA, dim=c(dist.res, length(age))) # fill later
   for(i in 1:length(age)) {
     this.age <- calibs[[i]]
     this.prob <- approx(this.age[,1], this.age[,2], age.seq, rule=2)
