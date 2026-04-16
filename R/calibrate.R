@@ -720,7 +720,7 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
         deltaR=deltaR[i], deltaSTD=deltaSTD[i]) else
           this.cal <- caldist(y[i], er[i], cc=this.cc[i], BCAD=BCAD, 
 			postbomb=postbomb, bombalert=bombalert, glue=glue, 
-			inthiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
+			thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
             deltaR=deltaR[i], deltaSTD=deltaSTD[i])
     this.cal <- this.cal[order(this.cal[,1]), ]
     this.hpd <- hpd(this.cal, BCAD=BCAD,
