@@ -360,7 +360,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
 
   # deal with postbomb ages
   is.postbomb <- FALSE
-  if(glue>1 || postbomb || (is.F && age >1) || (is.pMC && age >100) || (!is.F && !is.pMC && age < 50)) {
+  if(is.character(glue) || glue>1 || postbomb || (is.F && age >1) || (is.pMC && age >100) || (!is.F && !is.pMC && age < 50)) {
     is.postbomb <- TRUE
     if(is.na(cc.resample))
       cc.resample <- 1/12
@@ -374,15 +374,17 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
         xseq <- seq(age-4*error, age+4*error, length=5e3)
         Cc <- cbind(xseq, xseq, rep(0, length(xseq)))
       } else {
-          if(glue>0) {
-            if(glue %in% 1:3)
-               Cc <- rintcal::glue.ccurves(1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                 if(glue %in% 4:5)
-                   Cc <- rintcal::glue.ccurves(3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                     stop("please provide an integer for glue between 0 and 5")
-          } else {
-          Cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir, 
-            resample=cc.resample, as.F=is.F, as.pMC=is.pMC)
+          if(is.character(glue))
+            Cc <- rintcal::glue.ccurves(prebomb=1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else  	  
+            if(glue>0) {
+              if(glue %in% 1:3)
+                 Cc <- rintcal::glue.ccurves(prebomb=1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                   if(glue %in% 4:5)
+                     Cc <- rintcal::glue.ccurves(prebomb=3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                       stop("please provide an integer for glue between 0 and 5")
+            } else {
+                Cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir, 
+                  resample=cc.resample, as.F=is.F, as.pMC=is.pMC)
         
           # check if any dates lie at the younger edge of this.cc
           young <- FALSE

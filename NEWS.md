@@ -1,6 +1,7 @@
 # rice 2.1.1
 * postbomb dates are now plotted better in the `calibrate` function when using the option `glue`.
-* the `calibratable` function now calibrates dates faster by avoiding reading in the same curve multiple times.
+* to use a monthly postbomb calibration curve, try e.g. `calibrate(1.4, .005, is.F=TRUE, glue="NH1_monthly")`.
+* the `calibratable` function now calibrates dates faster by not reading in the same curve multiple times.
 * draw.dates its distributions at more predictable peak heights
 
 # rice 2.1.0

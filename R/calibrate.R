@@ -46,16 +46,17 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=
         xseq <- seq(y-4*er, y+4*er, length=cc0.res)
         this.cc <- cbind(xseq, xseq, rep(0, length(xseq)))
       } else {
-          if(glue>0) {
-            if(glue %in% 1:3)
-              this.cc <- rintcal::glue.ccurves(1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                if(glue %in% 4:5)
-                  this.cc <- rintcal::glue.ccurves(3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                    stop("please provide an integer for glue between 0 and 5")
-          } else {
-
-            this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir, 
-              resample=cc.resample, as.F=is.F, as.pMC=is.pMC)
+         if(is.character(glue))
+           this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else 
+             if(glue>0) {
+               if(glue %in% 1:3)
+                 this.cc <- rintcal::glue.ccurves(prebomb=1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                   if(glue %in% 4:5)
+                     this.cc <- rintcal::glue.ccurves(prebomb=3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                       stop("please provide an integer for glue between 0 and 5")
+             } else {
+                 this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir, 
+                   resample=cc.resample, as.F=is.F, as.pMC=is.pMC)
          
             # check if any dates lie at the younger edge of this.cc
             young <- FALSE
