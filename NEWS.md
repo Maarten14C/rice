@@ -1,8 +1,9 @@
 # rice 2.1.1
 * postbomb dates are now plotted better in the `calibrate` function when using the option `glue`.
-* to use a monthly postbomb calibration curve, try e.g. `calibrate(1.4, .005, is.F=TRUE, glue="NH1_monthly")`.
-* the `calibratable` function now calibrates dates faster by not reading in the same curve multiple times.
-* draw.dates its distributions at more predictable peak heights
+* added the `glue` option to additional relevant functions such as `draw.dates`, `l.calib`, `r.calib`, `younger`, `older`, `p.range` and timescale-related functions (e.g., `C14tocalBP`)
+* to use a monthly postbomb calibration curve, try e.g. `calibrate(1.4, .005, is.F=TRUE, glue="NH1_monthly", BCAD=TRUE)`.
+* `calibratable` now calibrates dates faster by not reading in the same curve multiple times.
+* `draw.dates` now draws its distributions at more predictable peak heights.
 
 # rice 2.1.0
 * added a function to plot the c. 175k dates available within the p3k14c github R package (Bird et al. 2022). Note that p3k14c is not available on CRAN (it's too large) but it's on github. 

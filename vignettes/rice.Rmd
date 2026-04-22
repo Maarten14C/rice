@@ -499,19 +499,17 @@ draw.dates(dates, errors, depths, BCAD=TRUE, add=TRUE, labels=my.labels, mirror=
 or get creative (inspired by Jocelyn Bell Burnell[^12], Joy Division[^13] and the Hallstatt Plateau[^14]):
 
 ```{r, fig.width=4, fig.asp=1}
-par(bg="black", mar=rep(1, 4))
-n <- 50; set.seed(1)
-draw.dates(rnorm(n, 2450, 30), rep(25, n), 1:n,
+par(bg="black", mar=rep(1.5, 4))
+n <- 50; set.seed(42)
+draw.dates(rnorm(n, 2480, 50), rep(20, n), 1:n,
   mirror=FALSE, draw.base=FALSE, draw.hpd=FALSE, col="white",
-  threshold=1e-28, age.lim=c(2250, 2800), up=TRUE, peak=30)
+  threshold=1e-5, age.lim=c(2150, 2900), up=TRUE, peak=30, as.unit=TRUE)
 ```
 
 
-[^1]: Stuiver, R., Polach, H.A., 1977. Discussion: reporting of 14C data.
-*Radiocarbon* 19, 355-363 <http://dx.doi.org/10.1017/S0033822200003672>
+[^1]: Stuiver, R., Polach, H.A., 1977. Discussion: reporting of 14C data. *Radiocarbon* 19, 355-363 <http://dx.doi.org/10.1017/S0033822200003672>
 
-[^2]: Reimer, P.J., Brown, T.A., Reimer, R.W., 2004. Discussion: reporting
-and calibration of post-bomb 14C Data. *Radiocarbon* 46, 1299-1304 <http://dx.doi.org/10.1017/S0033822200033154>
+[^2]: Reimer, P.J., Brown, T.A., Reimer, R.W., 2004. Discussion: reporting and calibration of post-bomb 14C Data. *Radiocarbon* 46, 1299-1304 <http://dx.doi.org/10.1017/S0033822200033154>
 
 [^3]: Millard, R., 2014. Conventions for reporting radiocarbon determinations. *Radiocarbon* 56, 555-559 <http://dx.doi.org/10.2458/56.17455>
 

@@ -8,6 +8,7 @@ b2ktopMC(
   x,
   cc = 1,
   postbomb = FALSE,
+  glue = 0,
   rule = 1,
   cc.dir = NULL,
   thiscurve = NULL,
@@ -20,6 +21,8 @@ b2ktopMC(
 \item{cc}{calibration curve for C14 (see \code{caldist()}).}
 
 \item{postbomb}{Whether or not to use a postbomb curve (see \code{caldist()}).}
+
+\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc. Can also be used to glue other pre-bomb and post-bomb curves, e.g., \code{glue="NH1_monthly"}.}
 
 \item{rule}{How should R's approx function deal with extrapolation. If \code{rule=1}, the default, then NAs are returned for such points and if it is 2, the value at the closest data extreme is used.}
 

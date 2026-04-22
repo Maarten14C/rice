@@ -11,6 +11,7 @@ calib.t(
   t.b = 4,
   cc = 1,
   postbomb = FALSE,
+  glue = 0,
   deltaR = 0,
   deltaSTD = 0,
   as.F = FALSE,
@@ -38,6 +39,8 @@ calib.t(
 \item{cc}{calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).}
 
 \item{postbomb}{Which postbomb curve to use for negative 14C dates.}
+
+\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.}
 
 \item{deltaR}{Age offset (e.g. for marine samples).}
 

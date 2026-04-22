@@ -9,6 +9,7 @@ smooth.ccurve(
   smooth = 30,
   cc = 1,
   postbomb = FALSE,
+  glue = 0,
   cc.dir = c(),
   thiscurve = c(),
   resample = 0,
@@ -23,6 +24,8 @@ smooth.ccurve(
 \item{cc}{The calibration curve to smooth. Calibration curve for 14C dates: 'cc=1' for IntCal20 (northern hemisphere terrestrial), 'cc=2' for Marine20 (marine), 'cc=3' for SHCal20 (southern hemisphere terrestrial). Alternatively, one can also write, e.g., "IntCal20", "Marine13". One can also make a custom-built calibration curve, e.g. using 'mix.ccurves()', and load this using 'cc=4'. In this case, it is recommended to place the custom calibration curve in its own directory, using 'cc.dir' (see below).}
 
 \item{postbomb}{Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'ccurve("sh1-2_monthly")'}
+
+\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.}
 
 \item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., 'cc.dir="ccurves"'.}
 

@@ -58,7 +58,7 @@ calibratable(
 
 \item{prob.round}{Rounding for reported probabilities. Defaults to 1 decimal.}
 
-\item{age.round}{Rounding for ages. Defaults to 0 decimals.}
+\item{age.round}{Rounding for ages. Defaults to 0 decimals. Do round to the nearest decade, use \code{age.round=-1}, for centuries use \code{round.age=-2}, for near-monthly resolution use \code{round.age=1}, and so on.}
 
 \item{docx}{By default, the table is written to your web browser. If you wish to write it to a MS-Word document instead, provide the file (with .docx extension) and its location here, e.g., \code{docx="myC14_table.docx"}.}
 }

@@ -10,6 +10,7 @@ l.calib(
   er,
   cc = 1,
   postbomb = FALSE,
+  glue = 0,
   deltaR = 0,
   deltaSTD = 0,
   thiscurve = c(),
@@ -31,6 +32,8 @@ l.calib(
 \item{cc}{calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).}
 
 \item{postbomb}{Whether or not to use a postbomb curve. Required for negative radiocarbon ages.}
+
+\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.}
 
 \item{deltaR}{Age offset (e.g. for marine samples). This assumes that the radiocarbon age is provided as 14C BP (not F14C or pMC).}
 

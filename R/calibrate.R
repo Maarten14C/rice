@@ -7,7 +7,7 @@
 #' @param cc Calibration curve to use. Defaults to IntCal20 (cc=1), can be Marine20 (cc=2), SHCal20 (cc=3), or if postbomb=TRUE, NH1 (cc=1), NH2 (cc=2), NH3 (cc=3), SH1-2 (cc=4) or SH3 (cc=5).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
 #' @param bombalert Stop if a date is overly close to the younger limit of the IntCal curve. Defaults to \code{bombalert=TRUE}. This error can be avoided by either providing a postbomb curve (e.g., \code{postbomb=1}) or typing \code{bombalert=FALSE} (in this case, part of the date will be truncated).
-#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc. Can also be used to glue other pre-bomb and post-bomb curves, e.g., \code{glue="NH1_monthly"}.
 #' @param deltaR Age offset (e.g. for marine samples). This assumes that the radiocarbon age is provided as 14C BP (not F14C or pMC).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param is.F Set this to TRUE if the provided age and error are in the F14C timescale.
@@ -40,52 +40,9 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
 
-  if(length(thiscurve) > 0)
-    this.cc <- thiscurve else {
-      if(cc == 0) { # no ccurve needed
-        xseq <- seq(y-4*er, y+4*er, length=cc0.res)
-        this.cc <- cbind(xseq, xseq, rep(0, length(xseq)))
-      } else {
-         if(is.character(glue))
-           this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else 
-             if(glue>0) {
-               if(glue %in% 1:3)
-                 this.cc <- rintcal::glue.ccurves(prebomb=1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                   if(glue %in% 4:5)
-                     this.cc <- rintcal::glue.ccurves(prebomb=3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                       stop("please provide an integer for glue between 0 and 5")
-             } else {
-                 this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir, 
-                   resample=cc.resample, as.F=is.F, as.pMC=is.pMC)
-         
-            # check if any dates lie at the younger edge of this.cc
-            young <- FALSE
-            if(is.F || is.pMC) {
-              if(max(y+(3*er)) > max(this.cc[,2]))
-                young <- TRUE
-            } else 
-                if(min(y-(3*er)) < min(this.cc[,2]))
-                  young <- TRUE 
+  this.cc <- build.curve(y=y, er=er, cc=cc, thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC, postbomb=postbomb, glue=glue, bombalert=bombalert, cc.resample=cc.resample)
 
-            if(young) {
-              if(postbomb == FALSE) {
-                if(bombalert)
-                  stop("please provide a postbomb curve") else { 
-                    # no postbomb has been defined, but we need to add one 
-                    if(cc==1) # then assume we need NH1
-                      this.cc <- rintcal::glue.ccurves(cc, postbomb=1, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                      if(cc==3) # then assume we need SH1-2
-                        this.cc <- rintcal::glue.ccurves(cc, postbomb=4, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                          stop("please provide a postbomb curve, e.g. postbomb=1")
-                } 
-              } else
-                  this.cc <- rintcal::glue.ccurves(cc, postbomb=postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)
-            }
-          }
-        }
-    }
-
-  if(postbomb || (glue > 1)) {
+  if(postbomb || (glue > 0)) { # then resample in pb.steps
     xseq <- seq(this.cc[1,1], this.cc[nrow(this.cc),1], by=pb.steps)
     ccmu <- approx(this.cc[,1], this.cc[,2], xseq)$y
     ccsd <- approx(this.cc[,1], this.cc[,3], xseq)$y
@@ -299,7 +256,7 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
 age.range <- function(calib, prob=0.95, roundby=0, BCAD=FALSE) {
   if(NCOL(calib) == 1) { # then it's NOT a 'calib' and we assume it's a vector
     rng <- quantile(calib, c((1-prob)/2, 1 - (1-prob)/2))
-  }	else {
+  } else {
     cdf <- cumsum(calib[,2] / sum(calib[,2]))
     rng <- approx(cdf, calib[,1],
       c((1-prob)/2, 1 - (1-prob)/2))$y
@@ -322,6 +279,7 @@ age.range <- function(calib, prob=0.95, roundby=0, BCAD=FALSE) {
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
 #' @param deltaR Age offset (e.g. for marine samples). This assumes that the radiocarbon age is provided as 14C BP (not F14C or pMC).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
@@ -338,14 +296,14 @@ age.range <- function(calib, prob=0.95, roundby=0, BCAD=FALSE) {
 #'   l.calib(100, c(130,150), c(15,20)) # multiple radiocarbon ages and a single calendar age
 #'   plot(0:300, l.calib(0:300, 130, 20), type='l')
 #' @export
-l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscurve=c(), cc.dir=c(), normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4) {
+l.calib <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, deltaR=0, deltaSTD=0, thiscurve=c(), cc.dir=c(), normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4) {
   
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
 
   if(length(x) == 1) {
     if(length(y) != length(er))
-      stop("check that y has as many entries as er") 		  
+      stop("check that y has as many entries as er")
   } else
     if(length(y) > 1 || length(er)>1)
       stop("cannot deal with multiple entries for both x and y+er") 
@@ -355,17 +313,17 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
       prob <- dnorm(x, y, er) else 
         prob <- ( (t.b + ((x - y)^2) / (2 * er^2)) ^ (-1 * (t.a + 0.5))) /er
     prob[is.na(prob)] <- 0
-    return(prob)	
+    return(prob)
   } else {
     if(is.F) {
-      mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
+      mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, glue=glue, cc.dir=cc.dir, thiscurve=thiscurve)
     } else
         if(as.F) {
-          mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
+          mu <- calBPtoF14C(x, cc=cc, postbomb=postbomb, glue=glue, cc.dir=cc.dir, thiscurve=thiscurve)
           tmp <- C14toF14C(y, er)
           y <- tmp[,1]; er <- tmp[,2]
         } else
-          mu <- calBPtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)
+          mu <- calBPtoC14(x, cc=cc, postbomb=postbomb, glue=glue, cc.dir=cc.dir, thiscurve=thiscurve)
     if(normal)
       prob <- dnorm(y, mu[,1], sqrt(mu[,2]^2 + er^2)) else
         prob <- ((t.b + ((y-mu[,1])^2) / (2*(sqrt(er^2+mu[,2]^2)^2))) ^ (-1*(t.a+0.5))) / sqrt(er^2+mu[,2]^2)
@@ -386,6 +344,7 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
 #' @param cc Calibration curve to use. Defaults to IntCal20 (\code{cc=1}).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
 #' @param bombalert Warn if a date is close to the lower limit of the calibration curve. Defaults to \code{postbomb=TRUE}.
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc. Can also be used to glue other pre-bomb and post-bomb curves, e.g., \code{glue="NH1_monthly"}.
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
@@ -407,13 +366,13 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, thiscu
 #'   r.calib(10,130,20, bombalert=FALSE) # 10 random cal BP ages
 #'   plot(density(r.calib(1e6, 2450, 20)))
 #' @export
-r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=2, cc.dir=NULL, seed=NA) {
+r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=2, cc.dir=NULL, seed=NA) {
   if(length(n) == 0 || n<1)
     stop("n needs to be a value >0")
   if(!length(y) == 1 || !length(er) == 1)
     stop("I can only handle one date at a time")
   
-  calib <- caldist(y, er, cc=cc, postbomb=postbomb, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, as.F=as.F, is.F=is.F, thiscurve=thiscurve, yrsteps=yrsteps, normalise=normalise, BCAD=BCAD, rule=rule, cc.dir=cc.dir)
+  calib <- caldist(y, er, cc=cc, postbomb=postbomb, bombalert=bombalert, glue=glue, deltaR=deltaR, deltaSTD=deltaSTD, as.F=as.F, is.F=is.F, thiscurve=thiscurve, yrsteps=yrsteps, normalise=normalise, BCAD=BCAD, rule=rule, cc.dir=cc.dir)
   if(!is.na(seed))
     if(is.numeric(seed))  
       set.seed(seed) else
@@ -434,6 +393,7 @@ r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, de
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
 #' @param bombalert Warn if a date is close to the lower limit of the calibration curve. Defaults to \code{postbomb=TRUE}.
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
@@ -451,11 +411,11 @@ r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, de
 #' calibrate(160, 20, BCAD=TRUE)
 #' younger(1750, 160, 20, BCAD=TRUE)
 #' @export
-younger <- function(x, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+younger <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
   if(length(y)>1 || length(er) >1)
     stop("I can only deal with one date at a time")
   
-  cal <- caldist(y, er, cc, postbomb=postbomb, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, BCAD=BCAD, threshold=threshold)
+  cal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, BCAD=BCAD, threshold=threshold)
 
   dx <- diff(cal[,1])
   cdf <- c(0, cumsum((cal[-nrow(cal),2] + cal[-1,2]) / 2 * dx)) # trapezium integration
@@ -477,6 +437,7 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, de
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
 #' @param bombalert Warn if a date is close to the lower limit of the calibration curve. Defaults to \code{postbomb=TRUE}.
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
@@ -494,8 +455,8 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, de
 #' calibrate(160, 20, BCAD=TRUE)
 #' older(1750, 160, 20, BCAD=TRUE)
 #' @export
-older <- function(x, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
-  return(1 - younger(x, y, er, cc, postbomb=postbomb, bombalert=bombalert, deltaR, deltaSTD, normal, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, BCAD=BCAD, threshold=threshold))
+older <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+  return(1 - younger(x, y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR, deltaSTD, normal, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, BCAD=BCAD, threshold=threshold))
 }
 
 
@@ -511,6 +472,7 @@ older <- function(x, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, delt
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
 #' @param bombalert Warn if a date is close to the lower limit of the calibration curve. Defaults to \code{postbomb=TRUE}.
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
@@ -525,10 +487,10 @@ older <- function(x, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, delt
 #' @examples
 #' p.range(2800, 2400, 2450, 20)
 #' @export
-p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
   if(length(y)>1 || length(er) >1)
     stop("I can only deal with one date at a time")
-  cal <- caldist(y, er, cc, postbomb=postbomb, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, BCAD=BCAD, threshold=threshold)
+  cal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, BCAD=BCAD, threshold=threshold)
 
   dx <- diff(cal[,1])
   cdf <- c(0, cumsum((cal[-nrow(cal),2] + cal[-1,2]) / 2 * dx)) # trapezium integration
@@ -551,6 +513,7 @@ p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=
 #' @param t.b Value for the t parameter \code{b}.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Which postbomb curve to use for negative 14C dates.
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
 #' @param deltaR Age offset (e.g. for marine samples).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
@@ -570,13 +533,13 @@ p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, deltaR=
 #' calib.t()
 #'
 #' @export
-calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, BCAD=FALSE, cal.rev=TRUE, cc.dir=c(), normal.col="red", normal.lwd=1.5, t.col=rgb(0,0,0,0.25), t.border=rgb(0,0,0,0,0.25), xlim=c(), ylim=c()) {
+calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, glue=0, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, BCAD=FALSE, cal.rev=TRUE, cc.dir=c(), normal.col="red", normal.lwd=1.5, t.col=rgb(0,0,0,0.25), t.border=rgb(0,0,0,0,0.25), xlim=c(), ylim=c()) {
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
 
-  normalcal <- caldist(y, er, cc, postbomb, BCAD=BCAD, cc.dir=cc.dir, as.F=as.F, is.F=is.F, normal=TRUE)
-  tcal <- caldist(y, er, cc, postbomb, BCAD=BCAD, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, cc.dir=cc.dir, normal=FALSE)
+  normalcal <- caldist(y, er, cc=cc, postbomb=postbomb, glue=glue, BCAD=BCAD, cc.dir=cc.dir, as.F=as.F, is.F=is.F, normal=TRUE)
+  tcal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, BCAD=BCAD, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, cc.dir=cc.dir, normal=FALSE)
   tpol <- cbind(c(tcal[1,1], tcal[,1], tcal[nrow(tcal),1]), c(0, tcal[,2], 0))
 
   xlab <- ifelse(BCAD, "BC/AD", "cal BP")
@@ -603,6 +566,7 @@ calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, deltaR=0,
 #' @param smooth The window width of the smoothing. Defaults to \code{smooth=30}.
 #' @param cc The calibration curve to smooth. Calibration curve for 14C dates: 'cc=1' for IntCal20 (northern hemisphere terrestrial), 'cc=2' for Marine20 (marine), 'cc=3' for SHCal20 (southern hemisphere terrestrial). Alternatively, one can also write, e.g., "IntCal20", "Marine13". One can also make a custom-built calibration curve, e.g. using 'mix.ccurves()', and load this using 'cc=4'. In this case, it is recommended to place the custom calibration curve in its own directory, using 'cc.dir' (see below).
 #' @param postbomb Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'ccurve("sh1-2_monthly")'
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., 'cc.dir="ccurves"'.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
 #' @param resample The IntCal curves come at a range of 'bin sizes'; every year from 0 to 5 kcal BP, then every 5 yr until 15 kcal BP, then every 10 yr until 25 kcal BP, and every 20 year thereafter. The curves can be resampled to constant bin sizes, e.g. 'resample=5'. Defaults to FALSE.
@@ -614,8 +578,8 @@ calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, deltaR=0,
 #'  mycurve <- smooth.ccurve(smooth=50)
 #'  calibrate(2450,20, thiscurve=mycurve)
 #' @export
-smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve=c(), resample=0, name="smoothed.csv", save=FALSE, sep="\t") {
-  Cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir, resample=resample)
+smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, glue=0, cc.dir=c(), thiscurve=c(), resample=0, name="smoothed.csv", save=FALSE, sep="\t") {
+  Cc <- rintcal::ccurve(cc, postbomb=postbomb, glue=glue, cc.dir=cc.dir, resample=resample)
   if(length(thiscurve) > 0)
     Cc <- thiscurve
 
@@ -658,7 +622,7 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, cc.dir=c(), thiscurve
 #' @param deltaR Age offset (e.g. for marine samples). If provided, the deltaR and deltaSTD values will be provided as an extra table column.
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation). If provided, the deltaR and deltaSTD values will be provided as an extra table column.
 #' @param prob Probability range which should be calculated. Default \code{prob=0.95}.
-#' @param age.round Rounding for ages. Defaults to 0 decimals.
+#' @param age.round Rounding for ages. Defaults to 0 decimals. Do round to the nearest decade, use \code{age.round=-1}, for centuries use \code{round.age=-2}, for near-monthly resolution use \code{round.age=1}, and so on.
 #' @param prob.round Rounding for reported probabilities. Defaults to 1 decimal.
 #' @param docx By default, the table is written to your web browser. If you wish to write it to a MS-Word document instead, provide the file (with .docx extension) and its location here, e.g., \code{docx="myC14_table.docx"}.
 #' @author Maarten Blaauw
@@ -680,15 +644,17 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
       stop("cc needs to be of length 1 or the same length as y")
    
   one.cc <- FALSE
-  if(length(cc) == 1 || glue > 0) { # then no need to read the same curve multiple times
-	one.cc <- TRUE  
+  if(length(cc) == 1 || glue > 0 || is.character(glue)) { # then no need to read the same curve multiple times
+    one.cc <- TRUE
+    if(is.character(glue))
+      this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=glue, cc.dir=cc.dir)
     if(glue>0) {
       if(glue %in% 1:3)
-        this.cc <- rintcal::glue.ccurves(1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+        this.cc <- rintcal::glue.ccurves(prebomb=1, postbomb=glue, cc.dir=cc.dir, as.F=is.F, as.pMC=is.pMC) else
           if(glue %in% 4:5)
-            this.cc <- rintcal::glue.ccurves(3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+            this.cc <- rintcal::glue.ccurves(prebomb=3, postbomb=glue, cc.dir=cc.dir, as.F=is.F, as.pMC=is.pMC) else
               stop("please provide an integer for glue between 0 and 5")
-    } else this.cc <- rintcal::ccurve(cc, postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)
+    } else this.cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir, as.F=is.F, as.pMC=is.pMC)
   }
   
   if(length(er) != length(y))
@@ -716,12 +682,12 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
   }
 
   for(i in 1:length(y)) {
-	if(one.cc)  
+    if(one.cc)
       this.cal <- caldist(y[i], er[i], cc=cc, BCAD=BCAD, thiscurve=this.cc, 
         deltaR=deltaR[i], deltaSTD=deltaSTD[i]) else
           this.cal <- caldist(y[i], er[i], cc=this.cc[i], BCAD=BCAD, 
-			postbomb=postbomb, bombalert=bombalert, glue=glue, 
-			thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
+            postbomb=postbomb, bombalert=bombalert, glue=glue,
+            thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
             deltaR=deltaR[i], deltaSTD=deltaSTD[i])
     this.cal <- this.cal[order(this.cal[,1]), ]
     this.hpd <- hpd(this.cal, BCAD=BCAD,

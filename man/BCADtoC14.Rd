@@ -8,6 +8,7 @@ BCADtoC14(
   x,
   cc = 1,
   postbomb = FALSE,
+  glue = 0,
   zero = FALSE,
   rule = 1,
   cc.dir = NULL,
@@ -21,6 +22,8 @@ BCADtoC14(
 \item{cc}{calibration curve for C14 (see \code{caldist()}).}
 
 \item{postbomb}{Whether or not to use a postbomb curve (see \code{caldist()}).}
+
+\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc. Can also be used to glue other pre-bomb and post-bomb curves, e.g., \code{glue="NH1_monthly"}.}
 
 \item{zero}{Whether or not zero BC/AD should be included. Defaults to \code{zero=FALSE}.}
 

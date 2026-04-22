@@ -43,7 +43,7 @@ caldist(
 
 \item{bombalert}{Stop if a date is overly close to the younger limit of the IntCal curve. Defaults to \code{bombalert=TRUE}. This error can be avoided by either providing a postbomb curve (e.g., \code{postbomb=1}) or typing \code{bombalert=FALSE} (in this case, part of the date will be truncated).}
 
-\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.}
+\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc. Can also be used to glue other pre-bomb and post-bomb curves, e.g., \code{glue="NH1_monthly"}.}
 
 \item{deltaR}{Age offset (e.g. for marine samples). This assumes that the radiocarbon age is provided as 14C BP (not F14C or pMC).}
 

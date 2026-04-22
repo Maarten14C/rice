@@ -1,3 +1,5 @@
+# add glue to l.calib and r.calib (also to younger/older, p.range?), also to C14tocalBP
+# also make glue allow e.g. glue="NH1_monthly" in functions where glue is an option
 
 # can intcal.data be made to show the SH data? Currently shows the NH data
 
@@ -157,6 +159,57 @@ adjust.background <- function(y, er, bg, bg.er, timescale="C14") {
         as.C <- data.frame(F14CtoC14(F_corr, er_corr))
         return(data.frame(C14=as.C[,1], C14.er=as.C[,2]))
       }
+}
+
+
+
+# to read in the required calibration curve(s)
+build.curve <- function(y=c(), er=c(), cc=1, thiscurve=c(), cc.dir=c(), is.F=FALSE, is.pMC=FALSE, postbomb=0, glue=0, bombalert=TRUE, cc.resample=FALSE, cc0.res=1e3) {
+  if(length(thiscurve) > 0)
+    return(thiscurve) else {
+      if(cc == 0) { # no ccurve needed
+        xseq <- seq(y-4*er, y+4*er, length=cc0.res)
+        return(cbind(xseq, xseq, rep(0, length(xseq))))
+      } else {
+          if(is.character(glue))
+            this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+              if(glue>0) {
+                if(glue %in% 1:3)
+                  this.cc <- rintcal::glue.ccurves(prebomb=1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                    if(glue %in% 4:5)
+                      this.cc <- rintcal::glue.ccurves(prebomb=3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                        stop("please provide an integer for glue between 0 and 5")
+              } else {
+                  this.cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir,
+                    resample=cc.resample, as.F=is.F, as.pMC=is.pMC)
+
+            # check if any dates lie at the younger edge of this.cc
+            young <- FALSE
+            if(is.F || is.pMC) {
+              if(max(y+(3*er)) > max(this.cc[,2]))
+                young <- TRUE
+            } else
+                if(min(y-(3*er)) < min(this.cc[,2]))
+                  young <- TRUE
+
+              if(young) {
+                if(postbomb == FALSE) {
+                  if(bombalert)
+                    stop("please provide a postbomb curve") else {
+                      # no postbomb has been defined, but we need to add one
+                      if(cc==1) # then assume we need NH1
+                        this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=1, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                        if(cc==3) # then assume we need SH1-2
+                          this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=4, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                            stop("please provide a postbomb curve, e.g. postbomb=1")
+                    }
+                } else
+                  this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)
+              }
+            }
+           return(this.cc)
+         }
+    }
 }
 
 

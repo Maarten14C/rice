@@ -11,6 +11,7 @@ r.calib(
   cc = 1,
   postbomb = FALSE,
   bombalert = TRUE,
+  glue = 0,
   deltaR = 0,
   deltaSTD = 0,
   as.F = FALSE,
@@ -41,6 +42,8 @@ r.calib(
 \item{postbomb}{Whether or not to use a postbomb curve. Required for negative radiocarbon ages.}
 
 \item{bombalert}{Warn if a date is close to the lower limit of the calibration curve. Defaults to \code{postbomb=TRUE}.}
+
+\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc. Can also be used to glue other pre-bomb and post-bomb curves, e.g., \code{glue="NH1_monthly"}.}
 
 \item{deltaR}{Age offset (e.g. for marine samples).}
 

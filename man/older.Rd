@@ -10,6 +10,7 @@ older(
   er,
   cc = 1,
   postbomb = FALSE,
+  glue = 0,
   bombalert = TRUE,
   deltaR = 0,
   deltaSTD = 0,
@@ -32,6 +33,8 @@ older(
 \item{cc}{calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).}
 
 \item{postbomb}{Whether or not to use a postbomb curve (see \code{caldist()}).}
+
+\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.}
 
 \item{bombalert}{Warn if a date is close to the lower limit of the calibration curve. Defaults to \code{postbomb=TRUE}.}
 

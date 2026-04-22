@@ -75,7 +75,7 @@ calibrate(
 
 \item{bombalert}{Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.}
 
-\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.}
+\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc. Can also be used to glue other pre-bomb and post-bomb curves, e.g., \code{glue="NH1_monthly"}.}
 
 \item{deltaR}{Age offset (e.g. for marine samples). Can also be provided as option 'reservoir'.}
 
@@ -143,7 +143,7 @@ calibrate(
 
 \item{round.age}{Rounding of the uncalibrated 14C age as reported on the plot. Defaults to 0 decimals for 14C ages, 4 for F14C values.}
 
-\item{round.hpd.ages}{Rounding of the ages of the hpd ranges. Defaults to 0 decimals.}
+\item{round.hpd.ages}{Rounding of the ages of the hpd ranges. Defaults to 0 decimals; -1 will round to decades, 1 to 1 decimal place, etc.}
 
 \item{round.hpd.probs}{Rounding of the percentages of the hpd ranges. Defaults to 1 decimal.}
 

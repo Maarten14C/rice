@@ -62,7 +62,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
   if(cc1 %in% c(2, "Marine20")) # then no postbomb curve available
     cc.1 <- rintcal::ccurve(2, postbomb=FALSE, cc.dir=cc.dir, as.F=as.F, as.pMC=as.pMC, as.D=as.Delta) else
       if(cc1.postbomb)
-        cc.1 <- rintcal::glue.ccurves(cc1, postbomb=cc1.postbomb, cc.dir=cc.dir, as.F=as.F, as.pMC=as.pMC) else
+        cc.1 <- rintcal::glue.ccurves(prebomb=cc1, postbomb=cc1.postbomb, cc.dir=cc.dir, as.F=as.F, as.pMC=as.pMC) else
           cc.1 <- rintcal::ccurve(cc1, postbomb=cc1.postbomb, cc.dir=cc.dir, as.F=as.F, as.pMC=as.pMC, as.D=as.Delta)
   cc.cal <- 1 # which column to use for calendar ages
 
@@ -284,7 +284,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
 #' @param cc Calibration curve for C-14 dates (1, 2, 3, or 4, or, e.g., "IntCal20", "Marine20", "SHCal20", "nh1", "sh3", or "mixed").
 #' @param postbomb Whether or not this is a postbomb age. Defaults to FALSE. 
 #' @param bombalert Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.
-#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc. Can also be used to glue other pre-bomb and post-bomb curves, e.g., \code{glue="NH1_monthly"}.
 #' @param deltaR Age offset (e.g. for marine samples). Can also be provided as option 'reservoir'.
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation). Can also be provided within option 'reservoir'.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
@@ -318,7 +318,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param rounded Rounding of the percentages of the reported hpd ranges. Defaults to 1 decimal.
 #' @param round.age Rounding of the uncalibrated 14C age as reported on the plot. Defaults to 0 decimals for 14C ages, 4 for F14C values.
-#' @param round.hpd.ages Rounding of the ages of the hpd ranges. Defaults to 0 decimals.
+#' @param round.hpd.ages Rounding of the ages of the hpd ranges. Defaults to 0 decimals; -1 will round to decades, 1 to 1 decimal place, etc.
 #' @param round.hpd.probs Rounding of the percentages of the hpd ranges. Defaults to 1 decimal.
 #' @param every Deprecated. See `rounded`.
 #' @param extend.range Range by which the axes are extended beyond the data limits. Defaults to 5\%.
@@ -368,51 +368,8 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
       if(is.na(cc.resample))
         cc.resample <- 1
 
-  if(length(thiscurve) > 0)
-    Cc <- thiscurve else {
-      if(cc == 0) { # no ccurve needed
-        xseq <- seq(age-4*error, age+4*error, length=5e3)
-        Cc <- cbind(xseq, xseq, rep(0, length(xseq)))
-      } else {
-          if(is.character(glue))
-            Cc <- rintcal::glue.ccurves(prebomb=1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else  	  
-            if(glue>0) {
-              if(glue %in% 1:3)
-                 Cc <- rintcal::glue.ccurves(prebomb=1, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                   if(glue %in% 4:5)
-                     Cc <- rintcal::glue.ccurves(prebomb=3, postbomb=glue, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                       stop("please provide an integer for glue between 0 and 5")
-            } else {
-                Cc <- rintcal::ccurve(cc, postbomb=postbomb, cc.dir=cc.dir, 
-                  resample=cc.resample, as.F=is.F, as.pMC=is.pMC)
-        
-          # check if any dates lie at the younger edge of this.cc
-          young <- FALSE
-          if(is.F || is.pMC) {
-            if(max(age+(3*error)) > max(Cc[,2]))
-              young <- TRUE
-          } else 
-              if(min(age-(3*error)) < min(Cc[,2]))
-                young <- TRUE 
-
-          if(young) {
-            if(postbomb == FALSE) {
-              if(bombalert)
-                stop("please provide a postbomb curve") else { 
-                  # no postbomb has been defined, but we need to add one 
-                    if(cc==1) # then assume we need NH1
-                    Cc <- rintcal::glue.ccurves(cc, postbomb=1, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                    if(cc==3) # then assume we need SH1-2
-                      Cc <- rintcal::glue.ccurves(cc, postbomb=4, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                        stop("please provide a postbomb curve, e.g. postbomb=1")
-                } 
-            } else
-                Cc <- rintcal::glue.ccurves(cc, postbomb=postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)
-          }
-        }
-      }
-    }
-
+  Cc <- build.curve(y=age, er=error, cc=cc, thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC, postbomb=postbomb, glue=glue, bombalert=bombalert, cc.resample=cc.resample)
+cat(1)
   if(BCAD) {
     Cc <- cbind(Cc, calBPtoBCAD(Cc[,1]))
     cc.cal <- 4
@@ -454,16 +411,16 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
   if(border > 0)
     truncate.warning <- TRUE
   C14.dist <- caldist(age, sqrt(error^2 + cc.er^2), cc=0, BCAD=FALSE, postbomb=FALSE, is.F=is.F, is.pMC=is.pMC, as.F=as.F, normal=normal, t.a=t.a, t.b=t.b)
- # C14.dist
 
   if(!is.F && !is.pMC)
     if(asymmetric) { # then calculate in F, followed by translation into C14
       redo.as.F <- as.numeric(C14toF14C(age, error)) # not taking into account cc's errors
-      F.dist <- caldist(redo.as.F[1], redo.as.F[2], cc=0, BCAD=FALSE, postbomb=FALSE, bombalert=bombalert, glue=glue)
+      F.dist <- caldist(redo.as.F[1], redo.as.F[2], cc=0, BCAD=FALSE, postbomb=FALSE) # why cc=0? Simply to get a distribution?
       F.dist <- F.dist[!is.nan(F.dist[,1]),] # remove non-numbers
       #F.dist <- F.dist[F.dist[,1]>=0,] # also remove F < 0
       C14.dist <- cbind(F14CtoC14(F.dist[,1], c()), F.dist[,2])
   }
+
   cal.dist <- caldist(age, error, cc=cc, glue=glue, yrsteps=yr.steps, threshold=threshold,
     normal=normal, is.F=is.F, is.pMC=is.pMC, as.F=as.F, t.a=t.a, t.b=t.b,
     thiscurve=Cc, cc.dir=cc.dir, BCAD=BCAD)
@@ -567,14 +524,19 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
     if(length(round.hpd.probs) == 0)
       round.hpd.probs <- 1
 
-    C14.label <- c(cc.name, 
-      paste(format(round(age, round.age), scientific=FALSE, nsmall=round.age), "\u00B1",
-      format(round(error, round.age), scientific=FALSE, nsmall=round.age)))
+    digits <- round.age
+    nsmall <- if (digits < 0) 0 else digits
+    hpd.digits <- round.hpd.ages
+    hpd.nsmall <- if (hpd.digits < 0) 0 else hpd.digits
+
+    C14.label <- c(cc.name,
+      paste(format(round(age, round.age), scientific=FALSE, nsmall=nsmall), "\u00B1",
+      format(round(error, round.age), scientific=FALSE, nsmall=nsmall)))
+
     legend(legend1.loc, legend=C14.label, text.col=c(cc.col, 1),  ncol=1, bty="n", cex=legend.cex)
 
-    hpds[,1:2] <- format(round(hpds[,1:2], round.hpd.ages), nsmall=round.hpd.ages)
-    hpds[,3] <- format(round(hpds[,3], round.hpd.probs), nsmall=round.hpd.probs)
-
+    hpds[,1:2] <- format(round(hpds[,1:2], round.hpd.ages), nsmall=hpd.nsmall)
+    hpds[,3] <- format(round(hpds[,3], round.hpd.probs), nsmall=hpd.nsmall)
     colnames(hpds)[3] <- "%"
     print.hpds <- rbind(colnames(hpds), apply(hpds, 2, as.character))
     legend(legend2.loc, legend=print.hpds, ncol=3, cex=legend.cex, bty="n")
@@ -779,9 +741,28 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TR
     }
   }
 
+  one.cc <- FALSE
+  if(length(cc) == 1 || glue > 0 || is.character(glue)) { # then no need to read the same curve multiple times
+    one.cc <- TRUE
+    if(is.character(glue))
+      this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=glue, cc.dir=cc.dir)
+    if(glue>0) {
+      if(glue %in% 1:3)
+        this.cc <- rintcal::glue.ccurves(prebomb=1, postbomb=glue, cc.dir=cc.dir, as.F=is.F, as.pMC=is.pMC) else
+          if(glue %in% 4:5)
+            this.cc <- rintcal::glue.ccurves(prebomb=3, postbomb=glue, cc.dir=cc.dir, as.F=is.F, as.pMC=is.pMC) else
+              stop("please provide an integer for glue between 0 and 5")
+    } else this.cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir, as.F=is.F, as.pMC=is.pMC)
+  }
+
   calibs <- list()
   for(i in 1:length(age))
-    calibs[[i]] <- caldist(age[i], error[i], cc=cc[i], postbomb=postbomb[i], as.F=as.F, is.F=is.F, is.pMC=is.pMC, glue=glue, bombalert=bombalert, normal=normal, t.a=t.a, t.b=t.b, normalise=FALSE, thiscurve=thiscurve, cc.resample=cc.resample, threshold=threshold, BCAD=BCAD, cc.dir=cc.dir)
+    if(one.cc)
+      calibs[[i]] <- caldist(age[i], error[i], cc=cc, BCAD=BCAD, thiscurve=this.cc) else
+        calibs[[i]] <- caldist(age[i], error[i], cc=cc[i], postbomb=postbomb[i],
+          as.F=as.F, is.F=is.F, is.pMC=is.pMC, glue=glue, bombalert=bombalert, normal=normal,
+          t.a=t.a, t.b=t.b, normalise=FALSE, thiscurve=thiscurve, cc.resample=cc.resample,
+          threshold=threshold, BCAD=BCAD, cc.dir=cc.dir)
 
   age.range <- range(vapply(calibs, function(z) range(z[,1]), numeric(2)))
   age.seq <- seq(age.range[1], age.range[2], length=dist.res)
