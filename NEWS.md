@@ -4,11 +4,15 @@
 * to use a monthly postbomb calibration curve, try e.g. `calibrate(1.4, .005, is.F=TRUE, glue="NH1_monthly", BCAD=TRUE)`.
 * `calibratable` now calibrates dates faster by not reading in the same curve multiple times.
 * `draw.dates` now draws its distributions at more predictable peak heights.
+* updated the Hallstatt Plateau graph of the vignette.
+
+******** TBC: UPDATE PAPER'S CITATION INFORMATION ONCE AVAILABLE *******
+
 
 # rice 2.1.0
-* added a function to plot the c. 175k dates available within the p3k14c github R package (Bird et al. 2022). Note that p3k14c is not available on CRAN (it's too large) but it's on github. 
+* added a function to plot the c. 175k dates available within the p3k14c github R package (Bird et al. 2022). Note that p3k14c is not available on CRAN (too large) but it's on github. 
 * new option in `hpd` function to pad distributions with 0s at each end. This can be useful for 'open-ended' distributions.
-* cleaned up 'orphan' variables (which were created but not used).
+* cleaned up 'orphan' variables (which were created but not used within functions).
 
 # rice 2.0.1
 * placed angle brackets around dois in DESCRIPTION as per CRAN request.

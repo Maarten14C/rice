@@ -67,13 +67,12 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=
   if(yrsteps)
     yrseq <- seq(min(cal[,1], na.rm=TRUE), max(cal[,1], na.rm=TRUE), by=yrsteps) else
       yrseq <- cal[,1]
- #     yrsteps <- seq(min(cal[,1]), max(cal[,1]), length=dist.res)
   cal <- approx(cal[,1], cal[,2], yrseq, rule=rule)
-  # cal <- cbind(cal$x, cal$y/sum(cal$y)) # normalise
   cal <- cbind(cal$x, cal$y)
 
   if(normalise)
     cal[,2] <- cal[,2]/sum(cal[,2])
+
   # remove years with very small probabilities on the extremes of the distribution
   above <- which(cal[,2] >= (threshold * max(cal[,2]))) # relative to its peak
   if(length(above)>2)
@@ -639,23 +638,23 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
     stop("cc should be 0 (no calibration), 1 (IntCal20), 2 (Marine20) or 3 (SHCal20)") 
   if(is.numeric(cc) && any(cc > 3))
     stop("cc should be 0 (no calibration), 1 (IntCal20), 2 (Marine20) or 3 (SHCal20)")
-  if(length(cc) > 1)
-    if(length(cc) != length(y))
-      stop("cc needs to be of length 1 or the same length as y")
    
   one.cc <- FALSE
   if(length(cc) == 1 || glue > 0 || is.character(glue)) { # then no need to read the same curve multiple times
     one.cc <- TRUE
     if(is.character(glue))
       this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=glue, cc.dir=cc.dir)
-    if(glue>0) {
+    if(glue > 0) {
       if(glue %in% 1:3)
         this.cc <- rintcal::glue.ccurves(prebomb=1, postbomb=glue, cc.dir=cc.dir, as.F=is.F, as.pMC=is.pMC) else
           if(glue %in% 4:5)
             this.cc <- rintcal::glue.ccurves(prebomb=3, postbomb=glue, cc.dir=cc.dir, as.F=is.F, as.pMC=is.pMC) else
-              stop("please provide an integer for glue between 0 and 5")
-    } else this.cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir, as.F=is.F, as.pMC=is.pMC)
-  }
+              stop("please provide an integer for glue between 0 and 5 (or provide the name of the postbomb curve)")
+    } else
+        this.cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir, as.F=is.F, as.pMC=is.pMC)
+  } else
+      if(length(cc) != length(y))
+        stop("cc needs to be of length 1 or have the same length as y")
   
   if(length(er) != length(y))
     stop("er needs to be of the same length as y")
@@ -684,8 +683,8 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
   for(i in 1:length(y)) {
     if(one.cc)
       this.cal <- caldist(y[i], er[i], cc=cc, BCAD=BCAD, thiscurve=this.cc, 
-        deltaR=deltaR[i], deltaSTD=deltaSTD[i]) else
-          this.cal <- caldist(y[i], er[i], cc=this.cc[i], BCAD=BCAD, 
+        deltaR=deltaR[i], deltaSTD=deltaSTD[i]) else # then provide cc for each date
+          this.cal <- caldist(y[i], er[i], cc=cc[i], BCAD=BCAD,
             postbomb=postbomb, bombalert=bombalert, glue=glue,
             thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
             deltaR=deltaR[i], deltaSTD=deltaSTD[i])
@@ -765,7 +764,7 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
           "2" = "NH2 (Hua et al. 2022)",
           "3" = "NH3 (Hua et al. 2022)",
           "4" = "SH1-2 (Hua et al. 2022)",
-          "5" = "SH3 (Hua et al. 2022)")			
+          "5" = "SH3 (Hua et al. 2022)")
       } else
           cc_labels <- c(
             "1" = "IntCal20 (Reimer et al. 2020)",

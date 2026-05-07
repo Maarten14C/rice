@@ -199,9 +199,9 @@ build.curve <- function(y=c(), er=c(), cc=1, thiscurve=c(), cc.dir=c(), is.F=FAL
                       # no postbomb has been defined, but we need to add one
                       if(cc==1) # then assume we need NH1
                         this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=1, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                        if(cc==3) # then assume we need SH1-2
-                          this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=4, cc.dir, as.F=is.F, as.pMC=is.pMC) else
-                            stop("please provide a postbomb curve, e.g. postbomb=1")
+                          if(cc==3) # then assume we need SH1-2
+                            this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=4, cc.dir, as.F=is.F, as.pMC=is.pMC) else
+                              stop("please provide a postbomb curve, e.g. postbomb=1")
                     }
                 } else
                   this.cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=postbomb, cc.dir, as.F=is.F, as.pMC=is.pMC)

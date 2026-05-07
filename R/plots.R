@@ -25,8 +25,10 @@
 #' @param add.yaxis Whether or not to plot the second calibration. Defaults to \code{add.yaxis=FALSE}.
 #' @param cc1.col Colour of the calibration curve (outline).
 #' @param cc1.fill Colour of the calibration curve (fill).
+#' @param cc1.lwd Line width of the calibration curve.
 #' @param cc2.col Colour of the calibration curve (outline), if activated (default cc2=NA).
 #' @param cc2.fill Colour of the calibration curve (fill), if activated (default cc2=NA).
+#' @param cc2.lwd Line width of the calibration curve, if activated (default cc2=NA).
 #' @param add Whether or not to add the curve(s) to an existing plot. Defaults to FALSE, which draws a new plot.
 #' @param bty Draw a box around a box of a certain shape. Defaults to \code{bty="l"}.
 #' @param mar Plot margins (amount of white space along edges of axes 1-4). Defaults to give more white space if a second y-axis is to be plotted.
@@ -40,7 +42,7 @@
 #' draw.ccurve(1800, 2020, BCAD=TRUE, cc2="nh1", cc2.postbomb=TRUE)
 #' draw.ccurve(1800, 2010, BCAD=TRUE, cc2="nh1", add.yaxis=TRUE)
 #' @export
-draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.postbomb=FALSE, cc2.postbomb=FALSE, BCAD=FALSE, timescale="C14", as.F=FALSE, as.pMC=FALSE, as.Delta=FALSE, timescale2=c(), cal.lab=c(), cal.rev=FALSE, c14.lab=c(), cc2.lab=c(), c14.lim=c(), c14.rev=FALSE, ka=FALSE, add.yaxis=FALSE, cc1.col=rgb(0,0,1,.5), cc1.fill=rgb(0,0,1,.2), cc2.col=rgb(0,.5,0,.5), cc2.fill=rgb(0,.5,0,.2), add=FALSE, bty="l", mar=c(), mgp=c(), cc.dir=NULL, legend="topleft", ...) {
+draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.postbomb=FALSE, cc2.postbomb=FALSE, BCAD=FALSE, timescale="C14", as.F=FALSE, as.pMC=FALSE, as.Delta=FALSE, timescale2=c(), cal.lab=c(), cal.rev=FALSE, c14.lab=c(), cc2.lab=c(), c14.lim=c(), c14.rev=FALSE, ka=FALSE, add.yaxis=FALSE, cc1.col=rgb(0,0,1,.5), cc1.fill=rgb(0,0,1,.2), cc1.lwd=1, cc2.col=rgb(0,.5,0,.5), cc2.fill=rgb(0,.5,0,.2), cc2.lwd=1, add=FALSE, bty="l", mar=c(), mgp=c(), cc.dir=NULL, legend="topleft", ...) {
 
   # checking timescale
   if(sum(as.F, as.pMC, as.Delta) > 1)
@@ -195,8 +197,8 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
 
   # add the calibration curve
   polygon(cc1.pol, col=cc1.fill, border=NA) # calibration curve
-  lines(cc.1[,cc.cal], cc.1[,2]-cc.1[,3], col=cc1.col)
-  lines(cc.1[,cc.cal], cc.1[,2]+cc.1[,3], col=cc1.col)
+  lines(cc.1[,cc.cal], cc.1[,2]-cc.1[,3], col=cc1.col, lwd=cc1.lwd)
+  lines(cc.1[,cc.cal], cc.1[,2]+cc.1[,3], col=cc1.col, lwd=cc1.lwd)
 
   # add a second curve?
   if(!is.na(cc2)) {
@@ -208,8 +210,8 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
       mtext(cc2.lab, 4, par('mgp')[1], col=cc2.col)
     }
     polygon(cc2.pol, col=cc2.fill, border=NA) # calibration curve
-    lines(cc.2[,cc.cal], cc.2[,2]-cc.2[,3], col=cc2.col)
-    lines(cc.2[,cc.cal], cc.2[,2]+cc.2[,3], col=cc2.col)
+    lines(cc.2[,cc.cal], cc.2[,2]-cc.2[,3], col=cc2.col, lwd=cc2.lwd)
+    lines(cc.2[,cc.cal], cc.2[,2]+cc.2[,3], col=cc2.col, lwd=cc2.lwd)
     if(add.yaxis)
       axis(4, col=cc2.col, col.axis=cc2.col)
     if(length(legend) > 0)
@@ -369,7 +371,7 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
         cc.resample <- 1
 
   Cc <- build.curve(y=age, er=error, cc=cc, thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC, postbomb=postbomb, glue=glue, bombalert=bombalert, cc.resample=cc.resample)
-cat(1)
+
   if(BCAD) {
     Cc <- cbind(Cc, calBPtoBCAD(Cc[,1]))
     cc.cal <- 4
@@ -552,7 +554,7 @@ cat(1)
 
 
 # internal function to draw distributions
-draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE, hpd=TRUE, ka=FALSE, prob=0.95, age.round=0, prob.round=1, BCAD=FALSE, x.pos=c(), y.pos=c(), ex=1, as.unit=FALSE, fraction=0.1, dist.col=rgb(0,0,1,0.3), dist.border=dist.col, hpd.col=dist.col, hpd.border=dist.col) {
+draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE, hpd=TRUE, ka=FALSE, prob=0.95, age.round=0, prob.round=1, BCAD=FALSE, x.pos=c(), y.pos=c(), ex=1, as.unit=FALSE, fraction=0.1, dist.col=rgb(0,0,1,0.3), dist.border=dist.col, hpd.col=dist.col, hpd.border=dist.col, lwd=1) {
   ages0 <- c(dist[1,1], dist[,1], dist[nrow(dist),1]) # the ages and the extremes
   agesmirror <- c(dist[,1], rev(dist[,1]))
   dist0 <- ex*c(0, dist[,2], 0) # the probabilities, padded by 0s
@@ -585,7 +587,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
         pol <- cbind(agesmirror, y.pos+distmirror) else
           pol <- cbind(ages0, y.pos+add*dist0)
     }
-    polygon(pol, col=dist.col, border=dist.border)
+    polygon(pol, col=dist.col, border=dist.border, lwd=lwd)
 
   if(hpd) {
     hpds <- hpd(dist, return.raw=TRUE, BCAD=BCAD, prob=prob, age.round=age.round, prob.round=prob.round, ka=ka)
@@ -618,7 +620,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
           pol <- cbind(agesmirror, y.pos+distmirror) else
             pol <- cbind(ages0, y.pos+add*dist0)
       }
-    polygon(pol, col=hpd.col, border=hpd.border)
+    polygon(pol, col=hpd.col, border=hpd.border, lwd=lwd)
     }
   invisible(hpds)
   }
@@ -666,6 +668,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
 #' @param draw.base By default, the base of the calibrated distributions is plotted. This can be avoided by supplying \code{draw.base=FALSE} as an option.
 #' @param col Colour of the inside of the distribution
 #' @param border Colour of the border of the distribution. Defaults to the colour of `col`.
+#' @param lwd Line width of the distribution
 #' @param cal.col Colour of the inside of distribution of non-radiocarbon dates that didn't need calibration
 #' @param cal.border Colour of the border of the distribution of non-radiocarbon dates that didn't need calibration. Defaults to the colour of `cal.col`.
 #' @param add Whether or not to add the dates to an existing plot. If set to FALSE (default), a plot will be set up.
@@ -674,6 +677,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
 #' @param normalise If TRUE, the age distributions are normalised by plotting each distribution with the same total area. Precise dates will therefore peak higher than less precise dates (default). If \code{normalise=FALSE}, the peak of each date will be drawn at the same height.
 #' @param cc.col Colour of the calibration curve. Default semi-transparent darkgreen.
 #' @param cc.border Colour of the edges of the calibration curve. Default semi-transparent darkgreen.
+#' @param cc.lwd Line width of the calibration curve.
 #' @param cc.resample The IntCal20 curves have different densities (every year between 0 and 5 kcal BP, then every 5 yr up to 15 kcal BP, then every 10 yr up to 25 kcal BP, and then every 20 yr up to 55 kcal BP). If calibrated ages span these density ranges, their drawn heights can differ, as can their total areas (which should ideally all sum to the same size). To account for this, resample to a constant time-span, using, e.g., \code{cc.resample=5} for 5-yr timespans.
 #' @param age.lab Title of the calendar axis (if present)
 #' @param age.lim Limits of the calendar axis (if present)
@@ -705,7 +709,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
 #'   draw.dates(y, er, y, d.lab="Radiocarbon age (BP)", bombalert=FALSE)
 #'   draw.ccurve(add=TRUE, cc1.col=rgb(0,.5,0,.5))
 #' @export
-draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TRUE, glue=1, as.F=TRUE, is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, thiscurve=c(), oncurve=FALSE, timescale="C", reservoir=c(), normal=TRUE, peak=1, ex=c(), as.unit=FALSE, t.a=3, t.b=4, prob=0.95, threshold=.001, BCAD=FALSE, draw.hpd=TRUE, hpd.border=NA, rounded=0.1, every=1, mirror=TRUE, up=TRUE, draw.base=TRUE, col=rgb(0,0,1,.3), border=col, hpd.col=col, cal.col=rgb(0, 0.5, 0.5, 0.35), cal.border=cal.col, cal.hpd.col=cal.col, add=FALSE, ka=FALSE, rotate.axes=FALSE, normalise=TRUE, cc.col=rgb(0,.5,0,.5), cc.border=cc.col, cc.resample=5, age.lab=c(), age.lim=c(), age.rev=FALSE, cal.rev=FALSE, d.lab=c(), d.lim=c(), d.rev=TRUE, labels=c(), label.x=1, label.y=c(), label.cex=0.8, label.col=col, label.offset=c(0,0), label.adj=c(1,0), label.rot=0, cc.dir=NULL, dist.res=1000, ...) {
+draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TRUE, glue=1, as.F=TRUE, is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, thiscurve=c(), oncurve=FALSE, timescale="C", reservoir=c(), normal=TRUE, peak=1, ex=c(), as.unit=FALSE, t.a=3, t.b=4, prob=0.95, threshold=.001, BCAD=FALSE, draw.hpd=TRUE, hpd.border=NA, rounded=0.1, every=1, mirror=TRUE, up=TRUE, draw.base=TRUE, col=rgb(0,0,1,.3), border=col, lwd=1, hpd.col=col, cal.col=rgb(0, 0.5, 0.5, 0.35), cal.border=cal.col, cal.hpd.col=cal.col, add=FALSE, ka=FALSE, rotate.axes=FALSE, normalise=TRUE, cc.col=rgb(0,.5,0,.5), cc.border=cc.col, cc.lwd=1, cc.resample=5, age.lab=c(), age.lim=c(), age.rev=FALSE, cal.rev=FALSE, d.lab=c(), d.lim=c(), d.rev=TRUE, labels=c(), label.x=1, label.y=c(), label.cex=0.8, label.col=col, label.offset=c(0,0), label.adj=c(1,0), label.rot=0, cc.dir=NULL, dist.res=1000, ...) {
 
   age <- age - deltaR
   error <- sqrt(error^2 + deltaSTD^2)
@@ -841,7 +845,7 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TR
         if(ka)
           cc <- cc/1e3
       ccpol <- cbind(c(cc[,1], rev(cc[,1])), c(cc[,2]-cc[,3], rev(cc[,2]+cc[,3])))
-      polygon(ccpol, col=cc.col, border=cc.border)
+      polygon(ccpol, col=cc.col, border=cc.border, lwd=cc.lwd)
     }
   } else {
       ax.lm <- par("usr")
@@ -857,12 +861,12 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TR
   for(i in 1:length(age)) {
     if(draw.base) {
       if(rotate.axes)
-        draw.dist(cbind(age.seq, probs[,i]), as.unit=as.unit, up=up, mirror=mirror, ka=ka, on.y=TRUE, rotate.axes=TRUE, ex=peak, x.pos=depth[i], hpd=draw.hpd, prob=prob, hpd.col=hpd.col[i], hpd.border=hpd.border[i], dist.col=col[i], dist.border=border[i]) else
-          draw.dist(cbind(age.seq, probs[,i]), as.unit=as.unit, up=up, mirror=mirror, ka=ka, on.y=FALSE, ex=peak, y.pos=depth[i], hpd=draw.hpd, prob=prob, hpd.col=hpd.col[i], hpd.border=hpd.border[i], dist.col=col[i], dist.border=border[i])
+        draw.dist(cbind(age.seq, probs[,i]), as.unit=as.unit, up=up, mirror=mirror, ka=ka, on.y=TRUE, rotate.axes=TRUE, ex=peak, x.pos=depth[i], hpd=draw.hpd, prob=prob, hpd.col=hpd.col[i], hpd.border=hpd.border[i], dist.col=col[i], dist.border=border[i], lwd=lwd) else
+          draw.dist(cbind(age.seq, probs[,i]), as.unit=as.unit, up=up, mirror=mirror, ka=ka, on.y=FALSE, ex=peak, y.pos=depth[i], hpd=draw.hpd, prob=prob, hpd.col=hpd.col[i], hpd.border=hpd.border[i], dist.col=col[i], dist.border=border[i], lwd=lwd)
     } else
         if(rotate.axes)
-          lines(depth[i]+peak*ifelse(up,-1,1)*probs[,i], age.seq, col=col[i]) else
-            lines(age.seq, depth[i]+peak*ifelse(up,-1,1)*probs[,i], col=col[i])
+          lines(depth[i]+peak*ifelse(up,-1,1)*probs[,i], age.seq, col=col[i], lwd=lwd) else
+            lines(age.seq, depth[i]+peak*ifelse(up,-1,1)*probs[,i], col=col[i], lwd=lwd)
 
     if(length(labels) > 0) {
       xx <- c(min(age.seq), max(age.seq), mean(age.seq))

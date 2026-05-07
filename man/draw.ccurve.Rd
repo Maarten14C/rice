@@ -28,8 +28,10 @@ draw.ccurve(
   add.yaxis = FALSE,
   cc1.col = rgb(0, 0, 1, 0.5),
   cc1.fill = rgb(0, 0, 1, 0.2),
+  cc1.lwd = 1,
   cc2.col = rgb(0, 0.5, 0, 0.5),
   cc2.fill = rgb(0, 0.5, 0, 0.2),
+  cc2.lwd = 1,
   add = FALSE,
   bty = "l",
   mar = c(),
@@ -86,9 +88,13 @@ draw.ccurve(
 
 \item{cc1.fill}{Colour of the calibration curve (fill).}
 
+\item{cc1.lwd}{Line width of the calibration curve.}
+
 \item{cc2.col}{Colour of the calibration curve (outline), if activated (default cc2=NA).}
 
 \item{cc2.fill}{Colour of the calibration curve (fill), if activated (default cc2=NA).}
+
+\item{cc2.lwd}{Line width of the calibration curve, if activated (default cc2=NA).}
 
 \item{add}{Whether or not to add the curve(s) to an existing plot. Defaults to FALSE, which draws a new plot.}
 

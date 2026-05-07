@@ -15,7 +15,7 @@ c(
     bibtype = "Manual",
     title = "rice: Radiocarbon Equations",
     author = person("Maarten", "Blaauw"),
-    year = "2025",
+    year = "2026",
     url = "https://CRAN.R-project.org/package=rice"
   )
 )
