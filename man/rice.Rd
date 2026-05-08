@@ -19,6 +19,11 @@ Useful links:
 \author{
 \strong{Maintainer}: Maarten Blaauw \email{maarten.blaauw@qub.ac.uk} (\href{https://orcid.org/0000-0002-5680-1515}{ORCID})
 
+Authors:
+\itemize{
+  \item Maarten Blaauw \email{maarten.blaauw@qub.ac.uk} (\href{https://orcid.org/0000-0002-5680-1515}{ORCID})
+}
+
 Other contributors:
 \itemize{
   \item Paula Reimer \email{p.j.reimer@qub.ac.uk} (\href{https://orcid.org/0000-0001-9238-2146}{ORCID}) [contributor]
