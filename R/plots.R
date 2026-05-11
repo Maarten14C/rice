@@ -206,7 +206,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
       oldpar <- par(no.readonly = TRUE)
       on.exit(par(oldpar))
       par(new=TRUE)
-      plot(cc2.pol, type="n", xlim=cal.lim, ylim=cc2.yrng, xlab="", ylab="", bty="n", xaxt="n", yaxt="n")
+      plot(cc2.pol, type="n", xlim=cal.lim, ylim=cc2.yrng, xlab="", ylab="", bty="n", xaxt="n", yaxt="n", ...)
       mtext(cc2.lab, 4, par('mgp')[1], col=cc2.col)
     }
     polygon(cc2.pol, col=cc2.fill, border=NA) # calibration curve

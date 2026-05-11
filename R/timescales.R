@@ -32,12 +32,12 @@
 #'   fromto(0, "BCAD")
 #'   fromto(2450, "C14")
 #' @export
-fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NULL, zero=FALSE, width=c(), digits=0, C14.col=rgb(0,0,1,.5), Delta14C.col=rgb(0,.4,0,.4), ka=FALSE, cal.rev=TRUE, legend.size=.7) {
+fromto <- function(x, from="calBP", cc=1, postbomb=0, cc.dir=NULL, thiscurve=NULL, zero=FALSE, width=c(), digits=0, C14.col=rgb(0,0,1,.5), Delta14C.col=rgb(0,.4,0,.4), ka=FALSE, cal.rev=TRUE, legend.size=.7) {
   if(cc==2)
     Cc <- rintcal::ccurve(cc, postbomb=FALSE, cc.dir=cc.dir) else
       if(postbomb)
         Cc <- rintcal::glue.ccurves(prebomb=cc, postbomb, cc.dir=cc.dir) else
-          Cc <- rintcal::ccurve(cc, postbomb, cc.dir=cc.dir)   
+          Cc <- rintcal::ccurve(cc, postbomb=FALSE, cc.dir=cc.dir)
 
   if(grepl("bp", tolower(from))) { # cal BP
     if(x < -69.5 || x > 55e3) # limits postbomb & prebomb
@@ -46,10 +46,10 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
       message("please provide a postbomb curve")
     calbp <- x
     bcad <- calBPtoBCAD(x, zero)
-    c14 <- calBPtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
-    f14c <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
-    pmc <- calBPtopMC(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
-    delta14c <- calBPtoDelta14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
+    c14 <- calBPtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
+    f14c <- calBPtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
+    pmc <- calBPtopMC(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
+    delta14c <- calBPtoDelta14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
     message(calbp, " cal BP equals ", round(bcad, digits), " cal BC/AD, ", round(c14, digits),
       " 14C BP, ", round(f14c, digits+2), " F14C, ", round(pmc, digits+2),
       " pMC, ", round(delta14c, digits+2), " Delta14C (cc=", cc, ")\n")
@@ -62,10 +62,10 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
       message("please provide a postbomb curve")
     bcad <- x
     calbp <- BCADtocalBP(x, zero)
-    c14 <- BCADtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
-    f14c <- BCADtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
-    pmc <- BCADtopMC(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
-    delta14c <- BCADtoDelta14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[1]
+    c14 <- BCADtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
+    f14c <- BCADtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
+    pmc <- BCADtopMC(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
+    delta14c <- BCADtoDelta14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
     message(bcad, " cal BC/AD equals ", round(calbp, digits), " cal BP, ", round(c14, digits), 
       " 14C BP, ", round(f14c, digits+2), " F14C, ", round(pmc, digits+2),
       " pMC, ", round(delta14c, digits+2), " Delta14C (cc=", cc, ")\n")
@@ -75,8 +75,8 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
     c14 <- x
     calbp <- unique(C14tocalBP(x))
     bcad <- calBPtoBCAD(calbp)
-    f14c <- C14toF14C(x)[1]
-    pmc <- C14topMC(x)[1]
+    f14c <- C14toF14C(x)[,1]
+    pmc <- C14topMC(x)[,1]
     delta14c <- NA # do not calculate since no theta
     message(c14, " 14C BP equals c. ", paste(round(calbp, digits), collapse="/"), " cal BP, c. ", 
       paste(round(bcad, digits), collapse="/"), " cal BC/AD, ",
@@ -85,7 +85,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
   
   if(grepl("f", tolower(from))) { # F14C
     f14c <- x
-    c14 <- F14CtoC14(x)[1]
+    c14 <- F14CtoC14(x)[,1]
     calbp <- unique(C14tocalBP(c14))
     bcad <- calBPtoBCAD(calbp)
     pmc <- 100*x
@@ -99,7 +99,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
   if(grepl("p", tolower(from))) { # pMC
     pmc <- x
     f14c <- pmc/100
-    c14 <- pMCtoC14(x)[1]
+    c14 <- pMCtoC14(x)[,1]
     calbp <- unique(C14tocalBP(c14))
     bcad <- calBPtoBCAD(calbp)
     pmc <- 100*x
@@ -161,7 +161,8 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
   par(mar=c(4,3,3,3))
   mincalbp <- min(calbp) - width
   maxcalbp <- max(calbp) + width
-  Delta14C.coors <- draw.ccurve(mincalbp, maxcalbp, cc1=cc, cc2=cc, cc1.postbomb=TRUE, cc2.postbomb=TRUE, timescale2="d", cc2.col=Delta14C.col, cc2.fill=Delta14C.col, add.yaxis=TRUE, cc.dir=cc.dir, ka=ka, bty="n", legend=NA, xaxs="i", yaxt="n", c14.lab="", cal.rev=cal.rev)
+  message("mincalbp=", mincalbp, ", maxcalbp=", maxcalbp, ", cc1=", cc, ", cc2=", cc, ", cc1.postbomb=", postbomb, ", cc2.postbomb=", postbomb)
+  Delta14C.coors <- draw.ccurve(mincalbp, maxcalbp, cc1=cc, cc2=cc, cc1.postbomb=postbomb, cc2.postbomb=postbomb, timescale2="d", cc2.col=Delta14C.col, cc2.fill=Delta14C.col, add.yaxis=TRUE, cc.dir=cc.dir, ka=ka, bty="n", legend=NA, xaxs="i", yaxt="n", c14.lab="", cal.rev=cal.rev)
   C14.coors <- par("usr")
   if(!is.na(delta14c))
     f.y <- as.numeric(((delta14c-Delta14C.coors[3])/(Delta14C.coors[4] - Delta14C.coors[3])) * (C14.coors[4] - C14.coors[3]) + C14.coors[3])
@@ -183,9 +184,9 @@ fromto <- function(x, from="calBP", cc=1, postbomb=1, cc.dir=NULL, thiscurve=NUL
   mtext(expression(Delta^14*C), 4, 2, col=Delta14C.col)
 
   abline(v=calbp, lty=2)
-  segments(C14.coors[1]-1e3, c14, calbp, c14, lty=2, col=C14.col)
+  segments(C14.coors[1], c14, calbp, c14, lty=2, col=C14.col)
   if(!is.na(delta14c))
-    segments(calbp, f.y, C14.coors[2]+1e3, f.y, lty=2, col=Delta14C.col)
+    segments(calbp, f.y, C14.coors[2], f.y, lty=2, col=Delta14C.col)
 
   invisible(values)
 }

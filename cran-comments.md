@@ -1,5 +1,5 @@
 ## Test environments
-* local Mac install, R 4.5.3
+* local Mac install, R 4.6.0
 * local fedora install, R 4.6.0
 * rhub: R-devel and R-* on windows, linux, mac-arm64
 

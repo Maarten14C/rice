@@ -8,7 +8,7 @@ fromto(
   x,
   from = "calBP",
   cc = 1,
-  postbomb = 1,
+  postbomb = 0,
   cc.dir = NULL,
   thiscurve = NULL,
   zero = FALSE,

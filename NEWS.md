@@ -5,6 +5,7 @@
 * `calibratable` now calibrates dates faster by not reading in the same curve multiple times.
 * `draw.dates` now draws its distributions at more predictable peak heights.
 * updated the Hallstatt Plateau graph of the vignette.
+* `fromto` now has more predictable axis limits and drawing of calibration curves.
 
 ******** TBC: UPDATE PAPER'S CITATION INFORMATION ONCE AVAILABLE *******
 
