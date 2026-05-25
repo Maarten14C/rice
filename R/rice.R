@@ -1,3 +1,5 @@
+# draw.dates(MSB[,2], MSB[,3], MSB[,4], threshold=.01, ex=15, border=NA, draw.hpd=F) has very extended low bits. Why?
+
 # add glue to l.calib and r.calib (also to younger/older, p.range?), also to C14tocalBP
 # also make glue allow e.g. glue="NH1_monthly" in functions where glue is an option
 

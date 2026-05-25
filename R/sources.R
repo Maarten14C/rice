@@ -430,16 +430,18 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
   # sanity checks
   init.results <- (F.obs[,1]-F.target[,1]) / (F.contam - F.target[,1])
   if(init.results < 0)
-    message("(F.obs-F.target)/(F.contam-F.target) negative, contamination appears to be <0%!")
+    if(F.contam > F.obs[,1]) 
+      message("(F.obs-F.target)/(F.contam-F.target) negative, set F.contam to < F.obs?") else
+       message("(F.obs-F.target)/(F.contam-F.target) negative, contamination appears to be <0%!") 
   if(init.results > 1)
     message("(F.obs-F.target) > (F.contam-F.target), these values result in >100% contamination!")
   if(all(F.contam > F.target[,1]) && all(F.obs[,1] < F.target[,1]))
-    warning("The observed age (F.obs ", F.obs[,1], ") cannot be magicked into the younger target age (F.target ",
-      F.target[,1], "), because the activity of the contamination (F.contam, ", F.contam, 
+    warning("The observed age (F.obs ", round(F.obs[,1], decimals), ") cannot be magicked into the younger target age (F.target ",
+      round(F.target[,1], decimals), "), because the activity of the contamination (F.contam, ", F.contam, 
       ") is higher than F.target.", call.=FALSE)
   if(all(F.contam < F.target[,1]) && all(F.obs[,1] > F.target[,1]))
-    warning("The observed age (F.obs ", F.obs[,1], ") cannot be magicked into the older target age (F.target ",
-      F.target[,1], "), because the activity of the contamination (F.contam, ", F.contam, 
+    warning("The observed age (F.obs ", round(F.obs[,1], decimals), ") cannot be magicked into the older target age (F.target ",
+      round(F.target[,1], decimals), "), because the activity of the contamination (F.contam, ", F.contam, 
       ") is lower than F.target.", call.=FALSE)
   if(any(F.contam < 0))
     stop("F.contam cannot be smaller than 0", call.=FALSE)
@@ -562,7 +564,7 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
         if(MC)
           message("Contamination required: ", perc, "+-", perc.sd, "%" ) else
             message("Contamination required: ", perc, "%" )
-        if(perc>100)
+        if(perc>100 && !is.na(perc))
           message("That's >100%, please check your values (is it a postbomb date?)")
       } else {
         if(MC)

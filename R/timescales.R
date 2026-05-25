@@ -266,14 +266,15 @@ calBPtoC14 <- function(x, cc=1, postbomb=FALSE, glue=0, rule=1, cc.dir=NULL, thi
               if(glue %in% 4:5)
                 Cc <- rintcal::glue.ccurves(prebomb=3, postbomb=glue, cc.dir, as.F=FALSE, as.pMC=FALSE) else
                   stop("please provide an integer for glue between 0 and 5")
-        }
-      if(cc == 2) # Marine20 has no postbomb counterpart
-        Cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else
-          if(postbomb)
-            Cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=postbomb, cc.dir=cc.dir) else
-              Cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir)
+        } else
+            if(cc == 2) # Marine20 has no postbomb counterpart
+              Cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir) else
+                if(postbomb)
+                  Cc <- rintcal::glue.ccurves(prebomb=cc, postbomb=postbomb, cc.dir=cc.dir) else
+                    Cc <- rintcal::ccurve(cc=cc, postbomb=postbomb, cc.dir=cc.dir)
     } else
         Cc <- thiscurve
+
   mu <- approx(Cc[,1], Cc[,2], x, rule=rule)$y
   er <- approx(Cc[,1], Cc[,3], x, rule=rule)$y
 

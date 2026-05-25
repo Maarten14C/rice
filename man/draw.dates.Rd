@@ -22,6 +22,7 @@ draw.dates(
   timescale = "C",
   reservoir = c(),
   normal = TRUE,
+  same.peaks = FALSE,
   peak = 1,
   ex = c(),
   as.unit = FALSE,
@@ -106,6 +107,8 @@ draw.dates(
 \item{reservoir}{Reservoir age, or reservoir age and age offset.}
 
 \item{normal}{Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2009).}
+
+\item{same.peaks}{Have each of the individual distributions peak to the same height. Defaults to FALSE}
 
 \item{peak}{Height multiplier for the distributions. Defaults to \code{peak=1}.}
 

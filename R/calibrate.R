@@ -33,7 +33,6 @@
 #' postbomb <- caldist(-3030, 20, postbomb=1, BCAD=TRUE)
 #' @export
 caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=TRUE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, pb.steps=0.05, cc0.res=5e3, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL, col.names=NULL) {
-
   if(is.F && is.pMC)
     stop("cannot have both is.F=TRUE and is.pMC=TRUE")
 
@@ -70,15 +69,15 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=
   cal <- approx(cal[,1], cal[,2], yrseq, rule=rule)
   cal <- cbind(cal$x, cal$y)
 
-  if(normalise)
-    cal[,2] <- cal[,2]/sum(cal[,2])
+ # if(normalise)
+ #   cal[,2] <- cal[,2]/sum(cal[,2])
 
   # remove years with very small probabilities on the extremes of the distribution
   above <- which(cal[,2] >= (threshold * max(cal[,2]))) # relative to its peak
   if(length(above)>2)
     cal <- cal[min(above):max(above),] # now does not necessarily sum to exactly 1 any more
-  if(normalise) # ... so normalise again if asked for
-    cal[,2] <- cal[,2]/sum(cal[,2])
+  if(normalise) # ... so normalise if asked for
+    cal[,2] <- cal[,2]/sum(cal[,2], na.rm=TRUE)
 
   if(is.null(col.names)) {
     colnames(cal) <- c("cal BP", "prob")
@@ -265,6 +264,7 @@ age.range <- function(calib, prob=0.95, roundby=0, BCAD=FALSE) {
     rev(rng)
   return(round(rng, roundby))
 }
+
 
 
 #  find the calibrated probability of a calendar age for a 14C date

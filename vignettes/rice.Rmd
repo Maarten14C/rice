@@ -256,7 +256,7 @@ The calibrated ranges of radiocarbon dates can also be displayed in a table (eit
 
 ```{r, fig.width=4, fig.asp=1}
 data(shroud)
-calibratable(shroud$y, shroud$er, shroud$ID)
+calibratable(shroud$y, shroud$er, shroud$ID, BCAD=TRUE)
 ```
 
 # Contamination
