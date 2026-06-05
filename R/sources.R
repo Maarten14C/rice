@@ -450,7 +450,7 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
     if(!is.na(seed))
       if(is.numeric(seed))
         set.seed(seed) else
-          message("seed has to be numeric")	  	  
+          message("seed has to be numeric")
 
     safe_sample <- function(mean, sd, n) 
       if(all(sd == 0))

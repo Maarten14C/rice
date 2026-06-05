@@ -14,6 +14,7 @@ howmuchC14(
   format = "g",
   cc = 1,
   postbomb = FALSE,
+  glue = 0,
   cc.dir = NULL,
   thiscurve = NULL,
   talk = TRUE,
@@ -21,7 +22,7 @@ howmuchC14(
 )
 }
 \arguments{
-\item{age}{The age of the sample (in cal BP per default, or in C14 BP is use.cc=FALSE).}
+\item{age}{The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).}
 
 \item{wght}{The weight of the sample (in mg). Defaults to 1 mg.}
 
@@ -39,6 +40,8 @@ howmuchC14(
 
 \item{postbomb}{Whether or not to use a postbomb curve (see \code{caldist()}).}
 
+\item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc. Can also be used to glue other pre-bomb and post-bomb curves, e.g., \code{glue="NH1_monthly"}.}
+
 \item{cc.dir}{Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.}
 
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).}
@@ -55,7 +58,7 @@ Calculate the expected amount of remaining C14 atoms in a sample, given its weig
 }
 \details{
 The number of carbon atoms in the sample is estimated. Given the known C14/C ratio at F=1, and given the sample's age, we can estimate the number of remaining C14 atoms. Given a 12C current at the detector end of an AMS, we can then also calculate how many 14C ions would be counted per second and minute. 
-Note that backgrounds are not modelled (but could be investigated by e.g. typing \code{howmuchC14(45e3)} which gives as c. 1 background count per second).
+Note that backgrounds are not modelled (but could be investigated by e.g. typing \code{howmuchC14(45e3)} which gives as c. 1 background count per second). The calculated C14 count rate assumes no fractionation.
 }
 \examples{
   howmuchC14(0) # recent sample

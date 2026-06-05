@@ -6,6 +6,7 @@
 * `draw.dates` now draws its distributions at more predictable peak heights.
 * updated the Hallstatt Plateau graph of the vignette.
 * `fromto` now has more predictable axis limits and drawing of calibration curves.
+* `howmuchC14` now invisibly reports both the number of remaining C14 atoms and the count rate per second at the detector.
 
 ******** TBC: UPDATE PAPER'S CITATION INFORMATION ONCE AVAILABLE *******
 

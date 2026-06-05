@@ -45,8 +45,15 @@ C-14, or radiocarbon, is a radioactive isotope that decays with a half-life of a
 howmuchC14(0)
 howmuchC14(55e3)
 x <- seq(0, 55e3, length=100) # a sequence of ages
-y <- sapply(x, function(x) howmuchC14(x, talk=FALSE))
+y <- sapply(x, function(x) howmuchC14(x, talk=FALSE)[1])
 plot(x, y, type="l", xlab="time (cal BP)", ylab="C-14 remaining")
+```
+
+Younger samples will have more C-14 atoms left than older ones, and thus will get higher counts-per-second at the AMS's C-14 detector. Want to hear a 'sonification' of the counts-per-second of C-14 atoms? (The frequency of the tone relates to the counts per second, and the clicks represent the particles crashing into the detector.) 
+
+```{r, eval=FALSE}
+radio(0)
+radio(45000) # an old sample 
 ```
 
 Radiocarbon laboratories correct their measurements for fractionation (to -25 &permil; by default) and for background measurements before they are reported. These calculations can be seen here:
