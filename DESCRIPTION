@@ -18,7 +18,7 @@ Depends: R (>= 3.5.0), rintcal (>= 1.4.0)
 Imports: rlang, ggplot2, maps (>= 3.4.2.1)
 Suggests:
   knitr, rmarkdown, utf8, remotes, sf, flextable,
-  rnaturalearthdata, rnaturalearth (>= 1.0.1), audio,
+  rnaturalearthdata, rnaturalearth (>= 1.0.1), audio, tuneR,
   leaflet, htmltools, CopernicusMarine, testthat (>= 3.0.0)
 Language: en-GB
 VignetteBuilder: knitr

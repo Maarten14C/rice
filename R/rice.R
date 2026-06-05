@@ -108,13 +108,14 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 radio <- function(age, duration=10, sr=44100, as.clicks=TRUE, as.tone=TRUE, click_length=80, tone.volume=0.5, noise=0.02, meander=0.005, play=interactive(), ...) {
 
   hasaudio <- requireNamespace("audio", quietly=TRUE)
+  hastuneR <- requireNamespace("tuneR", quietly=TRUE)
   if(!hasaudio)
-    stop("Please install the audio package:\ninstall.packages(\"audio\")")	
-	
+    stop("Please install the audio package:\ninstall.packages(\"audio\")")
+
   rate <- howmuchC14(age, ...)$C14persecond # C14 atoms counted per second
   n <- sr * duration # number of steps
   time <- 1:(n)
- 
+
   p <- rate / sr # probability per sample
   events <- runif(n) < p # random Bernoulli trials
 
@@ -128,27 +129,40 @@ radio <- function(age, duration=10, sr=44100, as.clicks=TRUE, as.tone=TRUE, clic
   }
   if(max(abs(clicks)) > 0)
     clicks <- clicks / max(abs(clicks)) # normalise
-  
+
   # make a sine wave based on the rate, perhaps wobble it a bit
   tone <- sin(2 * pi * rate * time / sr)
   if(noise > 0) {
-	noise <- rnorm(n, 0, noise * sqrt(rate))
-	noise[is.na(noise)] <- 0
-	wobble <- numeric(n)
-	wobble[1] <- rate 
+    noise <- rnorm(n, 0, noise * sqrt(rate))
+    noise[is.na(noise)] <- 0
+    wobble <- numeric(n)
+    wobble[1] <- rate
     for(i in 2:n)
       wobble[i] <- max(0, wobble[i-1] + meander * (rate - wobble[i-1]) + noise[i])
-	tone <- sin(cumsum(2 * pi * wobble / sr))
+    tone <- sin(cumsum(2 * pi * wobble / sr))
   }
-  
+
   if(as.clicks && as.tone)
     sound <- rbind(tone.volume*tone, clicks) else
       if(as.clicks)
         sound <- clicks else 
           sound <- tone
-	
+
   if(play)
-    audio::play(audio::audioSample(sound, sr))
+    if(nrow(audio::audio.drivers()) > 0) # expected drivers are installed
+      audio::play(audio::audioSample(sound, sr)) else {
+        if(!hastuneR)
+         stop("Please install the tuneR package:\ninstall.packages(\"tuneR\")")
+        if(is.matrix(sound))
+          sound <- sound[1,] + sound[2,]
+        sound <- sound / max(abs(sound))
+        sound <- as.integer(sound * 32767) # scale to int16 range
+
+        wave <- tuneR::Wave(left=sound, samp.rate=sr, bit=16)
+        tmpwav <- tempfile(fileext=".wav")
+        tuneR::writeWave(wave, tmpwav)
+        system2("ffplay", args=c("-nodisp", "-autoexit", "-loglevel", "quiet", tmpwav))
+      }
   invisible(sound)
 }
 
