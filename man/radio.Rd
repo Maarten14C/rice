@@ -14,6 +14,7 @@ radio(
   tone.volume = 0.5,
   noise = 0.02,
   meander = 0.005,
+  play = interactive(),
   ...
 )
 }
@@ -36,10 +37,12 @@ radio(
 
 \item{meander}{Drift of the tone along the mean. Defaults to 0.005.}
 
+\item{play}{Whether or not to play the sound}
+
 \item{...}{Optional constants to be entered into the function `howmuchC14`}
 }
 \value{
-A sound (tone and or clicks)
+A sound (tone and or clicks) is played and returned invisibly.
 }
 \description{
 A sonification of the amount of C14 being detected in an AMS.
