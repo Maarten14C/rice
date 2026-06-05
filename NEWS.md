@@ -1,4 +1,4 @@
-# rice 2.1.1
+# rice 2.2.0
 * postbomb dates are now plotted better in the `calibrate` function when using the option `glue`.
 * added the `glue` option to additional relevant functions such as `draw.dates`, `l.calib`, `r.calib`, `younger`, `older`, `p.range` and timescale-related functions (e.g., `calBPtoC14`, `C14tocalBP`).
 * to use a monthly postbomb calibration curve, try e.g. `calibrate(1.4, .005, is.F=TRUE, glue="NH1_monthly", BCAD=TRUE)`.
@@ -7,6 +7,7 @@
 * updated the Hallstatt Plateau graph of the vignette.
 * `fromto` now has more predictable axis limits and drawing of calibration curves.
 * `howmuchC14` now invisibly reports both the number of remaining C14 atoms and the count rate per second at the detector.
+* new function `radio` to listen to C-14 being detected in an AMS
 
 ******** TBC: UPDATE PAPER'S CITATION INFORMATION ONCE AVAILABLE *******
 
