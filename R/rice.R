@@ -88,7 +88,7 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #' @title Listen to radiocarbon being measured
 #' @description A sonification of the amount of C14 being detected in an AMS. 
 #' @details The sonification can be heard as 'Geiger counter-like' clicks (individual C14 atoms ending up in the detector) and/or as a possibly slightly meandering sine wave (e.g., for a sample of age 5000 14C BP, we'd count c. 105.6 atoms per second in the AMS, so this would become a tone of frequency 105.6 Hz). The calculations are based on the function \code{howmuchC14}.
-#' @return A sound (tone and or clicks)
+#' @return A sound (tone and or clicks) is played and returned invisibly.
 #' @param age The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).
 #' @param duration How long the sample will sound for in seconds. Defaults to 10 seconds.
 #' @param sr Sampling rate. This defaults to 44100 (per second), which is based on the CD standard.
@@ -98,13 +98,14 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #' @param tone.volume Volume of the tone/wave relative to that of the clicks.
 #' @param noise Deviation from the mean of the tone. Defaults to 0.02.
 #' @param meander Drift of the tone along the mean. Defaults to 0.005. 
+#' @param play Whether or not to play the sound
 #' @param ... Optional constants to be entered into the function `howmuchC14`
 #' @author Maarten Blaauw
 #' @examples
 #'   radio(0)
 #'   radio(45000)
 #' @export
-radio <- function(age, duration=10, sr=44100, as.clicks=TRUE, as.tone=TRUE, click_length=80, tone.volume=0.5, noise=0.02, meander=0.005, ...) {
+radio <- function(age, duration=10, sr=44100, as.clicks=TRUE, as.tone=TRUE, click_length=80, tone.volume=0.5, noise=0.02, meander=0.005, play=interactive(), ...) {
 
   hasaudio <- requireNamespace("audio", quietly=TRUE)
   if(!hasaudio)
@@ -145,8 +146,9 @@ radio <- function(age, duration=10, sr=44100, as.clicks=TRUE, as.tone=TRUE, clic
       if(as.clicks)
         sound <- clicks else 
           sound <- tone
-	   
-  audio::play(audio::audioSample(sound, sr))
+	
+  if(play)
+    audio::play(audio::audioSample(sound, sr))
   invisible(sound)
 }
 
