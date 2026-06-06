@@ -7,7 +7,8 @@
 radio(
   age,
   duration = 10,
-  sr = 44100,
+  as.decays = FALSE,
+  wght = 1,
   as.clicks = TRUE,
   as.tone = TRUE,
   click_length = 80,
@@ -15,6 +16,7 @@ radio(
   noise = 0.02,
   meander = 0.005,
   play = interactive(),
+  sr = 44100,
   ...
 )
 }
@@ -23,7 +25,9 @@ radio(
 
 \item{duration}{How long the sample will sound for in seconds. Defaults to 10 seconds.}
 
-\item{sr}{Sampling rate. This defaults to 44100 (per second), which is based on the CD standard.}
+\item{as.decays}{Work with the C14 decays. Defaults to FALSE, which works with the number of C14 atoms instead.}
+
+\item{wght}{The weight of the sample (in mg). Defaults to 1 mg.}
 
 \item{as.clicks}{Make the C-14 counts sound as clicks, based on random Poisson sampling.}
 
@@ -39,6 +43,8 @@ radio(
 
 \item{play}{Whether or not to play the sound}
 
+\item{sr}{Sampling rate. This audio quality defaults to 44100 (per second), which is based on the CD standard.}
+
 \item{...}{Optional constants to be entered into the function `howmuchC14`}
 }
 \value{
@@ -48,11 +54,13 @@ A sound (tone and or clicks) is played and returned invisibly.
 A sonification of the amount of C14 being detected in an AMS.
 }
 \details{
-The sonification can be heard as 'Geiger counter-like' clicks (individual C14 atoms ending up in the detector) and/or as a possibly slightly meandering sine wave (e.g., for a sample of age 5000 14C BP, we'd count c. 105.6 atoms per second in the AMS, so this would become a tone of frequency 105.6 Hz). The calculations are based on the function \code{howmuchC14}.
+The sonification can be heard as 'Geiger counter-like' clicks (individual C14 atoms ending up in the detector) and/or as a possibly slightly meandering sine wave (e.g., for a sample of age 5000 14C BP, we'd count c. 105.6 atoms per second in the AMS, so this would become a tone of frequency 105.6 Hz). The calculations are based on the function \code{howmuchC14}. Instead of counting the particles themselves (as done in an AMS), we can also count the decay events as used in radiometric counting (then we need much larger samples and longer counting times).
 }
 \examples{
   radio(0)
   radio(45000)
+  # decay events in 1 gram of carbon of age 500 14C BP:
+  radio(500, wght=1000, as.decays=TRUE) 
 }
 \author{
 Maarten Blaauw

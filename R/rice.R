@@ -79,19 +79,21 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
       60*persecond, " per minute)" ))
   }
 
-  invisible(list(C14=C14, C14persecond=i14))
+  invisible(list(C14=C14, C14persecond=i14, decaysperday=as.numeric(decays)))
 }
 
 
+# the below could also be visualised as counts coming in and from those counts estimate the F14C and its uncertainty (sqrt(N)). Counting the decays will take much much longer than counting the particles.
 
 #' @name radio
 #' @title Listen to radiocarbon being measured
 #' @description A sonification of the amount of C14 being detected in an AMS. 
-#' @details The sonification can be heard as 'Geiger counter-like' clicks (individual C14 atoms ending up in the detector) and/or as a possibly slightly meandering sine wave (e.g., for a sample of age 5000 14C BP, we'd count c. 105.6 atoms per second in the AMS, so this would become a tone of frequency 105.6 Hz). The calculations are based on the function \code{howmuchC14}.
+#' @details The sonification can be heard as 'Geiger counter-like' clicks (individual C14 atoms ending up in the detector) and/or as a possibly slightly meandering sine wave (e.g., for a sample of age 5000 14C BP, we'd count c. 105.6 atoms per second in the AMS, so this would become a tone of frequency 105.6 Hz). The calculations are based on the function \code{howmuchC14}. Instead of counting the particles themselves (as done in an AMS), we can also count the decay events as used in radiometric counting (then we need much larger samples and longer counting times).
 #' @return A sound (tone and or clicks) is played and returned invisibly.
 #' @param age The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).
 #' @param duration How long the sample will sound for in seconds. Defaults to 10 seconds.
-#' @param sr Sampling rate. This defaults to 44100 (per second), which is based on the CD standard.
+#' @param as.decays Work with the C14 decays. Defaults to FALSE, which works with the number of C14 atoms instead.
+#' @param wght The weight of the sample (in mg). Defaults to 1 mg.
 #' @param as.clicks Make the C-14 counts sound as clicks, based on random Poisson sampling.
 #' @param as.tone Make the C-14 frequency (counts per second) sound as a wave (e.g., 105 cps becomes a 105 Hz sine wave). This can either be a constant wave or be meandering (see `noise` and `meander`).
 #' @param click_length Length of the clicks. Defaults to 80, but can be altered to make the clicks sound different
@@ -99,20 +101,25 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #' @param noise Deviation from the mean of the tone. Defaults to 0.02.
 #' @param meander Drift of the tone along the mean. Defaults to 0.005. 
 #' @param play Whether or not to play the sound
+#' @param sr Sampling rate. This audio quality defaults to 44100 (per second), which is based on the CD standard.
 #' @param ... Optional constants to be entered into the function `howmuchC14`
 #' @author Maarten Blaauw
 #' @examples
 #'   radio(0)
 #'   radio(45000)
+#'   # decay events in 1 gram of carbon of age 500 14C BP:
+#'   radio(500, wght=1000, as.decays=TRUE) 
 #' @export
-radio <- function(age, duration=10, sr=44100, as.clicks=TRUE, as.tone=TRUE, click_length=80, tone.volume=0.5, noise=0.02, meander=0.005, play=interactive(), ...) {
+radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.tone=TRUE, click_length=80, tone.volume=0.5, noise=0.02, meander=0.005, play=interactive(), sr=44100, ...) {
 
   hasaudio <- requireNamespace("audio", quietly=TRUE)
   hastuneR <- requireNamespace("tuneR", quietly=TRUE)
   if(!hasaudio)
     stop("Please install the audio package:\ninstall.packages(\"audio\")")
 
-  rate <- howmuchC14(age, ...)$C14persecond # C14 atoms counted per second
+  if(as.decays) # rate = per second
+    rate <- howmuchC14(age, wght=wght, ...)$decaysperday / (60*60*24) else # C14 decays
+      rate <- howmuchC14(age, wght=wght, ...)$C14persecond # C14 atoms
   n <- sr * duration # number of steps
   time <- 1:(n)
 
@@ -152,11 +159,11 @@ radio <- function(age, duration=10, sr=44100, as.clicks=TRUE, as.tone=TRUE, clic
     if(nrow(audio::audio.drivers()) > 0) # expected drivers are installed
       audio::play(audio::audioSample(sound, sr)) else {
         if(!hastuneR)
-         stop("Please install the tuneR package:\ninstall.packages(\"tuneR\")")
+          stop("Please install the tuneR package:\ninstall.packages(\"tuneR\")")
         if(is.matrix(sound))
           sound <- sound[1,] + sound[2,]
         sound <- sound / max(abs(sound))
-        sound <- as.integer(sound * 32767) # scale to int16 range
+        sound <- as.integer(sound * 32767) # scale to int16 range (full range of 16 bit sound)
 
         wave <- tuneR::Wave(left=sound, samp.rate=sr, bit=16)
         tmpwav <- tempfile(fileext=".wav")
