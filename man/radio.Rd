@@ -17,6 +17,8 @@ radio(
   meander = 0.005,
   play = interactive(),
   sr = 44100,
+  visualise = TRUE,
+  cex = 0.6,
   ...
 )
 }
@@ -54,7 +56,11 @@ A sound (tone and or clicks) is played and returned invisibly.
 A sonification of the amount of C14 being detected in an AMS.
 }
 \details{
-The sonification can be heard as 'Geiger counter-like' clicks (individual C14 atoms ending up in the detector) and/or as a possibly slightly meandering sine wave (e.g., for a sample of age 5000 14C BP, we'd count c. 105.6 atoms per second in the AMS, so this would become a tone of frequency 105.6 Hz). The calculations are based on the function \code{howmuchC14}. Instead of counting the particles themselves (as done in an AMS), we can also count the decay events as used in radiometric counting (then we need much larger samples and longer counting times).
+The sonification can be heard as 'Geiger counter-like' clicks (individual C14 atoms ending up in the detector) and/or as a possibly slightly meandering sine wave (e.g., for a sample of age 5000 14C BP, we'd count c. 105.6 atoms per second in the AMS, so this would become a tone of frequency 105.6 Hz). The calculations are based on the function \code{howmuchC14}.
+
+Instead of counting the particles themselves (as done in an AMS), we can also count the decay events as used in radiometric counting. I this case, we need much larger samples and longer counting times (wght, duration).
+
+Note that the calculations in this function do not include important corrections such as for fractionation, backgrounds and error multipliers.
 }
 \examples{
   radio(0)

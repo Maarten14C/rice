@@ -1,7 +1,3 @@
-# draw.dates(MSB[,2], MSB[,3], MSB[,4], threshold=.01, ex=15, border=NA, draw.hpd=F) has very extended low bits. Why?
-
-# add glue to l.calib and r.calib (also to younger/older, p.range?), also to C14tocalBP
-# also make glue allow e.g. glue="NH1_monthly" in functions where glue is an option
 
 # can intcal.data be made to show the SH data? Currently shows the NH data
 
@@ -41,10 +37,10 @@
 #'   howmuchC14(55e3) # at dating limit
 #'   howmuchC14(145e3) # way beyond the dating limit, 1 C14 atom per mg remains
 #' @export
-howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.176e-12, current=25e-6, format="g", cc=1, postbomb=FALSE, glue=0, cc.dir=NULL, thiscurve=NULL, talk=TRUE, decimals=3) {
+howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.176e-12, current=25e-6, format="g", cc=1, postbomb=FALSE, glue=0, cc.dir=NULL, thiscurve=NULL, talk=TRUE, asAMS=TRUE, decimals=3) {
   if(length(age) > 1)
     stop("can only handle single value for age")
-
+  
   if(use.cc) {
     F <- calBPtoF14C(age, cc=cc, postbomb=postbomb, glue=glue, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
     if(is.na(F)) {
@@ -52,11 +48,12 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
       F <- C14toF14C(age)
     }
   } else
-       F <- C14toF14C(age) # then 'age' is on the C14 scale
-
+      F <- C14toF14C(age) # then 'age' is on the C14 scale
   F <- as.numeric(F)
+  
   atoms <- (wght/1e3)*Av/12 # number of C atoms in a mg
-  C14 <- as.numeric(round(F * C14.1950 * atoms, 0)) # C14 atoms roundest to nearest number
+  C14_atoms <- F * C14.1950 * atoms # number of C14 atoms in 1950 in the same amount of sample
+  C14 <- as.numeric(ceiling(F * C14.1950 * atoms)) # C14 atoms roundest up
   
   # from the current, calculate amount of ions ending up at the C12 Faraday cup:
   i12 <- current/1.602e-19 # e, electric charge for a single proton, in coulomb
@@ -67,19 +64,20 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
   
   atoms <- formatC(atoms, format=format, digits=decimals)
   C14.talk <- formatC(C14, format=format, digits=decimals)
-  decays <- formatC(C14 * log(2) / (5730 * 365.25), format=format, digits=decimals)
+  decays <- formatC(C14 * log(2) / (5730 * 365.25), format="fg", digits=decimals)
 
   if(talk) {
     message(wght, " mg carbon contains ", atoms, " C atoms")
     message("14C atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk)
     message(decays, " 14C atoms in the sample will decay each day")
-    message(paste0("For a 12C current of ", current*1e6, " micro-ampere (", i12,
-      " 12C/second) at the AMS detector,\n  ",
-      persecond, " 14C particles would be counted per second (",
-      60*persecond, " per minute)" ))
+	if(asAMS)
+      message(paste0("For a 12C current of ", current*1e6, " micro-ampere (", i12,
+        " 12C/second) at the AMS detector,\n  ",
+        persecond, " 14C particles would be counted per second (",
+        60*persecond, " per minute)" ))
   }
 
-  invisible(list(C14=C14, C14persecond=i14, decaysperday=as.numeric(decays)))
+  invisible(list(C14=C14, C14persecond=i14, decaysperday=as.numeric(decays), i12=current/1.602e-19, C14.1950=C14.1950, totC=as.numeric(atoms)))
 }
 
 
@@ -88,11 +86,15 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #' @name radio
 #' @title Listen to radiocarbon being measured
 #' @description A sonification of the amount of C14 being detected in an AMS. 
-#' @details The sonification can be heard as 'Geiger counter-like' clicks (individual C14 atoms ending up in the detector) and/or as a possibly slightly meandering sine wave (e.g., for a sample of age 5000 14C BP, we'd count c. 105.6 atoms per second in the AMS, so this would become a tone of frequency 105.6 Hz). The calculations are based on the function \code{howmuchC14}. Instead of counting the particles themselves (as done in an AMS), we can also count the decay events as used in radiometric counting (then we need much larger samples and longer counting times).
+#' @details The sonification can be heard as 'Geiger counter-like' clicks (individual C14 atoms ending up in the detector) and/or as a possibly slightly meandering sine wave (e.g., for a sample of age 5000 14C BP, we'd count c. 105.6 atoms per second in the AMS, so this would become a tone of frequency 105.6 Hz). The calculations are based on the function \code{howmuchC14}.
+#'
+#' Instead of counting the particles themselves (as done in an AMS), we can also count the decay events as used in radiometric counting. In this case, we need much larger samples (wght) and longer counting times (duration).
+#'
+#' Note that the calculations in this function do not include error multipliers or corrections such as for fractionation and backgrounds. 
 #' @return A sound (tone and or clicks) is played and returned invisibly.
 #' @param age The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).
-#' @param duration How long the sample will sound for in seconds. Defaults to 10 seconds.
-#' @param as.decays Work with the C14 decays. Defaults to FALSE, which works with the number of C14 atoms instead.
+#' @param duration How long the sample will count (and sound) for in seconds. Defaults to 10 seconds.
+#' @param as.decays Work with the C14 decays. Defaults to FALSE, which works with the number of C14 atoms instead. If set to true, you'll need larger sample sizes (wght) and longer counting times (duration) to get decent counts.
 #' @param wght The weight of the sample (in mg). Defaults to 1 mg.
 #' @param as.clicks Make the C-14 counts sound as clicks, based on random Poisson sampling.
 #' @param as.tone Make the C-14 frequency (counts per second) sound as a wave (e.g., 105 cps becomes a 105 Hz sine wave). This can either be a constant wave or be meandering (see `noise` and `meander`).
@@ -107,25 +109,78 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #' @examples
 #'   radio(0)
 #'   radio(45000)
-#'   # decay events in 1 gram of carbon of age 500 14C BP:
-#'   radio(500, wght=1000, as.decays=TRUE) 
+#'   # decay events over 1 minute in 1 gram of carbon of age 500 14C BP:
+#'   radio(500, wght=1000, as.decays=TRUE, duration=60) 
 #' @export
-radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.tone=TRUE, click_length=80, tone.volume=0.5, noise=0.02, meander=0.005, play=interactive(), sr=44100, ...) {
+radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.tone=TRUE, click_length=80, tone.volume=0.5, noise=0.02, meander=0.005, play=interactive(), sr=44100, visualise=TRUE, cex=.6, ...) {
 
   hasaudio <- requireNamespace("audio", quietly=TRUE)
   hastuneR <- requireNamespace("tuneR", quietly=TRUE)
   if(!hasaudio)
     stop("Please install the audio package:\ninstall.packages(\"audio\")")
 
+  if(as.decays)
+	as.tone <- FALSE # no music
+
+  counts <- howmuchC14(age, wght=wght, asAMS=!as.decays, ...)
   if(as.decays) # rate = per second
-    rate <- howmuchC14(age, wght=wght, ...)$decaysperday / (60*60*24) else # C14 decays
-      rate <- howmuchC14(age, wght=wght, ...)$C14persecond # C14 atoms
+    rate <- counts$decaysperday / (60*60*24) else # C14 decays
+      rate <- counts$C14persecond # C14 atoms
+	  
   n <- sr * duration # number of steps
-  time <- 1:(n)
-
   p <- rate / sr # probability per sample
-  events <- runif(n) < p # random Bernoulli trials
+  events <- runif(n) < p # counts/decays, simulated by random Bernoulli trials
 
+  if(visualise) {
+	plot(0, type="n", xlim=c(0, duration), ylim=c(0, 1), xlab="duration (s)", ylab="", yaxt="n", yaxs="i", bty="n")
+	alpha <- 1/(1+((rate*duration)/200)^0.95) # at higher rates, lines become more transparent
+	abline(v=which(events)/sr, col=rgb(0,0,0, alpha))
+	rect(-10, .5, duration+10, 1.1, col="white", border=NA)
+    # C14_count <- rate*duration
+	C14_count <- sum(events)
+	
+    if(as.decays) { # radiometric: counting decays, not atoms
+      C12_count <- counts$totC
+      AN <- counts$C14 / counts$totC
+	  asF <- AN / counts$C14.1950
+	  if(C14_count > 0) {
+        AN.sd <- AN / sqrt(C14_count)
+        asF.sd <- asF / sqrt(C14_count)
+        as.C14 <- F14CtoC14(asF, asF.sd, round=0)
+      } else {
+          AN.sd <- NA
+          asF.sd <- NA
+          as.C14 <- F14CtoC14(asF, round=0)
+        }
+    } else { # AMS: counting atoms
+        C12_count <- counts$i12 * duration
+        AN <- C14_count / C12_count
+        asF <- AN / counts$C14.1950
+        if(C14_count > 0) {
+          AN.sd <- AN * sqrt(1/C14_count + 1/C12_count)
+          asF.sd <- AN.sd / counts$C14.1950
+		  as.C14 <- F14CtoC14(asF, asF.sd, round=0)
+        } else {
+            AN.sd <- NA
+            asF.sd <- NA
+			as.C14 <- F14CtoC14(asF, round=0)
+          }
+      }
+	
+    if(as.decays)
+      labels <- c("C14 decays (A\u00B1\u221AA):", "C12 counts (N\u00B1\u221AN):", 
+        "C14/C12 ratio (AN):", "relative to AD 1950 (F=AN/A0):", "as C14 BP (-8033*log(F)):") else		
+          labels <- c("C14 counts (N\u00B1\u221AN):", "C12 counts (N\u00B1\u221AN):", 
+             "C14/C12 ratio (AN):", "relative to AD 1950 (F=AN/A0):", "as C14 BP (-8033*log(F)):") 
+	values <- c(
+      paste(format(round(C14_count), format="fg"), "\u00B1", format(round(sqrt(C14_count)), format="fg")), 
+      paste(format(round(C12_count), format="fg"), "\u00B1", format(round(sqrt(C12_count)), format="fg")),	       paste(format(AN, scientific=TRUE), "\u00B1", format(AN.sd, scientific=TRUE)),
+	  paste(format(asF, format="fg"), "\u00B1", format(asF.sd, format="fg")),
+	  paste(as.C14[1], "\u00B1", as.C14[2]))
+	legend(0, 1, legend=cbind(labels, values), cex=cex, ncol=2, 
+	  text.col=rep(c(1,rep(grey(.5), 3), 1),2), bty="n")
+  }
+	  
   # make random clicks based on the rate
   click <- rnorm(click_length) * exp(-seq(0, 6, length.out = click_length))
   click <- click / max(abs(click))
@@ -138,7 +193,7 @@ radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.
     clicks <- clicks / max(abs(clicks)) # normalise
 
   # make a sine wave based on the rate, perhaps wobble it a bit
-  tone <- sin(2 * pi * rate * time / sr)
+  tone <- sin(2 * pi * rate * 1:(n) / sr)
   if(noise > 0) {
     noise <- rnorm(n, 0, noise * sqrt(rate))
     noise[is.na(noise)] <- 0
@@ -155,7 +210,7 @@ radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.
         sound <- clicks else 
           sound <- tone
 
-  if(play)
+  if(play && (as.clicks+as.tone>0))
     if(nrow(audio::audio.drivers()) > 0) # expected drivers are installed
       audio::play(audio::audioSample(sound, sr)) else {
         if(!hastuneR)

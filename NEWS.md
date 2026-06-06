@@ -7,7 +7,7 @@
 * updated the Hallstatt Plateau graph of the vignette.
 * `fromto` now has more predictable axis limits and drawing of calibration curves.
 * `howmuchC14` now invisibly reports both the number of remaining C14 atoms and the count rate per second at the detector.
-* new function `radio` to listen to C-14 being detected in an AMS
+* new function `radio` to listen to (and view) C-14 being detected in an AMS (or registered as decays for radiometric measurement)
 
 ******** TBC: UPDATE PAPER'S CITATION INFORMATION ONCE AVAILABLE *******
 
