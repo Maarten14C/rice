@@ -30,6 +30,7 @@
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
 #' @param talk Whether or not to provide feedback (defaults to TRUE).
+#' @param as.AMS If set to true, will calculate how many atoms would be counted in an AMS 
 #' @param decimals Number of decimals to be returned for F and atom counts.
 #' @author Maarten Blaauw
 #' @examples
@@ -37,7 +38,7 @@
 #'   howmuchC14(55e3) # at dating limit
 #'   howmuchC14(145e3) # way beyond the dating limit, 1 C14 atom per mg remains
 #' @export
-howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.176e-12, current=25e-6, format="g", cc=1, postbomb=FALSE, glue=0, cc.dir=NULL, thiscurve=NULL, talk=TRUE, asAMS=TRUE, decimals=3) {
+howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.176e-12, current=25e-6, format="g", cc=1, postbomb=FALSE, glue=0, cc.dir=NULL, thiscurve=NULL, talk=TRUE, as.AMS=TRUE, decimals=3) {
   if(length(age) > 1)
     stop("can only handle single value for age")
   
@@ -70,7 +71,7 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
     message(wght, " mg carbon contains ", atoms, " C atoms")
     message("14C atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk)
     message(decays, " 14C atoms in the sample will decay each day")
-	if(asAMS)
+	if(as.AMS)
       message(paste0("For a 12C current of ", current*1e6, " micro-ampere (", i12,
         " 12C/second) at the AMS detector,\n  ",
         persecond, " 14C particles would be counted per second (",
@@ -81,7 +82,6 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 }
 
 
-# the below could also be visualised as counts coming in and from those counts estimate the F14C and its uncertainty (sqrt(N)). Counting the decays will take much much longer than counting the particles.
 
 #' @name radio
 #' @title Listen to radiocarbon being measured
@@ -125,7 +125,7 @@ radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.
   if(as.decays)
 	as.tone <- FALSE # no music
 
-  counts <- howmuchC14(age, wght=wght, asAMS=!as.decays, ...)
+  counts <- howmuchC14(age, wght=wght, as.AMS=!as.decays, ...)
   if(as.decays) # rate = per second
     rate <- counts$decaysperday / (60*60*24) else # C14 decays
       rate <- counts$C14persecond # C14 atoms
@@ -149,11 +149,11 @@ radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.
 	  if(C14_count > 0) {
         AN.sd <- AN / sqrt(C14_count)
         asF.sd <- asF / sqrt(C14_count)
-        as.C14 <- F14CtoC14(asF, asF.sd, round=0)
+        as.C14 <- F14CtoC14(asF, asF.sd, roundby=0)
       } else {
           AN.sd <- NA
           asF.sd <- NA
-          as.C14 <- F14CtoC14(asF, round=0)
+          as.C14 <- F14CtoC14(asF, roundby=0)
         }
     } else { # AMS: counting atoms
         C12_count <- counts$i12 * duration
@@ -162,25 +162,30 @@ radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.
         if(C14_count > 0) {
           AN.sd <- AN * sqrt(1/C14_count + 1/C12_count)
           asF.sd <- AN.sd / counts$C14.1950
-		  as.C14 <- F14CtoC14(asF, asF.sd, round=0)
+		  as.C14 <- F14CtoC14(asF, asF.sd, roundby=0)
         } else {
             AN.sd <- NA
             asF.sd <- NA
-			as.C14 <- F14CtoC14(asF, round=0)
+			as.C14 <- F14CtoC14(asF, roundby=0)
           }
       }
 	
     if(as.decays)
-      labels <- c("C14 decays (A\u00B1\u221AA):", "C12 counts (N\u00B1\u221AN):", 
-        "C14/C12 ratio (AN):", "relative to AD 1950 (F=AN/A0):", "as C14 BP (-8033*log(F)):") else		
-          labels <- c("C14 counts (N\u00B1\u221AN):", "C12 counts (N\u00B1\u221AN):", 
-             "C14/C12 ratio (AN):", "relative to AD 1950 (F=AN/A0):", "as C14 BP (-8033*log(F)):") 
+      labels <- c(expression(C14~decays~(A %+-% sqrt(A))),
+        expression(C12~amount~(N %+-% sqrt(N))), 
+        "C14/C12 ratio (AN):", "relative to AD 1950 (F=AN/A0):", 
+        "as C14 BP (-8033*log(F)):") else
+          labels <- c(expression(C14~counts~(N %+-% sqrt(N))),
+            expression(C12~counts~(N %+-% sqrt(N))), 
+              "C14/C12 ratio (AN):", "relative to AD 1950 (F=AN/A0):", 
+              "as C14 BP (-8033*log(F)):")
 	values <- c(
       paste(format(round(C14_count), format="fg"), "\u00B1", format(round(sqrt(C14_count)), format="fg")), 
-      paste(format(round(C12_count), format="fg"), "\u00B1", format(round(sqrt(C12_count)), format="fg")),	       paste(format(AN, scientific=TRUE), "\u00B1", format(AN.sd, scientific=TRUE)),
-	  paste(format(asF, format="fg"), "\u00B1", format(asF.sd, format="fg")),
-	  paste(as.C14[1], "\u00B1", as.C14[2]))
-	legend(0, 1, legend=cbind(labels, values), cex=cex, ncol=2, 
+      paste(format(round(C12_count), format="fg"), "\u00B1", format(round(sqrt(C12_count)), format="fg")),
+      paste(format(AN, scientific=TRUE), "\u00B1", format(AN.sd, scientific=TRUE)),
+      paste(format(asF, format="fg"), "\u00B1", format(asF.sd, format="fg")),
+      paste(as.C14[1], "\u00B1", as.C14[2]))
+    legend(0, 1, legend=c(labels, values), cex=cex, ncol=2, 
 	  text.col=rep(c(1,rep(grey(.5), 3), 1),2), bty="n")
   }
 	  

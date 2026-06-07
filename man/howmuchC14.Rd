@@ -18,7 +18,7 @@ howmuchC14(
   cc.dir = NULL,
   thiscurve = NULL,
   talk = TRUE,
-  asAMS = TRUE,
+  as.AMS = TRUE,
   decimals = 3
 )
 }
@@ -48,6 +48,8 @@ howmuchC14(
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).}
 
 \item{talk}{Whether or not to provide feedback (defaults to TRUE).}
+
+\item{as.AMS}{If set to true, will calculate how many atoms would be counted in an AMS}
 
 \item{decimals}{Number of decimals to be returned for F and atom counts.}
 }
