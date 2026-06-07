@@ -104,6 +104,9 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #' @param meander Drift of the tone along the mean. Defaults to 0.005. 
 #' @param play Whether or not to play the sound
 #' @param sr Sampling rate. This audio quality defaults to 44100 (per second), which is based on the CD standard.
+#' @param visualise the counts and calculation of the C14 age. Defaults to TRUE.
+#' @param cex Size of the font. Defaults to \code{cex=0.6}.
+#' @param return.sound Return the sound as an invisible object. If set to FALSE (the default), instead returns the counts and the calculated C14 age.
 #' @param ... Optional constants to be entered into the function `howmuchC14`
 #' @author Maarten Blaauw
 #' @examples
@@ -112,7 +115,7 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #'   # decay events over 1 minute in 1 gram of carbon of age 500 14C BP:
 #'   radio(500, wght=1000, as.decays=TRUE, duration=60) 
 #' @export
-radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.tone=TRUE, click_length=80, tone.volume=0.5, noise=0.02, meander=0.005, play=interactive(), sr=44100, visualise=TRUE, cex=.6, ...) {
+radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.tone=TRUE, click_length=80, tone.volume=0.5, noise=0.02, meander=0.005, play=interactive(), sr=44100, visualise=TRUE, cex=.6, return.sound=FALSE, ...) {
 
   hasaudio <- requireNamespace("audio", quietly=TRUE)
   hastuneR <- requireNamespace("tuneR", quietly=TRUE)
@@ -225,7 +228,10 @@ radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.
         tuneR::writeWave(wave, tmpwav)
         system2("ffplay", args=c("-nodisp", "-autoexit", "-loglevel", "quiet", tmpwav))
       }
-  invisible(sound)
+
+  if(return.sound)
+    invisible(sound) else
+      invisible(list(C14_count=C14_count, duration=duration, F14C=asF, C14_age=as.C14))
 }
 
 

@@ -19,15 +19,16 @@ radio(
   sr = 44100,
   visualise = TRUE,
   cex = 0.6,
+  return.sound = FALSE,
   ...
 )
 }
 \arguments{
 \item{age}{The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).}
 
-\item{duration}{How long the sample will sound for in seconds. Defaults to 10 seconds.}
+\item{duration}{How long the sample will count (and sound) for in seconds. Defaults to 10 seconds.}
 
-\item{as.decays}{Work with the C14 decays. Defaults to FALSE, which works with the number of C14 atoms instead.}
+\item{as.decays}{Work with the C14 decays. Defaults to FALSE, which works with the number of C14 atoms instead. If set to true, you'll need larger sample sizes (wght) and longer counting times (duration) to get decent counts.}
 
 \item{wght}{The weight of the sample (in mg). Defaults to 1 mg.}
 
@@ -47,6 +48,12 @@ radio(
 
 \item{sr}{Sampling rate. This audio quality defaults to 44100 (per second), which is based on the CD standard.}
 
+\item{visualise}{the counts and calculation of the C14 age. Defaults to TRUE.}
+
+\item{cex}{Size of the font. Defaults to \code{cex=0.6}.}
+
+\item{return.sound}{Return the sound as an invisible object. If set to FALSE (the default), instead returns the counts and the calculated C14 age.}
+
 \item{...}{Optional constants to be entered into the function `howmuchC14`}
 }
 \value{
@@ -58,15 +65,15 @@ A sonification of the amount of C14 being detected in an AMS.
 \details{
 The sonification can be heard as 'Geiger counter-like' clicks (individual C14 atoms ending up in the detector) and/or as a possibly slightly meandering sine wave (e.g., for a sample of age 5000 14C BP, we'd count c. 105.6 atoms per second in the AMS, so this would become a tone of frequency 105.6 Hz). The calculations are based on the function \code{howmuchC14}.
 
-Instead of counting the particles themselves (as done in an AMS), we can also count the decay events as used in radiometric counting. I this case, we need much larger samples and longer counting times (wght, duration).
+Instead of counting the particles themselves (as done in an AMS), we can also count the decay events as used in radiometric counting. In this case, we need much larger samples (wght) and longer counting times (duration).
 
-Note that the calculations in this function do not include important corrections such as for fractionation, backgrounds and error multipliers.
+Note that the calculations in this function do not include error multipliers or corrections such as for fractionation and backgrounds.
 }
 \examples{
   radio(0)
   radio(45000)
-  # decay events in 1 gram of carbon of age 500 14C BP:
-  radio(500, wght=1000, as.decays=TRUE) 
+  # decay events over 1 minute in 1 gram of carbon of age 500 14C BP:
+  radio(500, wght=1000, as.decays=TRUE, duration=60) 
 }
 \author{
 Maarten Blaauw

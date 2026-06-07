@@ -18,6 +18,7 @@ howmuchC14(
   cc.dir = NULL,
   thiscurve = NULL,
   talk = TRUE,
+  asAMS = TRUE,
   decimals = 3
 )
 }
