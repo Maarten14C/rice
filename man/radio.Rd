@@ -7,6 +7,8 @@
 radio(
   age,
   duration = 10,
+  duration.unit = c(),
+  use.cc = FALSE,
   as.decays = FALSE,
   wght = 1,
   as.clicks = TRUE,
@@ -24,9 +26,13 @@ radio(
 )
 }
 \arguments{
-\item{age}{The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).}
+\item{age}{The age of the sample (in C14 BP by default, or in cal BP if use.cc=FALSE).}
 
 \item{duration}{How long the sample will count (and sound) for in seconds. Defaults to 10 seconds.}
+
+\item{duration.unit}{Unit of the duration. Left empty by default (c()) which then makes seconds the unit ('s'), or if as.decays is used, days ('d'). Even if set to 'd', the sound will be played back using the seconds unit ('s').}
+
+\item{use.cc}{Whether or not to use the calibration curve. If set to \code{use.cc=FALSE} (the default), then we assume that the age is the radiocarbon age (this enables ages beyond the reach of the calibration curves to be used).}
 
 \item{as.decays}{Work with the C14 decays. Defaults to FALSE, which works with the number of C14 atoms instead. If set to true, you'll need larger sample sizes (wght) and longer counting times (duration) to get decent counts.}
 

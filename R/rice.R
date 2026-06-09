@@ -53,32 +53,33 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
   F <- as.numeric(F)
   
   atoms <- (wght/1e3)*Av/12 # number of C atoms in a mg
-  C14_atoms <- F * C14.1950 * atoms # number of C14 atoms in 1950 in the same amount of sample
-  C14 <- as.numeric(ceiling(F * C14.1950 * atoms)) # C14 atoms roundest up
+  C14 <- as.numeric(ceiling(F * C14.1950 * atoms)) # C14 atoms rounded up
   
   # from the current, calculate amount of ions ending up at the C12 Faraday cup:
   i12 <- current/1.602e-19 # e, electric charge for a single proton, in coulomb
   # from this, we can model the numbers of C14 atoms arriving at the C14 detector:
   i14 <- C14.1950 * i12 * F # charge in A = protons arriving per second
   persecond <- round(i14, decimals)
-  i12 <- formatC(i12, format=format, digits=decimals)
-  
+
   atoms <- formatC(atoms, format=format, digits=decimals)
   C14.talk <- formatC(C14, format=format, digits=decimals)
-  decays <- formatC(C14 * log(2) / (5730 * 365.25), format="fg", digits=decimals)
+  decays_val <- C14 * log(2) / (5730 * 365.25) # per day
+  decays_str <- formatC(decays_val, format="fg", digits=decimals)
 
   if(talk) {
     message(wght, " mg carbon contains ", atoms, " C atoms")
-    message("14C atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk)
-    message(decays, " 14C atoms in the sample will decay each day")
-	if(as.AMS)
-      message(paste0("For a 12C current of ", current*1e6, " micro-ampere (", i12,
+    if(use.cc)
+      message("14C atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk) else
+        message("14C atoms remaining at ", age, " 14C BP (F=", round(F, decimals), "): ", C14.talk)
+    message(decays_str, " 14C atoms in the sample will decay each day")
+    if(as.AMS)
+      message(paste0("For a 12C current of ", current*1e6, " micro-ampere (", formatC(i12, format=format, digits=decimals),
         " 12C/second) at the AMS detector,\n  ",
         persecond, " 14C particles would be counted per second (",
         60*persecond, " per minute)" ))
   }
 
-  invisible(list(C14=C14, C14persecond=i14, decaysperday=as.numeric(decays), i12=current/1.602e-19, C14.1950=C14.1950, totC=as.numeric(atoms)))
+  invisible(list(C14=C14, C14persecond=i14, decaysperday=decays_val, i12=i12, C14.1950=C14.1950, totC=as.numeric(atoms)))
 }
 
 
@@ -92,8 +93,10 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #'
 #' Note that the calculations in this function do not include error multipliers or corrections such as for fractionation and backgrounds. 
 #' @return A sound (tone and or clicks) is played and returned invisibly.
-#' @param age The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).
+#' @param age The age of the sample (in C14 BP by default, or in cal BP if use.cc=FALSE).
 #' @param duration How long the sample will count (and sound) for in seconds. Defaults to 10 seconds.
+#' @param duration.unit Unit of the duration. Left empty by default (c()) which then makes seconds the unit ('s'), or if as.decays is used, days ('d'). Even if set to 'd', the sound will be played back using the seconds unit ('s'). 
+#' @param use.cc Whether or not to use the calibration curve. If set to \code{use.cc=FALSE} (the default), then we assume that the age is the radiocarbon age (this enables ages beyond the reach of the calibration curves to be used).
 #' @param as.decays Work with the C14 decays. Defaults to FALSE, which works with the number of C14 atoms instead. If set to true, you'll need larger sample sizes (wght) and longer counting times (duration) to get decent counts.
 #' @param wght The weight of the sample (in mg). Defaults to 1 mg.
 #' @param as.clicks Make the C-14 counts sound as clicks, based on random Poisson sampling.
@@ -115,100 +118,135 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #'   # decay events over 1 minute in 1 gram of carbon of age 500 14C BP:
 #'   radio(500, wght=1000, as.decays=TRUE, duration=60) 
 #' @export
-radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.tone=TRUE, click_length=80, tone.volume=0.5, noise=0.02, meander=0.005, play=interactive(), sr=44100, visualise=TRUE, cex=.6, return.sound=FALSE, ...) {
+radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=FALSE, wght=1, as.clicks=TRUE, as.tone=TRUE, click_length=80, tone.volume=0.5, noise=0.02, meander=0.005, play=interactive(), sr=44100, visualise=TRUE, cex=.6, return.sound=FALSE, ...) {
 
   hasaudio <- requireNamespace("audio", quietly=TRUE)
   hastuneR <- requireNamespace("tuneR", quietly=TRUE)
   if(!hasaudio)
     stop("Please install the audio package:\ninstall.packages(\"audio\")")
 
+  if(length(duration.unit) == 0)
+    duration.unit <- if(as.decays) "d" else "s"
   if(as.decays)
-	as.tone <- FALSE # no music
+    as.tone <- FALSE
 
-  counts <- howmuchC14(age, wght=wght, as.AMS=!as.decays, ...)
+  counts <- howmuchC14(age, wght=wght, as.AMS=!as.decays, use.cc=use.cc, ...)
+
   if(as.decays) # rate = per second
     rate <- counts$decaysperday / (60*60*24) else # C14 decays
       rate <- counts$C14persecond # C14 atoms
-	  
-  n <- sr * duration # number of steps
-  p <- rate / sr # probability per sample
-  events <- runif(n) < p # counts/decays, simulated by random Bernoulli trials
+  duration_sec <- duration * if(duration.unit == "d") 86400 else 1
+
+  C14_count <- rpois(1, rate * duration_sec) # simulate amount of particles...
+  event_times <- sort(runif(C14_count, 0, duration_sec)) # and their timing
+  #event_idx <- floor(event_times * sr) + 1 # bin them to the time steps
+  n <- sr * duration_sec # number of steps
 
   if(visualise) {
-	plot(0, type="n", xlim=c(0, duration), ylim=c(0, 1), xlab="duration (s)", ylab="", yaxt="n", yaxs="i", bty="n")
-	alpha <- 1/(1+((rate*duration)/200)^0.95) # at higher rates, lines become more transparent
-	abline(v=which(events)/sr, col=rgb(0,0,0, alpha))
-	rect(-10, .5, duration+10, 1.1, col="white", border=NA)
-    # C14_count <- rate*duration
-	C14_count <- sum(events)
-	
     if(as.decays) { # radiometric: counting decays, not atoms
-      C12_count <- counts$totC
-      AN <- counts$C14 / counts$totC
-	  asF <- AN / counts$C14.1950
-	  if(C14_count > 0) {
-        AN.sd <- AN / sqrt(C14_count)
-        asF.sd <- asF / sqrt(C14_count)
-        as.C14 <- F14CtoC14(asF, asF.sd, roundby=0)
-      } else {
-          AN.sd <- NA
+      A <- C14_count / duration
+      if(duration.unit == "d") # decays per day
+        A0 <- counts$decaysperday else
+          A0 <- counts$decaysperday / (24*3600) # per second
+      asF <- A / A0
+
+      has_counts <- C14_count > 0
+      if(has_counts)
+        asF.sd <- asF / sqrt(C14_count) else
           asF.sd <- NA
-          as.C14 <- F14CtoC14(asF, roundby=0)
-        }
+      as.C14 <- F14CtoC14(asF, if(has_counts) asF.sd, roundby=0)
     } else { # AMS: counting atoms
         C12_count <- counts$i12 * duration
         AN <- C14_count / C12_count
         asF <- AN / counts$C14.1950
-        if(C14_count > 0) {
+        has_counts <- C14_count > 0
+        if(has_counts) {
           AN.sd <- AN * sqrt(1/C14_count + 1/C12_count)
-          asF.sd <- AN.sd / counts$C14.1950
-		  as.C14 <- F14CtoC14(asF, asF.sd, roundby=0)
-        } else {
-            AN.sd <- NA
-            asF.sd <- NA
-			as.C14 <- F14CtoC14(asF, roundby=0)
-          }
+          asF.sd <- asF / sqrt(C14_count)
+      } else {
+          AN.sd <- NA
+          asF.sd <- NA
+        }
+        as.C14 <- F14CtoC14(asF, if(has_counts) asF.sd, roundby=0)
       }
-	
-    if(as.decays)
-      labels <- c(expression(C14~decays~(A %+-% sqrt(A))),
-        expression(C12~amount~(N %+-% sqrt(N))), 
-        "C14/C12 ratio (AN):", "relative to AD 1950 (F=AN/A0):", 
-        "as C14 BP (-8033*log(F)):") else
-          labels <- c(expression(C14~counts~(N %+-% sqrt(N))),
-            expression(C12~counts~(N %+-% sqrt(N))), 
-              "C14/C12 ratio (AN):", "relative to AD 1950 (F=AN/A0):", 
-              "as C14 BP (-8033*log(F)):")
-	values <- c(
-      paste(format(round(C14_count), format="fg"), "\u00B1", format(round(sqrt(C14_count)), format="fg")), 
-      paste(format(round(C12_count), format="fg"), "\u00B1", format(round(sqrt(C12_count)), format="fg")),
-      paste(format(AN, scientific=TRUE), "\u00B1", format(AN.sd, scientific=TRUE)),
-      paste(format(asF, format="fg"), "\u00B1", format(asF.sd, format="fg")),
-      paste(as.C14[1], "\u00B1", as.C14[2]))
-    legend(0, 1, legend=c(labels, values), cex=cex, ncol=2, 
-	  text.col=rep(c(1,rep(grey(.5), 3), 1),2), bty="n")
+
+   pm <- function(x, sd, sci=FALSE) # print x +- y
+     paste(format(x, scientific=sci), "\u00B1", format(sd, scientific=sci))
+
+    if(as.decays) {
+      labels <- c(expression({}^{14}*C ~ decays ~ (A %+-% sqrt(A))),
+        expression(relative~to~AD~1950~(F == A / A[0])),
+        expression(as ~ {}^{14}*C ~ BP == -8033 %.% ln(F)))
+      } else {
+        labels <- c(
+          expression({}^{14}*C ~ counts ~ (N %+-% sqrt(N))),
+          expression({}^{12}*C ~ counts ~ (N %+-% sqrt(N))),
+          expression({}^{14}*C/{}^{12}*C ~ ratio ~ (A[N])),
+          expression(relative ~ to ~ AD ~ 1950 ~ (F == A[N]/A[0])),
+          expression(as ~ {}^{14}*C ~ BP == -8033 %.% ln(F)))
+        }
+
+    values <- if(as.decays)
+      c(pm(round(C14_count), round(sqrt(C14_count))), pm(asF, asF.sd), paste(as.C14[1], "\u00B1", as.C14[2])) else
+        c(pm(round(C14_count), round(sqrt(C14_count))), pm(round(C12_count), round(sqrt(C12_count))),
+          pm(AN, AN.sd, TRUE), pm(asF, asF.sd), paste(as.C14[1], "\u00B1", as.C14[2]))
+
+    layout(matrix(c(1,2), nrow=2)) # first the equations
+    plot(0, type="n", xlim=c(0,1), ylim=c(0,1), bty="n", xaxt="n", yaxt="n", xlab="", ylab="")
+    line_height <- strheight("M") * 1.7 # flexible line spacing
+    nl <- length(labels)
+    y <- .95 - (0:(nl-1)) * line_height
+    if(as.decays) {
+      y <- y[1:3]
+      cols <- c(1, grey(0.5), 1)
+    } else
+        cols <- c(1, rep(grey(0.5), 3), 1)
+      cex_val <- par("pin")[2] / (2*nl) # scale relative to height
+    cex_val <- min(1, max(0.87, cex_val))
+
+    text(0.02, y, labels, cex=cex_val, adj=0, col=cols)
+    text(0.98, y, values, cex=cex_val, adj=1, col=cols)
+
+    par(mar=c(3, 1, 1, 1), mgp=c(2, .7,0))
+    xlab <- ifelse(duration.unit == "d", "duration (d)", "duration (s)")
+    plot(0, type="n", xlim=c(0, duration), ylim=c(0, 1), xlab=xlab, ylab="", yaxt="n", bty="n")
+    alpha <- 1/(1+((rate*duration)/200)^0.95) # transparency of the lines
+
+    event_times_plot <- if(duration.unit == "d")
+      event_times / (3600 * 24) else
+        event_times
+    segments(x0=event_times_plot, y0=0, x1=event_times_plot, y1=1, col=rgb(0,0,0,alpha))
   }
-	  
+
   # make random clicks based on the rate
-  click <- rnorm(click_length) * exp(-seq(0, 6, length.out = click_length))
-  click <- click / max(abs(click))
-  clicks <- numeric(n)
-  for(i in which(events)) {
-    end <- min(i + click_length - 1, n)
-    clicks[i:end] <- clicks[i:end] + click[1:(end - i + 1)]
+  if(as.clicks) {
+    audio_duration <- duration   # e.g. 10 seconds of playback
+    scale <- audio_duration / duration_sec
+
+    event_times_audio <- event_times * scale
+    n <- sr * audio_duration
+    event_idx <- floor(event_times_audio * sr) + 1
+
+    click <- rnorm(click_length) * exp(-seq(0, 6, length.out = click_length))
+    click <- click / max(abs(click))
+    clicks <- numeric(n)
+    for(i in event_idx) {
+      end <- min(i + click_length - 1, n)
+      clicks[i:end] <- clicks[i:end] + click[1:(end - i + 1)]
+    }
+    if(max(abs(clicks)) > 0)
+      clicks <- clicks / max(abs(clicks)) # normalise
   }
-  if(max(abs(clicks)) > 0)
-    clicks <- clicks / max(abs(clicks)) # normalise
 
   # make a sine wave based on the rate, perhaps wobble it a bit
   tone <- sin(2 * pi * rate * 1:(n) / sr)
   if(noise > 0) {
-    noise <- rnorm(n, 0, noise * sqrt(rate))
-    noise[is.na(noise)] <- 0
+    noise_vec <- rnorm(n, 0, noise * sqrt(rate))
+    noise_vec[is.na(noise_vec)] <- 0
     wobble <- numeric(n)
     wobble[1] <- rate
     for(i in 2:n)
-      wobble[i] <- max(0, wobble[i-1] + meander * (rate - wobble[i-1]) + noise[i])
+      wobble[i] <- max(0, wobble[i-1] + meander * (rate - wobble[i-1]) + noise_vec[i])
     tone <- sin(cumsum(2 * pi * wobble / sr))
   }
 
@@ -218,21 +256,27 @@ radio <- function(age, duration=10, as.decays=FALSE, wght=1, as.clicks=TRUE, as.
         sound <- clicks else 
           sound <- tone
 
-  if(play && (as.clicks+as.tone>0))
-    if(nrow(audio::audio.drivers()) > 0) # expected drivers are installed
-      audio::play(audio::audioSample(sound, sr)) else {
-        if(!hastuneR)
-          stop("Please install the tuneR package:\ninstall.packages(\"tuneR\")")
-        if(is.matrix(sound))
-          sound <- sound[1,] + sound[2,]
-        sound <- sound / max(abs(sound))
-        sound <- as.integer(sound * 32767) # scale to int16 range (full range of 16 bit sound)
+  if(play && (as.clicks+as.tone>0)) {
+   sys <- Sys.info()[["sysname"]] # Windows, Mac or Linux
+   if(sys %in% c("Darwin", "Windows") && nrow(audio::audio.drivers()) > 0) # can use 'play'
+     audio::play(audio::audioSample(sound, sr)) else {
+      if(is.matrix(sound))
+        sound <- sound[1,] + sound[2,] # reformat sound
+      mx <- max(abs(sound))
+      if(mx > 0)
+        sound <- sound / mx
 
-        wave <- tuneR::Wave(left=sound, samp.rate=sr, bit=16)
-        tmpwav <- tempfile(fileext=".wav")
-        tuneR::writeWave(wave, tmpwav)
-        system2("ffplay", args=c("-nodisp", "-autoexit", "-loglevel", "quiet", tmpwav))
-      }
+      wave <- tuneR::Wave(left=as.integer(sound * 32767), samp.rate=sr, bit=16) # 32767 = 16 bit
+      tmpwav <- tempfile(fileext=".wav")
+      tuneR::writeWave(wave, tmpwav)
+      player <- Sys.which(c("ffplay","pw-play","paplay","aplay"))
+      player <- player[nzchar(player)][1]
+      if(is.na(player))
+        stop("No audio player found")
+      system(paste(player, "-nodisp -vn -autoexit -loglevel quiet -hide_banner",
+        shQuote(tmpwav), "> /dev/null 2>&1"))
+     }
+  }
 
   if(return.sound)
     invisible(sound) else
