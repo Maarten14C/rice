@@ -99,13 +99,12 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #' @param use.cc Whether or not to use the calibration curve. If set to \code{use.cc=FALSE} (the default), then we assume that the age is the radiocarbon age (this enables ages beyond the reach of the calibration curves to be used).
 #' @param as.decays Work with the C14 decays. Defaults to FALSE, which works with the number of C14 atoms instead. If set to true, you'll need larger sample sizes (wght) and longer counting times (duration) to get decent counts.
 #' @param wght The weight of the sample (in mg). Defaults to 1 mg.
-#' @param as.clicks Make the C-14 counts sound as clicks, based on random Poisson sampling.
-#' @param as.tone Make the C-14 frequency (counts per second) sound as a wave (e.g., 105 cps becomes a 105 Hz sine wave). This can either be a constant wave or be meandering (see `noise` and `meander`).
-#' @param click_length Length of the clicks. Defaults to 80, but can be altered to make the clicks sound different
-#' @param tone.volume Volume of the tone/wave relative to that of the clicks.
-#' @param noise Deviation from the mean of the tone. Defaults to 0.02.
-#' @param meander Drift of the tone along the mean. Defaults to 0.005. 
 #' @param play Whether or not to play the sound
+#' @param as.clicks Make the C-14 counts sound as clicks, based on random Poisson sampling. Defaults to TRUE.
+#' @param click_length Length of the clicks. Defaults to 80, but can be altered to make the clicks sound different
+#' @param as.tone Make the C-14 frequency (counts per second) sound as a wave (e.g., 105 cps becomes a 105 Hz sine wave). This can either be a constant wave or be meandering (see `wobble`).
+#' @param tone.volume Volume of the tone/wave relative to that of the clicks.
+#' @param wobble Drift of the tone along the mean. Defaults to 0.00001. Increasing this value can cause the sound to change from a stable tone (low values of `wobble`) via an unstable one to noise and eventually clicks.  
 #' @param sr Sampling rate. This audio quality defaults to 44100 (per second), which is based on the CD standard.
 #' @param visualise the counts and calculation of the C14 age. Defaults to TRUE.
 #' @param cex Size of the font. Defaults to \code{cex=0.6}.
@@ -118,12 +117,18 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #'   # decay events over 1 minute in 1 gram of carbon of age 500 14C BP:
 #'   radio(500, wght=1000, as.decays=TRUE, duration=60) 
 #' @export
-radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=FALSE, wght=1, as.clicks=TRUE, as.tone=TRUE, click_length=80, tone.volume=0.5, noise=0.02, meander=0.005, play=interactive(), sr=44100, visualise=TRUE, cex=.6, return.sound=FALSE, ...) {
+radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=FALSE, wght=1, play=interactive(), as.clicks=TRUE, click_length=80, as.tone=TRUE, tone.volume=0.5, wobble=c(), sr=44100, visualise=TRUE, cex=.5, return.sound=FALSE, ...) {
 
   hasaudio <- requireNamespace("audio", quietly=TRUE)
   hastuneR <- requireNamespace("tuneR", quietly=TRUE)
   if(!hasaudio)
     stop("Please install the audio package:\ninstall.packages(\"audio\")")
+
+  if(as.decays && as.tone)
+    message("Tone not supported in as.decay mode")
+
+  if(!as.clicks && !as.tone)
+    message("No sound to play")
 
   if(length(duration.unit) == 0)
     duration.unit <- if(as.decays) "d" else "s"
@@ -139,7 +144,6 @@ radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=F
 
   C14_count <- rpois(1, rate * duration_sec) # simulate amount of particles...
   event_times <- sort(runif(C14_count, 0, duration_sec)) # and their timing
-  #event_idx <- floor(event_times * sr) + 1 # bin them to the time steps
   n <- sr * duration_sec # number of steps
 
   if(visualise) {
@@ -171,7 +175,7 @@ radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=F
       }
 
    pm <- function(x, sd, sci=FALSE) # print x +- y
-     paste(format(x, scientific=sci), "\u00B1", format(sd, scientific=sci))
+     paste(format(x, format="fg", scientific=sci), "\u00B1", format(sd, scientific=sci))
 
     if(as.decays) {
       labels <- c(expression({}^{14}*C ~ decays ~ (A %+-% sqrt(A))),
@@ -188,21 +192,22 @@ radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=F
 
     values <- if(as.decays)
       c(pm(round(C14_count), round(sqrt(C14_count))), pm(asF, asF.sd), paste(as.C14[1], "\u00B1", as.C14[2])) else
-        c(pm(round(C14_count), round(sqrt(C14_count))), pm(round(C12_count), round(sqrt(C12_count))),
+        c(pm(round(C14_count), round(sqrt(C14_count))), pm(round(C12_count), round(sqrt(C12_count)), TRUE),
           pm(AN, AN.sd, TRUE), pm(asF, asF.sd), paste(as.C14[1], "\u00B1", as.C14[2]))
 
     layout(matrix(c(1,2), nrow=2)) # first the equations
     plot(0, type="n", xlim=c(0,1), ylim=c(0,1), bty="n", xaxt="n", yaxt="n", xlab="", ylab="")
-    line_height <- strheight("M") * 1.7 # flexible line spacing
-    nl <- length(labels)
+	nl <- length(labels)
+	cex_val <- par("pin")[2] / (2*nl)
+	cex_val <- min(1, max(0.87, cex_val))
+	line_height <- strheight("M", cex = cex_val) * 1.7
     y <- .95 - (0:(nl-1)) * line_height
+
     if(as.decays) {
       y <- y[1:3]
       cols <- c(1, grey(0.5), 1)
     } else
         cols <- c(1, rep(grey(0.5), 3), 1)
-      cex_val <- par("pin")[2] / (2*nl) # scale relative to height
-    cex_val <- min(1, max(0.87, cex_val))
 
     text(0.02, y, labels, cex=cex_val, adj=0, col=cols)
     text(0.98, y, values, cex=cex_val, adj=1, col=cols)
@@ -238,18 +243,20 @@ radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=F
       clicks <- clicks / max(abs(clicks)) # normalise
   }
 
-  # make a sine wave based on the rate, perhaps wobble it a bit
-  tone <- sin(2 * pi * rate * 1:(n) / sr)
-  if(noise > 0) {
-    noise_vec <- rnorm(n, 0, noise * sqrt(rate))
-    noise_vec[is.na(noise_vec)] <- 0
-    wobble <- numeric(n)
-    wobble[1] <- rate
-    for(i in 2:n)
-      wobble[i] <- max(0, wobble[i-1] + meander * (rate - wobble[i-1]) + noise_vec[i])
-    tone <- sin(cumsum(2 * pi * wobble / sr))
+  # turn the count rate (counts/s=Hz) into a tone
+  if(as.tone) {
+    if(is.null(wobble))
+      wobble <- rate / (sr * 2000) # default perceptual smoothing  
+    rate_est <- numeric(n)
+    counts <- tabulate(floor(event_times * sr)+1, nbins=n)
+    rate_est[1] <- rate
+    for(i in 2:n) {
+      inst_rate <- counts[i] * sr
+      rate_est[i] <- (1-wobble)*rate_est[i-1] + wobble*inst_rate
+    }
+    tone <- sin(cumsum(2 * pi * rate_est / sr))
   }
-
+  
   if(as.clicks && as.tone)
     sound <- rbind(tone.volume*tone, clicks) else
       if(as.clicks)
