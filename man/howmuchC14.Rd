@@ -31,9 +31,9 @@ howmuchC14(
 
 \item{Av}{Avogadro's number, used to calculate the number of carbon atoms in the sample.}
 
-\item{C14.1950}{The standard 14C/C ratio at 0 cal BP (AD 1950), defined as 95\% of the C-14 activity of NBS Oxalic Acid I, normalized to d13C=–25 permille. This ratio is 1.176e-12, or in other words, 1.2 C-14 atoms per 1 trillion carbon atoms. Note that this is a conventional reference value, not the actual atmospheric 14C/C ratio in AD 1950. Due to the Suess effect (dilution by CO2 derived from burning C14-free fossil-fuel), the real atmospheric ratio in AD 1950 was already slightly lower.}
+\item{C14.1950}{The standard 14C/C ratio at 0 cal BP (AD 1950), defined as 95\% of the C-14 activity of NBS Oxalic Acid I (oxI), normalized to d13C=–25 permille.}
 
-\item{current}{The beam current of 12C+ ions as measured at the Faraday cup (C12 detector). Defaults to \code{current=25e-6}, 25 micro-Amperes, a typical value for graphite targets on modern AMS systems. Gas targets generally yield c. 4-5 times lower currents.}
+\item{current}{The beam current of 12C+ ions as measured at the Faraday cup (C12 detector). Defaults to \code{current=25e-6}, 25 microamperes, a typical value for graphite targets on modern AMS systems. Gas targets generally yield c. 4-5 times lower currents.}
 
 \item{format}{The format of the printed numbers. Defaults to either scientific (for large numbers) or as fixed-point, depending on the size of the number.}
 
@@ -61,7 +61,10 @@ Calculate the expected amount of remaining C14 atoms in a sample, given its weig
 }
 \details{
 The number of carbon atoms in the sample is estimated. Given the known C14/C ratio at F=1, and given the sample's age, we can estimate the number of remaining C14 atoms. Given a 12C current at the detector end of an AMS, we can then also calculate how many 14C ions would be counted per second and minute. 
-Note that backgrounds are not modelled (but could be investigated by e.g. typing \code{howmuchC14(45e3)} which gives as c. 1 background count per second). The calculated C14 count rate assumes no fractionation.
+Measured C14 activities/concentrations are expressed relative to 95% of the 14C/C ratio of the Oxalic Acid I (OxI) standard (and normalised to d13C=-25 permille). This standard was made of oxalic acid from a 1957 beet sugar crop, distributed by the US National Bureau of Standards. When this standard ran out, in 1977 a French beetroot crop was prepared the same way and distributed as OxII (cross-calibrated to OxI and still in use by most C-14 laboratories).  
+This standard ratio, "modern" (F14C=1) is 1.176e-12, or in other words, c. 1.2 C-14 atoms per 1 trillion carbon atoms. Note that this is a conventional reference value, not the actual atmospheric 14C/C ratio in AD 1950. Due to the Suess effect (dilution by CO2 from C14-free fossil fuel combustion), the real atmospheric ratio in AD 1950 was already slightly lower.
+
+Note that backgrounds are not modelled (but could be investigated by e.g. typing \code{howmuchC14(45e3)} which gives on the order of 1 background count per second). The calculated C14 count rate assumes no isotopic fractionation.
 }
 \examples{
   howmuchC14(0) # recent sample
