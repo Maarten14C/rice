@@ -1,6 +1,8 @@
 
 # can intcal.data be made to show the SH data? Currently shows the NH data
 
+# simulate spallation, Cs sputtering, AMS beam, stripping
+
 # sample weight functions (per Philippa Ascough's suggestion). Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
 # prepare a function to redo deltaR calcs when new Marine curves come out. Using BCADtocalBP(shells$collected), calBPto14C(cc=2) and shells$C14, shells$er. Unclear how the dR errors are obtained.
@@ -21,8 +23,8 @@
 #' @param wght The weight of the sample (in mg). Defaults to 1 mg.
 #' @param use.cc Whether or not to use the calibration curve. If set to \code{use.cc=FALSE}, then we assume that the age is the radiocarbon age (this enables ages beyond the reach of the calibration curves to be used).
 #' @param Av Avogadro's number, used to calculate the number of carbon atoms in the sample.
-#' @param C14.1950 The standard 14C/C ratio back in AD 1950 (1.176e-12, so around 1 in 1 trillion carbon atoms was a 14C atom at that moment in time.
-#' @param current The current of 12C+ ions arriving at the Faraday counter. Defaults to \code{current=25e-6}, 25 micro-Ampere.
+#' @param C14.1950 The standard 14C/C ratio at 0 cal BP (AD 1950), defined as 95\% of the C-14 activity of NBS Oxalic Acid I, normalized to d13C=–25 permille. This ratio is 1.176e-12, or in other words, 1.2 C-14 atoms per 1 trillion carbon atoms. Note that this is a conventional reference value, not the actual atmospheric 14C/C ratio in AD 1950. Due to the Suess effect (dilution by CO2 derived from burning C14-free fossil-fuel), the real atmospheric ratio in AD 1950 was already slightly lower.
+#' @param current The beam current of 12C+ ions as measured at the Faraday cup (C12 detector). Defaults to \code{current=25e-6}, 25 micro-Amperes, a typical value for graphite targets on modern AMS systems. Gas targets generally yield c. 4-5 times lower currents.
 #' @param format The format of the printed numbers. Defaults to either scientific (for large numbers) or as fixed-point, depending on the size of the number.
 #' @param cc calibration curve for C14 (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
@@ -91,6 +93,7 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #'
 #' Instead of counting the particles themselves (as done in an AMS), we can also count the decay events as used in radiometric counting. In this case, we need much larger samples (wght) and longer counting times (duration).
 #'
+#' To produce and listen to the sounds, the package 'audio' (and possibly 'tuneR') has to be installed. A warning will be provided if it isn't installed.
 #' Note that the calculations in this function do not include error multipliers or corrections such as for fractionation and backgrounds. 
 #' @return A sound (tone and or clicks) is played and returned invisibly.
 #' @param age The age of the sample (in C14 BP by default, or in cal BP if use.cc=FALSE).
@@ -101,10 +104,10 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #' @param wght The weight of the sample (in mg). Defaults to 1 mg.
 #' @param play Whether or not to play the sound
 #' @param as.clicks Make the C-14 counts sound as clicks, based on random Poisson sampling. Defaults to TRUE.
-#' @param click_length Length of the clicks. Defaults to 80, but can be altered to make the clicks sound different
+#' @param click_length Length of the clicks. Defaults to 80, but can be altered to make the clicks sound different (larger values leave a larger 'echo')
 #' @param as.tone Make the C-14 frequency (counts per second) sound as a wave (e.g., 105 cps becomes a 105 Hz sine wave). This can either be a constant wave or be meandering (see `wobble`).
 #' @param tone.volume Volume of the tone/wave relative to that of the clicks.
-#' @param wobble Drift of the tone along the mean. Defaults to 0.00001. Increasing this value can cause the sound to change from a stable tone (low values of `wobble`) via an unstable one to noise and eventually clicks.  
+#' @param wobble Drift of the tone along the mean. Defaults to 0.00001. Increasing this value can cause the sound to change from a stable tone (low values of `wobble`) via an unstable one to noise and eventually clicks. Values outside the 0-1 range are unlikely to work as expected. 
 #' @param sr Sampling rate. This audio quality defaults to 44100 (per second), which is based on the CD standard.
 #' @param visualise the counts and calculation of the C14 age. Defaults to TRUE.
 #' @param cex Size of the font. Defaults to \code{cex=0.6}.
@@ -225,36 +228,35 @@ radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=F
 
   # make random clicks based on the rate
   if(as.clicks) {
-    audio_duration <- duration   # e.g. 10 seconds of playback
-    scale <- audio_duration / duration_sec
+    audio_duration <- duration  # e.g. 10 seconds of playback
+    n <- sr * audio_duration # number of bins
+    scale <- audio_duration / duration_sec # if in days, replay in seconds
+    event_times_audio <- event_times * scale # times of events, in seconds
+    event_idx <- floor(event_times_audio * sr) + 1 # time bin of event
 
-    event_times_audio <- event_times * scale
-    n <- sr * audio_duration
-    event_idx <- floor(event_times_audio * sr) + 1
-
-    click <- rnorm(click_length) * exp(-seq(0, 6, length.out = click_length))
-    click <- click / max(abs(click))
+    click <- rnorm(click_length) * exp(-seq(0, 6, length.out=click_length)) # decaying noise 
+    click <- click / max(abs(click)) # normalise to peak value
     clicks <- numeric(n)
-    for(i in event_idx) {
-      end <- min(i + click_length - 1, n)
-      clicks[i:end] <- clicks[i:end] + click[1:(end - i + 1)]
+    for(i in event_idx) { # when a click happens...
+      end <- min(i + click_length-1, n) # find its time bins...
+      clicks[i:end] <- clicks[i:end] + click[1:(end-i+1)] # superpose it to any other clicks at that time
     }
     if(max(abs(clicks)) > 0)
       clicks <- clicks / max(abs(clicks)) # normalise
   }
 
-  # turn the count rate (counts/s=Hz) into a tone
+  # turn the count rate (counts/s=Hz) into a tone (will not be heard at low count rates)
   if(as.tone) {
-    if(is.null(wobble))
-      wobble <- rate / (sr * 2000) # default perceptual smoothing  
+    if(is.null(wobble)) # default perceptual smoothing
+      wobble <- rate / (sr * 2000) # frequency of events relative to sampling rate  
     rate_est <- numeric(n)
-    counts <- tabulate(floor(event_times * sr)+1, nbins=n)
-    rate_est[1] <- rate
+    counts <- tabulate(floor(event_times * sr)+1, nbins=n) # find the time bins
+    rate_est[1] <- rate # start the tone at frequency of 'rate'
     for(i in 2:n) {
-      inst_rate <- counts[i] * sr
-      rate_est[i] <- (1-wobble)*rate_est[i-1] + wobble*inst_rate
+      inst_rate <- counts[i] * sr # find the rate at time i
+      rate_est[i] <- (1-wobble)*rate_est[i-1] + wobble*inst_rate # mean-reverting stochastic process
     }
-    tone <- sin(cumsum(2 * pi * rate_est / sr))
+    tone <- sin(cumsum(2 * pi * rate_est / sr)) # wobbly wave
   }
   
   if(as.clicks && as.tone)

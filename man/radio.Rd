@@ -11,16 +11,15 @@ radio(
   use.cc = FALSE,
   as.decays = FALSE,
   wght = 1,
-  as.clicks = TRUE,
-  as.tone = TRUE,
-  click_length = 80,
-  tone.volume = 0.5,
-  noise = 0.02,
-  meander = 0.005,
   play = interactive(),
+  as.clicks = TRUE,
+  click_length = 80,
+  as.tone = TRUE,
+  tone.volume = 0.5,
+  wobble = c(),
   sr = 44100,
   visualise = TRUE,
-  cex = 0.6,
+  cex = 0.5,
   return.sound = FALSE,
   ...
 )
@@ -38,19 +37,17 @@ radio(
 
 \item{wght}{The weight of the sample (in mg). Defaults to 1 mg.}
 
-\item{as.clicks}{Make the C-14 counts sound as clicks, based on random Poisson sampling.}
+\item{play}{Whether or not to play the sound}
 
-\item{as.tone}{Make the C-14 frequency (counts per second) sound as a wave (e.g., 105 cps becomes a 105 Hz sine wave). This can either be a constant wave or be meandering (see `noise` and `meander`).}
+\item{as.clicks}{Make the C-14 counts sound as clicks, based on random Poisson sampling. Defaults to TRUE.}
 
-\item{click_length}{Length of the clicks. Defaults to 80, but can be altered to make the clicks sound different}
+\item{click_length}{Length of the clicks. Defaults to 80, but can be altered to make the clicks sound different (larger values leave a larger 'echo')}
+
+\item{as.tone}{Make the C-14 frequency (counts per second) sound as a wave (e.g., 105 cps becomes a 105 Hz sine wave). This can either be a constant wave or be meandering (see `wobble`).}
 
 \item{tone.volume}{Volume of the tone/wave relative to that of the clicks.}
 
-\item{noise}{Deviation from the mean of the tone. Defaults to 0.02.}
-
-\item{meander}{Drift of the tone along the mean. Defaults to 0.005.}
-
-\item{play}{Whether or not to play the sound}
+\item{wobble}{Drift of the tone along the mean. Defaults to 0.00001. Increasing this value can cause the sound to change from a stable tone (low values of `wobble`) via an unstable one to noise and eventually clicks. Values outside the 0-1 range are unlikely to work as expected.}
 
 \item{sr}{Sampling rate. This audio quality defaults to 44100 (per second), which is based on the CD standard.}
 
@@ -73,6 +70,7 @@ The sonification can be heard as 'Geiger counter-like' clicks (individual C14 at
 
 Instead of counting the particles themselves (as done in an AMS), we can also count the decay events as used in radiometric counting. In this case, we need much larger samples (wght) and longer counting times (duration).
 
+To produce and listen to the sounds, the package 'audio' (and possibly 'tuneR') has to be installed. A warning will be provided if it isn't installed.
 Note that the calculations in this function do not include error multipliers or corrections such as for fractionation and backgrounds.
 }
 \examples{

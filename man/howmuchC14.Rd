@@ -31,9 +31,9 @@ howmuchC14(
 
 \item{Av}{Avogadro's number, used to calculate the number of carbon atoms in the sample.}
 
-\item{C14.1950}{The standard 14C/C ratio back in AD 1950 (1.176e-12, so around 1 in 1 trillion carbon atoms was a 14C atom at that moment in time.}
+\item{C14.1950}{The standard 14C/C ratio at 0 cal BP (AD 1950), defined as 95\% of the C-14 activity of NBS Oxalic Acid I, normalized to d13C=–25 permille. This ratio is 1.176e-12, or in other words, 1.2 C-14 atoms per 1 trillion carbon atoms. Note that this is a conventional reference value, not the actual atmospheric 14C/C ratio in AD 1950. Due to the Suess effect (dilution by CO2 derived from burning C14-free fossil-fuel), the real atmospheric ratio in AD 1950 was already slightly lower.}
 
-\item{current}{The current of 12C+ ions arriving at the Faraday counter. Defaults to \code{current=25e-6}, 25 micro-Ampere.}
+\item{current}{The beam current of 12C+ ions as measured at the Faraday cup (C12 detector). Defaults to \code{current=25e-6}, 25 micro-Amperes, a typical value for graphite targets on modern AMS systems. Gas targets generally yield c. 4-5 times lower currents.}
 
 \item{format}{The format of the printed numbers. Defaults to either scientific (for large numbers) or as fixed-point, depending on the size of the number.}
 
