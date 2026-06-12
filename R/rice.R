@@ -23,8 +23,8 @@
 #' @param wght The weight of the sample (in mg). Defaults to 1 mg.
 #' @param use.cc Whether or not to use the calibration curve. If set to \code{use.cc=FALSE}, then we assume that the age is the radiocarbon age (this enables ages beyond the reach of the calibration curves to be used).
 #' @param Av Avogadro's number, used to calculate the number of carbon atoms in the sample.
-#' @param C14.1950 The standard 14C/C ratio at 0 cal BP (AD 1950), defined as 95\% of the C-14 activity of NBS Oxalic Acid I, normalized to d13C=–25 permille. This ratio is 1.176e-12, or in other words, 1.2 C-14 atoms per 1 trillion carbon atoms. Note that this is a conventional reference value, not the actual atmospheric 14C/C ratio in AD 1950. Due to the Suess effect (dilution by CO2 derived from burning C14-free fossil-fuel), the real atmospheric ratio in AD 1950 was already slightly lower.
-#' @param current The beam current of 12C+ ions as measured at the Faraday cup (C12 detector). Defaults to \code{current=25e-6}, 25 micro-Amperes, a typical value for graphite targets on modern AMS systems. Gas targets generally yield c. 4-5 times lower currents.
+#' @param C14.1950 The standard 14C/C ratio at 0 cal BP (AD 1950), defined as 95\% of the C-14 activity of NBS Oxalic Acid I, normalized to d13C=–25 permille. This ratio is 1.176e-12, or in other words, c. 1.2 C-14 atoms per 1 trillion carbon atoms. Note that this is a conventional reference value, not the actual atmospheric 14C/C ratio in AD 1950. Due to the Suess effect (dilution by CO2 derived from burning C14-free fossil-fuel), the real atmospheric ratio in AD 1950 was already slightly lower.
+#' @param current The beam current of 12C+ ions as measured at the Faraday cup (C12 detector). Defaults to \code{current=25e-6}, 25 microamperes, a typical value for graphite targets on modern AMS systems. Gas targets generally yield c. 4-5 times lower currents.
 #' @param format The format of the printed numbers. Defaults to either scientific (for large numbers) or as fixed-point, depending on the size of the number.
 #' @param cc calibration curve for C14 (see \code{caldist()}).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
@@ -235,7 +235,6 @@ radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=F
     event_idx <- floor(event_times_audio * sr) + 1 # time bin of event
 
     click <- runif(1, .5, 1.5) * rnorm(click_length) * exp(-seq(0, 6, length.out=click_length)) # decaying noise
-    #click <- click / max(abs(click)) # normalise to peak value
     clicks <- numeric(n)
     for(i in event_idx) { # when a click happens...
       end <- min(i + click_length-1, n) # find its time bins...
