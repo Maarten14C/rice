@@ -11,6 +11,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
 # Introduction
 
 Radiocarbon dating requires a range of calculations, for example calibration[^1][^2][^3][^4], translations between pMC, $\text{F}^{14}\text{C}$, $^{14}\text{C}$ age and $\Delta^{14}\text{C}$, and assessing the impacts of contamination. This package provides functions to do so in R.
@@ -49,15 +50,15 @@ y <- sapply(x, function(x) howmuchC14(x, talk=FALSE)[1])
 plot(x, y, type="l", xlab="time (cal BP)", ylab="C-14 remaining")
 ```
 
-Younger samples will have more C-14 atoms left than older ones, and thus will get higher counts-per-second at the AMS's C-14 detector. Want to hear a 'sonification' of the counts-per-second of C-14 atoms? (The frequency of the tone relates to the counts per second, and the clicks represent the particles crashing into the detector. A visualisation of the counts as well as how they translate into a C-14 age is also provided.) 
+Younger samples will have more C-14 atoms left than older ones, and thus will get higher counts-per-second at the AMS's C-14 detector. Want to hear a 'sonification' of the counts-per-second of C-14 atoms? The frequency of the tone relates to the counts per second, and the clicks represent the particles crashing into the detector. A visualisation of the counts as well as how they translate into a C-14 age is also provided. (This requires the 'audio' R package to be installed; if it isn't, a notification will be displayed with installation instructions.)
 
 ```{r, eval=FALSE}
 radio(30000)
 ```
 
-```{r, echo=FALSE, fig.width=5, fig.asp=.8}
-radio(30000, play=FALSE, return.sound=FALSE)
-```
+<img src="./radio.png" width="400" />
+
+---
 
 Radiocarbon laboratories correct their measurements for fractionation (to -25 &permil; by default) and for background measurements before they are reported. These calculations can be seen here:
 
