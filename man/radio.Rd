@@ -76,8 +76,8 @@ Note that the calculations in this function do not include error multipliers or 
 \examples{
   radio(0)
   radio(45000)
-  # decay events over 1 minute in 1 gram of carbon of age 500 14C BP:
-  radio(500, wght=1000, as.decays=TRUE, duration=60) 
+  # decay events over 1 hour in 1 gram of carbon of age 500 14C BP:
+  radio(500, as.decays=TRUE, wght=1000, duration=1/24) 
 }
 \author{
 Maarten Blaauw

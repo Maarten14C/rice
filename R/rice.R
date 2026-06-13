@@ -120,8 +120,8 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #' @examples
 #'   radio(0)
 #'   radio(45000)
-#'   # decay events over 1 minute in 1 gram of carbon of age 500 14C BP:
-#'   radio(500, wght=1000, as.decays=TRUE, duration=60, play=FALSE) 
+#'   # decay events over 1 hour in 1 gram of carbon of age 500 14C BP:
+#'   radio(500, as.decays=TRUE, wght=1000, duration=1/24) 
 #' @export
 radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=FALSE, wght=1, play=interactive(), as.clicks=TRUE, click_length=80, as.tone=TRUE, tone.volume=0.5, wobble=c(), sr=44100, visualise=TRUE, cex=.5, return.sound=FALSE, ...) {
 
@@ -130,10 +130,10 @@ radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=F
   if(!hasaudio)
     stop("Please install the audio package:\ninstall.packages(\"audio\")")
 
-  if(as.decays && as.tone)
+  if(as.decays && as.tone && play)
     message("Tone not supported in as.decay mode")
 
-  if(!as.clicks && !as.tone)
+  if(!as.clicks && !as.tone && play)
     message("No sound to play")
 
   if(length(duration.unit) == 0)
@@ -221,12 +221,12 @@ radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=F
     par(mar=c(3, 1, 1, 1), mgp=c(2, .7,0))
     xlab <- ifelse(duration.unit == "d", "duration (d)", "duration (s)")
     plot(0, type="n", xlim=c(0, duration), ylim=c(0, 1), xlab=xlab, ylab="", yaxt="n", bty="n")
-    alpha <- 1/(1+((rate*duration)/200)^0.95) # transparency of the lines
+    alpha <- 1/(1+((length(event_times))/200)^0.95) # transparency of the lines
 
     event_times_plot <- if(duration.unit == "d")
       event_times / (3600 * 24) else
         event_times
-    segments(x0=event_times_plot, y0=0, x1=event_times_plot, y1=1, col=rgb(0,0,0,alpha))
+    segments(x0=event_times_plot, y0=0, x1=event_times_plot, y1=1, lwd=.5, col=rgb(0,0,0,alpha))
   }
 
   # make random clicks based on the rate
@@ -243,8 +243,8 @@ radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=F
       end <- min(i + click_length-1, n) # find its time bins...
       clicks[i:end] <- clicks[i:end] + click[1:(end-i+1)] # superpose it to any other clicks at that time
     }
-    if(max(abs(clicks)) > 0)
-      clicks <- clicks / max(abs(clicks)) # normalise
+    if(max(abs(clicks), na.rm=TRUE) > 0)
+      clicks <- clicks / max(abs(clicks), na.rm=TRUE) # normalise
   }
 
   # turn the count rate (counts/s=Hz) into a tone (will not be heard at low count rates)
