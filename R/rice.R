@@ -121,7 +121,7 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #'   radio(0)
 #'   radio(45000)
 #'   # decay events over 1 minute in 1 gram of carbon of age 500 14C BP:
-#'   radio(500, wght=1000, as.decays=TRUE, duration=60) 
+#'   radio(500, wght=1000, as.decays=TRUE, duration=60, play=FALSE) 
 #' @export
 radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=FALSE, wght=1, play=interactive(), as.clicks=TRUE, click_length=80, as.tone=TRUE, tone.volume=0.5, wobble=c(), sr=44100, visualise=TRUE, cex=.5, return.sound=FALSE, ...) {
 
