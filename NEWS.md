@@ -4,9 +4,9 @@
 * to use a monthly postbomb calibration curve, try e.g. `calibrate(1.4, .005, is.F=TRUE, glue="NH1_monthly", BCAD=TRUE)`.
 * `calibratable` now calibrates dates faster by not reading in the same curve multiple times.
 * `draw.dates` now draws its distributions at more predictable peak heights.
-* updated the Hallstatt Plateau graph of the vignette.
+* updated the Hallstatt Plateau / Joy Division / Jocelyn Bell Burnell graph of the vignette.
 * `fromto` now has more predictable axis limits and drawing of calibration curves.
-* `howmuchC14` now invisibly reports both the number of remaining C14 atoms and the count rate per second at the detector.
+* `howmuchC14` now invisibly reports both the number of remaining C14 atoms and the count rate per second at the detector. More information has been added in the documentation for this function.
 * new function `radio` to listen to (and view) C-14 being detected in an AMS (or registered as decays for radiometric measurement)
 
 ******** TBC: UPDATE PAPER'S CITATION INFORMATION ONCE AVAILABLE *******
