@@ -555,10 +555,10 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
 
   if(talk)
     if(length(y.obs) == 1) {
-      message("Observed age: ", y.obs, "+-", y.obs.er, " C14 BP (", F.obs[,1], "+-", F.obs[,2], " F14C)")
-      message("Target age: ", y.target, " C14 BP (", F.target[,1], " F14C)")
+      message("Observed age: ", round(y.obs, decimals), " +- ", round(y.obs.er, decimals), " C14 BP (", F.obs[,1], "+-", F.obs[,2], " F14C)")
+      message("Target age: ", round(y.target, decimals), " C14 BP (", round(F.target[,1], decimals), " F14C)")
       if(is.na(perc.contam))
-        message("Calculation: (", F.obs[,1], "-", F.target[,1], ")/(", F.contam, " - ", F.target[,1], ") = ", round(median(frac), decimals+2)) else
+        message("Calculation: (", round(F.obs[,1], decimals), "-", round(F.target[,1],decimals), ")/(", round(F.contam, decimals), " - ", round(F.target[,1], decimals), ") = ", round(median(frac), decimals+2)) else
           message("Calculation: ", F.target[,1], " + ((", F.obs[,1], "-", F.target[,1], ") / ", frac, ") = ", round(median(F.contam), decimals+2))
       if(is.na(perc.contam)) {
         if(MC)
@@ -568,7 +568,7 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
           message("That's >100%, please check your values (is it a postbomb date?)")
       } else {
         if(MC)
-          message("F of contamination: ", F.contam, "+-", F.contam.er)	else
+          message("F of contamination: ", F.contam, " +- ", F.contam.er)	else
             message("F of contamination: ", F.contam)
       }
     }

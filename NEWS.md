@@ -8,6 +8,7 @@
 * `fromto` now has more predictable axis limits and drawing of calibration curves.
 * `howmuchC14` now invisibly reports both the number of remaining C14 atoms and the count rate per second at the detector. More information has been added in the documentation for this function.
 * new function `radio` to listen to (and view) C-14 being detected in an AMS (or registered as decays for radiometric measurement).
+* better rounding within the `muck` function.
 
 # rice 2.1.0
 * added a function to plot the c. 175k dates available within the p3k14c github R package (Bird et al. 2022). Note that p3k14c is not available on CRAN (too large) but it's on github. 
