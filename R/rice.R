@@ -25,6 +25,7 @@
 #' Note that backgrounds are not modelled (but could be investigated by e.g. typing \code{howmuchC14(45e3)} which gives on the order of 1 background count per second). The calculated C14 count rate assumes no isotopic fractionation.
 #' @return The estimated number of C14 atoms.
 #' @param age The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).
+#' is.F By default, ages are assumed to be in either cal BP or 14C BP. If \code{is.F=TRUE}, age is assumed to be on the F14C scale.
 #' @param wght The weight of the sample (in mg). Defaults to 1 mg.
 #' @param use.cc Whether or not to use the calibration curve. If set to \code{use.cc=FALSE}, then we assume that the age is the radiocarbon age (this enables ages beyond the reach of the calibration curves to be used).
 #' @param Av Avogadro's number, used to calculate the number of carbon atoms in the sample.
@@ -45,18 +46,21 @@
 #'   howmuchC14(55e3) # at dating limit
 #'   howmuchC14(145e3) # way beyond the dating limit, 1 C14 atom per mg remains
 #' @export
-howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.176e-12, current=25e-6, format="g", cc=1, postbomb=FALSE, glue=0, cc.dir=NULL, thiscurve=NULL, talk=TRUE, as.AMS=TRUE, decimals=3) {
+howmuchC14 <- function(age, wght=1, is.F=FALSE, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.176e-12, current=25e-6, format="g", cc=1, postbomb=FALSE, glue=0, cc.dir=NULL, thiscurve=NULL, talk=TRUE, as.AMS=TRUE, decimals=3) {
   if(length(age) > 1)
     stop("can only handle single value for age")
   
-  if(use.cc) {
-    F <- calBPtoF14C(age, cc=cc, postbomb=postbomb, glue=glue, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
-    if(is.na(F)) {
-      message("Cannot use calibration curve for this age, assuming C14 age")
-      F <- C14toF14C(age)
+  if(is.F)
+    F <- age else {
+      if(use.cc) {
+         F <- calBPtoF14C(age, cc=cc, postbomb=postbomb, glue=glue, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
+         if(is.na(F)) {
+           message("Cannot use calibration curve for this age, assuming C14 age")
+           F <- C14toF14C(age)
+         }
+       } else
+           F <- C14toF14C(age) # then 'age' is on the C14 scale
     }
-  } else
-      F <- C14toF14C(age) # then 'age' is on the C14 scale
   F <- as.numeric(F)
   
   atoms <- (wght/1e3)*Av/12 # number of C atoms in a mg
@@ -75,9 +79,12 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 
   if(talk) {
     message(wght, " mg carbon contains ", atoms, " C atoms")
-    if(use.cc)
-      message("14C atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk) else
-        message("14C atoms remaining at ", age, " 14C BP (F=", round(F, decimals), "): ", C14.talk)
+    if(is.F) 
+      message("14C atoms remaining at ", age, " F14C: ", C14.talk) else {
+        if(use.cc)
+          message("14C atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk) else
+            message("14C atoms remaining at ", age, " 14C BP (F=", round(F, decimals), "): ", C14.talk)
+		}
     message(decays_str, " 14C atoms in the sample will decay each day")
     if(as.AMS)
       message(paste0("For a 12C current of ", current*1e6, " micro-ampere (", formatC(i12, format=format, digits=decimals),
@@ -104,6 +111,7 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #' @param age The age of the sample (in C14 BP by default, or in cal BP if use.cc=FALSE).
 #' @param duration How long the sample will count (and sound) for in seconds. Defaults to 10 seconds.
 #' @param duration.unit Unit of the duration. Left empty by default (c()) which then makes seconds the unit ('s'), or if as.decays is used, days ('d'). Even if set to 'd', the sound will be played back using the seconds unit ('s'). 
+#' is.F By default, ages are assumed to be in either cal BP or 14C BP. If \code{is.F=TRUE}, age is assumed to be on the F14C scale.
 #' @param use.cc Whether or not to use the calibration curve. If set to \code{use.cc=FALSE} (the default), then we assume that the age is the radiocarbon age (this enables ages beyond the reach of the calibration curves to be used).
 #' @param as.decays Work with the C14 decays. Defaults to FALSE, which works with the number of C14 atoms instead. If set to true, you'll need larger sample sizes (wght) and longer counting times (duration) to get decent counts.
 #' @param wght The weight of the sample (in mg). Defaults to 1 mg.
@@ -125,7 +133,7 @@ howmuchC14 <- function(age, wght=1, use.cc=TRUE, Av=6.02214076e23, C14.1950=1.17
 #'   # decay events over 1 hour in 1 gram of carbon of age 500 14C BP:
 #'   radio(500, as.decays=TRUE, wght=1000, duration=1/24) 
 #' @export
-radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=FALSE, wght=1, play=interactive(), as.clicks=TRUE, click_length=80, as.tone=TRUE, tone.volume=0.5, wobble=c(), sr=44100, visualise=TRUE, cex=.5, return.sound=FALSE, ...) {
+radio <- function(age, duration=10, duration.unit=c(), is.F=FALSE, use.cc=FALSE, as.decays=FALSE, wght=1, play=interactive(), as.clicks=TRUE, click_length=80, as.tone=TRUE, tone.volume=0.5, wobble=c(), sr=44100, visualise=TRUE, cex=.5, return.sound=FALSE, ...) {
 
   hasaudio <- requireNamespace("audio", quietly=TRUE)
   hastuneR <- requireNamespace("tuneR", quietly=TRUE)
@@ -143,7 +151,7 @@ radio <- function(age, duration=10, duration.unit=c(), use.cc=FALSE, as.decays=F
   if(as.decays)
     as.tone <- FALSE
 
-  counts <- howmuchC14(age, wght=wght, as.AMS=!as.decays, use.cc=use.cc, ...)
+  counts <- howmuchC14(age, wght=wght, as.AMS=!as.decays, use.cc=use.cc, is.F=is.F, ...)
 
   if(as.decays) # rate = per second
     rate <- counts$decaysperday / (60*60*24) else # C14 decays

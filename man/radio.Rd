@@ -8,6 +8,7 @@ radio(
   age,
   duration = 10,
   duration.unit = c(),
+  is.F = FALSE,
   use.cc = FALSE,
   as.decays = FALSE,
   wght = 1,
@@ -29,7 +30,8 @@ radio(
 
 \item{duration}{How long the sample will count (and sound) for in seconds. Defaults to 10 seconds.}
 
-\item{duration.unit}{Unit of the duration. Left empty by default (c()) which then makes seconds the unit ('s'), or if as.decays is used, days ('d'). Even if set to 'd', the sound will be played back using the seconds unit ('s').}
+\item{duration.unit}{Unit of the duration. Left empty by default (c()) which then makes seconds the unit ('s'), or if as.decays is used, days ('d'). Even if set to 'd', the sound will be played back using the seconds unit ('s'). 
+is.F By default, ages are assumed to be in either cal BP or 14C BP. If \code{is.F=TRUE}, age is assumed to be on the F14C scale.}
 
 \item{use.cc}{Whether or not to use the calibration curve. If set to \code{use.cc=FALSE} (the default), then we assume that the age is the radiocarbon age (this enables ages beyond the reach of the calibration curves to be used).}
 

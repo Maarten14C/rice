@@ -7,6 +7,7 @@
 howmuchC14(
   age,
   wght = 1,
+  is.F = FALSE,
   use.cc = TRUE,
   Av = 6.02214076e+23,
   C14.1950 = 1.176e-12,
@@ -23,7 +24,8 @@ howmuchC14(
 )
 }
 \arguments{
-\item{age}{The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).}
+\item{age}{The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).
+is.F By default, ages are assumed to be in either cal BP or 14C BP. If \code{is.F=TRUE}, age is assumed to be on the F14C scale.}
 
 \item{wght}{The weight of the sample (in mg). Defaults to 1 mg.}
 
