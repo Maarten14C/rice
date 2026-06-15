@@ -25,7 +25,7 @@
 #' Note that backgrounds are not modelled (but could be investigated by e.g. typing \code{howmuchC14(45e3)} which gives on the order of 1 background count per second). The calculated C14 count rate assumes no isotopic fractionation.
 #' @return The estimated number of C14 atoms.
 #' @param age The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).
-#' is.F By default, ages are assumed to be in either cal BP or 14C BP. If \code{is.F=TRUE}, age is assumed to be on the F14C scale.
+#' @param is.F By default, ages are assumed to be in either cal BP or 14C BP. If \code{is.F=TRUE}, age is assumed to be on the F14C scale.
 #' @param wght The weight of the sample (in mg). Defaults to 1 mg.
 #' @param use.cc Whether or not to use the calibration curve. If set to \code{use.cc=FALSE}, then we assume that the age is the radiocarbon age (this enables ages beyond the reach of the calibration curves to be used).
 #' @param Av Avogadro's number, used to calculate the number of carbon atoms in the sample.
@@ -84,7 +84,7 @@ howmuchC14 <- function(age, wght=1, is.F=FALSE, use.cc=TRUE, Av=6.02214076e23, C
         if(use.cc)
           message("14C atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk) else
             message("14C atoms remaining at ", age, " 14C BP (F=", round(F, decimals), "): ", C14.talk)
-		}
+        }
     message(decays_str, " 14C atoms in the sample will decay each day")
     if(as.AMS)
       message(paste0("For a 12C current of ", current*1e6, " micro-ampere (", formatC(i12, format=format, digits=decimals),
@@ -111,7 +111,7 @@ howmuchC14 <- function(age, wght=1, is.F=FALSE, use.cc=TRUE, Av=6.02214076e23, C
 #' @param age The age of the sample (in C14 BP by default, or in cal BP if use.cc=FALSE).
 #' @param duration How long the sample will count (and sound) for in seconds. Defaults to 10 seconds.
 #' @param duration.unit Unit of the duration. Left empty by default (c()) which then makes seconds the unit ('s'), or if as.decays is used, days ('d'). Even if set to 'd', the sound will be played back using the seconds unit ('s'). 
-#' is.F By default, ages are assumed to be in either cal BP or 14C BP. If \code{is.F=TRUE}, age is assumed to be on the F14C scale.
+#' @param is.F By default, ages are assumed to be in either cal BP or 14C BP. If \code{is.F=TRUE}, age is assumed to be on the F14C scale.
 #' @param use.cc Whether or not to use the calibration curve. If set to \code{use.cc=FALSE} (the default), then we assume that the age is the radiocarbon age (this enables ages beyond the reach of the calibration curves to be used).
 #' @param as.decays Work with the C14 decays. Defaults to FALSE, which works with the number of C14 atoms instead. If set to true, you'll need larger sample sizes (wght) and longer counting times (duration) to get decent counts.
 #' @param wght The weight of the sample (in mg). Defaults to 1 mg.
@@ -236,7 +236,8 @@ radio <- function(age, duration=10, duration.unit=c(), is.F=FALSE, use.cc=FALSE,
     event_times_plot <- if(duration.unit == "d")
       event_times / (3600 * 24) else
         event_times
-    segments(x0=event_times_plot, y0=0, x1=event_times_plot, y1=1, lwd=.5, col=rgb(0,0,0,alpha))
+    if(length(event_times_plot) > 0)
+      segments(x0=event_times_plot, y0=0, x1=event_times_plot, y1=1, lwd=.5, col=rgb(0,0,0,alpha))
   }
 
   # make random clicks based on the rate

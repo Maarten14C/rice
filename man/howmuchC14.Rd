@@ -24,10 +24,11 @@ howmuchC14(
 )
 }
 \arguments{
-\item{age}{The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).
-is.F By default, ages are assumed to be in either cal BP or 14C BP. If \code{is.F=TRUE}, age is assumed to be on the F14C scale.}
+\item{age}{The age of the sample (in cal BP per default, or in C14 BP if use.cc=FALSE).}
 
 \item{wght}{The weight of the sample (in mg). Defaults to 1 mg.}
+
+\item{is.F}{By default, ages are assumed to be in either cal BP or 14C BP. If \code{is.F=TRUE}, age is assumed to be on the F14C scale.}
 
 \item{use.cc}{Whether or not to use the calibration curve. If set to \code{use.cc=FALSE}, then we assume that the age is the radiocarbon age (this enables ages beyond the reach of the calibration curves to be used).}
 
