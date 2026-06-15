@@ -5,4 +5,4 @@
 
 ## R CMD check results
 
-No changes to worse with rev. depends clam coffee rbacon rplum (I maintain these packages)
+No changes to worse with reverse depends clam coffee rbacon rplum (I maintain these packages)

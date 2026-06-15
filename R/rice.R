@@ -1,6 +1,8 @@
 
 # can intcal.data be made to show the SH data? Currently shows the NH data
 
+# add decay correction delta (difference between year of measurement and year of collection) D = 1000*[(1+D14C/1000)exp(lambda dt) - 1]
+
 # simulate spallation, Cs sputtering, AMS beam, stripping
 
 # sample weight functions (per Philippa Ascough's suggestion). Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
