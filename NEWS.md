@@ -6,7 +6,7 @@
 * `draw.dates` now draws its distributions at more predictable peak heights.
 * updated the Hallstatt Plateau / Joy Division / Jocelyn Bell Burnell graph of the vignette.
 * `fromto` now has more predictable axis limits and drawing of calibration curves.
-* `howmuchC14` now invisibly reports both the number of remaining C14 atoms and the count rate per second at the detector. More information has been added in the documentation for this function. The function also gains an option `is.F` for values entered as F14C instead of 14C BP. 
+* `howmuchC14` now invisibly reports both the number of remaining C14 atoms and the count rate per second at the detector. More information has been added in the documentation for this function. The function also gains an option `is.F` for values entered as F14C instead of as 14C BP. 
 * new function `radio` to listen to (and view) C-14 being detected in an AMS (or registered as decays for radiometric measurement).
 * better rounding within the `muck` function.
 
