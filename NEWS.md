@@ -1,3 +1,7 @@
+# rice 2.2.1
+* `draw.dates` now plots calibrated dates correctly also if cc>1.
+* `draw.dates` now plots any labels to the left, middle or right of calibrated dates. 
+
 # rice 2.2.0
 * postbomb dates are now plotted better in the `calibrate` function when using the option `glue`.
 * added the `glue` option to additional relevant functions such as `draw.dates`, `l.calib`, `r.calib`, `younger`, `older`, `p.range` and timescale-related functions (e.g., `calBPtoC14`, `C14tocalBP`).

@@ -1,4 +1,3 @@
-
 # can intcal.data be made to show the SH data? Currently shows the NH data
 
 # add decay correction delta (difference between year of measurement and year of collection) D = 1000*[(1+D14C/1000)exp(lambda dt) - 1]
@@ -82,8 +81,8 @@ howmuchC14 <- function(age, wght=1, is.F=FALSE, use.cc=TRUE, Av=6.02214076e23, C
     if(is.F) 
       message("14C atoms remaining at ", age, " F14C: ", C14.talk) else {
         if(use.cc)
-          message("14C atoms remaining at ", age, " cal BP (F=", round(F, decimals), "): ", C14.talk) else
-            message("14C atoms remaining at ", age, " 14C BP (F=", round(F, decimals), "): ", C14.talk)
+          message("14C atoms remaining at ", round(age, decimals), " cal BP (F=", round(F, decimals), "): ", C14.talk) else
+            message("14C atoms remaining at ", round(age, decimals), " 14C BP (F=", round(F, decimals), "): ", C14.talk)
         }
     message(decays_str, " 14C atoms in the sample will decay each day")
     if(as.AMS)
