@@ -11,7 +11,7 @@ draw.dates(
   cc = 1,
   postbomb = FALSE,
   bombalert = TRUE,
-  glue = 1,
+  glue = 0,
   as.F = TRUE,
   is.F = FALSE,
   is.pMC = FALSE,
@@ -186,9 +186,9 @@ draw.dates(
 
 \item{labels}{Add labels to the dates. Empty by default.}
 
-\item{label.x}{Horizontal position of the date labels. By default draws them before the youngest age (1), but can also draw them after the oldest age (2), or above its mean (3).}
+\item{label.x}{Horizontal position of the date labels. By default draws them before the youngest age (1), but can also draw them after the oldest age (2), or above its mean (3). Alternatively, the desired x coordinates for all dates can be provided.}
 
-\item{label.y}{Vertical positions of the depths/labels. Defaults to 0 (or 1 if label.x is 3 or 4).}
+\item{label.y}{Vertical positions of the depths/labels. Defaults to 0 (or 1 if label.x is 3 or 4). Alternatively, the desired y coordinates for all dates can be provided.}
 
 \item{label.cex}{Size of labels.}
 

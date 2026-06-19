@@ -252,17 +252,16 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
 #' age.range(caldist(130,20, bombalert=FALSE))
 #' @export
 age.range <- function(calib, prob=0.95, roundby=0, BCAD=FALSE) {
-  if(NCOL(calib) == 1) { # then it's NOT a 'calib' and we assume it's a vector
-    rng <- quantile(calib, c((1-prob)/2, 1 - (1-prob)/2))
+  if(is.null(dim(calib)) || ncol(calib) == 1) { # then it's NOT a 'calib' and we assume it's a vector
+    rng <- quantile(calib, c((1-prob)/2, 1 - (1-prob)/2) )
   } else {
     cdf <- cumsum(calib[,2] / sum(calib[,2]))
     rng <- approx(cdf, calib[,1],
       c((1-prob)/2, 1 - (1-prob)/2))$y
     }
-  rng <- rev(rng)
   if(BCAD && max(rng) > 0)
-    rev(rng)
-  return(round(rng, roundby))
+    rev <- rev(rng)
+  return(round(rev(rng), roundby))
 }
 
 
@@ -724,7 +723,7 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
   }
 
   # format the values
-  C14_sd <- paste(ys, " \u00b1 ", ers)
+  C14_sd <- paste0(ys, " \u00b1 ", ers)
   hpd_str <- paste0(froms, " \u2013 ", tos, " (", percs, "%)")
   rng_str <- paste0(max.rngs, " \u2013 ", min.rngs)
   
