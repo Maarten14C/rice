@@ -1,6 +1,7 @@
 # rice 2.2.1
 * `draw.dates` now plots calibrated dates correctly also if cc>1.
 * `draw.dates` now plots any labels to the left, middle or right of calibrated dates. Alternatively, the x and/or y coordinates of the labels can be specified, e.g., `labels.x=seq(1000, 0, length=length(y))`.
+* the `draw=FALSE` option in `calibrate` no longer throws an error.
 
 # rice 2.2.0
 * postbomb dates are now plotted better in the `calibrate` function when using the option `glue`.
