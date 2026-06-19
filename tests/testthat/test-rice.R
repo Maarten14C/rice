@@ -101,7 +101,7 @@ test_that("as.one returns average", {
   data(shroud)
   Zu <- grep("ETH", shroud$ID)
   result <- as.one(shroud$y[Zu],shroud$er[Zu], talk=FALSE)
-  expect_equal(nrow(result), 417)
+  expect_equal(nrow(result), 411)
 })
 
 

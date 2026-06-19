@@ -904,17 +904,16 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TR
       x <- xx[label.x]
       if(length(label.x) == length(labels)) # then we assume the x coordinates have been provided
         x <- label.x[i]
-      if(length(label.y) == length(labels))
-        y <- label.y[i] else
-          y <- depth[i]
+  #    if(length(label.y) == length(labels))
+  #      y <- label.y[i] else
+      y <- depth[i]
        # if(label.x > 2)
        #   ifelse(up, y <- y+1, y <- y-1)
-      }
 
       if(rotate.axes)
          text(y+label.offset[1], x+label.offset[2], labels[i], cex=label.cex, col=label.col[i], adj=label.adj, srt=label.rot) else
            text(x+label.offset[2], y+label.offset[1], labels[i], cex=label.cex, col=label.col[i], adj=label.adj, srt=label.rot)
-   # }
+    }
   }
 
   invisible(list(ages=replicate(ncol(probs), age.seq), probs=probs))

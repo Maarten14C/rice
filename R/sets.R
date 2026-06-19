@@ -88,10 +88,11 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE
 
   if(length(d.lim) == 0)
     d.lim <- c(0, length(y)+1)   
-  calib <- draw.dates(y, er, d.lim=d.lim, BCAD=BCAD, age.lim=age.lim, age.lab=age.lab, col=calib.col, mirror=FALSE, up=TRUE, hpd.col=calib.col, border=NA, yaxt="n", d.lab="", bty=bty, prob=prob)  
-  
+
+  calib <- draw.dates(y, er, d.lim=d.lim, BCAD=BCAD, postbomb=postbomb, is.F=is.F, as.F=as.F, thiscurve=thiscurve, age.lim=age.lim, threshold=threshold, age.lab=age.lab, col=calib.col, mirror=FALSE, up=TRUE, hpd.col=calib.col, border=NA, yaxt="n", d.lab="", bty=bty, prob=prob)
+
   xmin <- c(); xmax <- c()
-  for(i in 1:length(y))	{
+  for(i in 1:length(y)) {
     yr <- calib$ages[,i] 
     xmin <- min(xmin, yr)
     xmax <- max(xmax, yr)
@@ -105,6 +106,7 @@ as.one <- function(y, er, cc=1, postbomb=FALSE, deltaR=0, deltaSTD=0, is.F=FALSE
 
   as.dist <- cbind(xseq, product/max(product))
   hpds <- draw.dist(as.dist, y.pos=max(d.lim), prob=prob, dist.col=one.col, fraction=one.height, as.unit=FALSE)
+
   if(talk) {
     as.points <- suppressWarnings(point.estimates(as.dist, rounded=roundby))
     message("point estimates (mean, median, mode and midpoint): ", as.points[1], ", ", as.points[2], ", ", as.points[3], " & ", as.points[4], ifelse(BCAD, " cal BC/AD", " cal BP"))
