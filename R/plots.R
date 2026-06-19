@@ -882,7 +882,8 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TR
     peak <- ex
 
   # estimate the required distribution height
-  peak <- peak * (max(depth, na.rm=TRUE) - min(depth, na.rm=TRUE)) / length(depth)
+  if(diff(range(depth, na.rm=TRUE)) > 0)
+    peak <- peak * (max(depth, na.rm=TRUE) - min(depth, na.rm=TRUE)) / length(depth)
   if(length(peak) == 1)
     peak <- rep(peak, nrow(probs))
 
