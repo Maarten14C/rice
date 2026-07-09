@@ -99,7 +99,7 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=
 #' @title Calculate a point estimate
 #' @description Calculate a point estimate of a calibrated distribution - either the weighted mean, the median or the mode (maximum). Note that point estimates often tend to be very poor representations of entire calibrated distributions, so please be careful and do not reduce entire calibrated distributions to just 1 point value.
 #' @return The chosen point estimates
-#' @param calib The calibrated distribution, as returned from caldist()
+#' @param calib The calibrated distribution, as returned from caldist(). Alternatively this can be multiple values (e.g., rnorm(1e3, 2450,50)), from which the point estimates will be returned.
 #' @param wmean Report the weighted mean (defaults to TRUE)
 #' @param median Report the median (defaults to TRUE)
 #' @param mode Report the mode, which is the year with the maximum probability (defaults to TRUE)
@@ -113,6 +113,12 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=
 #' abline(v=point.estimates(tmp), col=1:4)
 #' @export
 point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=TRUE, prob=.95, rounded=1, every=1) {
+
+ if(is.null(dim(calib)) || ncol(calib) == 1) { # then it's NOT a 'calib' but just a set of values. Reformat into a 'histogram'
+    asdist <- density(unlist(calib))
+    calib <- cbind(asdist$x, asdist$y)	 
+  }	 
+    
   to.report <- c()
   name <- c()
   calib[,2] <- calib[,2] / sum(calib[,2])
@@ -149,7 +155,7 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 #' @title Calculate highest posterior density
 #' @description Calculate highest posterior density ranges of a calibrated distribution
 #' @return The highest posterior density ranges, as three columns: from age, to age, and the corresponding percentage(s) of the range(s)
-#' @param calib The calibrated distribution, as returned from caldist()
+#' @param calib The calibrated distribution, as returned from caldist(). Alternatively this can be multiple values (e.g., rnorm(1e3, 2450,50)), from which the hpd ranges will be returned.
 #' @param prob Probability range which should be calculated. Default \code{prob=0.95}.
 #' @param return.raw The raw data to calculate hpds can be returned, e.g. to draw polygons of the calibrated distributions. Defaults to \code{return.raw=FALSE}.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
@@ -166,6 +172,11 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 #' abline(v=unlist(myhpds[,1:2]), col=4)
 #' @export
 hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.round=0, prob.round=1, every=0.1, bins=20, add.zeros=FALSE) {
+
+  if(is.null(dim(calib)) || ncol(calib) == 1) { # then it's NOT a 'calib' but just a set of values. Reformat into 'histogram'
+     asdist <- density(unlist(calib))
+     calib <- cbind(asdist$x, asdist$y)	 
+  }	
 
   # re-interpolate to desired precision
   if(ka) {
@@ -244,7 +255,7 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
 #' @title Calculate age ranges
 #' @description Calculate the quantile age ranges of a calibrated distribution
 #' @return The highest posterior density ranges, as three columns: from age, to age, and the corresponding percentage(s) of the range(s)
-#' @param calib The calibrated distribution, as returned from caldist()
+#' @param calib The calibrated distribution, as returned from caldist(). Alternatively this can be multiple values (e.g., rnorm(1e3, 2450,50)), from which the quantiles/age ranges will be returned.
 #' @param prob Probability range which should be calculated. Default \code{prob=0.95}.
 #' @param roundby Rounding. Defaults to 0 decimals.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.

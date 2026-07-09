@@ -1,5 +1,5 @@
-MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear,ReservoirAge,ReservoirErr,C14age,C14err,LabID,Delta13C,TaxaNo,RefNo,nextime,last_changed
-688,8.22,56.72,55,106,Heier-Nielse:1995,"Thyborðn Kanal, Limfjorden, at Sandene",,b,1909,547,106,663,106,AAR-986,,45,74,,11/08/2020 23:00
+ï»¿MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear,ReservoirAge,ReservoirErr,C14age,C14err,LabID,Delta13C,TaxaNo,RefNo,nextime,last_changed
+688,8.22,56.72,55,106,Heier-Nielse:1995,"Thyborï¿½n Kanal, Limfjorden, at Sandene",,b,1909,547,106,663,106,AAR-986,,45,74,,11/08/2020 23:00
 690,8.23,56.62,68,59,Heier-Nielse:1995,"Nissum Bredning, Limfjorden",,b,1909,560,59,676,59,AAR-990,,2,74,,11/08/2020 23:00
 3,10.67,79.57,-9,45,"Mangerud, J :1975","Magdalenafj, Spitsbergen",,,1878,500,46,625,45,T-1541,,23,102,,11/08/2020 23:00
 4,14,79.5,-73,70,"Olsson, 1960","Tangen, Mushamna, Spitsbergen",,"g,h",1952,327,72,530,70,U-133,,23,111,,10/10/2025 14:45
@@ -17,12 +17,12 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 708,-114.7,68.77,224,40,Coulthard RD:2010,"Dophin & Union Str., NU",Arctic Ocean Coastal,,1914,709,40,830,40,CAMS-57295,0.6,155,32,,11/08/2020 23:00
 705,-161.42,70.4,454,40,"McNeely R., :2006","Chukchi Sea, AK",Arctic Ocean Coastal,,1913,940,40,1060,40,CAMS-57292,0.1,131,105,,11/08/2020 23:00
 703,-116,69.13,274,50,Coulthard RD:2010,"Dophin & Union Str., NU",Arctic Ocean Coastal,,1915,757,50,880,50,CAMS-34653,2.49,36,32,,11/08/2020 23:00
-20,-19.27,74.38,-23,38,HŒkansson S:1973,S of L. Penduluisoen and SE of Clavering,,,1899,494,39,591,38,Lu-0650,,315,68,,11/08/2020 23:00
-21,-21.5,73.47,37,47,HŒkansson S:1973,"Mackenziebugt, NE Greenland",,,1900,554,48,650,47,Lu-0609,,315,68,,11/08/2020 23:00
-22,-21.5,73.47,7,54,HŒkansson S:1973,"Mackenziebugt, NE Greenland",,,1900,524,54,620,54,Lu-0610,,315,68,,11/08/2020 23:00
-23,-22.55,70.83,27,39,HŒkansson S:1973,"Fame Qer, Scoresby Sund, NE Greenland",,,1899,544,40,641,39,Lu-0643,,315,68,,11/08/2020 23:00
+20,-19.27,74.38,-23,38,HÃ¥kansson S:1973,S of L. Penduluisoen and SE of Clavering,,,1899,494,39,591,38,Lu-0650,,315,68,,11/08/2020 23:00
+21,-21.5,73.47,37,47,HÃ¥kansson S:1973,"Mackenziebugt, NE Greenland",,,1900,554,48,650,47,Lu-0609,,315,68,,11/08/2020 23:00
+22,-21.5,73.47,7,54,HÃ¥kansson S:1973,"Mackenziebugt, NE Greenland",,,1900,524,54,620,54,Lu-0610,,315,68,,11/08/2020 23:00
+23,-22.55,70.83,27,39,HÃ¥kansson S:1973,"Fame Qer, Scoresby Sund, NE Greenland",,,1899,544,40,641,39,Lu-0643,,315,68,,11/08/2020 23:00
 692,8.65,56.45,375,63,Heier-Nielse:1995,"Struer, Limfjorden",,b,1886,886,63,1003,63,AAR-989,,45,74,,11/08/2020 23:00
-38,-54.73,72.37,-193,61,"Mšrner, N.-:1990",Proven harvour,,l,1936,250,45,410,44,K-381,-0.1,155,107,,10/03/2026 15:50
+38,-54.73,72.37,-193,61,"MÃ¶rner, N.-:1990",Proven harvour,,l,1936,250,45,410,44,K-381,-0.1,155,107,,10/03/2026 15:50
 31,-18.73,76.75,4,64,"Funder, S, 1:1982",Danmarkshavn (depth up to ten fathoms),,"g(1),l",1907,503,58,613,58,K-353,0.6,152,53,,10/03/2026 15:50
 687,9,56.8,-270,60,"Krog, H and T:1974","Limfjorden, Denmark",,"b,j",1952,130,52,333,51,K-433,-1,178,89,,10/03/2026 15:50
 30,-27.13,70.47,-67,62,"Tauber, H an:1975",Hekla Havn,,l,1933,375,74,537,73,K-345,-1,108,144,,10/03/2026 15:50
@@ -37,7 +37,7 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 36,-53.5,69.25,-261,64,"Krog, H and T:1974","Disco, Greenland",,"c,e",1902,256,72,351,71,K-338,-1,155,89,,10/03/2026 15:50
 35,-51.13,69.22,-196,64,"Krog, H and T:1974","Jacobshavn, Greenland",,e,1898,321,73,419,72,K-337,-1,155,89,,10/03/2026 15:50
 709,-114.7,68.77,124,40,Coulthard RD:2010,"Dophin & Union Str., NU",Arctic Ocean Coastal,,1913,610,40,730,40,CAMS-57296,1.1,148,32,,11/08/2020 23:00
-694,8.82,56.72,21,67,Heier-Nielse:1995,"Glyngðr, Limfjorden",,b,1886,532,67,649,67,AAR-992,,1,74,,11/08/2020 23:00
+694,8.82,56.72,21,67,Heier-Nielse:1995,"Glyngï¿½r, Limfjorden",,b,1886,532,67,649,67,AAR-992,,1,74,,11/08/2020 23:00
 695,8.88,56.77,162,62,Heier-Nielse:1995,"Nykobing Mors, Limfjorden",,b,1906,665,62,771,62,AAR-1073,,174,74,,11/08/2020 23:00
 696,9,56.95,-46,59,Heier-Nielse:1995,"Limfjorden, Denmark",,"b,c",1905,462,59,564,59,AAR-903,,178,74,,11/08/2020 23:00
 698,10.28,56.97,115,62,Heier-Nielse:1995,"Nordmandshage, Limfjorden natural banks",,b,1895,635,62,734,62,AAR-900,,178,74,,11/08/2020 23:00
@@ -47,12 +47,12 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 57,-22,64,-60,51,"Broecker, W :1961","Faxa Bay, Kollafjord, Iceland",,,1946,353,52,543,51,L-576C,,172,24,,11/08/2020 23:00
 58,-22,64,18,51,"Broecker, W :1961","Faxa Bay, Kollafjord, Iceland",,,1900,535,51,631,51,L-576H,,172,24,,11/08/2020 23:00
 59,-22,64,57,51,"Broecker, W :1961","Faxa Bay, Kollafjord, Iceland",,,1840,586,52,715,51,L-5761,,172,24,,11/08/2020 23:00
-60,-22,65.17,-108,35,HŒkansson S:1984,"Reykajavik, SW Iceland (3 m)",,,1900,409,36,505,35,Lu-2006,,155,71,,11/08/2020 23:00
-61,-14.25,64.67,-135,41,HŒkansson S:1984,"Djupivogur, E. Iceland (6 m)",,,1898,382,42,480,41,Lu-2007,,155,71,,11/08/2020 23:00
-62,-14,65.28,-124,41,HŒkansson S:1984,"Seydisfjordur, E. Iceland (40 m)",,,1926,327,42,480,41,Lu-2008,,131,71,,11/08/2020 23:00
-63,-22.5,64.33,-134,35,HŒkansson S:1984,"Faxafloi, SW Iceland (33m)",,,1926,317,36,470,35,Lu-2009,,131,71,,11/08/2020 23:00
-64,-22.2,64.12,-103,42,HŒkansson S:1984,"Faxafloi, SW Iceland (48 m)",,,1939,334,43,500,42,Lu-2010,,19,71,,11/08/2020 23:00
-65,-17.5,66,-164,34,HŒkansson S:1984,"Skjalfani, N. Iceland (22 m)",,,1926,287,35,440,34,Lu-2011,,19,71,,11/08/2020 23:00
+60,-22,65.17,-108,35,HÃ¥kansson S:1984,"Reykajavik, SW Iceland (3 m)",,,1900,409,36,505,35,Lu-2006,,155,71,,11/08/2020 23:00
+61,-14.25,64.67,-135,41,HÃ¥kansson S:1984,"Djupivogur, E. Iceland (6 m)",,,1898,382,42,480,41,Lu-2007,,155,71,,11/08/2020 23:00
+62,-14,65.28,-124,41,HÃ¥kansson S:1984,"Seydisfjordur, E. Iceland (40 m)",,,1926,327,42,480,41,Lu-2008,,131,71,,11/08/2020 23:00
+63,-22.5,64.33,-134,35,HÃ¥kansson S:1984,"Faxafloi, SW Iceland (33m)",,,1926,317,36,470,35,Lu-2009,,131,71,,11/08/2020 23:00
+64,-22.2,64.12,-103,42,HÃ¥kansson S:1984,"Faxafloi, SW Iceland (48 m)",,,1939,334,43,500,42,Lu-2010,,19,71,,11/08/2020 23:00
+65,-17.5,66,-164,34,HÃ¥kansson S:1984,"Skjalfani, N. Iceland (22 m)",,,1926,287,35,440,34,Lu-2011,,19,71,,11/08/2020 23:00
 34,-51.75,64.2,-36,64,"Krog, H and T:1974","Godthab, Greenland",,e,1887,475,59,591,59,K-336,-1,155,89,,10/03/2026 15:50
 67,-15.32,66.25,-16,64,"Krog, H and T:1974","Thorshofn, Iceland",,j,1913,470,60,590,59,K-335,-1,155,89,,10/03/2026 15:50
 68,-7.33,62.07,-142,64,"Krog, H and T:1974","Sorvag, Vago, Faroe Islands",,j,1905,366,73,468,72,K-334,-1,155,89,,10/03/2026 15:50
@@ -64,31 +64,31 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 74,6,54,-71,105,"Weidman, C R:1995",German Bight,North Sea,d,1950,333,105,532,105,OS-0094,,19,154,,11/08/2020 23:00
 75,6,54,92,116,"Weidman, C R:1995",German Bight,North Sea,d,1954,488,119,695,116,OS-rec1018,,19,154,,11/08/2020 23:00
 76,9.3,58.73,-228,57,"Mangerud, J,:1972","Gronholmsund, Risor, Aust-Agder, Norway",,,1905,280,57,382,57,T-960,,146,101,,11/08/2020 23:00
-77,11.43,58.25,-197,50,HŒkansson S:1970,"Near Kristingeberg, island of Skaftoland",,g(8),1896,322,50,420,50,Lu-237,,315,67,,11/08/2020 23:00
+77,11.43,58.25,-197,50,HÃ¥kansson S:1970,"Near Kristingeberg, island of Skaftoland",,g(8),1896,322,50,420,50,Lu-237,,315,67,,11/08/2020 23:00
 78,12,58,-94,80,"Olsson, I U,:1969","Bohuslan, Sweden U-607",,"c,g",1935,350,80,510,80,U-607,,186,114,,11/08/2020 23:00
-79,11.52,58.02,-174,46,HŒkansson S:1969,"Haron, Bohuslan, Sweden",,g(15),1935,270,47,430,46,Lu-236,,153,66,,11/08/2020 23:00
-80,11.62,57.78,-194,46,HŒkansson S:1969,"Roro, N archipelago of Goteborg, Sweden",,g(10),1930,247,47,410,46,Lu-235,,39,66,,11/08/2020 23:00
-81,11.62,57.78,-234,57,HŒkansson S:1969,"Roro, N archipelago of Goteborg, Sweden",,g(10),1930,207,57,370,57,Lu-234,,32,66,,11/08/2020 23:00
+79,11.52,58.02,-174,46,HÃ¥kansson S:1969,"Haron, Bohuslan, Sweden",,g(15),1935,270,47,430,46,Lu-236,,153,66,,11/08/2020 23:00
+80,11.62,57.78,-194,46,HÃ¥kansson S:1969,"Roro, N archipelago of Goteborg, Sweden",,g(10),1930,247,47,410,46,Lu-235,,39,66,,11/08/2020 23:00
+81,11.62,57.78,-234,57,HÃ¥kansson S:1969,"Roro, N archipelago of Goteborg, Sweden",,g(10),1930,207,57,370,57,Lu-234,,32,66,,11/08/2020 23:00
 82,9.88,57.73,-151,38,"Mangerud, J :1975","Skagerak, Norway",,,1906,352,39,458,38,T-1532,,163,102,,11/08/2020 23:00
 685,9,56.8,-93,64,"Krog, H and T:1974","Fur Sund, Limfjorden, Denmark",,"b,j",1886,418,59,535,58,K-333,-1,155,89,,10/03/2026 15:50
 84,10.53,57.5,-86,58,Heier-Nielse:1995,"W of Uirsholmene, Kattegat (15 m)",,,1912,401,58,520,58,AAR-1074,,243,74,,11/08/2020 23:00
 85,10.6,57.48,-168,70,Heier-Nielse:1995,"NE of Hirsholmene, Kattegat (19 m)",,,1907,331,70,441,70,AAR-1075,,91,74,,11/08/2020 23:00
 86,10.6,57.33,-196,74,Heier-Nielse:1995,Kattegat off Saeby,,,1916,283,74,409,74,AAR-904,,254,74,,11/08/2020 23:00
-87,10.73,57.17,-185,58,Heier-Nielse:1995,"Lesð Rende Fyrskib, Kattegat (18 m)",,,1885,328,58,444,58,AAR-1071,,174,74,,11/08/2020 23:00
+87,10.73,57.17,-185,58,Heier-Nielse:1995,"Lesï¿½ Rende Fyrskib, Kattegat (18 m)",,,1885,328,58,444,58,AAR-1071,,174,74,,11/08/2020 23:00
 88,11.58,56.75,28,60,Heier-Nielse:1995,"SE of Anholt Fyi, Kattegat (40 m)",,,1911,516,60,635,60,AAR-1068,,243,74,,11/08/2020 23:00
 89,11.22,56.05,-93,58,Heier-Nielse:1995,"N of Sj. Odde, Gronne Revic Kattegat (19",,,1909,399,58,515,58,AAR-1070,,19,74,,11/08/2020 23:00
-90,12.55,56.07,-170,59,Heier-Nielse:1995,ðresund off HelIebaek,,,1885,343,59,459,59,AAR-905,,7,74,,11/08/2020 23:00
-91,12.63,55.95,-138,54,Heier-Nielse:1995,Vedbaek ðresund (15-18 m),,,1886,373,54,490,54,AAR-993,,2,74,,11/08/2020 23:00
+90,12.55,56.07,-170,59,Heier-Nielse:1995,ï¿½resund off HelIebaek,,,1885,343,59,459,59,AAR-905,,7,74,,11/08/2020 23:00
+91,12.63,55.95,-138,54,Heier-Nielse:1995,Vedbaek ï¿½resund (15-18 m),,,1886,373,54,490,54,AAR-993,,2,74,,11/08/2020 23:00
 92,10.88,55.47,-262,56,Heier-Nielse:1995,Storebaelt,,,1908,233,56,346,56,AAR-988,,1,74,,11/08/2020 23:00
-93,9.72,55.28,-213,58,Heier-Nielse:1995,"Brandsð Bredning, Lillebaelt",,,1886,298,58,415,58,AAR-991,,1,74,,11/08/2020 23:00
-701,10.05,55.77,-44,66,Heier-Nielse:1995,"Horsens Fjord at Vorsð (10 m -black,stin",,b,1945,371,66,559,66,AAR-994,,1,74,,11/08/2020 23:00
+93,9.72,55.28,-213,58,Heier-Nielse:1995,"Brandsï¿½ Bredning, Lillebaelt",,,1886,298,58,415,58,AAR-991,,1,74,,11/08/2020 23:00
+701,10.05,55.77,-44,66,Heier-Nielse:1995,"Horsens Fjord at Vorsï¿½ (10 m -black,stin",,b,1945,371,66,559,66,AAR-994,,1,74,,11/08/2020 23:00
 699,10.22,56.53,411,58,Heier-Nielse:1995,"Randers Fjord, by Holbaekgard 4 m",,b,1915,894,58,1017,58,AAR-985,,45,74,,11/08/2020 23:00
 697,9.12,56.98,173,50,Heier-Nielse:1995,"Limfjorden, Denmark",,"b,c",1886,684,50,801,50,AAR-899,,151,74,,11/08/2020 23:00
 693,8.48,56.75,282,53,Heier-Nielse:1995,"Dover Odde, Limfjorden, on poles",,b,1925,737,53,886,53,AAR-901,,155,74,,11/08/2020 23:00
 691,8.35,56.55,-20,56,Heier-Nielse:1995,"Nissum Bredning, Limfjorden",,b,1908,475,56,588,56,AAR-902,,3,74,,11/08/2020 23:00
-689,8.2,56.62,-32,57,Heier-Nielse:1995,"Thyborðn Kanal, Limfjorden (0-4 m)",,b,1910,457,57,575,57,AAR-898,,130,74,,11/08/2020 23:00
+689,8.2,56.62,-32,57,Heier-Nielse:1995,"Thyborï¿½n Kanal, Limfjorden (0-4 m)",,b,1910,457,57,575,57,AAR-898,,130,74,,11/08/2020 23:00
 66,-22,64.33,-245,65,"Krog, H and T:1974","Faxe Bugt, Iceland",,"c,j",1861,274,58,400,58,K-330,-1,155,89,,10/03/2026 15:50
-118,15.83,56.07,-273,40,"HŒkansson, :1987","Langoren I,.Torhamn archipelago, SE Bele",,g,1900,244,41,340,40,Lu-1867,,294,72,,11/08/2020 23:00
+118,15.83,56.07,-273,40,"HÃ¥kansson, :1987","Langoren I,.Torhamn archipelago, SE Bele",,g,1900,244,41,340,40,Lu-1867,,294,72,,11/08/2020 23:00
 119,14.58,56.07,-192,80,"Olsson, I U,:1980","Valvjeviken and Solveborgsviken, Bleking",,g(4),1892,327,80,430,80,St-1467,,267,112,,11/08/2020 23:00
 120,14.58,56.07,-287,56,"Olsson, I U,:1980","Valvjeviken and Solveborgsviken, Bleking",,g(4),1892,232,56,335,56,St-1468,,314,112,,11/08/2020 23:00
 121,16,56,-251,120,"Olsson, I U,:1980","SW coast of Skane (Scania), southern Bal",,"c,g(4)",1914,234,120,355,120,St-1469,,293,112,,11/08/2020 23:00
@@ -190,8 +190,8 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 223,14.08,40.92,-103,40,"Siani, G, Pa:2000","Naples, Italy",,,1873,406,41,535,40,GifA-96717,,16,130,,30/08/2023 13:38
 224,14.08,40.92,-12,110,"Siani, G, Pa:2000","Naples, Italy",,,1892,507,110,610,110,GifA-96725,,175,130,,30/08/2023 13:38
 225,14,38,-88,50,"Siani, G, Pa:2000",Sicily,,c,1900,429,50,525,50,Ly-6863,,45,130,,30/08/2023 13:38
-682,11.43,58.25,-183,45,"HŒkansson, :1987","Gunnarsfjarden, outside Kristineberg, W.",,b,1946,230,46,420,45,Lu-1781,,19,72,,11/08/2020 23:00
-681,11.43,58.25,-153,45,"HŒkansson, :1987","Gunnarsfjarden, outside Kristineberg, W.",,b,1946,260,46,450,45,Lu-1782,,19,72,,11/08/2020 23:00
+682,11.43,58.25,-183,45,"HÃ¥kansson, :1987","Gunnarsfjarden, outside Kristineberg, W.",,b,1946,230,46,420,45,Lu-1781,,19,72,,11/08/2020 23:00
+681,11.43,58.25,-153,45,"HÃ¥kansson, :1987","Gunnarsfjarden, outside Kristineberg, W.",,b,1946,260,46,450,45,Lu-1782,,19,72,,11/08/2020 23:00
 680,23.4,70.27,-58,57,"Mangerud, J,:1972","Komagfjord, Finnmark, N Norway",,b,1922,405,57,546,57,T-958,,155,101,,11/08/2020 23:00
 230,20.75,37.75,17,40,"Reimer, P J :2002","Zante, Greece",,,1942,442,41,620,40,CAMS-69547,,59,124,,11/08/2020 23:00
 231,35.5,33.87,-114,40,"Reimer, P J :2002","Beirut, Lebanon",,,1929,328,41,490,40,CAMS-69545,,193,124,,11/08/2020 23:00
@@ -276,12 +276,12 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 313,-45.34,-23.73,-153,40,Nadal De Mas:1999,Ponta das Canas,,,1942,272,41,450,40,CAMS-52772,,230,108,,11/08/2020 23:00
 314,-45.34,-23.73,-213,40,Nadal De Mas:1999,Ponta das Canas,,,1942,212,41,390,40,CAMS-52773,,230,108,,11/08/2020 23:00
 315,-48.45,-27.4333,-103,40,Nadal De Mas:1999,Canasvieras,,c,1942,322,41,500,40,CAMS-48547,,259,108,,11/08/2020 23:00
-317,-48.47,-27.42,-23,40,"Angulo, R. J:2005","Ilha do Franðes, Santa Catarina",,g,1944,395,41,580,40,GX-29110,,40,2,,11/08/2020 23:00
+317,-48.47,-27.42,-23,40,"Angulo, R. J:2005","Ilha do Franï¿½es, Santa Catarina",,g,1944,395,41,580,40,GX-29110,,40,2,,11/08/2020 23:00
 318,-48.48,-27.68,-53,40,"Angulo, R. J:2005","Campeche, Santa Catarina",,g,1940,380,41,550,40,GX-29111,,206,2,,11/08/2020 23:00
-319,-48.47,-27.68,-103,40,"Angulo, R. J:2005","Ilha do Franðes, Santa Catarina",,g,1940,330,41,500,40,GX-29113,,114,2,,11/08/2020 23:00
-320,-48.28,-25.5,-193,40,"Angulo, R. J:2005","Ilha do Mel, Paranð",,g,1940,240,41,410,40,GX-29114,,205,2,,11/08/2020 23:00
-321,-48.28,-25.5,-143,40,"Angulo, R. J:2005","Ilha do Mel, Paranð",,g,1940,290,41,460,40,GX-29112,,313,2,,11/08/2020 23:00
-322,-48.3,-25.52,-114,40,"Angulo, R. J:2005","Mar de Dentro,Ilha do Mel, Paranð",,g,1933,328,41,490,40,GX-29109,,160,2,,11/08/2020 23:00
+319,-48.47,-27.68,-103,40,"Angulo, R. J:2005","Ilha do Franï¿½es, Santa Catarina",,g,1940,330,41,500,40,GX-29113,,114,2,,11/08/2020 23:00
+320,-48.28,-25.5,-193,40,"Angulo, R. J:2005","Ilha do Mel, Paranï¿½",,g,1940,240,41,410,40,GX-29114,,205,2,,11/08/2020 23:00
+321,-48.28,-25.5,-143,40,"Angulo, R. J:2005","Ilha do Mel, Paranï¿½",,g,1940,290,41,460,40,GX-29112,,313,2,,11/08/2020 23:00
+322,-48.3,-25.52,-114,40,"Angulo, R. J:2005","Mar de Dentro,Ilha do Mel, Paranï¿½",,g,1933,328,41,490,40,GX-29109,,160,2,,11/08/2020 23:00
 323,-158,21.3,-29,51,"Broecker, W :1961","Oahu, Hawaii",,"g(1),c",1841,500,52,629,51,L-576J,,246,24,,11/08/2020 23:00
 325,-158,21.3,357,70,"Dye, T, 1994:1994","Waimanalo, Oahu",,,1936,800,70,960,70,Beta-12749,,68,46,,11/08/2020 23:00
 327,-157.95,21.35,-174,60,"Dye, T, 1994:1994","Pearl Harbor, Oahu",,,1927,274,60,430,60,Beta-15793,,424,46,,11/08/2020 23:00
@@ -294,9 +294,9 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 335,-158,21.3,664,80,"Dye, T, 1994:1994","Barbers Point, Oahu",,,1914,1149,80,1270,80,Beta-54332/C,,42,46,,11/08/2020 23:00
 336,-158,21.3,374,80,"Dye, T, 1994:1994","Barbers Point, Oahu",,,1915,857,80,980,80,Beta-54331/C,,83,46,,11/08/2020 23:00
 337,-158,21.65,626,80,"Dye, T, 1994:1994","Kualakai, Oahu",,,1930,1067,80,1230,80,Beta-54333/C,,167,46,,11/08/2020 23:00
-1559,-2.0833,47,-114,45,TisnŽrat-La:2010,Loire infðrieure,Northeast Atlantic,,1871,400,45,525,45,GifA-100672,,459,146,,30/08/2023 13:38
-1558,-1.5833,48.8333,-325,50,TisnŽrat-La:2010,Granville,Northeast Atlantic,,1870,191,50,315,50,GifA-100695,,458,146,,30/08/2023 13:38
-1557,-1.8333,48.8667,-144,50,TisnŽrat-La:2010,Iles Chausey,Northeast Atlantic,,1829,424,51,520,50,GifA-100670,,175,146,,30/08/2023 13:38
+1559,-2.0833,47,-114,45,TisnÃ©rat-La:2010,Loire infï¿½rieure,Northeast Atlantic,,1871,400,45,525,45,GifA-100672,,459,146,,30/08/2023 13:38
+1558,-1.5833,48.8333,-325,50,TisnÃ©rat-La:2010,Granville,Northeast Atlantic,,1870,191,50,315,50,GifA-100695,,458,146,,30/08/2023 13:38
+1557,-1.8333,48.8667,-144,50,TisnÃ©rat-La:2010,Iles Chausey,Northeast Atlantic,,1829,424,51,520,50,GifA-100670,,175,146,,30/08/2023 13:38
 342,124.33,24.55,-152,40,"Hideshima, S:2001","Ishigaki Island, Japan",,g(4),1901,365,41,460,40,ISH-993-1901,,288,75,,30/08/2023 13:38
 343,124.33,24.55,-217,40,"Hideshima, S:2001","Ishigaki Island, Japan",,g(4),1911,271,41,390,40,ISH-993-1911,,288,75,,30/08/2023 13:38
 344,124.33,24.55,-134,40,"Hideshima, S:2001","Ishigaki Island, Japan",,g(4),1931,306,41,470,40,ISH-993-1931,,288,75,,30/08/2023 13:38
@@ -323,17 +323,17 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 366,-71.8,-33.1,-83,50,"Ingram, B L :1996","Valparaiso, Chile",,g,1939,354,51,520,50,CAMS-17919/1,,154,82,,11/08/2020 23:00
 367,-78,-14,523,44,"Taylor, R E :1967",Peru,,"c,g(5)",1935,967,45,1127,44,UCLA-1279,,176,143,,11/08/2020 23:00
 368,-72.65,-51.7,77,40,"Ingram, B L :1996","Puerto Natales, Chile",,g,1939,514,41,680,40,CAMS-17918,,154,82,,11/08/2020 23:00
-1556,-1.5833,48.8333,-194,60,TisnŽrat-La:2010,Granville,Northeast Atlantic,,1829,374,61,470,60,GifA-100704,,457,146,,30/08/2023 13:38
-1555,-3.9833,48.7167,-126,140,TisnŽrat-La:2010,Roscoff,Northeast Atlantic,,1828,444,140,540,140,GifA-100698,,456,146,,30/08/2023 13:38
-1554,-1.6,43.4167,-10,45,TisnŽrat-La:2010,Guðthary,Northeast Atlantic,,1898,507,46,605,45,GifA-100707,,455,146,,30/08/2023 13:38
-1553,-1.65,43.3833,-85,50,TisnŽrat-La:2010,Saint-Jean-de-Luz,Northeast Atlantic,,1898,432,50,530,50,GifA-100711,,16,146,,30/08/2023 13:38
-1552,-1.1667,44.7167,-151,39,TisnŽrat-La:2010,Arcachon,Northeast Atlantic,,1892,368,40,471,39,GifA-40018/SM,,188,146,,30/08/2023 13:38
-1551,-1.1667,46.1667,-152,60,TisnŽrat-La:2010,La Rochelle,Northeast Atlantic,,1892,367,60,470,60,GifA-100682,,59,146,,30/08/2023 13:38
-1550,-4.5,48.3833,-207,45,TisnŽrat-La:2010,Brest,Northeast Atlantic,,1892,312,46,415,45,GifA-100680,,58,146,,30/08/2023 13:38
-1549,-1.1667,44.7167,-135,39,TisnŽrat-La:2010,Arcachon,Northeast Atlantic,,1891,381,40,488,39,GifA-40019/SM,,188,146,,30/08/2023 13:38
-1548,-1.1667,44.7167,-229,40,TisnŽrat-La:2010,Arcachon,Northeast Atlantic,,1890,285,41,395,40,GifA-40020/SM,,188,146,,30/08/2023 13:38
+1556,-1.5833,48.8333,-194,60,TisnÃ©rat-La:2010,Granville,Northeast Atlantic,,1829,374,61,470,60,GifA-100704,,457,146,,30/08/2023 13:38
+1555,-3.9833,48.7167,-126,140,TisnÃ©rat-La:2010,Roscoff,Northeast Atlantic,,1828,444,140,540,140,GifA-100698,,456,146,,30/08/2023 13:38
+1554,-1.6,43.4167,-10,45,TisnÃ©rat-La:2010,Guï¿½thary,Northeast Atlantic,,1898,507,46,605,45,GifA-100707,,455,146,,30/08/2023 13:38
+1553,-1.65,43.3833,-85,50,TisnÃ©rat-La:2010,Saint-Jean-de-Luz,Northeast Atlantic,,1898,432,50,530,50,GifA-100711,,16,146,,30/08/2023 13:38
+1552,-1.1667,44.7167,-151,39,TisnÃ©rat-La:2010,Arcachon,Northeast Atlantic,,1892,368,40,471,39,GifA-40018/SM,,188,146,,30/08/2023 13:38
+1551,-1.1667,46.1667,-152,60,TisnÃ©rat-La:2010,La Rochelle,Northeast Atlantic,,1892,367,60,470,60,GifA-100682,,59,146,,30/08/2023 13:38
+1550,-4.5,48.3833,-207,45,TisnÃ©rat-La:2010,Brest,Northeast Atlantic,,1892,312,46,415,45,GifA-100680,,58,146,,30/08/2023 13:38
+1549,-1.1667,44.7167,-135,39,TisnÃ©rat-La:2010,Arcachon,Northeast Atlantic,,1891,381,40,488,39,GifA-40019/SM,,188,146,,30/08/2023 13:38
+1548,-1.1667,44.7167,-229,40,TisnÃ©rat-La:2010,Arcachon,Northeast Atlantic,,1890,285,41,395,40,GifA-40020/SM,,188,146,,30/08/2023 13:38
 381,115.67,-32.25,-130,85,"Gillespie, R:1979","Garden Island, W. Australia",,e,1930,311,86,474,85,SUA-355,,204,56,,11/08/2020 23:00
-1547,-1.6167,49.6333,-100,160,TisnŽrat-La:2010,Cherbourg,Northeast Atlantic,,1870,416,160,540,160,GifA-100710,,454,146,,30/08/2023 13:38
+1547,-1.6167,49.6333,-100,160,TisnÃ©rat-La:2010,Cherbourg,Northeast Atlantic,,1870,416,160,540,160,GifA-100710,,454,146,,30/08/2023 13:38
 383,116.5,-35,-42,88,"Bowman, G M :1985","Nornalup, WA. Australia",,"c,d",1938,398,88,561,88,CS-394,,185,21,,11/08/2020 23:00
 384,116.5,-35,-11,117,"Bowman, G M :1985","Nornalup, WA. Australia",,"c,d",1938,429,117,592,117,CS-400,,185,21,,11/08/2020 23:00
 385,116.5,-35,-85,86,"Bowman, G M :1985","Nornalup, WA. Australia",,c,1938,355,86,518,86,CS-401,,185,21,,11/08/2020 23:00
@@ -352,8 +352,8 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 398,122.23,-17.97,-40,78,"Bowman, G M :1985","Broome, WA",,g(24),1926,411,79,564,78,CS-445,,84,22,,11/08/2020 23:00
 399,106.5,-7,-117,70,"Southon, J, :2002","Pelabuhanratu, Java",,,1910,372,71,490,70,CAMS-6569,,236,132,,11/08/2020 23:00
 400,132.4,-11.3,-109,40,"Southon, J, :2002","Raffles Bay, N.Australia",,,1841,420,41,549,40,CAMS-3957+39,,100,132,,11/08/2020 23:00
-1546,-1.5833,48.8333,-330,50,TisnŽrat-La:2010,Granville,Northeast Atlantic,,1870,186,50,310,50,GifA-100708,,186,146,,30/08/2023 13:38
-1545,-1.4333,46.1667,-206,40,TisnŽrat-La:2010,Ile de Rð,Northeast Atlantic,,1835,338,41,455,40,GifA-40021/SM,,188,146,,30/08/2023 13:38
+1546,-1.5833,48.8333,-330,50,TisnÃ©rat-La:2010,Granville,Northeast Atlantic,,1870,186,50,310,50,GifA-100708,,186,146,,30/08/2023 13:38
+1545,-1.4333,46.1667,-206,40,TisnÃ©rat-La:2010,Ile de Rï¿½,Northeast Atlantic,,1835,338,41,455,40,GifA-40021/SM,,188,146,,30/08/2023 13:38
 403,120.5,12.5,-68,70,"Southon, J, :2002","Mindoro Strait, Phillipines",,,1908,427,70,540,70,CAMS-6568,,77,132,,11/08/2020 23:00
 404,120,12,-195,70,"Southon, J, :2002","Mona Is., Philippines",,g(<),1916,284,70,410,70,CAMS-6571,,239,132,,11/08/2020 23:00
 405,120.9,13.8,-215,50,"Southon, J, :2002","Janao Bay, Luzon, Phillipines",,,1916,264,50,390,50,CAMS-8695,,316,132,,11/08/2020 23:00
@@ -376,7 +376,7 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 427,145.72,43.92,311,40,"Kuzmin, Y.V.:2001","Kunashir Island, Kurile Islands (middens",,g(23),1923,772,41,915,40,AA-36300,,145,91,,11/08/2020 23:00
 428,145.7,43.9,121,40,"Kuzmin, Y.V.:2001","Kunashir Island, Kurile Islands (middens",,g(23),1923,582,41,725,40,AA-36088,,75,91,,11/08/2020 23:00
 429,145.68,43.9,66,45,"Kuzmin, Y.V.:2001","Kunashir Island, Kurile Islands (middens",,g(23),1923,527,46,670,45,AA-36296,,216,91,,11/08/2020 23:00
-1544,-1.4333,46.1667,-201,39,TisnŽrat-La:2010,Ile de Rð,Northeast Atlantic,,1834,348,40,460,39,GifA-40022/SM,,188,146,,30/08/2023 13:38
+1544,-1.4333,46.1667,-201,39,TisnÃ©rat-La:2010,Ile de Rï¿½,Northeast Atlantic,,1834,348,40,460,39,GifA-40022/SM,,188,146,,30/08/2023 13:38
 1543,60.8153,46.1264,-170,48,"Kuzmin,Y.V.,:2007",Kuzhetpes_Is.,Aral Sea,,1936,273,49,433,48,AA-65491,,453,90,,11/08/2020 23:00
 1542,59.001,43.7957,-332,49,"Kuzmin,Y.V.,:2007",Muynoq,Aral Sea,,1937,110,49,271,49,AA-65490,,453,90,,11/08/2020 23:00
 1541,52.7675,41.396,-193,40,"Kuzmin,Y.V.,:2007",Garabogaz_Spit,Caspian Sea,,1953,205,41,410,40,AA-59489,,452,90,,11/08/2020 23:00
@@ -388,7 +388,7 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 674,11.43,58.28,-281,100,"Olsson, I U,:1980","Lysekil, Bohuslan, Sweden",,b,1868,236,100,360,100,U-4168,,311,112,,11/08/2020 23:00
 673,12.4,56.98,-222,45,"Olsson, I U,:1980","Morup, Halland, W of Sweden",,b,1875,285,46,415,45,U-4142,,302,112,,11/08/2020 23:00
 672,15,78.5,-77,70,"Olsson, I U,:1980","Kapp wijk, Dickson Fjord, Spitzbergen",,"b,g(50)",1910,412,70,530,70,Lu-715,,299,112,,11/08/2020 23:00
-1765,-81.3264,-4.6449,-18,40,"Etayo, et al: 2019","Puerto Pari–as,Peru",Eastern Pacific,,1929,424,41,586,40,AA-2025,1.8,482,165,1882,02/04/2024 13:16
+1765,-81.3264,-4.6449,-18,40,"Etayo, et al: 2019","Puerto PariÃ±as,Peru",Eastern Pacific,,1929,424,41,586,40,AA-2025,1.8,482,165,1882,02/04/2024 13:16
 460,183.5,-43.95,-54,40,"Sikes, E L, :2000","Waitangi Beach, Chatham Islands",,,1933,388,41,550,40,,,316,131,,11/08/2020 23:00
 461,183.5,-43.95,-34,28,"Sikes, E L, :2000","Waitangi Beach, Chatham Islands",,,1933,408,30,570,28,,,316,131,,11/08/2020 23:00
 478,56,-21,-44,40,"Southon, J, :2002",Ile de France (Mauritius),,,1836,495,41,616,40,CAMS-3930+39,,228,132,,11/08/2020 23:00
@@ -628,7 +628,7 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 839,-57.25,51.47,-154,80,"McNeely R., :2006","Bradore Basin, QC",Gulf of St. Lawrence northern,,1923,307,80,450,80,GSC-6106,0.64,155,105,,11/08/2020 23:00
 840,-71.18,46.87,174,50,"McNeely R., :2006","Beauport, QC",Gulf of St. Lawrence northern,,1912,661,50,780,50,TO-5702,0,73,105,,11/08/2020 23:00
 841,-61.16,50.28,77,60,"McNeely R., :2006","Pointe aux Outardes, QC",Gulf of St. Lawrence northern,,1953,475,60,680,60,TO-8045,0.24,155,105,,11/08/2020 23:00
-842,-69.55,48.23,-13,70,"McNeely R., :2006","Pointe ð John, QC",Gulf of St. Lawrence northern,,1953,385,70,590,70,TO-8046,0.15,155,105,,11/08/2020 23:00
+842,-69.55,48.23,-13,70,"McNeely R., :2006","Pointe ï¿½ John, QC",Gulf of St. Lawrence northern,,1953,385,70,590,70,TO-8046,0.15,155,105,,11/08/2020 23:00
 843,-67.58,48.84,77,60,"McNeely R., :2006","Matane, QC",Gulf of St. Lawrence northern,,1953,475,60,680,60,TO-8048,0.8,155,105,,11/08/2020 23:00
 844,-70.18,47.32,127,50,"McNeely R., :2006","Saint-Roch-des-Aulnaies., QC",Gulf of St. Lawrence northern,,1953,525,50,730,50,TO-8052,3.2,130,105,,11/08/2020 23:00
 845,-66.68,49.1,87,50,"McNeely R., :2006","Cap Chat, QC",Gulf of St. Lawrence northern,,1953,485,50,690,50,TO-8053,1.82,150,105,,11/08/2020 23:00
@@ -644,7 +644,7 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 855,-65.37,47.08,-63,50,"McNeely R., :2006","Bartibog Is., NB",Gulf of St. Lawrence southwestern,,1950,341,50,540,50,CAMS-34659,-5.48,32,105,,11/08/2020 23:00
 856,-63.67,45.83,-214,40,"McNeely R., :2006","Pugwash Basin, NS",Gulf of St. Lawrence southwestern,,1899,303,40,400,40,CAMS-46750,-0.38,73,105,,11/08/2020 23:00
 857,-63.17,48.17,86,40,"McNeely R., :2006","Banc de lOrphelin, QC",Gulf of St. Lawrence southwestern,,1899,603,40,700,40,CAMS-46753,-0.19,23,105,,11/08/2020 23:00
-858,-64.28,48.77,268,40,"McNeely R., :2006","Baie de Gaspð, QC",Gulf of St. Lawrence southwestern,,1867,785,40,910,40,CAMS-47245,0.89,23,105,,11/08/2020 23:00
+858,-64.28,48.77,268,40,"McNeely R., :2006","Baie de Gaspï¿½, QC",Gulf of St. Lawrence southwestern,,1867,785,40,910,40,CAMS-47245,0.89,23,105,,11/08/2020 23:00
 859,-63.3,46.47,-33,50,"McNeely R., :2006","North Rustico, PEI",Gulf of St. Lawrence southwestern,,1950,371,50,570,50,CAMS-47246,0.38,155,105,,11/08/2020 23:00
 860,-62.83,47.5,-103,30,"McNeely R., :2006","Banc Bradelle, QC",Gulf of St. Lawrence southwestern,,1937,339,30,500,30,CAMS-64251,2.3,57,105,,11/08/2020 23:00
 861,-65.83,48,-76,50,"McNeely R., :2006","Baie des Chaleurs, QC",Gulf of St. Lawrence southwestern,,1860,445,50,570,50,GSC-6044,-0.39,73,105,,11/08/2020 23:00
@@ -655,7 +655,7 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 866,-63,47,-83,50,"McNeely R., :2006","Gulf of St. Lawrence, PEI",Gulf of St. Lawrence southwestern,,1952,317,50,520,50,TO-5626,0,73,105,,11/08/2020 23:00
 867,-64.92,47.08,-63,60,"McNeely R., :2006","Escumimac, NB",Gulf of St. Lawrence southwestern,,1950,341,60,540,60,TO-8056,0.05,155,105,,11/08/2020 23:00
 868,-65.37,47.08,-113,60,"McNeely R., :2006","England Warf, NB",Gulf of St. Lawrence southwestern,,1950,291,60,490,60,TO-8057,-2.26,150,105,,11/08/2020 23:00
-869,-64.28,48.77,263,20,"McNeely R., :2006","Baie de Gaspð, QC",Gulf of St. Lawrence southwestern,,1867,780,20,905,20,UCIAMS-6023,0.89,23,105,,11/08/2020 23:00
+869,-64.28,48.77,263,20,"McNeely R., :2006","Baie de Gaspï¿½, QC",Gulf of St. Lawrence southwestern,,1867,780,20,905,20,UCIAMS-6023,0.89,23,105,,11/08/2020 23:00
 870,-64.97,48.18,36,15,"McNeely R., :2006","Port-Daniel, QC",Gulf of St. Lawrence southwestern,,1899,553,20,650,15,UCIAMS-6024,0.18,155,105,,11/08/2020 23:00
 871,-76.6,56.5,26,40,Coulthard RD:2010,"Richmond Gulf, NU",Hudson Bay,,1920,493,40,630,40,CAMS-46545,0.06,155,32,,11/08/2020 23:00
 872,-78.89,56.45,-183,40,"McNeely R., :2006","Belcher Is., NU",Hudson Bay,,1959,203,40,420,40,CAMS-46548,0.68,108,105,,11/08/2020 23:00
@@ -825,33 +825,33 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 1044,-17.25,15.85,161,39,"Ndeye, 2008,:2008",Senegal,,,1942,586,47,764,39,Gif-12173,0,364,109,,11/08/2020 23:00
 1045,-17.25,15.95,76,30,"Ndeye, 2008,:2008",Senegal,,,1945,491,38,679,30,AA-70012,0.8,365,109,,11/08/2020 23:00
 1046,-17.25,16.05,35,31,"Ndeye, 2008,:2008",Senegal,,,1916,514,38,640,31,AA-70015,2,366,109,,11/08/2020 23:00
-1047,-17,21,-99,31,"Ndeye, 2008,:2008",Port Etiðnne,,,1912,388,38,507,31,AA-70001,1.9,367,109,,18/08/2023 14:09
+1047,-17,21,-99,31,"Ndeye, 2008,:2008",Port Etiï¿½nne,,,1912,388,38,507,31,AA-70001,1.9,367,109,,18/08/2023 14:09
 1048,-17,21.1,-71,30,"Ndeye, 2008,:2008",El Manghar,,,1908,424,30,537,30,AA-70002,1.6,368,109,,18/08/2023 14:09
 1049,-17,21.2,-22,30,"Ndeye, 2008,:2008",Mauritania,,,1947,388,34,581,30,AA-70005,4,369,109,,18/08/2023 14:09
-1050,-17,21.3,-53,31,"Ndeye, 2008,:2008",Port Etiðnne,,,1908,442,30,555,31,AA-70007,1.8,370,109,,18/08/2023 14:09
+1050,-17,21.3,-53,31,"Ndeye, 2008,:2008",Port Etiï¿½nne,,,1908,442,30,555,31,AA-70007,1.8,370,109,,18/08/2023 14:09
 1051,-17,21.4,-130,30,"Ndeye, 2008,:2008",El Manghar,,,1908,365,30,478,30,AA-70008,0.3,371,109,,18/08/2023 14:09
 1052,6.65,61.16,-107,56,"Mangerud, et:2006",Vangsnes,,,1920,360,56,497,56,T-952,2.1,372,103,,11/08/2020 23:00
-1053,6.66,61.25,-80,69,"Mangerud, et:2006",Fjðrlandsfjorden,,,1909,412,69,528,69,T-953,2.7,373,103,,11/08/2020 23:00
-1054,5.08,60.27,-188,34,"Mangerud, et:2006",Skogsvðg,S-Norway,,1890,326,35,436,34,T-13236,-16.1,374,103,,11/08/2020 23:00
-1055,5.08,60.27,-221,31,"Mangerud, et:2006",Skogsvðg,S-Norway,,1869,297,32,420,31,T-13240,-15.3,374,103,,11/08/2020 23:00
-1056,5.08,60.27,-205,32,"Mangerud, et:2006",Skogsvðg,S-Norway,,1860,316,33,441,32,T-13239,-14.4,374,103,,11/08/2020 23:00
-1057,5.02,61.58,-119,24,"Mangerud, et:2006",Florð,S-Norway,,1867,398,25,523,24,T-13233,-14.8,302,103,,11/08/2020 23:00
+1053,6.66,61.25,-80,69,"Mangerud, et:2006",Fjï¿½rlandsfjorden,,,1909,412,69,528,69,T-953,2.7,373,103,,11/08/2020 23:00
+1054,5.08,60.27,-188,34,"Mangerud, et:2006",Skogsvï¿½g,S-Norway,,1890,326,35,436,34,T-13236,-16.1,374,103,,11/08/2020 23:00
+1055,5.08,60.27,-221,31,"Mangerud, et:2006",Skogsvï¿½g,S-Norway,,1869,297,32,420,31,T-13240,-15.3,374,103,,11/08/2020 23:00
+1056,5.08,60.27,-205,32,"Mangerud, et:2006",Skogsvï¿½g,S-Norway,,1860,316,33,441,32,T-13239,-14.4,374,103,,11/08/2020 23:00
+1057,5.02,61.58,-119,24,"Mangerud, et:2006",Florï¿½,S-Norway,,1867,398,25,523,24,T-13233,-14.8,302,103,,11/08/2020 23:00
 1058,4.88,59.32,-110,22,"Mangerud, et:2006",Utsira,S-Norway,,1865,405,33,533,22,T-13234,-13.5,302,103,,11/08/2020 23:00
-1059,22,70.63,-155,20,"Mangerud, et:2006",Sðrðya,N-Norway,,1879,358,21,479,20,T-13232,-16.6,375,103,,11/08/2020 23:00
-1060,22,70.63,-93,50,"Mangerud, et:2006",Sðrvðr,N-Norway,,1894,428,50,527,50,T-13244,-16.1,375,103,,11/08/2020 23:00
+1059,22,70.63,-155,20,"Mangerud, et:2006",Sï¿½rï¿½ya,N-Norway,,1879,358,21,479,20,T-13232,-16.6,375,103,,11/08/2020 23:00
+1060,22,70.63,-93,50,"Mangerud, et:2006",Sï¿½rvï¿½r,N-Norway,,1894,428,50,527,50,T-13244,-16.1,375,103,,11/08/2020 23:00
 1061,27,71,-164,23,"Mangerud, et:2006",Finnmark,N-Norway,,1879,349,24,470,23,T-13230,-15.9,376,103,,11/08/2020 23:00
 1062,27,71,-145,21,"Mangerud, et:2006",Finnmark,N-Norway,,1879,368,22,489,21,T-13231,-17.7,376,103,,11/08/2020 23:00
-1064,5.08,60.35,-134,32,"Mangerud, et:2006",Mðgster,S-Norway,,1874,373,33,503,32,T-13242,-12.2,377,103,,11/08/2020 23:00
-1065,5.23,60.58,-155,23,"Mangerud, et:2006",Bildðy,S-Norway,,1893,365,24,466,23,T-13227,-13,377,103,,11/08/2020 23:00
+1064,5.08,60.35,-134,32,"Mangerud, et:2006",Mï¿½gster,S-Norway,,1874,373,33,503,32,T-13242,-12.2,377,103,,11/08/2020 23:00
+1065,5.23,60.58,-155,23,"Mangerud, et:2006",Bildï¿½y,S-Norway,,1893,365,24,466,23,T-13227,-13,377,103,,11/08/2020 23:00
 1066,4.95,60.82,-124,21,"Mangerud, et:2006",Kilstraumen,S-Norway,,1884,390,22,505,21,T-13229,-14.7,378,103,,11/08/2020 23:00
 1067,10.67,59.88,-94,24,"Mangerud, et:2006",Oslo,S-Norway,,1874,413,25,543,24,T-13241,-18.3,378,103,,11/08/2020 23:00
-1068,5.23,60.35,-141,24,"Mangerud, et:2006",Bildðy,S-Norway,,1887,370,25,486,24,T-13237,-16.5,379,103,,11/08/2020 23:00
+1068,5.23,60.35,-141,24,"Mangerud, et:2006",Bildï¿½y,S-Norway,,1887,370,25,486,24,T-13237,-16.5,379,103,,11/08/2020 23:00
 1069,4.93,60.6,-138,53,"Mangerud, et:2006",Toska,S-Norway,,1885,375,53,491,53,T-13238,-15.5,380,103,,11/08/2020 23:00
-1070,31.08,70.38,-141,32,"Mangerud, et:2006",Vardð,N-Norway,,1883,375,33,489,32,T-13247,-15.5,381,103,,11/08/2020 23:00
+1070,31.08,70.38,-141,32,"Mangerud, et:2006",Vardï¿½,N-Norway,,1883,375,33,489,32,T-13247,-15.5,381,103,,11/08/2020 23:00
 1071,5.33,61.9,-177,28,"Mangerud, et:2006",Rugsund,S-Norway,,1901,340,29,435,28,T-13246,-17.5,382,103,,11/08/2020 23:00
-1072,5.23,60.35,-168,29,"Mangerud, et:2006",Bildðy,S-Norway,,1860,353,30,478,29,T-13243,-13,311,103,,11/08/2020 23:00
-1073,5.23,60.35,-150,22,"Mangerud, et:2006",Bildðy,S-Norway,,1887,361,23,477,22,T-13235,-17.3,311,103,,11/08/2020 23:00
-1074,29.83,70.63,-241,28,"Mangerud, et:2006",Bðtsfjord,N-Norway,,1896,278,29,376,28,T-13245,-13.3,384,103,,30/04/2021 08:08
+1072,5.23,60.35,-168,29,"Mangerud, et:2006",Bildï¿½y,S-Norway,,1860,353,30,478,29,T-13243,-13,311,103,,11/08/2020 23:00
+1073,5.23,60.35,-150,22,"Mangerud, et:2006",Bildï¿½y,S-Norway,,1887,361,23,477,22,T-13235,-17.3,311,103,,11/08/2020 23:00
+1074,29.83,70.63,-241,28,"Mangerud, et:2006",Bï¿½tsfjord,N-Norway,,1896,278,29,376,28,T-13245,-13.3,384,103,,30/04/2021 08:08
 1075,-5,48,-186,23,"Mangerud, et:2006",Bretagne,France,,1890,328,24,438,23,T-13228,-12.4,384,103,,30/04/2021 08:08
 1076,-62.27,-38.79,-104,40,"Gomez, et al:2008",Ingeniero White,Argentina Southern Coast,,1922,359,41,500,40,BETA-216776,-0.8,385,57,,11/08/2020 23:00
 1077,-62.27,-38.79,-244,40,"Gomez, et al:2008",Ingeniero White,Argentina Southern Coast,,1922,219,41,360,40,BETA-223394,-1.4,385,57,,11/08/2020 23:00
@@ -859,11 +859,11 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 1079,-62.1,-38.9,-384,40,"Gomez, et al:2008",Belgrano Port,Argentina Southern Coast,,1920,83,41,220,40,BETA-216782,-1.1,386,57,,11/08/2020 23:00
 1080,-62.1,-38.9,-114,40,"Gomez, et al:2008",Belgrano Port,Argentina Southern Coast,,1920,353,41,490,40,BETA-223397,-1.2,386,57,,11/08/2020 23:00
 1081,-62.07,-38.92,-4,40,"Gomez, et al:2008",Parejas Creek,Argentina Southern Coast,,1935,440,41,600,40,BETA-216775,-2.7,387,57,,11/08/2020 23:00
-1082,-58.68,-38.58,686,40,"Gomez, et al:2008",Quequðn Port,Argentina Southern Coast,,1922,1149,41,1290,40,BETA-216784,-1.3,388,57,,11/08/2020 23:00
-1083,-58.68,-38.58,226,40,"Gomez, et al:2008",Quequðn Port,Argentina Southern Coast,,1922,689,41,830,40,BETA-223400,-1.8,388,57,,11/08/2020 23:00
-1084,-58.68,-38.58,166,40,"Gomez, et al:2008",Quequðn Port,Argentina Southern Coast,,1922,629,41,770,40,BETA-223401,-0.7,388,57,,11/08/2020 23:00
-1085,-58.7,-38.57,996,40,"Gomez, et al:2008",Quequðn River,Argentina Southern Coast,,1920,1463,41,1600,40,BETA-216792,-5.9,389,57,,11/08/2020 23:00
-1086,-58.7,-38.57,1236,40,"Gomez, et al:2008",Quequðn River,Argentina Southern Coast,,1920,1703,41,1840,40,BETA-223402,-6.5,389,57,,11/08/2020 23:00
+1082,-58.68,-38.58,686,40,"Gomez, et al:2008",Quequï¿½n Port,Argentina Southern Coast,,1922,1149,41,1290,40,BETA-216784,-1.3,388,57,,11/08/2020 23:00
+1083,-58.68,-38.58,226,40,"Gomez, et al:2008",Quequï¿½n Port,Argentina Southern Coast,,1922,689,41,830,40,BETA-223400,-1.8,388,57,,11/08/2020 23:00
+1084,-58.68,-38.58,166,40,"Gomez, et al:2008",Quequï¿½n Port,Argentina Southern Coast,,1922,629,41,770,40,BETA-223401,-0.7,388,57,,11/08/2020 23:00
+1085,-58.7,-38.57,996,40,"Gomez, et al:2008",Quequï¿½n River,Argentina Southern Coast,,1920,1463,41,1600,40,BETA-216792,-5.9,389,57,,11/08/2020 23:00
+1086,-58.7,-38.57,1236,40,"Gomez, et al:2008",Quequï¿½n River,Argentina Southern Coast,,1920,1703,41,1840,40,BETA-223402,-6.5,389,57,,11/08/2020 23:00
 1087,-57.42,-37.92,36,60,"Gomez, et al:2008",Mar del Plata,Argentina Southeast Coast,,1920,503,61,640,60,BETA-216778,1.4,390,57,,11/08/2020 23:00
 1088,-57.42,-37.92,106,50,"Gomez, et al:2008",Mar del Plata,Argentina Southeast Coast,,1920,573,51,710,50,BETA-216779,1.2,391,57,,11/08/2020 23:00
 1089,-57.42,-37.92,686,40,"Gomez, et al:2008",Mar del Plata,Argentina Southeast Coast,,1920,1153,41,1290,40,BETA-223395,0.9,391,57,,11/08/2020 23:00
@@ -931,12 +931,12 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 1356,-134.966,-23.133,-166,20,"Petchey F., :2008",Mangareva Atoll,South Pacific,,1903,349,21,445,20,Wk-19678,,192,119,,11/08/2020 23:00
 1357,-134.933,-23.083,-185,19,"Petchey F., :2008",Tearia Bank 18m,South Pacific,,1904,327,20,426,19,Wk-21061,,410,119,,11/08/2020 23:00
 1358,-166.45,-22.266,-168,17,"Petchey F., :2008","Presquile Ducos, Noumea, New Caledonia",South Pacific,,1903,347,18,443,17,Wk-20336,,101,119,,11/08/2020 23:00
-1359,-165.333,-20.933,-166,17,"Petchey F., :2008",Poindimið,South Pacific,,1950,238,19,437,17,Wk-20341,,411,119,,11/08/2020 23:00
+1359,-165.333,-20.933,-166,17,"Petchey F., :2008",Poindimiï¿½,South Pacific,,1950,238,19,437,17,Wk-20341,,411,119,,11/08/2020 23:00
 1360,-165,-21.333,-133,19,"Petchey F., :2008","Paines des Gaiacs, New Caledonia",South Pacific,,1943,289,21,470,19,Wk-21055,,412,119,,11/08/2020 23:00
-1361,-167,-21.016,-131,19,"Petchey F., :2008",ðLoyalty Islandð,South Pacific,,1926,320,20,473,19,Wk-21059,,413,119,,11/08/2020 23:00
+1361,-167,-21.016,-131,19,"Petchey F., :2008",ï¿½Loyalty Islandï¿½,South Pacific,,1926,320,20,473,19,Wk-21059,,413,119,,11/08/2020 23:00
 1362,-161.016,-10.4,-145,19,"Petchey F., :2008","Manihiki, Northern Cook Is",South Pacific,,1924,313,20,459,19,Wk-19676,,98,119,,11/08/2020 23:00
 1363,-158.05,-9.016,-162,20,"Petchey F., :2008","Penrhyn atoll, Northern Cook Islands",South Pacific,,1931,278,21,442,20,Wk-19691,,192,119,,11/08/2020 23:00
-1364,-170.6,-14.283,-144,19,"Petchey F., :2008","Tutuila Island, Fagaðitua, Samoa",South Pacific,,1933,298,20,460,19,Wk-19682,,98,119,,11/08/2020 23:00
+1364,-170.6,-14.283,-144,19,"Petchey F., :2008","Tutuila Island, Fagaï¿½itua, Samoa",South Pacific,,1933,298,20,460,19,Wk-19682,,98,119,,11/08/2020 23:00
 1365,-170.7,-14.266,-143,20,"Petchey F., :2008","Tutuila Island, Pago Pago, Samoa",South Pacific,,1865,372,20,500,20,Wk-19683,,414,119,,11/08/2020 23:00
 1366,-171.533,-13.533,-123,17,"Petchey F., :2008","Upolu, Fagola, Samoa",South Pacific,,1922,340,18,481,17,Wk-20343,,98,119,,11/08/2020 23:00
 1367,166.333,-10.25,-147,21,"Petchey F., :2008","Reef Island, Santa Cruz Islands, Solomon",South Pacific,,1926,304,22,457,21,Wk-19689,,98,119,,03/04/2025 09:55
@@ -1042,21 +1042,21 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 1473,139,-35,-7,86,"Gillespie, R:1979","Gulf St. Vincent, Adelaide","S, Australia","c,e,g(2)",1937,435,87,596,86,SUA-393,,441,56,,11/08/2020 23:00
 1474,150.1167,-36.2167,-123,85,"Gillespie, R:1979",Narooma,N.S.W. Australia,e,1950,281,86,480,85,SUA-356,,116,56,,11/08/2020 23:00
 1475,148.0833,-40.1667,-148,120,"Gill, E. D. :1983","Key Island, Furneaux Group",Bass Strait,,1956,244,121,455,120,GX-7009,,224,54,,11/08/2020 23:00
-1560,2.3833,51.0333,-208,60,TisnŽrat-La:2010,Dunkerque,Northeast Atlantic,,1873,301,60,430,60,GifA-100693,,460,146,,30/08/2023 13:38
-1561,2.3833,51.0333,-28,60,TisnŽrat-La:2010,Dunkerque,Northeast Atlantic,,1873,481,60,610,60,GifA-100692,,134,146,,30/08/2023 13:38
-1562,-4.5,48.3833,-27,60,TisnŽrat-La:2010,Bretagne,Northeast Atlantic,,1887,484,60,600,60,GifA-100684,,44,146,,30/08/2023 13:38
-1563,1.1667,49.75,15,50,TisnŽrat-La:2010,Tatihou,Northeast Atlantic,,1889,527,50,640,50,GifA-100686,,359,146,,30/08/2023 13:38
-1564,-4.5167,48.2333,-176,50,TisnŽrat-La:2010,Morgat (Finistðre),Northeast Atlantic,,1897,341,50,440,50,GifA-100694,,460,146,,30/08/2023 13:38
-1565,0.7333,49.75,-84,45,TisnŽrat-La:2010,Saint Vaast,Northeast Atlantic,,1899,433,46,530,45,GifA-100675,,104,146,,30/08/2023 13:38
-1566,-2,48.65,-217,50,TisnŽrat-La:2010,Saint Malo,Northeast Atlantic,,1901,300,50,395,50,GifA-100696,,461,146,,30/08/2023 13:38
-1567,-2,48.65,-62,60,TisnŽrat-La:2010,Saint Malo,Northeast Atlantic,,1901,455,60,550,60,GifA-100699,,462,146,,30/08/2023 13:38
-1568,-2.55,48.6,-121,45,TisnŽrat-La:2010,Val Andrð,Northeast Atlantic,,1903,394,46,490,45,GifA-100671,,175,146,,30/08/2023 13:38
-1569,-2.5167,47.3,-9,45,TisnŽrat-La:2010,Le Croisic,Northeast Atlantic,,1907,490,46,600,45,GifA-100701,,463,146,,30/08/2023 13:38
-1570,-2,48.65,-143,45,TisnŽrat-La:2010,Saint Malo,Northeast Atlantic,,1909,349,46,465,45,GifA-100674,,104,146,,30/08/2023 13:38
-1571,-2.45,49.4667,-94,45,TisnŽrat-La:2010,Ile Herm,Northeast Atlantic,,1924,364,46,510,45,GifA-100705,,457,146,,30/08/2023 13:38
-1572,-2.75,48.5167,-194,60,TisnŽrat-La:2010,Saint Brieuc,Northeast Atlantic,,1927,254,60,410,60,GifA-100688,,359,146,,30/08/2023 13:38
-1573,-2.55,48.6,-79,45,TisnŽrat-La:2010,Val Andrð,Northeast Atlantic,,1929,363,46,525,45,GifA-100703,,208,146,,30/08/2023 13:38
-1574,-1.2667,45.9167,-173,60,TisnŽrat-La:2010,Ile dðOlðron,Northeast Atlantic,,1945,242,61,430,60,GifA-100685,,44,146,,30/08/2023 13:38
+1560,2.3833,51.0333,-208,60,TisnÃ©rat-La:2010,Dunkerque,Northeast Atlantic,,1873,301,60,430,60,GifA-100693,,460,146,,30/08/2023 13:38
+1561,2.3833,51.0333,-28,60,TisnÃ©rat-La:2010,Dunkerque,Northeast Atlantic,,1873,481,60,610,60,GifA-100692,,134,146,,30/08/2023 13:38
+1562,-4.5,48.3833,-27,60,TisnÃ©rat-La:2010,Bretagne,Northeast Atlantic,,1887,484,60,600,60,GifA-100684,,44,146,,30/08/2023 13:38
+1563,1.1667,49.75,15,50,TisnÃ©rat-La:2010,Tatihou,Northeast Atlantic,,1889,527,50,640,50,GifA-100686,,359,146,,30/08/2023 13:38
+1564,-4.5167,48.2333,-176,50,TisnÃ©rat-La:2010,Morgat (Finistï¿½re),Northeast Atlantic,,1897,341,50,440,50,GifA-100694,,460,146,,30/08/2023 13:38
+1565,0.7333,49.75,-84,45,TisnÃ©rat-La:2010,Saint Vaast,Northeast Atlantic,,1899,433,46,530,45,GifA-100675,,104,146,,30/08/2023 13:38
+1566,-2,48.65,-217,50,TisnÃ©rat-La:2010,Saint Malo,Northeast Atlantic,,1901,300,50,395,50,GifA-100696,,461,146,,30/08/2023 13:38
+1567,-2,48.65,-62,60,TisnÃ©rat-La:2010,Saint Malo,Northeast Atlantic,,1901,455,60,550,60,GifA-100699,,462,146,,30/08/2023 13:38
+1568,-2.55,48.6,-121,45,TisnÃ©rat-La:2010,Val Andrï¿½,Northeast Atlantic,,1903,394,46,490,45,GifA-100671,,175,146,,30/08/2023 13:38
+1569,-2.5167,47.3,-9,45,TisnÃ©rat-La:2010,Le Croisic,Northeast Atlantic,,1907,490,46,600,45,GifA-100701,,463,146,,30/08/2023 13:38
+1570,-2,48.65,-143,45,TisnÃ©rat-La:2010,Saint Malo,Northeast Atlantic,,1909,349,46,465,45,GifA-100674,,104,146,,30/08/2023 13:38
+1571,-2.45,49.4667,-94,45,TisnÃ©rat-La:2010,Ile Herm,Northeast Atlantic,,1924,364,46,510,45,GifA-100705,,457,146,,30/08/2023 13:38
+1572,-2.75,48.5167,-194,60,TisnÃ©rat-La:2010,Saint Brieuc,Northeast Atlantic,,1927,254,60,410,60,GifA-100688,,359,146,,30/08/2023 13:38
+1573,-2.55,48.6,-79,45,TisnÃ©rat-La:2010,Val Andrï¿½,Northeast Atlantic,,1929,363,46,525,45,GifA-100703,,208,146,,30/08/2023 13:38
+1574,-1.2667,45.9167,-173,60,TisnÃ©rat-La:2010,Ile dï¿½Olï¿½ron,Northeast Atlantic,,1945,242,61,430,60,GifA-100685,,44,146,,30/08/2023 13:38
 1575,122.236,-17.962,-84,30,"O'Connor, S,:2010",Broome,Western Australia,,1929,358,23,520,30,SANU-7720,-6,464,110,,11/08/2020 23:00
 1576,122.283,-18.086,-84,35,"O'Connor, S,:2010",Roebuck Bay,Western Australia,,1929,358,23,520,35,SANU-7730,-7,465,110,,11/08/2020 23:00
 1577,122.925,-16.389,-69,30,"O'Connor, S,:2010",Cape Leveque NE side,Western Australia,,1929,373,23,535,30,SANU-7725,-6,466,110,,11/08/2020 23:00
@@ -1128,7 +1128,7 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 1715,20.96,56.5,266,50,Lougheed et al. (2013),Latvian Coast,Baltic Sea,8m,1928,710,50,870,50,LuS-9959,-2.77,130,164,,04/04/2022 08:36
 1716,24.35,57.8667,101,50,Lougheed et al. (2013),Gulf of Riga,Baltic Sea,1m,1926,552,50,705,50,LuS-9971,-3.24,130,164,,04/04/2022 08:36
 1717,18.9167,59.6667,-339,50,Lougheed et al. (2013),Stockholm archipelago,Baltic Sea,1m,1906,164,50,270,50,LuS-9973,1.57,130,164,,04/04/2022 08:36
-1718,19.95,60.1,-243,45,Lougheed et al. (2013),ðland,Baltic Sea,1m,1939,194,46,360,45,LuS-9952,-1.15,130,164,,04/04/2022 08:36
+1718,19.95,60.1,-243,45,Lougheed et al. (2013),ï¿½land,Baltic Sea,1m,1939,194,46,360,45,LuS-9952,-1.15,130,164,,04/04/2022 08:36
 1719,24.7667,60.1167,-371,50,Lougheed et al. (2013),South Finnish coast,Baltic Sea,19m,1893,149,50,250,50,LuS-9961,0.28,130,164,,04/04/2022 08:36
 1720,20.7833,63.4167,-339,50,Lougheed et al. (2013),South Bothnian Bay,Baltic Sea,40m,1934,104,51,265,50,LuS-9960,2.08,130,164,,04/04/2022 08:36
 1721,20.8333,63.0667,-334,45,Lougheed et al. (2013),North Bothnian Sea,Baltic Sea,1.6m,1934,109,46,270,45,LuS-9954,-0.33,130,164,,04/04/2022 08:36
@@ -1187,7 +1187,7 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 1829,-38.6667,-12.8833,-76,26,"Alves, 2015","Ilha de Itaparica, BA",Brazil Coast,,1948,332,27,527,26,LACUFF-140128,0,490,168,,30/08/2023 13:38
 1830,-45.34,-23.73,87,40,Nadal De Mas:1999,"Ponta das Canas, Santa Catarina",Brazil coast,,1942,512,41,690,40,CAMS-51904,,230,108,,11/08/2020 23:00
 1831,-45.34,-23.73,117,40,Nadal De Mas:1999,"Ponta das Canas, Santa Catarina",Brazil coast,,1942,542,41,720,40,CAMS-52524,,230,108,,11/08/2020 23:00
-1832,-43.05,-22.9333,67,26,"Eastoe, CJ, :2002","Jurujuba, Niter—i, Rio de Janeiro",Brazil coast,,1939,504,27,670,26,A-10038,,9,48,,11/08/2020 23:00
+1832,-43.05,-22.9333,67,26,"Eastoe, CJ, :2002","Jurujuba, NiterÃ³i, Rio de Janeiro",Brazil coast,,1939,504,27,670,26,A-10038,,9,48,,11/08/2020 23:00
 1833,168.9833,-34.6333,-158,30,"Komugabe, et al, 2014",Tasman Sea,"North Island, New Zealand",560m depth,1949,248,32,445,30,SANU-26514,,491,169,1934,11/08/2020 23:00
 1834,14.2795,45.2947,-67,21,"Faivre, et al, 2015",Lovran,Adriatic Sea,deltar and R errors recalculated,1882,450,23,564,21,Z-5408,-2.8,492,170,,13/07/2021 07:32
 1835,15.2236,44.1194,-501,21,"Faivre, et al, 2015",Zadararea,Adriatic Sea,deltar and R errors recalculated,1836,38,23,159,21,Z-5555,-0.8,492,170,,13/07/2021 07:32
@@ -1287,9 +1287,9 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 1938,-84.6014,29.8064,-3,23,"Hadden, Cherkinsky 2017",Dog Island,"Apalachicola Bay, Florida.",37.6mm,1941,426,24,600,23,UGAMS-23652A.01,0.45,73,188,2323,04/04/2022 08:36
 1939,-84.6014,29.8064,-28,24,"Hadden, Cherkinsky 2017",Dog Island,"Apalachicola Bay, Florida.",9.7mm,1941,401,25,575,24,UGAMS-23652B.02,0.13,73,188,2324,04/04/2022 08:36
 1940,-84.3867,29.9091,-79,24,"Hadden, Cherkinsky 2017",Alligator Harbor,"Apalachicola Bay, Florida.",51.3mm,1941,350,25,524,24,UGAMS-23653.01,-1.83,73,188,2326,04/04/2022 08:36
-1941,13.7387,44.9854,-140,22,"Perhada, et al 2018",Istrian Peninsula,Adriatic Sea,10Ð11 m water depth,1950,264,23,463,22,Z-6169,2.08,542,189,,04/04/2022 08:36
-1942,9.6,44.1667,-143,30,"TisnŽrat-Laborde, et al, 2013",Liguro-Provenal Basin,northwestern Mediterranean Sea,28m water depth,1949,263,31,460,30,GifA-11384,,543,190,,11/08/2020 23:00
-1943,9.6,44.1667,-133,30,"TisnŽrat-Laborde, et al, 2013",Liguro-Provenal Basin,northwestern Mediterranean Sea,28m water depth,1950,271,31,470,30,GifA-11385,,543,190,,11/08/2020 23:00
+1941,13.7387,44.9854,-140,22,"Perhada, et al 2018",Istrian Peninsula,Adriatic Sea,10â€“11 m water depth,1950,264,23,463,22,Z-6169,2.08,542,189,,04/04/2022 08:36
+1942,9.6,44.1667,-143,30,"TisnÃ©rat-Laborde, et al, 2013",Liguro-ProvenÃ§al Basin,northwestern Mediterranean Sea,28m water depth,1949,263,31,460,30,GifA-11384,,543,190,,11/08/2020 23:00
+1943,9.6,44.1667,-133,30,"TisnÃ©rat-Laborde, et al, 2013",Liguro-ProvenÃ§al Basin,northwestern Mediterranean Sea,28m water depth,1950,271,31,470,30,GifA-11385,,543,190,,11/08/2020 23:00
 1944,163.6568,-78.2,507,21,Hall et al 2010,McMurdo Ice Shelf,Ross Sea,U/TH age=49+-30,1901,1024,22,1119,21,SUERC-5901,,544,191,,04/04/2022 08:36
 1945,165.1578,-77.8,635,30,Hall et al 2010,McMurdo Ice Shelf,Ross Sea,U/TH age=88+-39,1862,1153,31,1280,30,OS-42497,,544,191,,04/04/2022 08:36
 1946,164.2785,-74.8392,751,39,Hall etal 2010,Terra Nova Bay,Ross Sea,U/TH age=103+-37,1847,1282,40,1406,39,AA-56092,,544,191,,04/04/2022 08:36
@@ -1352,7 +1352,7 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 2002,-2.53,56.15,-187,35,Cappelli & Austin 2020,Forth,Northeast Atlantic,,1925,268,36,417,35,SUERC-11186,,559,197,,11/08/2020 23:00
 2003,-2.53,56.15,-142,35,Cappelli & Austin 2020,Forth,Northeast Atlantic,,1924,316,36,462,35,SUERC-11193,,560,197,,11/08/2020 23:00
 2004,-2.53,56.15,-157,35,Cappelli & Austin 2020,Forth,Northeast Atlantic,,1924,301,36,447,35,SUERC-11195,,560,197,,11/08/2020 23:00
-2005,-78.8411,-33.6414,-119,30,Merino-Campos et al (2019),Juan Fernðndez,Chilean continental margin,,1907,364,32,490,30,UCIAMS-144986,,562,198,,04/04/2022 08:36
+2005,-78.8411,-33.6414,-119,30,Merino-Campos et al (2019),Juan Fernï¿½ndez,Chilean continental margin,,1907,364,32,490,30,UCIAMS-144986,,562,198,,04/04/2022 08:36
 2006,-73.8216,-41.8596,37,25,Merino-Campos et al (2019),Ancud,Chilean continental margin,,1951,464,29,640,25,UCIAMS-144996,,563,198,,04/04/2022 08:36
 2007,-73.0619,-36.626,87,25,Merino-Campos et al (2019),Quiriquina Island,Chilean continental margin,,1948,522,28,690,25,UCIAMS-144989,,564,198,,04/04/2022 08:36
 2008,-73.0619,-36.626,72,30,Merino-Campos et al (2019),Quiriquina Island,Chilean continental margin,,1948,507,32,675,30,UCIAMS-144990,,564,198,,04/04/2022 08:36
@@ -1362,10 +1362,10 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 2012,-72.9465,-41.4754,58,30,Merino-Campos et al (2019),Pto. Montt,Chilean continental margin,,1911,538,32,665,30,UCIAMS-144974,,565,198,,04/04/2022 08:36
 2013,-70.9559,-53.6127,-98,20,Merino-Campos et al (2019),"Bulnes Fort, Magallanes",Chilean continental margin,,1954,323,25,505,20,UCIAMS-134084,,566,198,,04/04/2022 08:36
 2014,-70.9064,-53.1587,-128,20,Merino-Campos et al (2019),Punta Arenas,Chilean continental margin,,1956,290,26,475,20,UCIAMS-134090,,566,198,,04/04/2022 08:36
-2015,-71.6087,-33.0409,-23,20,Merino-Campos et al (2019),Valparaðso,Chilean continental margin,,1953,400,25,580,20,UCIAMS-134080,,566,198,,04/04/2022 08:36
+2015,-71.6087,-33.0409,-23,20,Merino-Campos et al (2019),Valparaï¿½so,Chilean continental margin,,1953,400,25,580,20,UCIAMS-134080,,566,198,,04/04/2022 08:36
 2016,-73.8216,-41.8596,-33,30,Merino-Campos et al (2019),Ancud,Chilean continental margin,,1951,394,33,570,30,UCIAMS-144978,,567,198,,04/04/2022 08:36
 2017,-73.1577,-36.7395,24,30,Merino-Campos et al (2019),Sn. Vicente,Chilean continental margin,,1893,512,32,645,30,UCIAMS-144979,,567,198,,04/04/2022 08:36
-2018,-71.3491,-29.9516,-55,25,Carrð et al. (2016),Coquimbo,Chilean continental margin,,1837,450,28,605,25,UCIAMS-142533,,568,198,,04/04/2022 08:36
+2018,-71.3491,-29.9516,-55,25,Carrï¿½ et al. (2016),Coquimbo,Chilean continental margin,,1837,450,28,605,25,UCIAMS-142533,,568,198,,04/04/2022 08:36
 2019,-73.4964,-52.1265,-98,20,Merino-Campos et al (2019),Magallanes Region,Chilean continental margin,,1954,323,25,505,20,UCIAMS-134085,,569,198,,04/04/2022 08:36
 2020,-69.5,-54.317,-73,20,Merino-Campos et al (2019),Seno Almirantazgo,Chilean continental margin,,1955,347,26,530,20,UCIAMS-134087,,570,198,,04/04/2022 08:36
 2021,-70.4507,-53.2912,-108,20,Merino-Campos et al (2019),Punta Chilota,Chilean continental margin,,1953,315,25,495,20,UCIAMS-134083,,580,198,,04/04/2022 08:36
@@ -1375,11 +1375,11 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 2025,-73.8216,-41.8596,17,25,Merino-Campos et al (2019),Ancud,Chilean continental margin,,1880,502,27,650,25,UCIAMS-144983,,572,198,,04/04/2022 08:36
 2026,-73.8216,-41.8596,-27,25,Merino-Campos et al (2019),Asasao,Chilean continental margin,,1852,476,27,625,25,UCIAMS-144982,,573,198,,04/04/2022 08:36
 2027,-73.7548,-41.9141,-18,25,Merino-Campos et al (2019),Pudeto River mouth,Chilean continental margin,,1951,409,29,585,25,UCIAMS-144994,,574,198,,04/04/2022 08:36
-2028,-71.6087,-33.0409,-23,25,Merino-Campos et al (2019),Valparaðso,Chilean continental margin,,1956,395,30,580,25,UCIAMS-144993,,574,198,,04/04/2022 08:36
+2028,-71.6087,-33.0409,-23,25,Merino-Campos et al (2019),Valparaï¿½so,Chilean continental margin,,1956,395,30,580,25,UCIAMS-144993,,574,198,,04/04/2022 08:36
 2029,-70.9223,-53.181,-93,25,Merino-Campos et al (2019),Strait of Magallanes,Chilean continental margin,,1955,327,30,510,25,UCIAMS-144984,,575,198,,04/04/2022 08:36
 2030,-73.76,-42.4796,20,25,Merino-Campos et al (2019),Castro,Chilean continental margin,,1894,512,28,640,25,UCIAMS-144992,,576,198,,04/04/2022 08:36
 2031,-73.0619,-36.626,37,25,Merino-Campos et al (2019),Quiriquina Island,Chilean continental margin,,1948,472,28,640,25,UCIAMS-144991,,577,198,,04/04/2022 08:36
-2032,-71.6087,-33.0409,127,20,Merino-Campos et al (2019),Valparaðso,Chilean continental margin,,1953,550,25,730,20,UCIAMS-134081,,577,198,,04/04/2022 08:36
+2032,-71.6087,-33.0409,127,20,Merino-Campos et al (2019),Valparaï¿½so,Chilean continental margin,,1953,550,25,730,20,UCIAMS-134081,,577,198,,04/04/2022 08:36
 2033,-72.0432,-34.6418,-53,30,Merino-Campos et al (2019),Bucalemu,Chilean continental margin,,1954,368,34,550,30,UCIAMS-144995,,578,198,,04/04/2022 08:36
 2034,-70.9559,-53.6127,-98,20,Merino-Campos et al (2019),"Bulnes Fort, Magallanes",Chilean continental margin,,1954,323,25,505,20,UCIAMS-134086,,578,198,,04/04/2022 08:36
 2035,-73.8216,-41.8596,-78,25,Merino-Campos et al (2019),Ancud,Chilean continental margin,,1953,345,29,525,25,UCIAMS-144975,,579,198,,04/04/2022 08:36
@@ -1415,12 +1415,12 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 2065,-70.595,62.5512,2,NA,Dyke et al 2019,Central Hudson Strait,Arctic Ocean,,1886,513,,630,,UCIAMS-168857,-14.5,300,199,,04/04/2022 08:36
 2068,-37.367,-17.95,-319,26,Oliveira et al. 2019,Abrolhos Archipelago,SW Atlantic,U/Th age=18+-2,1932,124,12,285,26,LAC-UFF-170214,,290,200,2369,04/04/2022 08:36
 2069,-38.517,-12.867,-236,26,Oliveira et al. 2019,Todos os Santos Bay,SW Atlantic,U/Th age=16+-3,1934,207,12,368,26,LAC-UFF-170213,,290,200,,04/04/2022 08:36
-2070,150.0167,-37.7333,-116,35,Komugabe-Dixon et al. 2016,Cape Howe,Tasman Sea,U-Th 325 ð 12 yr BP,1625,436,36,765,35,SANU-32923,,317,201,2385,16/08/2020 23:00
-2071,150.4,-43.9667,-215,40,Komugabe-Dixon et al. 2016,Cascade Plateau,Tasman Sea,U-Th 192 ð 9 yr BP,1758,352,41,510,40,SANU-29726,,317,201,2397,16/08/2020 23:00
-2072,148.55,-41.4167,-103,20,Komugabe-Dixon et al. 2016,St Helens Hill (SH-10),Tasman Sea,U-Th 2948 ð 17 yr BP,-998,365,26,3193,20,SANU-24023,,317,201,2414,16/08/2020 23:00
-2073,148.85,-39.6,-73,35,Komugabe-Dixon et al. 2016,Bass Strait,Tasman Sea,U-Th -4 ð 11 yr BP,1954,323,37,530,35,SANU-30212,,581,201,2430,16/08/2020 23:00
-2074,148.55,-41.4167,-270,25,Komugabe-Dixon et al. 2016,St Helens Hill (SH-9),Tasman Sea,U-Th 438 ð 10 yr BP,1512,358,27,700,25,SANU-34024,,317,201,2459,16/08/2020 23:00
-2075,147.2333,-44.25,-117,40,Komugabe-Dixon et al. 2016,North Sister,Tasman Sea,U-Th 94 ð 6 yr BP,1856,406,41,532,40,SANU-23837,,317,201,2478,16/08/2020 23:00
+2070,150.0167,-37.7333,-116,35,Komugabe-Dixon et al. 2016,Cape Howe,Tasman Sea,U-Th 325 ï¿½ 12 yr BP,1625,436,36,765,35,SANU-32923,,317,201,2385,16/08/2020 23:00
+2071,150.4,-43.9667,-215,40,Komugabe-Dixon et al. 2016,Cascade Plateau,Tasman Sea,U-Th 192 ï¿½ 9 yr BP,1758,352,41,510,40,SANU-29726,,317,201,2397,16/08/2020 23:00
+2072,148.55,-41.4167,-103,20,Komugabe-Dixon et al. 2016,St Helens Hill (SH-10),Tasman Sea,U-Th 2948 ï¿½ 17 yr BP,-998,365,26,3193,20,SANU-24023,,317,201,2414,16/08/2020 23:00
+2073,148.85,-39.6,-73,35,Komugabe-Dixon et al. 2016,Bass Strait,Tasman Sea,U-Th -4 ï¿½ 11 yr BP,1954,323,37,530,35,SANU-30212,,581,201,2430,16/08/2020 23:00
+2074,148.55,-41.4167,-270,25,Komugabe-Dixon et al. 2016,St Helens Hill (SH-9),Tasman Sea,U-Th 438 ï¿½ 10 yr BP,1512,358,27,700,25,SANU-34024,,317,201,2459,16/08/2020 23:00
+2075,147.2333,-44.25,-117,40,Komugabe-Dixon et al. 2016,North Sister,Tasman Sea,U-Th 94 ï¿½ 6 yr BP,1856,406,41,532,40,SANU-23837,,317,201,2478,16/08/2020 23:00
 2076,93.03,13.65,-290,67,Raj et al. 2020,Landfall Island,Andaman basin,Band count,1948,118,68,313,67,AURIS-02035,,401,202,,03/09/2021 09:10
 2077,93.03,13.65,-340,66,Raj et al. 2020,Landfall Island,Andaman basin,Band count,1948,68,67,263,66,AURIS-02036,,401,202,,03/09/2021 09:10
 2078,93.03,13.65,-282,67,Raj et al. 2020,Landfall Island,Andaman basin,Band count,1949,124,68,321,67,AURIS-02037,,401,202,,03/09/2021 09:10
@@ -1489,11 +1489,11 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 2142,3.1,42.5,-279,27,Faivre et al 2019,"Banyuls, France",Western Mediterranean,approximate location,1913,207,29,327,27,Z-5668,-0.9,610,214,,04/04/2022 08:36
 2143,7.1,43.5,-184,22,Faivre et al 2019,"Antibes, France",Western Mediterranean,approximate location,1858,338,24,463,22,Z-5669,0.2,610,214,,04/04/2022 08:36
 2144,10.3,43.6,-177,22,Faivre et al 2019,"Livorno, Italy",Western Mediterranean,approximate location,1879,336,24,457,22,Z-5917,0.8,610,214,,04/04/2022 08:36
-2145,-2.4,46.7,-200,22,Faivre et al 2019,"Ile dÕYeu, France",East Atlantic ocean,approximate location,1880,315,24,433,22,Z-5918,-1.3,610,214,,04/04/2022 08:36
+2145,-2.4,46.7,-200,22,Faivre et al 2019,"Ile dâ€™Yeu, France",East Atlantic ocean,approximate location,1880,315,24,433,22,Z-5918,-1.3,610,214,,04/04/2022 08:36
 2146,10.3,43.6,-150,22,Faivre et al 2019,"Probably Livorno, Italy",Western Mediterranean,approximate location,1879,363,24,484,22,Z-5919,1.4,610,214,,04/04/2022 08:36
 2147,10.3,43.6,-174,22,Faivre et al 2019,"Probably Livorno, Italy",Western Mediterranean,approximate location,1879,339,24,460,22,Z-5922,-0.9,610,214,,04/04/2022 08:36
-2148,14.5,44.5,-183,22,Faivre et al 2019,"Mali Lo_inj, Croatia",Adriatic Sea,approximate location,1870,333,24,457,22,Z-5900,-1.5,610,214,,04/04/2022 08:36
-2149,14.5,44.5,-233,22,Faivre et al 2019,"Mali Lo_inj, Croatia",Adriatic Sea,approximate location,1870,283,24,407,22,Z-5898,-1.5,610,214,,04/04/2022 08:36
+2148,14.5,44.5,-183,22,Faivre et al 2019,"Mali LoÅ¡inj, Croatia",Adriatic Sea,approximate location,1870,333,24,457,22,Z-5900,-1.5,610,214,,04/04/2022 08:36
+2149,14.5,44.5,-233,22,Faivre et al 2019,"Mali LoÅ¡inj, Croatia",Adriatic Sea,approximate location,1870,283,24,407,22,Z-5898,-1.5,610,214,,04/04/2022 08:36
 2150,8.9,44.4,-158,23,Faivre et al 2019,"Genova, Italy",Western Mediterranean,approximate location,1859,365,25,489,23,Z-5925,0.9,610,214,,04/04/2022 08:36
 2151,14.3,40.8,-137,22,Faivre et al 2019,"Napoli, Italy",Western Mediterranean,approximate location,1903,378,24,474,22,Z-5916,1.8,611,214,,04/04/2022 08:36
 2152,19.9,39.7,-220,21,Faivre et al 2019,"Korfu, Greece",Eastern Mediterranean,approximate location,1912,267,23,386,21,Z-5923,-1.3,612,214,,04/04/2022 08:36
@@ -1506,7 +1506,7 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 2159,151.7458,-23.5325,-181,19,Wu et al 2021,Masthead Island,Great Barrier Reef,4.5m water depth,1955,213,22,422,19,ANU-62013,,401,216,2631,24/08/2021 13:31
 2160,142.2167,27.0667,-242,52,Saito-Kokubu et al 2019,Ogasawara Islands,northwestern subtropical Pacific,,1955,152,53,361,52,JAT-14185-1,,288,217,2638,02/09/2021 09:47
 2161,-37.07,-11.03,-92,29,Alves et al 2020,Aracaju SE,Brazil Coast,,1949,315,31,512,29,LACUFF-180132,1.17,605,218,,27/10/2021 10:41
-2162,-46.78,-24.19,-123,21,Alves et al 2020,ItanhaŽm,Brazil Coast,averaged with OXA-31917,1937,320,24,481,21,LACUFF-180385,2.09,488,218,,27/10/2021 10:41
+2162,-46.78,-24.19,-123,21,Alves et al 2020,ItanhaÃ©m,Brazil Coast,averaged with OXA-31917,1937,320,24,481,21,LACUFF-180385,2.09,488,218,,27/10/2021 10:41
 2163,-40.97,-21.98,165,43,Alves et al 2020,Cabo de Sao Thome RJ,Brazil Coast,,1872,677,44,804,43,LACUFF-180149,0.98,390,218,,04/04/2022 08:36
 2164,-43.46,-23.029,-107,43,Alves et al 2020,Recreio dos Bandeirantes RJ,Brazil Coast,,1939,331,44,497,43,LACUFF-180145,1.85,245,218,,04/04/2022 08:36
 2165,-43.19,-22.97,-121,42,Alves et al 2020,Praia de Copacabana RJ,Brazil Coast,,1940,313,43,483,42,LACUFF-180146,2.18,193,218,,04/04/2022 08:36
@@ -1519,19 +1519,19 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 2172,-34.86,-8.06,-134,30,Alves et al 2020,Pernambuco,Brazil Coast,,1865,382,31,510,30,LACUFF-180256,-0.11,620,218,,27/10/2021 10:41
 2173,-37.1,-11.49,-184,25,Alves et al 2020,off Bahia c/coordinates,Brazil Coast,,1872,328,27,455,25,LACUFF-180260,2.07,621,218,,27/10/2021 10:41
 2174,-32.43,-3.84,-227,25,Alves et al 2020,Fernando de Noronha St Michael Rock,Brazil Coast,,1873,282,27,411,25,OXA-40202,1.6,622,218,,27/10/2021 10:41
-2175,-45.39,-23.82,-213,28,Alves et al 2020,S‹o Sebasti‹o,Brazil Coast,,1896,307,29,405,28,OXA-32149,-0.5,623,218,,27/10/2021 10:41
-2176,-45.39,-23.82,-213,25,Alves et al 2020,S‹o Sebasti‹o,Brazil Coast,,1898,305,27,403,25,OXA-32148,3,623,218,,27/10/2021 10:41
-2177,-47.43,-24.75,-167,21,Alves et al 2020,IguapŽ,Brazil Coast,averaged with OXA-31913,1902,350,23,445,21,LACUFF-180382,2.37,624,218,,27/10/2021 10:41
+2175,-45.39,-23.82,-213,28,Alves et al 2020,SÃ£o SebastiÃ£o,Brazil Coast,,1896,307,29,405,28,OXA-32149,-0.5,623,218,,27/10/2021 10:41
+2176,-45.39,-23.82,-213,25,Alves et al 2020,SÃ£o SebastiÃ£o,Brazil Coast,,1898,305,27,403,25,OXA-32148,3,623,218,,27/10/2021 10:41
+2177,-47.43,-24.75,-167,21,Alves et al 2020,IguapÃ©,Brazil Coast,averaged with OXA-31913,1902,350,23,445,21,LACUFF-180382,2.37,624,218,,27/10/2021 10:41
 2178,-44.2,-23.22,-191,25,Alves et al 2020,Ilha Grande,Brazil Coast,averaged with OXA-32782,1905,318,27,420,25,LACUFF-180366,4.9,625,218,,27/10/2021 10:41
 2179,-44.2,-23.22,-215,25,Alves et al 2020,Ilha Grande,Brazil Coast,averaged with OXA-32788,1905,294,27,396,25,LACUFF-180373,3.1,625,218,,27/10/2021 10:41
 2180,-44.2,-23.22,-228,25,Alves et al 2020,Ilha Grande,Brazil Coast,averaged with OXA-32789,1905,281,27,383,25,LACUFF-180375,3.5,625,218,,27/10/2021 10:41
-2181,-45.38,-23.82,-76,21,Alves et al 2020,Ilha de S‹o Sebasti‹o,Brazil Coast,averaged with OXA-31914,1915,407,23,530,21,LACUFF-180383,2.46,624,218,,27/10/2021 10:41
+2181,-45.38,-23.82,-76,21,Alves et al 2020,Ilha de SÃ£o SebastiÃ£o,Brazil Coast,averaged with OXA-31914,1915,407,23,530,21,LACUFF-180383,2.46,624,218,,27/10/2021 10:41
 2182,-48.3,-25.56,-176,23,Alves et al 2020,Ilha do Mel Saco do Miguel,Brazil Coast,averaged with OXA-33089,1933,266,25,428,23,LACUFF-180361,0.2,490,218,,27/10/2021 10:41
 2183,-45.29,-23.85,-142,24,Alves et al 2020,Baia dos Castelhanos,Brazil Coast,,1936,302,26,462,24,OXA-32147,2.6,626,218,,27/10/2021 10:41
 2184,-45.29,-23.85,-156,28,Alves et al 2020,Baia dos Castelhanos,Brazil Coast,,1936,288,30,448,28,OXA-32150,3.8,626,218,,27/10/2021 10:41
 2185,-45.29,-23.85,217,29,Alves et al 2020,Baia dos Castelhanos,Brazil Coast,,1936,661,31,821,29,OXA-32326,0.2,626,218,,27/10/2021 10:41
-2186,-45.38,-23.82,-153,21,Alves et al 2020,Ilha de S‹o Sebasti‹o,Brazil Coast,averaged with OXA-32152,1936,291,23,451,21,LACUFF-180376,1.5,627,218,,27/10/2021 10:41
-2187,-45.38,-23.82,-165,27,Alves et al 2020,Ilha de S‹o Sebasti‹o,Brazil Coast,averaged with OXA-32781,1936,279,29,439,27,LACUFF-180384,0.7,627,218,,27/10/2021 10:41
+2186,-45.38,-23.82,-153,21,Alves et al 2020,Ilha de SÃ£o SebastiÃ£o,Brazil Coast,averaged with OXA-32152,1936,291,23,451,21,LACUFF-180376,1.5,627,218,,27/10/2021 10:41
+2187,-45.38,-23.82,-165,27,Alves et al 2020,Ilha de SÃ£o SebastiÃ£o,Brazil Coast,averaged with OXA-32781,1936,279,29,439,27,LACUFF-180384,0.7,627,218,,27/10/2021 10:41
 2188,-37.07,-11.03,-104,25,Alves et al 2020,Atalara Velha - Aracaju SE,Brazil Coast,,1937,339,27,500,25,LACUFF-180269,0.36,490,218,,27/10/2021 10:41
 2189,-43.46,-23.029,-213,42,Alves et al 2020,Recreio dos Bandeirantes DF RJ,Brazil Coast,,1939,225,43,391,42,LACUFF-180151,-0.72,620,218,,04/04/2022 08:36
 2190,-43.46,-23.029,-29,25,Alves et al 2020,Recreio dos Bandeirantes DF RJ,Brazil Coast,,1939,409,27,575,25,LACUFF-180267,1.29,628,218,,27/10/2021 10:41
@@ -1542,8 +1542,8 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 2206,-130.693,54.198,273,67,Edge et al 2022,Hecate Strait,NE Pacific,collected at 10m depth,1766,816,19,995,16,OS-159180,1.45,641,222,,06/12/2022 14:20
 2205,-130.693,54.198,303,66,Edge et al 2022,Hecate Strait,NE Pacific,collected at 10m depth,1807,850,21,1000,18,OS-160280,0.9,641,222,,06/12/2022 14:20
 2204,-130.693,54.198,276,68,Edge et al 2022,Hecate Strait,NE Pacific,collected at 10m depth,1739,842,19,1010,16,OS-160307,1.52,641,222,,06/12/2022 14:20
-2203,153.3171,-27.5342,-170,20,Hua et al. 2015,Moreton Bay,SW Pacific,298±15,1652,,,673,20,OZM-654,-2.5,479,221,2681,04/04/2022 08:36
-2202,155.9167,-23.45,-192,26,Hua et al. 2015,Heron Reef,SW Pacific,U/Th age=6±2,1944,,,412,26,OZM-046,1,427,221,2663,28/02/2022 14:20
+2203,153.3171,-27.5342,-170,20,Hua et al. 2015,Moreton Bay,SW Pacific,298Â±15,1652,,,673,20,OZM-654,-2.5,479,221,2681,04/04/2022 08:36
+2202,155.9167,-23.45,-192,26,Hua et al. 2015,Heron Reef,SW Pacific,U/Th age=6Â±2,1944,,,412,26,OZM-046,1,427,221,2663,28/02/2022 14:20
 2201,168.6989,4.5772,-101,28,"Weisler, et al 2018",Ebon islet,South Pacific,U/TH AD/BC=1851+-2,1851,401,30,551,28,OZQ-018,-2.9,317,220,2643,15/02/2022 16:19
 2207,-130.693,54.198,286,65,Edge et al 2022,Hecate Strait,NE Pacific,collected at 10m depth,1789,768,19,995,16,OS-157457,2.54,641,222,,06/12/2022 14:20
 2208,-130.693,54.198,259,68,Edge et al 2022,Hecate Strait,NE Pacific,collected at 10m depth,1749,813,29,990,27,OS-160308,1.08,641,222,,06/12/2022 14:20
@@ -1815,7 +1815,7 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 2574,147.3859,-38.2223,-113,19,"Ulm et al, 2023",Gosney,Australia,22m,1950,291,22,490,19,Wk-45297,2.57,693,229,,07/09/2023 09:24
 2575,147.3859,-38.2223,-127,20,"Ulm et al, 2023",Gosney,Australia,22m,1950,277,23,476,20,Wk-45298,2.22,693,229,,07/09/2023 09:24
 2576,115.5333,-20.4333,-59,15,"Ulm et al, 2023","Montebello Islands, WA",Australia,0-50m,1912,429,17,548,15,Wk-46093,1.76,701,229,,07/09/2023 09:24
-2577,1.96,6.42,-193,66,Soulet et al 2023,AhŽmŽ Lake,Benin,,1910,296,21,414,18,SacA-68823,-4.76,702,230,,25/11/2023 09:50
+2577,1.96,6.42,-193,66,Soulet et al 2023,AhÃ©mÃ© Lake,Benin,,1910,296,21,414,18,SacA-68823,-4.76,702,230,,25/11/2023 09:50
 2578,-4.42,5.19,388,66,Soulet et al 2023,"Jacqueville, beach",Ivory Coast,,1910,877,21,995,18,SacA-68809,0.03,703,230,,25/11/2023 09:50
 2579,-17.04,20.88,255,66,Soulet et al 2023,Nouadhibou,Mauritania,,1908,750,21,863,18,SacA-68811,0.38,703,230,,25/11/2023 09:50
 2580,-13.79,9.46,249,75,Soulet et al 2023,"Los Islands, Roume Island at low tide",Republic of Guinea,,1909,741,40,857,39,SacA-68813,-0.4,703,230,,25/11/2023 09:50
@@ -1844,12 +1844,12 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 2603,11.8,-4.66,-53,67,Soulet et al 2023,Loango,Republic of Congo,,1890,427,20,571,19,SacA-68833,1.38,362,230,,25/11/2023 09:50
 2604,-7.37,33.71,-122,66,Soulet et al 2023,Mohammedia,Marocco,,1921,342,21,482,18,SacA-68834,1.19,362,230,,25/11/2023 09:50
 2605,-17.42,14.71,-64,63,Soulet et al 2023,"Dakar, beach of Hann, posts of the ponto",Senegal,,1947,346,22,539,19,SacA-68835,1.56,362,230,,25/11/2023 09:50
-2606,12.14,-15.18,-39,66,Soulet et al 2023,Mo‰medes,Angola,,1910,441,20,568,18,SacA-68836,1.75,362,230,,25/11/2023 09:50
-2607,-57,55.0833,-31,23,Pearce et al 2023,N¾r Labrador St14,Greenland coastal waters,water depth 314,1928,414,25,574,23,AAR-29770,8.24,706,231,,23/12/2023 09:34
+2606,12.14,-15.18,-39,66,Soulet et al 2023,MoÃ§Ã¢medes,Angola,,1910,441,20,568,18,SacA-68836,1.75,362,230,,25/11/2023 09:50
+2607,-57,55.0833,-31,23,Pearce et al 2023,NÃ¦r Labrador St14,Greenland coastal waters,water depth 314,1928,414,25,574,23,AAR-29770,8.24,706,231,,23/12/2023 09:34
 2608,-56.6333,66.5833,-26,24,Pearce et al 2023,N. Atlantic St.32,Greenland coastal waters,water depth 599,1895,494,26,593,24,AAR-29769,8.8,706,231,,23/12/2023 09:34
 2609,-56.6333,66.5833,-43,31,Pearce et al 2023,N. Atlantic St.32,Greenland coastal waters,water depth 599,1895,477,32,576,31,AAR-29771,7.96,706,231,,23/12/2023 09:34
 2610,-68.4667,76.15,-29,20,Pearce et al 2023,Greenland,Greenland coastal waters,water depth 40,1894,477,22,576,20,AAR-36968,0,707,231,,23/12/2023 09:34
-2611,-18.6667,74.5,58,26,Pearce et al 2023,SwedArc1900#18 - southeast of Hvalrossš,Greenland coastal waters,water depth 100,1900,577,28,673,26,AAR-27949,3.69,708,231,,23/12/2023 09:34
+2611,-18.6667,74.5,58,26,Pearce et al 2023,SwedArc1900#18 - southeast of HvalrossÃ¶,Greenland coastal waters,water depth 100,1900,577,28,673,26,AAR-27949,3.69,708,231,,23/12/2023 09:34
 2612,-52.4333,63.7833,-72,27,Pearce et al 2023,"SwedArc1871#05, davis strait, archipelag",Greenland coastal waters,water depth 64,1871,443,28,568,27,AAR-29759,7.79,709,231,,23/12/2023 09:34
 2613,-80.8833,76.1333,22,23,Pearce et al 2023,st 116,Greenland coastal waters,water depth 80,1928,466,25,626,23,AAR-29804,3.81,24,231,,23/12/2023 09:34
 2614,-71.2167,77.0833,-52,24,Pearce et al 2023,St 87,Greenland coastal waters,water depth 790,1928,393,26,553,24,AAR-29796,1.68,24,231,,23/12/2023 09:34
@@ -1901,7 +1901,7 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 2660,-20.3667,70.45,-77,26,Pearce et al 2023,"St. 29. Scoresby Sund, Cap levant?",Greenland coastal waters,water depth 15,1899,441,28,538,26,AAR-29776,4.07,140,231,,23/12/2023 09:34
 2661,-27.2833,73.1,1,30,Pearce et al 2023,St 35 Kaiser Frans Joseph - Fjord,Greenland coastal waters,water depth 5,1899,519,32,616,30,AAR-29783,1.06,140,231,,23/12/2023 09:34
 2662,-21.2167,73.4333,-39,24,Pearce et al 2023,St. 23 Cap Benett,Greenland coastal waters,water depth 10,1899,479,26,576,24,AAR-29778,3.74,140,231,,23/12/2023 09:34
-2663,-18.3833,74.5833,27,26,Pearce et al 2023,St. 20 F. om Lilla Pendulum ¯n,Greenland coastal waters,water depth 20,1899,545,28,642,26,AAR-29777,7.49,140,231,,23/12/2023 09:34
+2663,-18.3833,74.5833,27,26,Pearce et al 2023,St. 20 F. om Lilla Pendulum Ã˜n,Greenland coastal waters,water depth 20,1899,545,28,642,26,AAR-29777,7.49,140,231,,23/12/2023 09:34
 2664,-52.8333,65.4167,-81,27,Pearce et al 2023,"SwedArc1870#1899, sukkertoppen, stones",Greenland coastal waters,water depth 32,1870,436,28,560,27,AAR-29760,5.65,728,231,,23/12/2023 09:36
 2665,-66.3,64.9333,-42,23,Pearce et al 2023,Baffin Bay,Greenland coastal waters,NA,1894,479,25,578,23,AAR-30455,0,729,231,,23/12/2023 09:36
 2666,-76.3333,76.6667,-20,24,Pearce et al 2023,St 114,Greenland coastal waters,water depth 85,1928,425,26,585,24,AAR-29773,6.99,148,231,,23/12/2023 09:36
@@ -1937,6 +1937,13 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 2696,-25.7,73.25,716,30,Pearce et al 2023,Greenland 1899#36 - K. Frans Joseph Fjor,Greenland coastal waters,water depth 760,1899,1234,32,1331,30,AAR-27943,-10.74,741,231,,23/12/2023 09:36
 2697,-57,55.0833,-50,26,Pearce et al 2023,ca 20 somil fra Hamilton Inlet. Labrador,Greenland coastal waters,water depth 314,1928,395,28,555,26,AAR-29763,4.07,742,231,,23/12/2023 09:36
 2698,-22.4833,70.7167,64,38,Pearce et al 2023,Greenland 1899#33 - Greenland,Greenland coastal waters,water depth 70,1899,582,39,679,38,AAR-27946,-0.36,743,231,,23/12/2023 09:36
+3541,72.1805,10.8344,-99,66,"Raj, et al, 2026","Agatti, Lakshadweep",southeastern Arabian Sea,,1950,305,67,504,66,AURIS/19-472,,401,240,,11/05/2026 10:15
+3540,72.1805,10.8344,-226,43,"Raj, et al, 2026","Agatti, Lakshadweep",southeastern Arabian Sea,,1952,178,44,377,43,AURIS/19-473,,401,240,,11/05/2026 10:15
+3539,72.1805,10.8344,140,57,"Raj, et al, 2026","Agatti, Lakshadweep",southeastern Arabian Sea,,1953,544,58,743,57,AURIS/19-474,,401,240,,11/05/2026 10:15
+3538,72.1805,10.8344,-173,58,"Raj, et al, 2026","Agatti, Lakshadweep",southeastern Arabian Sea,,1955,231,59,430,58,AURIS/19-475,,401,240,,11/05/2026 10:15
+3537,72.1805,10.8344,-20,67,"Raj, et al, 2026","Agatti, Lakshadweep",southeastern Arabian Sea,,1956,384,68,583,67,AURIS/19-476,,401,240,,11/05/2026 10:15
+3536,72.1805,10.8344,-223,44,"Raj, et al, 2026","Agatti, Lakshadweep",southeastern Arabian Sea,,1958,181,45,380,44,AURIS/19-477,,401,240,,11/05/2026 10:15
+3535,72.1805,10.8344,-123,55,"Raj, et al, 2026","Agatti, Lakshadweep",southeastern Arabian Sea,,1960,281,56,480,55,AURIS/19-478,,401,240,,11/05/2026 10:15
 3534,112.0267,16.3468,-209,15,"Yang et al, 2025",Xisha Island,South China Sea,,1949,197,19,394,15,XA-53632,,288,239,3706,02/12/2025 11:05
 3533,112.0136,16.3409,-207,13,"Yang et al, 2025",Hainan Island,South China Sea,,1948,201,17,396,13,XA-52553,,288,239,3687,02/12/2025 11:03
 3532,-64.5,32.1667,-208,30,"Goodkin et al, 2012",Sargasso Sea,North Atlantic,,1938,232,32,395,30,UCIAMS-67647,,317,238,3663,16/11/2025 11:50
@@ -2026,8 +2033,8 @@ MapNo,Lon,Lat,DeltaR,DeltaRErr,Reference,Locality,Subregion,Notes,CollectionYear
 3372,120.4833,17.9833,-89,25,"Hirabayashi, et al, 2019",Luzon,northwestern coast of Philippines,water depth of 4.8m,1948,318,27,514,25,YAUT-032813,,288,233,,09/01/2025 14:52
 3371,120.4833,17.9833,-132,27,"Hirabayashi, et al, 2019",Luzon,northwestern coast of Philippines,water depth of 4.8m,1949,274,29,471,27,YAUT-032807,,288,233,,09/01/2025 14:52
 3370,120.4833,17.9833,-199,36,"Hirabayashi, et al, 2019",Luzon,northwestern coast of Philippines,water depth of 4.8m,1949,206,38,404,36,YAUT-032815,,288,233,,09/01/2025 14:52
-40,-68.8,76.57,-180,61,"Mšrner, N.-:1990",Thule,,l,1940,253,58,423,57,K-383,-0.3,155,107,,10/03/2026 15:50
-39,-56.17,72.78,-175,61,"Mšrner, N.-:1990",Upernavik,,l,1936,268,46,428,44,K-382,-0.2,155,107,,10/03/2026 15:50
+40,-68.8,76.57,-180,61,"MÃ¶rner, N.-:1990",Thule,,l,1940,253,58,423,57,K-383,-0.3,155,107,,10/03/2026 15:50
+39,-56.17,72.78,-175,61,"MÃ¶rner, N.-:1990",Upernavik,,l,1936,268,46,428,44,K-382,-0.2,155,107,,10/03/2026 15:50
 3369,-60.225,-62.6181,733,15,"Divola et al, 2024",Walker Bay. Livingston Island,Antarctica,,1910,1222,18,1340,15,UCIAMS-270242,-19,382,232,,10/07/2024 14:09
 3368,-62.6215,-64.6866,413,20,"Divola et al, 2024",Cuverville Island,Antarctica,,1910,902,22,1020,20,UCIAMS-270264,-19.7,382,232,,10/07/2024 14:09
 3367,-63.6633,-64.888,573,15,"Divola et al, 2024",Jougla Point,Antarctica,,1910,1062,18,1180,15,UCIAMS-270263,-21.2,376,232,,10/07/2024 14:09

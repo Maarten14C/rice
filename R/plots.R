@@ -645,6 +645,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation). Can also be provided within option 'reservoir'.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
 #' @param oncurve Whether or not to plot the calibration curve and then plot the dates onto this curve. Defaults to FALSE.
+#' @param curve.lim Limits of the radiocarbon age axis when oncurve=TRUE. Calculates the ranges automatically if left empty.
 #' @param timescale If oncurve is used, by default the calibration curve is plotted in the C14 age timescale. Alternatively, it can be provided as \code{timescale="F14C"} or \code{timescale="pMC"}  
 #' @param reservoir Reservoir age, or reservoir age and age offset.
 #' @param normal Use the normal distribution to calibrate dates (default TRUE). The alternative is to use the t model (Christen and Perez 2009).
@@ -709,7 +710,7 @@ draw.dist <- function(dist, on.y=FALSE, rotate.axes=FALSE, mirror=FALSE, up=TRUE
 #'   draw.dates(y, er, y, d.lab="Radiocarbon age (BP)", bombalert=FALSE)
 #'   draw.ccurve(add=TRUE, cc1.col=rgb(0,.5,0,.5))
 #' @export
-draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, as.F=TRUE, is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, thiscurve=c(), oncurve=FALSE, timescale="C", reservoir=c(), normal=TRUE, same.peaks=FALSE, peak=1, ex=c(), as.unit=FALSE, t.a=3, t.b=4, prob=0.95, threshold=.001, BCAD=FALSE, draw.hpd=TRUE, hpd.border=NA, rounded=0.1, every=1, mirror=TRUE, up=TRUE, draw.base=TRUE, col=rgb(0,0,1,.3), border=col, lwd=1, hpd.col=col, cal.col=rgb(0, 0.5, 0.5, 0.35), cal.border=cal.col, cal.hpd.col=cal.col, add=FALSE, ka=FALSE, rotate.axes=FALSE, normalise=TRUE, cc.col=rgb(0,.5,0,.5), cc.border=cc.col, cc.lwd=1, cc.resample=5, age.lab=c(), age.lim=c(), age.rev=FALSE, cal.rev=FALSE, d.lab=c(), d.lim=c(), d.rev=TRUE, labels=c(), label.x=1, label.y=c(), label.cex=0.8, label.col=col, label.offset=c(0,0), label.adj=c(1,0), label.rot=0, cc.dir=NULL, dist.res=1000, ...) {
+draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, as.F=TRUE, is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, thiscurve=c(), oncurve=FALSE, curve.lim=c(), timescale="C", reservoir=c(), normal=TRUE, same.peaks=FALSE, peak=1, ex=c(), as.unit=FALSE, t.a=3, t.b=4, prob=0.95, threshold=.001, BCAD=FALSE, draw.hpd=TRUE, hpd.border=NA, rounded=0.1, every=1, mirror=TRUE, up=TRUE, draw.base=TRUE, col=rgb(0,0,1,.3), border=col, lwd=1, hpd.col=col, cal.col=rgb(0, 0.5, 0.5, 0.35), cal.border=cal.col, cal.hpd.col=cal.col, add=FALSE, ka=FALSE, rotate.axes=FALSE, normalise=TRUE, cc.col=rgb(0,.5,0,.5), cc.border=cc.col, cc.lwd=1, cc.resample=5, age.lab=c(), age.lim=c(), age.rev=FALSE, cal.rev=FALSE, d.lab=c(), d.lim=c(), d.rev=TRUE, labels=c(), label.x=1, label.y=c(), label.cex=0.8, label.col=col, label.offset=c(0,0), label.adj=c(1,0), label.rot=0, cc.dir=NULL, dist.res=1000, ...) {
 
   if(length(cc) == 1 && cc==2 && glue > 0)
     warning("the marine calibration curve cannot be 'glued' to an (atmospheric) postbomb curve")
@@ -834,10 +835,10 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TR
         if(grepl("p", tolower(timescale)))
           d.lab <- "pMC" else 
          if(grepl("f", tolower(timescale)))
-           d.lab <- "F14C" else
+           d.lab <- expression(F^14*C)  else
            if(ka)
-             d.lab <- "C14 kBP" else
-               d.lab <- "C14 BP" 
+             d.lab <- expression(""^14*C~kBP)  else
+               d.lab <- expression(""^14*C~BP) 
       } else
           d.lab <- "depth"
 
@@ -851,8 +852,11 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TR
       d.lim <- rev(d.lim)
     if(age.rev || cal.rev)
       age.lim <- rev(age.lim)
-    if(oncurve)
-      age.lim <- rev(age.lim)
+    if(oncurve) {
+  	  d.lim <- rev(d.lim)
+      if(length(curve.lim) == 2)
+        d.lim <- curve.lim
+    }
     if(rotate.axes)
       plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=d.lim, xlab=d.lab, ...) else
         plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=d.lim, ylab=d.lab, ...)

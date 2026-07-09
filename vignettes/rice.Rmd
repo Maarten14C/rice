@@ -40,7 +40,19 @@ library(rice)
 
 # Radiocarbon 
 
-C-14, or radiocarbon, is a radioactive isotope that decays with a half-life of around 5730 years, and which is commonly used to date organic material back to around 50,000 years ago. Given a starting concentration $A_0$ of some organic material that we want to find the age of, the remaining amount of radiocarbon at time $t$ can be found as $A_t = A_0 e^{-\lambda t}$:
+C-14 or radiocarbon is a radioactive isotope that decays with a half-life of around 5730 years, and which is commonly used to date organic material back to around 50,000 years ago. 
+
+As cosmic rays interact with N-14, they produce C-14 at a global rate of around 6 kg C-14 per year. As can be seen in the first panel of the below Figure, if C-14 were stable and allowed to fill the atmosphere (as 14CO2) at that rate for 50,000 years, it'd reach 300,000 kg. However, since C-14 decays at a constant rate, over time an equilibrium would be reached between production and decay (top-right panel). Additionally, C-14 does not only accumulate in the atmosphere, but also diffuses into the ocean which is much larger than the atmosphere (bottom-left panel). 14C is usually expressed as the 14C/12C ratio (bottom-right). The dashed line is the atmospheric 14C/12C ratio in AD 1950 (since the ocean has lower 14C/12C ratios, its 14C ages are older).
+
+```{r, fig.width=7, fig.asp=.8, dpi=100}
+layout(matrix(1:4, ncol=2, byrow=TRUE))
+C14.cycle(as.ratio=FALSE, exchange=0, halflife=Inf) # top-left panel
+C14.cycle(as.ratio=FALSE, exchange=0) # top-right
+C14.cycle(as.ratio=FALSE) # bottom-left
+C14.cycle() # bottom-right
+```
+
+Given a starting concentration $A_0$ of some organic material that we want to find the age of, the remaining amount of radiocarbon at time $t$ can be found as $A_t = A_0 e^{-\lambda t}$:
 
 ```{r, fig.width=4, fig.asp=.8}
 howmuchC14(0)

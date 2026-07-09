@@ -1,9 +1,9 @@
 # R has to be within the working directory of this file
 
-# extracted from calib marine database on 12 March 2026
+# extracted from calib marine database on 2 July 2026 (11 May 2026 update)
 # http://calib.org/marine/query select * from details
-# 2053 records
-marinedata <- read.csv("marinedatabase.csv") # 290 kB
+# 2060 records
+marinedata <- read.csv("marinedatabase.csv") # 291 kB
 
 # replaced any empty dSTD values with NA
 

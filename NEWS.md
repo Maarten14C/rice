@@ -1,7 +1,15 @@
+# rice 2.2.2
+* `draw.dates` now plots the vertical axis correctly when `oncurve=TRUE` (which plots the radiocarbon dates on the calibration curve), and has a new option `curve.lim` (axis limits, calculated automatically when left empty).
+* new function `C14.cycle` which simulates the accumulation of 14C into the atmosphere and ocean over time. We start with 0% 14C in any of the reservoirs, and 14C builds up each year (but also decays at a constant rate). 14C is transferred to the ocean, and over time the amount of 14C as well as the 14C/12C ratios in each of the reservoirs change.
+* downloaded the latest (May 2026) update of calib.org/marine/ 
+* the `point.estimates` and `hpd` functions now can also deal with variables such as `rnorm(1000)` or Bacon output such as `Bacon.Age.d(20)`.
+* added citation to Blaauw & Reimer 2026 (Radiocarbon), which describes the `rice` package.
+
 # rice 2.2.1
 * `draw.dates` now plots calibrated dates correctly also if cc>1.
 * `draw.dates` now plots any labels to the left, middle or right of calibrated dates. Alternatively, the x and/or y coordinates of the labels can be specified, e.g., `labels.x=seq(1000, 0, length=length(y))`.
 * the `draw=FALSE` option in `calibrate` no longer throws an error.
+* made the installation of audio/tuneR packages for the `radio` function more user-friendly.
 
 # rice 2.2.0
 * postbomb dates are now plotted better in the `calibrate` function when using the option `glue`.

@@ -19,6 +19,7 @@ draw.dates(
   deltaSTD = 0,
   thiscurve = c(),
   oncurve = FALSE,
+  curve.lim = c(),
   timescale = "C",
   reservoir = c(),
   normal = TRUE,
@@ -101,6 +102,8 @@ draw.dates(
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().}
 
 \item{oncurve}{Whether or not to plot the calibration curve and then plot the dates onto this curve. Defaults to FALSE.}
+
+\item{curve.lim}{Limits of the radiocarbon age axis when oncurve=TRUE. Calculates the ranges automatically if left empty.}
 
 \item{timescale}{If oncurve is used, by default the calibration curve is plotted in the C14 age timescale. Alternatively, it can be provided as \code{timescale="F14C"} or \code{timescale="pMC"}}
 

@@ -1,8 +1,10 @@
+# adapt point.estimates so that it can accommodate e.g. a list of values e.g. from Bacon.Age.d
+
 # can intcal.data be made to show the SH data? Currently shows the NH data
 
 # add decay correction delta (difference between year of measurement and year of collection) D = 1000*[(1+D14C/1000)exp(lambda dt) - 1]
 
-# simulate spallation, Cs sputtering, AMS beam, stripping
+# simulate spallation/magnetism, Cs sputtering, AMS beam, stripping
 
 # sample weight functions (per Philippa Ascough's suggestion). Given a %C (perhaps provide estimates for sample types such as peat, bone, ...), a loss during pretreatment, and a required graphite weight, what sample weight will be required?)
 
@@ -136,8 +138,11 @@ radio <- function(age, duration=10, duration.unit=c(), is.F=FALSE, use.cc=FALSE,
 
   hasaudio <- requireNamespace("audio", quietly=TRUE)
   hastuneR <- requireNamespace("tuneR", quietly=TRUE)
-  if(!hasaudio)
-    stop("Please install the audio package:\ninstall.packages(\"audio\")")
+  if(!hasaudio && !hastuneR) {
+    if(interactive())
+      install.packages(c("audio", "tuneR")) else
+        stop("Please install the audio or tuneR packages:\ninstall.packages(c(\"audio\", \"tuneR\"))")
+  }
 
   if(as.decays && as.tone && play)
     message("Tone not supported in as.decay mode")
@@ -302,6 +307,115 @@ radio <- function(age, duration=10, duration.unit=c(), is.F=FALSE, use.cc=FALSE,
   if(return.sound)
     invisible(sound) else
       invisible(list(C14_count=C14_count, duration=duration, F14C=asF, C14_age=as.C14))
+}
+
+
+
+#' @name C14.cycle
+#' @title Fill the atmosphere and ocean with 14C
+#' @description Simulates the accumulation and exchange of 14C within the atmosphere and ocean over time, based on annual production, decay and exchange between the atmosphere and ocean.
+#' @details This is a very simplistic 'toy' model with two layers (atmosphere and ocean) between which carbon is exchanged. The model ignores essential carbon cycling features such as vegetation, soils, ocean layers, circulation and upwelling and should not be taken as anything other than an educational tool. 
+#'
+#' The simulation starts with no C14 present in either of the reservoirs (but both reservoirs will have plenty C12). As time passes, C14 produced by cosmic rays accumulates inside the atmosphere, with some leaking to the ocean at each step. Also at each step, some of the C14 will decay (at a rate dictated by its halflife). At each step, the total mass of 14C in both reservoirs is returned as well as its proportion as 14C/12C. Users can play around with values of annual 14C production, step duration, total mass, 12C concentration, exchange between the atmosphere and ocean, and half-life.
+#'
+#' Estimates of how much C14 is produced per year vary, but can be approached as follows. Up in the atmosphere (production peaks at c. 10 km height, where airplanes fly), cosmic ray collisions produce c. 1-2 14C atoms per second per cm^2 on average (c. 17k/m2; actual rates vary and are higher near the poles). Since the surface of a sphere equals 4*pi*r^2 and given Earth's radius of 6371 km, the amount of C14 particles produced per year would be n = 17e3 * 365.25 * 24*60*60 * 4*pi*(1e3*(6371+10))^2 or c. 2.745e26 C14 particles. Multiplied by the mass of a single C14 atom, n * 2.32e-26 = c. 6.37 kg. We round this to 6 kg, about the weight of a well-fed (i.e., slightly chonky) cat. 
+#' 
+#' Default values for the total masses of the atmosphere and the ocean are from Wikipedia, and C-12 concentrations are set at 300 ppm (i.e., pre-industrial atmospheric CO2 concentrations). With these values and the above C-14 productoin rate, the atmosphere contains around 480 kg of C14 at equilibrium, about the mass of a polar bear. A further 50,000 kg of C-14 resides in the ocean, roughly the mass of 10 African Elephants. The coefficient that sets the rate of exchange between the atmosphere and ocean is tuned such that with default settings, 14C/12C ratios reach expected values of c. 1.2e-12. (Note that the ocean 14C values in this toy model are much more depleted than the c. 500 14C marine reservoir age found in the real world.) 
+#' @return A plot and the underlying values of the atmospheric and ocean 14C concentration (in kg and as proportion of 12C).
+#' @param rate Annual production of 14C, in kg. Defaults to 6 kg/yr (see details). Instead of a constant, can also be provided as a time-series (e.g., a random walk). 
+#' @param duration Amount of time over which to cycle, in years.
+#' @param n.steps Number of steps.
+#' @param halflife Half-life of 14C. Defaults to Libby Halflife of 5730 yr, but can also be set to much shorter or longer to see the impacts on concentrations.
+#' @param CO2.ppm.atm Concentration (in ppm) of atmospheric 12C (as CO2). Defaults to 300 ppm. 
+#' @param CO2.ppm.ocean Concentration (in ppm) of surface ocean 12C. Defaults to 300 ppm. 
+#' @param mass.atm Mass (in kg) of carbon in the atmosphere (as CO2).
+#' @param mass.ocean Mass (in kg) of carbon in the ocean.
+#' @param exchange Exchange rate of carbon (as CO2) between the atmosphere and the ocean. Defaults to 0.0195 (since this results in reasonable atmospheric 14C concentrations).
+#' @param f.ocean Fraction of the ocean partaking in exchange with the atmosphere. Implicitly models surface and deep ocean. Defaults to 0.39.
+#' @param as.ratio Plot carbon in the reservoirs as 14C/12C ratio (default). If set to FALSE, is plotted as mass of 14C.
+#' @param C14.1950 The standard 14C/C ratio at 0 cal BP (AD 1950), defined as 95\% of the C-14 activity of NBS Oxalic Acid I (oxI), normalized to d13C=–25 permille. Set to NA to avoid plotting the dashed horizontal line. 
+#' @param col.atmosphere Colour of the curve depicting the atmosphere's values. Defaults to sunny orange.
+#' @param col.ocean Colour of the curve depicting the ocean's values. Defaults to blue.
+#' @param col.rate Colour of the rate (annual addition of C14 to the atmosphere). Defaults to dark grey.
+#' @param bg.rate Colour of the panel behind the rate curve (annual addition of C14 to the atmosphere). Defaults to light grey.
+#' @param x.lim Axis limits of the horizontal axis. Calculated automatically by default.
+#' @param y.lim Axis limits of the vertical axis. Calculated automatically by default.
+#' @author Maarten Blaauw
+#' @examples
+#'   C14.cycle()
+#'   mn <- 6; rw <- mn; set.seed(67)
+#'   for(i in 2:1e5) rw[i] <- rw[i-1] + rnorm(1, 0, .001)
+#'   C14.cycle(rw)
+#' @export
+C14.cycle <- function(rate=6, duration=50e3, n.steps=1e5, halflife=5730, CO2.ppm.atm=300, CO2.ppm.ocean=300, mass.atm=5e18, mass.ocean=1.4e21, exchange=0.0195, f.ocean=0.39, as.ratio=TRUE, C14.1950=1.176e-12, col.atmosphere="orange", col.ocean="blue", col.rate="darkgrey", bg.rate=rgb(0,0,0,.05), x.lim=c(), y.lim=c()) {
+
+  # total mass of C (mostly 12C) in the two reservoirs
+  C12.atm <- mass.atm * CO2.ppm.atm * 1e-6 * (12/44) 
+  C12.ocean <- mass.ocean * CO2.ppm.ocean * 1e-6 * (12/44)
+
+  if(duration<100e3)
+    n.steps <- max(2, duration) # then take yearly steps (at least two)
+  if(length(rate) > 1) # production rate can vary over time
+    rate <- approx(1:length(rate), rate, 1:n.steps)$y  
+  
+  # time vector (years)
+  time <- seq(0, duration, length=n.steps)
+  stepsize <- time[2]-time[1]
+
+  # 14C storage vectors. Initial 14C = 0
+  atm <- ocean <- numeric(n.steps)
+  atm[1] <- ocean[1] <- 0
+
+  for(i in 2:(n.steps)) {
+    decay.atm <- log(2)/halflife * atm[i-1]
+    decay.ocean <- log(2)/halflife * ocean[i-1]
+
+    R.atm <- atm[i-1] / C12.atm # previous 14C/12C ratio in the atmosphere...
+    R.ocean <- ocean[i-1] / C12.ocean # and in the ocean
+
+    # fluxes move carbon proportional to ratio differences. 'exchange' steers how fast this exchange goes    
+    flux.atm.ocean <- exchange * (R.atm - R.ocean) * C12.atm
+    prod <- if(length(rate)==1) rate else rate[i]
+    atm[i] <- atm[i-1] + (prod - decay.atm - flux.atm.ocean) * stepsize # fill in this step
+    ocean[i] <- ocean[i-1] + (flux.atm.ocean - decay.ocean) * stepsize # fill in this step
+  }
+
+  R.atm <- atm / C12.atm
+  R.ocean <- ocean / (f.ocean * C12.ocean) # not all of the ocean interacts with the atmosphere
+  
+  if(length(x.lim) == 0)
+    xlim <- range(time)   
+  
+  if(as.ratio) {
+    if(length(y.lim) == 0)
+      y.lim <- c(0, max(R.atm, R.ocean))  
+    plot(time, R.atm, type="l", col=col.atmosphere, xlab="time (yr)", ylab="14C/12C ratio", xlim=x.lim, ylim=y.lim)
+    lines(time, R.ocean, col=col.ocean)
+    abline(h=C14.1950, col=col.atmosphere, lty=2)
+  } else {
+      if(length(y.lim) == 0)
+        y.lim <- c(0, max(atm, ocean))  
+      plot(time, atm, type="l", col=col.atmosphere, xlab="time (yr)", ylab="14C (kg)", xlim=x.lim, ylim=y.lim)
+      lines(time, ocean, col=col.ocean)
+      abline(h=C14.1950*mass.atm*CO2.ppm.atm/1e6 * (12/44), col=col.atmosphere, lty=2)
+    }
+
+  if(length(rate) > 1) {
+    yr <- par('usr')
+    rr <- range(rate)  
+    if(rr[1] == rr[2]) # rate is constant
+      x <- rep(mean(yr), length(rate)) else
+        x <- yr[3] + (rate - rr[1]) * diff(yr[3:4]) / diff(rr) # scale to lefthand axis
+    rect(yr[1], yr[3], yr[2], .35*yr[4], col=bg.rate, border=NA)	
+    lines(time, .3*x, col=col.rate) # only go up to one third the height of the lefthand axis
+    axis(4, at=c(0, .3*(yr[4]-yr[3])), labels=c(round(min(rate),2), round(max(rate),2)), cex.axis=.8, col.axis=col.rate, col.ticks=col.rate, padj=-1.2)
+    legend("right", legend=c("atmosphere", "ocean", "rate"),
+      col=c(col.atmosphere, col.ocean, col.rate), lty=1, bty="n", cex=0.7)
+  } else 
+    legend("right", legend=c("atmosphere", "ocean"),
+      col=c(col.atmosphere, col.ocean), lty=1, bty="n", cex=0.7)	
+
+  invisible(data.frame(time=time, rate=rate, atm=atm, ocean=ocean, R.atm=R.atm, R.ocean=R.ocean))
 }
 
 

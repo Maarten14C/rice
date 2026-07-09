@@ -37,7 +37,7 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
                 "\ninstall.packages(\"rnaturalearthdata\")")
 
             # rnaturalearthhires plots detailed maps, but is too large to be on CRAN (c. 20 MB)
-			# so it has to be installed from github
+            # so it has to be installed from github
             if(!has_hires)
               message("For detailed maps, install rnaturalearthhires:\n",
                 "'https://github.com/ropensci/rnaturalearthhires'") 
