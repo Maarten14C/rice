@@ -18,7 +18,7 @@ hpd(
 )
 }
 \arguments{
-\item{calib}{The calibrated distribution, as returned from caldist()}
+\item{calib}{The calibrated distribution, as returned from caldist(). Alternatively this can be multiple values (e.g., rnorm(1e3, 2450,50)), from which the hpd ranges will be returned.}
 
 \item{prob}{Probability range which should be calculated. Default \code{prob=0.95}.}
 

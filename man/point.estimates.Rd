@@ -16,7 +16,7 @@ point.estimates(
 )
 }
 \arguments{
-\item{calib}{The calibrated distribution, as returned from caldist()}
+\item{calib}{The calibrated distribution, as returned from caldist(). Alternatively this can be multiple values (e.g., rnorm(1e3, 2450,50)), from which the point estimates will be returned.}
 
 \item{wmean}{Report the weighted mean (defaults to TRUE)}
 
