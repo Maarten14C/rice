@@ -17,6 +17,7 @@ calib.t(
   as.F = FALSE,
   is.F = FALSE,
   BCAD = FALSE,
+  zero = FALSE,
   cal.rev = TRUE,
   cc.dir = c(),
   normal.col = "red",
@@ -51,6 +52,8 @@ calib.t(
 \item{is.F}{Use this if the provided date is in the F14C timescale.}
 
 \item{BCAD}{Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.}
+
+\item{zero}{Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.}
 
 \item{cal.rev}{Reverse the calendar age axis. Defaults to TRUE}
 

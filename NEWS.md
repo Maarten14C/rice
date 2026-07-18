@@ -1,13 +1,16 @@
 # rice 2.2.2
+* the functions `younger`, `older` and `p.range` now deal better with BCAD=TRUE.
+* in functions which use `BCAD=TRUE` as option, zero now is an additional option (as sometimes one wishes to include 0 BC/AD, sometimes not).
+* corrected a versioning error in the News.md file of rice version 2.2.1 (some of the items listed in 2.2.1 below were wrongly listed under version 2.2.2)
+
+# rice 2.2.1
+* `draw.dates` now plots calibrated dates correctly also if cc>1.
+* `draw.dates` now plots any labels to the left, middle or right of calibrated dates. Alternatively, the x and/or y coordinates of the labels can be specified, e.g., `labels.x=seq(1000, 0, length=length(y))`.
 * `draw.dates` now plots the vertical axis correctly when `oncurve=TRUE` (which plots the radiocarbon dates on the calibration curve), and has a new option `curve.lim` (axis limits, calculated automatically when left empty).
 * new function `C14.cycle` which simulates the accumulation of 14C into the atmosphere and ocean over time. We start with 0% 14C in any of the reservoirs, and 14C builds up each year (but also decays at a constant rate). 14C is transferred to the ocean, and over time the amount of 14C as well as the 14C/12C ratios in each of the reservoirs change.
 * downloaded the latest (May 2026) update of calib.org/marine/ 
 * the `point.estimates` and `hpd` functions now can also deal with variables such as `rnorm(1000)` or Bacon output such as `Bacon.Age.d(20)`.
 * added citation to Blaauw & Reimer 2026 (Radiocarbon), which describes the `rice` package.
-
-# rice 2.2.1
-* `draw.dates` now plots calibrated dates correctly also if cc>1.
-* `draw.dates` now plots any labels to the left, middle or right of calibrated dates. Alternatively, the x and/or y coordinates of the labels can be specified, e.g., `labels.x=seq(1000, 0, length=length(y))`.
 * the `draw=FALSE` option in `calibrate` no longer throws an error.
 * made the installation of audio/tuneR packages for the `radio` function more user-friendly.
 

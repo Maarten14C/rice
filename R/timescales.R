@@ -19,7 +19,7 @@
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).
-#' @param zero Whether or not zero BC/AD should be included. Defaults to none, FALSE.
+#' @param zero Whether or not zero BC/AD should be included. Defaults to not included, i.e., FALSE.
 #' @param width Width of the righthand plot. Calculated automatically by default (older ages get wider windows).
 #' @param digits Rounding of the reported values. Defaults to 0 digits.
 #' @param C14.col Colour of the 14C calibration curve. Defaults to semi-transparent blue, \code{C14.col=rgb(0,0,1,.5)}.
@@ -62,10 +62,10 @@ fromto <- function(x, from="calBP", cc=1, postbomb=0, cc.dir=NULL, thiscurve=NUL
       message("please provide a postbomb curve")
     bcad <- x
     calbp <- BCADtocalBP(x, zero)
-    c14 <- BCADtoC14(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
-    f14c <- BCADtoF14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
-    pmc <- BCADtopMC(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
-    delta14c <- BCADtoDelta14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
+    c14 <- BCADtoC14(x, cc=cc, zero=zero, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
+    f14c <- BCADtoF14C(x, cc=cc, postbomb=postbomb, zero=zero, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
+    pmc <- BCADtopMC(x, cc=cc, postbomb=postbomb, zero=zero, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
+    delta14c <- BCADtoDelta14C(x, cc=cc, postbomb=postbomb, zero=zero, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
     message(bcad, " cal BC/AD equals ", round(calbp, digits), " cal BP, ", round(c14, digits), 
       " 14C BP, ", round(f14c, digits+2), " F14C, ", round(pmc, digits+2),
       " pMC, ", round(delta14c, digits+2), " Delta14C (cc=", cc, ")\n")
@@ -74,7 +74,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=0, cc.dir=NULL, thiscurve=NUL
   if(grepl("c14", tolower(from))) { # C14
     c14 <- x
     calbp <- unique(C14tocalBP(x))
-    bcad <- calBPtoBCAD(calbp)
+    bcad <- calBPtoBCAD(calbp, zero)
     f14c <- C14toF14C(x)[,1]
     pmc <- C14topMC(x)[,1]
     delta14c <- NA # do not calculate since no theta
@@ -87,7 +87,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=0, cc.dir=NULL, thiscurve=NUL
     f14c <- x
     c14 <- F14CtoC14(x)[,1]
     calbp <- unique(C14tocalBP(c14))
-    bcad <- calBPtoBCAD(calbp)
+    bcad <- calBPtoBCAD(calbp, zero)
     pmc <- 100*x
     delta14c <- NA # do not calculate since no theta
     message(f14c, " F14C equals ", round(pmc, digits+2), " pMC, ",
@@ -101,7 +101,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=0, cc.dir=NULL, thiscurve=NUL
     f14c <- pmc/100
     c14 <- pMCtoC14(x)[,1]
     calbp <- unique(C14tocalBP(c14))
-    bcad <- calBPtoBCAD(calbp)
+    bcad <- calBPtoBCAD(calbp, zero)
     pmc <- 100*x
     delta14c <- NA # do not calculate since no theta
     message(pmc, " pMC equals ", round(f14c, digits), " F14C, ",
@@ -172,10 +172,10 @@ fromto <- function(x, from="calBP", cc=1, postbomb=0, cc.dir=NULL, thiscurve=NUL
     mtext("k cal BC/AD", 3, 2)
     calbp <- calbp/1e3
     c14 <- c14/1e3
-    axis(3, pr, calBPtoBCAD(1e3*pr)/1e3)
+    axis(3, pr, calBPtoBCAD(1e3*pr, zero)/1e3)
   } else {
       mtext("cal BC/AD", 3, 2)
-      axis(3, pr, calBPtoBCAD(pr))
+      axis(3, pr, calBPtoBCAD(pr, zero))
     }
   segments(C14.coors[1], C14.coors[3], C14.coors[2], C14.coors[3])
   axis(2, pretty(C14.coors[3:4]), col=C14.col, col.axis=C14.col)

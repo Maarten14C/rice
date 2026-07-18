@@ -10,6 +10,8 @@ l.calib(
   er,
   cc = 1,
   postbomb = FALSE,
+  BCAD = FALSE,
+  zero = FALSE,
   glue = 0,
   deltaR = 0,
   deltaSTD = 0,
@@ -23,7 +25,7 @@ l.calib(
 )
 }
 \arguments{
-\item{x}{The cal BP year.}
+\item{x}{The year (in cal BP per default, use BCAD=TRUE if this is a BC/AD year).}
 
 \item{y}{The radiocarbon date's mean.}
 
@@ -32,6 +34,10 @@ l.calib(
 \item{cc}{calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).}
 
 \item{postbomb}{Whether or not to use a postbomb curve. Required for negative radiocarbon ages.}
+
+\item{BCAD}{Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.}
+
+\item{zero}{Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.}
 
 \item{glue}{Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.}
 

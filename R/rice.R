@@ -1,4 +1,3 @@
-# adapt point.estimates so that it can accommodate e.g. a list of values e.g. from Bacon.Age.d
 
 # can intcal.data be made to show the SH data? Currently shows the NH data
 

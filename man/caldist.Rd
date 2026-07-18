@@ -27,6 +27,7 @@ caldist(
   t.b = 4,
   normalise = TRUE,
   BCAD = FALSE,
+  zero = FALSE,
   rule = 1,
   cc.dir = NULL,
   col.names = NULL
@@ -76,6 +77,8 @@ caldist(
 \item{normalise}{Sum the entire calibrated distribution to 1. Defaults to \code{normalise=TRUE}.}
 
 \item{BCAD}{Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.}
+
+\item{zero}{Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.}
 
 \item{rule}{Which extrapolation rule to use. Defaults to \code{rule=1} which returns NAs.}
 

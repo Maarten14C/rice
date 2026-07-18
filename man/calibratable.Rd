@@ -10,6 +10,7 @@ calibratable(
   lab = c(),
   cc = 1,
   BCAD = FALSE,
+  zero = FALSE,
   postbomb = FALSE,
   bombalert = TRUE,
   glue = 0,
@@ -35,6 +36,8 @@ calibratable(
 \item{cc}{The calibration curve to smooth. Calibration curve for 14C dates: 'cc=1' for IntCal20 (northern hemisphere terrestrial), 'cc=2' for Marine20 (marine), 'cc=3' for SHCal20 (southern hemisphere terrestrial). Alternatively, one can also write, e.g., "IntCal20", "Marine13". One can also make a custom-built calibration curve, e.g. using 'mix.ccurves()', and load this using 'cc=4'. In this case, it is recommended to place the custom calibration curve in its own directory, using 'cc.dir' (see below). Explanations of the numbers are provided in the table footer. If there is more than one cc provided, they will be printed in an extra table column.}
 
 \item{BCAD}{Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}. For the BCAD scale, BC ages are negative.}
+
+\item{zero}{Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.}
 
 \item{postbomb}{Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'ccurve("sh1-2_monthly")'}
 

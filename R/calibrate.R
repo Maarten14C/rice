@@ -24,6 +24,7 @@
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param normalise Sum the entire calibrated distribution to 1. Defaults to \code{normalise=TRUE}.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param zero Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.
 #' @param rule Which extrapolation rule to use. Defaults to \code{rule=1} which returns NAs.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param col.names Names for the output columns. Defaults to calBP/BCAD and probs, respectively (depending on the value of BCAD).
@@ -32,7 +33,7 @@
 #' plot(calib, type="l")
 #' postbomb <- caldist(-3030, 20, postbomb=1, BCAD=TRUE)
 #' @export
-caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=TRUE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, pb.steps=0.05, cc0.res=5e3, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=1, cc.dir=NULL, col.names=NULL) {
+caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, is.F=FALSE, is.pMC=FALSE, as.F=TRUE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, pb.steps=0.05, cc0.res=5e3, threshold=1e-3, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, zero=FALSE, rule=1, cc.dir=NULL, col.names=NULL) {
   if(is.F && is.pMC)
     stop("cannot have both is.F=TRUE and is.pMC=TRUE")
 
@@ -82,7 +83,7 @@ caldist <- function(y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=
   if(is.null(col.names)) {
     colnames(cal) <- c("cal BP", "prob")
     if(BCAD) {
-      cal[,1] <- calBPtoBCAD(cal[,1])
+      cal[,1] <- calBPtoBCAD(cal[,1], zero)
       colnames(cal)[1] <- "cal BC/AD"
     }
   } else
@@ -283,12 +284,14 @@ age.range <- function(calib, prob=0.95, roundby=0, BCAD=FALSE) {
 #' @description Find the calibrated probability of a cal BP age for a radiocarbon date. Can handle either multiple calendar ages for a single radiocarbon date, or a single calendar age for multiple radiocarbon dates.
 #' @details The function cannot deal with multiple calibration curves if multiple calendar years or radiocarbon dates are entered.
 #' @return The calibrated probability of a calendar age for a 14C age
-#' @param x The cal BP year.
+#' @param x The year (in cal BP per default, use BCAD=TRUE if this is a BC/AD year).
 #' @param y The radiocarbon date's mean.
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Whether or not to use a postbomb curve. Required for negative radiocarbon ages.
 #' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
+#' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param zero Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.
 #' @param deltaR Age offset (e.g. for marine samples). This assumes that the radiocarbon age is provided as 14C BP (not F14C or pMC).
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation).
 #' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). 
@@ -305,11 +308,14 @@ age.range <- function(calib, prob=0.95, roundby=0, BCAD=FALSE) {
 #'   l.calib(100, c(130,150), c(15,20)) # multiple radiocarbon ages and a single calendar age
 #'   plot(0:300, l.calib(0:300, 130, 20), type='l')
 #' @export
-l.calib <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, deltaR=0, deltaSTD=0, thiscurve=c(), cc.dir=c(), normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4) {
+l.calib <- function(x, y, er, cc=1, postbomb=FALSE, BCAD=FALSE, zero=FALSE, glue=0, deltaR=0, deltaSTD=0, thiscurve=c(), cc.dir=c(), normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4) {
   
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
 
+  if(BCAD)
+    x <- BCADtocalBP(x, zero)
+  
   if(length(x) == 1) {
     if(length(y) != length(er))
       stop("check that y has as many entries as er")
@@ -367,6 +373,7 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, deltaR=0, deltaSTD=0
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param normalise Sum the entire calibrated distribution to 1. Defaults to \code{normalise=TRUE}.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param zero Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.
 #' @param rule Which extrapolation rule to use. Defaults to \code{rule=1} which returns NAs.
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param seed For reproducibility, a seed can be set (e.g., \code{seed=123}). Defaults to NA, no seed set.
@@ -375,13 +382,13 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, deltaR=0, deltaSTD=0
 #'   r.calib(10,130,20, bombalert=FALSE) # 10 random cal BP ages
 #'   plot(density(r.calib(1e6, 2450, 20)))
 #' @export
-r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, rule=2, cc.dir=NULL, seed=NA) {
+r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, thiscurve=NULL, yrsteps=FALSE, cc.resample=FALSE, threshold=0, normal=TRUE, t.a=3, t.b=4, normalise=TRUE, BCAD=FALSE, zero=FALSE, rule=2, cc.dir=NULL, seed=NA) {
   if(length(n) == 0 || n<1)
     stop("n needs to be a value >0")
   if(!length(y) == 1 || !length(er) == 1)
     stop("I can only handle one date at a time")
   
-  calib <- caldist(y, er, cc=cc, postbomb=postbomb, bombalert=bombalert, glue=glue, deltaR=deltaR, deltaSTD=deltaSTD, as.F=as.F, is.F=is.F, thiscurve=thiscurve, yrsteps=yrsteps, normalise=normalise, BCAD=BCAD, rule=rule, cc.dir=cc.dir)
+  calib <- caldist(y, er, cc=cc, postbomb=postbomb, bombalert=bombalert, glue=glue, deltaR=deltaR, deltaSTD=deltaSTD, as.F=as.F, is.F=is.F, thiscurve=thiscurve, yrsteps=yrsteps, normalise=normalise, BCAD=BCAD, zero=zero, rule=rule, cc.dir=cc.dir)
   if(!is.na(seed))
     if(is.numeric(seed))  
       set.seed(seed) else
@@ -412,6 +419,7 @@ r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, delt
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param zero Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.
 #' @param threshold Report only values above a threshold. Defaults to \code{threshold=0}.
 #' @author Maarten Blaauw
 #' @examples
@@ -420,15 +428,23 @@ r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, delt
 #' calibrate(160, 20, BCAD=TRUE)
 #' younger(1750, 160, 20, BCAD=TRUE)
 #' @export
-younger <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+younger <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, zero=FALSE, threshold=0) {
   if(length(y)>1 || length(er) >1)
     stop("I can only deal with one date at a time")
   
-  cal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, BCAD=BCAD, threshold=threshold)
+  cal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, threshold=threshold)
 
   dx <- diff(cal[,1])
-  cdf <- c(0, cumsum((cal[-nrow(cal),2] + cal[-1,2]) / 2 * dx)) # trapezium integration
+  if(any(dx <= 0))
+    stop("caldist() returned ages that are not strictly increasing")
+  
+  # trapezium integration
+  cdf <- c(0, cumsum((cal[-nrow(cal),2] + cal[-1,2]) / 2 * dx)) 
   cdf <- cdf / max(cdf)
+
+  # always work in cal BP
+  if(BCAD) 
+    x <- BCADtocalBP(x, zero)
 
   return(approx(cal[,1], cdf, x, rule=2)$y) # cumulative prob
 }
@@ -456,6 +472,7 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, delt
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param zero Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.
 #' @param threshold Report only values above a threshold. Defaults to \code{threshold=0}.
 #' @author Maarten Blaauw
 #' @examples
@@ -464,9 +481,8 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, delt
 #' calibrate(160, 20, BCAD=TRUE)
 #' older(1750, 160, 20, BCAD=TRUE)
 #' @export
-older <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
-  return(1 - younger(x, y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR, deltaSTD, normal, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, BCAD=BCAD, threshold=threshold))
-}
+older <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, zero=FALSE, threshold=0)
+  return(1 - younger(x, y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR, deltaSTD, normal, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, BCAD=BCAD, zero=zero, threshold=threshold))
 
 
 
@@ -491,19 +507,25 @@ older <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR
 #' @param t.a Value a of the t distribution (defaults to 3).
 #' @param t.b Value b of the t distribution (defaults to 4).
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param zero Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.
 #' @param threshold Report only values above a threshold. Defaults to \code{threshold=0}.
 #' @author Maarten Blaauw
 #' @examples
 #' p.range(2800, 2400, 2450, 20)
 #' @export
-p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, threshold=0) {
+p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, zero=FALSE, threshold=0) {
   if(length(y)>1 || length(er) >1)
     stop("I can only deal with one date at a time")
-  cal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, BCAD=BCAD, threshold=threshold)
+  cal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, threshold=threshold)
 
   dx <- diff(cal[,1])
   cdf <- c(0, cumsum((cal[-nrow(cal),2] + cal[-1,2]) / 2 * dx)) # trapezium integration
   cdf <- cdf / max(cdf)
+
+  if(BCAD) {
+    x1 <- BCADtocalBP(x1, zero)
+    x2 <- BCADtocalBP(x2, zero)
+  }
 
   prob <- approx(cal[,1], cdf, sort(c(x1, x2)), rule=2)$y
   #prob <- approx(cal[,1], cumsum(cal[,2])/sum(cal[,2]), sort(c(x1, x2)), rule=2)$y
@@ -528,6 +550,7 @@ p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE,
 #' @param as.F Whether or not to calculate ages in the F14C timescale. Defaults to \code{as.F=FALSE}, which uses the C14 timescale.
 #' @param is.F Use this if the provided date is in the F14C timescale.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.
+#' @param zero Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.
 #' @param cal.rev Reverse the calendar age axis. Defaults to TRUE
 #' @param cc.dir Directory where the calibration curves for C14 dates \code{cc} are allocated. By default \code{cc.dir=c()}.
 #' Use \code{cc.dir="."} to choose current working directory. Use \code{cc.dir="Curves/"} to choose sub-folder \code{Curves/}.
@@ -542,13 +565,13 @@ p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE,
 #' calib.t()
 #'
 #' @export
-calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, glue=0, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, BCAD=FALSE, cal.rev=TRUE, cc.dir=c(), normal.col="red", normal.lwd=1.5, t.col=rgb(0,0,0,0.25), t.border=rgb(0,0,0,0,0.25), xlim=c(), ylim=c()) {
+calib.t <- function(y=2450, er=50, t.a=3, t.b=4, cc=1, postbomb=FALSE, glue=0, deltaR=0, deltaSTD=0, as.F=FALSE, is.F=FALSE, BCAD=FALSE, zero=FALSE, cal.rev=TRUE, cc.dir=c(), normal.col="red", normal.lwd=1.5, t.col=rgb(0,0,0,0.25), t.border=rgb(0,0,0,0,0.25), xlim=c(), ylim=c()) {
 
   y <- y - deltaR
   er <- sqrt(er^2 + deltaSTD^2)
 
   normalcal <- caldist(y, er, cc=cc, postbomb=postbomb, glue=glue, BCAD=BCAD, cc.dir=cc.dir, as.F=as.F, is.F=is.F, normal=TRUE)
-  tcal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, BCAD=BCAD, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, cc.dir=cc.dir, normal=FALSE)
+  tcal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, BCAD=BCAD, zero=zero, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, cc.dir=cc.dir, normal=FALSE)
   tpol <- cbind(c(tcal[1,1], tcal[,1], tcal[nrow(tcal),1]), c(0, tcal[,2], 0))
 
   xlab <- ifelse(BCAD, "BC/AD", "cal BP")
@@ -621,6 +644,7 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, glue=0, cc.dir=c(), t
 #' @param lab The labels of the radiocarbon dates (if any)
 #' @param cc The calibration curve to smooth. Calibration curve for 14C dates: 'cc=1' for IntCal20 (northern hemisphere terrestrial), 'cc=2' for Marine20 (marine), 'cc=3' for SHCal20 (southern hemisphere terrestrial). Alternatively, one can also write, e.g., "IntCal20", "Marine13". One can also make a custom-built calibration curve, e.g. using 'mix.ccurves()', and load this using 'cc=4'. In this case, it is recommended to place the custom calibration curve in its own directory, using 'cc.dir' (see below). Explanations of the numbers are provided in the table footer. If there is more than one cc provided, they will be printed in an extra table column.
 #' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}. For the BCAD scale, BC ages are negative.
+#' @param zero Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.
 #' @param postbomb Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'ccurve("sh1-2_monthly")'
 #' @param bombalert Warn if a date is close to the lower limit of the IntCal curve. Defaults to \code{postbomb=TRUE}.
 #' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
@@ -640,7 +664,7 @@ smooth.ccurve <- function(smooth=30, cc=1, postbomb=FALSE, glue=0, cc.dir=c(), t
 #'  data(shroud)
 #'  calibratable(shroud$y, shroud$er, shroud$ID)
 #' @export
-calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bombalert=TRUE, glue=0, cc.dir=c(), thiscurve=c(), is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, prob=0.95, prob.round=1, age.round=0, docx=c()) {
+calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, zero=FALSE, postbomb=FALSE, bombalert=TRUE, glue=0, cc.dir=c(), thiscurve=c(), is.F=FALSE, is.pMC=FALSE, deltaR=0, deltaSTD=0, prob=0.95, prob.round=1, age.round=0, docx=c()) {
   if(!requireNamespace("flextable", quietly = TRUE))
     stop("Package 'flextable' is required. Install with install.packages('flextable').")
   
@@ -692,9 +716,9 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, postbomb=FALSE, bomba
 
   for(i in 1:length(y)) {
     if(one.cc)
-      this.cal <- caldist(y[i], er[i], cc=cc, BCAD=BCAD, thiscurve=this.cc, 
+      this.cal <- caldist(y[i], er[i], cc=cc, BCAD=BCAD, zero=zero, thiscurve=this.cc, 
         deltaR=deltaR[i], deltaSTD=deltaSTD[i]) else # then provide cc for each date
-          this.cal <- caldist(y[i], er[i], cc=cc[i], BCAD=BCAD,
+          this.cal <- caldist(y[i], er[i], cc=cc[i], BCAD=BCAD, zero=zero,
             postbomb=postbomb, bombalert=bombalert, glue=glue,
             thiscurve=thiscurve, cc.dir=cc.dir, is.F=is.F, is.pMC=is.pMC,
             deltaR=deltaR[i], deltaSTD=deltaSTD[i])

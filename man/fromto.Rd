@@ -34,7 +34,7 @@ fromto(
 
 \item{thiscurve}{As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error).}
 
-\item{zero}{Whether or not zero BC/AD should be included. Defaults to none, FALSE.}
+\item{zero}{Whether or not zero BC/AD should be included. Defaults to not included, i.e., FALSE.}
 
 \item{width}{Width of the righthand plot. Calculated automatically by default (older ages get wider windows).}
 

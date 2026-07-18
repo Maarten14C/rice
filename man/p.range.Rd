@@ -21,6 +21,7 @@ p.range(
   t.a = 3,
   t.b = 4,
   BCAD = FALSE,
+  zero = FALSE,
   threshold = 0
 )
 }
@@ -56,6 +57,8 @@ p.range(
 \item{t.b}{Value b of the t distribution (defaults to 4).}
 
 \item{BCAD}{Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}.}
+
+\item{zero}{Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.}
 
 \item{threshold}{Report only values above a threshold. Defaults to \code{threshold=0}.}
 }
