@@ -400,13 +400,13 @@ r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, delt
 
 
 #' @name younger
-#' @title Find the probability of a calibrated date being of a certain age or younger than it
-#' @description Find the probability that a sample is of a certain calendar age x or younger than it, by calculating the proportion of the calibrated distribution up to and including x (i.e., summing the calibrated distribution up to year x).
-#' @details The function can only deal with one date at a time.
-#' @return The probability of a date being of a certain calendar age or younger than it.
-#' @param x The year of interest, in cal BP by default.
-#' @param y The radiocarbon date's mean.
-#' @param er The radiocarbon date's lab error.
+#' @title Find the probability of a calibrated distribution being of a certain age or younger than it
+#' @description Find the probability that a date or distribution is of a certain calendar age x or younger than it, by calculating the proportion of the calibrated distribution up to and including x (i.e., summing the calibrated distribution up to year x). 
+#' @details Instead of providing a to-be-calibrated age (y +- er), one can also provide an age distribution (as two columns: cal BP ages and their probabilities) or a vector of ages.
+#' @return The probability of a date being of a certain calendar age or younger than it. Returns a vector if x contains multiple ages.
+#' @param x The year or years of interest, in cal BP by default.
+#' @param y The radiocarbon date's mean. Alternatively, can be an age distribution (two columns: ages and their probabilities) or a vector of ages.
+#' @param er The radiocarbon date's lab error. Leave empty if y is an age distribution. 
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
 #' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
@@ -428,11 +428,23 @@ r.calib <- function(n, y, er, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, delt
 #' calibrate(160, 20, BCAD=TRUE)
 #' younger(1750, 160, 20, BCAD=TRUE)
 #' @export
-younger <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, zero=FALSE, threshold=0) {
-  if(length(y)>1 || length(er) >1)
-    stop("I can only deal with one date at a time")
+younger <- function(x, y, er=c(), cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, zero=FALSE, threshold=0) {
   
-  cal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, threshold=threshold)
+  # always work in cal BP
+  if(BCAD) 
+    x <- BCADtocalBP(x, zero)
+
+  if(length(y) == 1 && length(er) == 1) { # we calibrate the date y +- er
+    cal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, threshold=threshold)
+  } else 
+      if(is.matrix(y) || is.data.frame(y)) {
+		if(ncol(y) == 2) { # two columns: ages and their probabilities
+          o <- order(y[,1], decreasing=FALSE)
+          cal <- cbind(y[o,1], y[o,2])
+		} else 
+		    stop("Age distributions must have two columns: ages and probabilities")	
+      } else # then we assume y has multiple age entries, from which we find the proportion younger than x
+          return(ecdf(y)(x))
 
   dx <- diff(cal[,1])
   if(any(dx <= 0))
@@ -442,10 +454,6 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, delt
   cdf <- c(0, cumsum((cal[-nrow(cal),2] + cal[-1,2]) / 2 * dx)) 
   cdf <- cdf / max(cdf)
 
-  # always work in cal BP
-  if(BCAD) 
-    x <- BCADtocalBP(x, zero)
-
   return(approx(cal[,1], cdf, x, rule=2)$y) # cumulative prob
 }
 
@@ -454,11 +462,11 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, delt
 #' @name older
 #' @title Find the probability of a calibrated date being older than a certain age
 #' @description Find the probability of a calibrated date being older than an age x.
-#' @description Find the probability that a sample is older than a certain calendar age x, by calculating the proportion of the calibrated distribution 'after' x (i.e., 1 - the summed calibrated distribution up to year x).
-#' @details The function can only deal with one date at a time.
+#' @description Find the probability that a sample is older than a certain calendar age x, by calculating the proportion of the calibrated distribution 'after' x (i.e., 1 - the summed calibrated distribution up to year x). 
+#' @details The function can only deal with one date at a time. Instead of providing a to-be-calibrated age (y +- er), one can also provide an age distribution (as two columns: cal BP ages and their probabilities) or a vector of ages.
 #' @return The probability of a date being older than a certain calendar age.
 #' @param x The year of interest, in cal BP by default.
-#' @param y The radiocarbon date's mean.
+#' @param y The radiocarbon date's mean. Alternatively, can be an age distribution (two columns: ages and their probabilities) or a vector of ages.
 #' @param er The radiocarbon date's lab error.
 #' @param cc calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).
 #' @param postbomb Whether or not to use a postbomb curve (see \code{caldist()}).
@@ -481,7 +489,7 @@ younger <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, delt
 #' calibrate(160, 20, BCAD=TRUE)
 #' older(1750, 160, 20, BCAD=TRUE)
 #' @export
-older <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, zero=FALSE, threshold=0)
+older <- function(x, y, er=c(), cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, zero=FALSE, threshold=0)
   return(1 - younger(x, y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR, deltaSTD, normal, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, BCAD=BCAD, zero=zero, threshold=threshold))
 
 
@@ -489,7 +497,7 @@ older <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR
 #' @name p.range
 #' @title Probability of a date lying within a cal BP range
 #' @description Find the probability of a calibrated date lying within an age range
-#' @details The function can only deal with one date at a time.
+#' @details Instead of providing a to-be-calibrated age (y +- er), one can also provide an age distribution (as two columns: cal BP ages and their probabilities) or a vector of ages.
 #' @return The probability of a date lying within a certain calendar age range.
 #' @param x1 The start the range of interest.
 #' @param x2 The end of the range of interest.
@@ -513,23 +521,12 @@ older <- function(x, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR
 #' @examples
 #' p.range(2800, 2400, 2450, 20)
 #' @export
-p.range <- function(x1, x2, y, er, cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, zero=FALSE, threshold=0) {
-  if(length(y)>1 || length(er) >1)
-    stop("I can only deal with one date at a time")
-  cal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, threshold=threshold)
-
-  dx <- diff(cal[,1])
-  cdf <- c(0, cumsum((cal[-nrow(cal),2] + cal[-1,2]) / 2 * dx)) # trapezium integration
-  cdf <- cdf / max(cdf)
-
-  if(BCAD) {
-    x1 <- BCADtocalBP(x1, zero)
-    x2 <- BCADtocalBP(x2, zero)
-  }
-
-  prob <- approx(cal[,1], cdf, sort(c(x1, x2)), rule=2)$y
-  #prob <- approx(cal[,1], cumsum(cal[,2])/sum(cal[,2]), sort(c(x1, x2)), rule=2)$y
-  return(max(prob)-min(prob))
+p.range <- function(x1, x2, y, er=c(), cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, zero=FALSE, threshold=0) {
+  p <- younger(c(x1, x2), y, er, cc=cc, postbomb=postbomb, glue=glue, bombalert=bombalert, 
+    deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, 
+	BCAD=BCAD, zero=zero, threshold=threshold)
+  
+  return(abs(diff(p)))
 }
 
 
@@ -863,3 +860,62 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, zero=FALSE, postbomb=
     flextable::save_as_docx(ft, path=file.path(docx)) else
       return(ft)
 }
+
+
+
+#' @name simulate.date
+#' @title Simulate a radiocarbon date
+#' @description Simulate a radiocarbon date based on a calendar age (cal BP or BC/AD), the corresponding calibration curve's C14 age, scatter and any offset.   
+#' @details The calibration curve is queried at the requested cal BP age(s). Laboratory uncertainty, calibration-curve uncertainty and any offset uncertainty are combined in quadrature.
+#' @param x The calendar age (in cal BP by default)
+#' @param n Number of dates to simulate. Note that whereas a real radiocarbon date costs several hundreds of GBP/USD/EUR and takes months to be reported, there's no need to pay or wait while using \code{simulate.date} and you could set n to, say, 100 at no extra cost. Defaults to just 1 radiocarbon date.
+#' @param F.er The laboratory error of the radiocarbon date, on the F scale. Defaults to 2 permille. 
+#' @param error.multiplier Multiplier of the laboratory uncertainty (F.er). Some radiocarbon labs have different error multipliers for different materials. Defaults to 1.
+#' @param cc.error Whether calibration-curve uncertainties should be included. Defaults to TRUE. Setting this to FALSE treats the calibration curve as known without uncertainty/error and is intended primarily for simulations and sensitivity analyses.
+#' @param scatter Multiplier of the laboratory uncertainty. If scatter > 0, dates are sampled from a normal distribution with standard deviation = scatter * total uncertainty. Set scatter=0 to return the expected radiocarbon age without random variation.
+#' @param cc The calibration curve to smooth. Calibration curve for 14C dates: 'cc=1' for IntCal20 (northern hemisphere terrestrial), 'cc=2' for Marine20 (marine), 'cc=3' for SHCal20 (southern hemisphere terrestrial). Alternatively, one can also write, e.g., "IntCal20", "Marine13". One can also make a custom-built calibration curve, e.g. using 'mix.ccurves()', and load this using 'cc=4'. In this case, it is recommended to place the custom calibration curve in its own directory, using 'cc.dir' (see below). Explanations of the numbers are provided in the table footer. If there is more than one cc provided, they will be printed in an extra table column.
+#' @param postbomb Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'cc="sh1-2_monthly"'
+#' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
+#' @param BCAD Which calendar scale to use. Defaults to cal BP, \code{BCAD=FALSE}. For the BCAD scale, BC ages are negative.
+#' @param zero Whether or not zero BC/AD should be included if using BCAD=TRUE. Defaults to \code{zero=FALSE}.
+#' @param thiscurve As an alternative to providing cc and/or postbomb, the data of a specific curve can be provided (3 columns: cal BP, C14 age, error). Defaults to c().
+#' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., 'cc.dir="ccurves"'.
+#' @param rule Approximation rule for finding the calibration curve's C14 age.
+#' @param deltaR Age offset (e.g. for marine samples). If present, the age offset will be simulated as a normal distribution, deltaR +-deltaSTD.
+#' @param deltaSTD Uncertainty of the age offset (1 standard deviation). If present, the age offset will be simulated as a normal distribution, deltaR +-deltaSTD.
+#' @param round Rounding for the output. Defaults to whatever decimals are returned by the underlying functions. To round to the year, use \code{round=0}, for the nearest decade, use \code{round=-1}, for centuries use \code{round=-2}, for near-monthly resolution use \code{round=1}, and so on.
+#' @return The simulated C14 age and error
+#' @author Maarten Blaauw
+#' @examples
+#'  simulate.date(900)
+#' @export
+simulate.date <- function(x, n=1, F.er=0.002, scatter=1, error.multiplier=1, cc.error=TRUE, cc=1, postbomb=FALSE, glue=0, BCAD=FALSE, zero=FALSE, thiscurve=NULL, cc.dir=NULL, rule=1, deltaR=0, deltaSTD=0, round=Inf) {
+  if(length(x)==1 && n > 1)
+    x <- rep(x, n)
+
+  if(BCAD)
+    x <- BCADtocalBP(x, zero=zero) # always work in cal BP
+  
+  if(any(x<0, na.rm=TRUE) && glue==0 && postbomb==FALSE)
+    stop("This looks like a postbomb age; please use postbomb=TRUE or glue>0")
+  if(length(deltaR) != 1 && length(deltaR) != length(x))
+    stop("deltaR should have length 1 or length(x)")
+  if(length(deltaSTD) != 1 && length(deltaSTD) != length(x))
+    stop("deltaSTD should have length 1 or length(x)")
+  if(any(error.multiplier < 0))
+    stop("error.multiplier cannot be negative")
+  if(any(scatter < 0))
+    stop("scatter cannot be negative")
+  
+  as.F <- calBPtoF14C(x, cc=cc, postbomb=postbomb, glue=glue, rule=rule,
+    thiscurve=thiscurve, cc.dir=cc.dir) # find the F14C values
+  if(!cc.error) # the user does not want to know about calibration curve uncertainty
+    as.F[,2] <- 0
+  as.C14 <- F14CtoC14(as.F[,1], sqrt(as.F[,2]^2+(error.multiplier*F.er)^2)) # transform to C14, adding lab error
+  off <- rnorm(length(x), deltaR, deltaSTD) # adjust for any age offset
+  sim <- rnorm(length(x), as.C14[,1]+off, scatter*as.C14[,2]) # deterministic if scatter=0
+
+  return(data.frame(age=round(sim, round), er=round(as.C14[,2], round)))
+}
+
+

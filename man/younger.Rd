@@ -2,12 +2,12 @@
 % Please edit documentation in R/calibrate.R
 \name{younger}
 \alias{younger}
-\title{Find the probability of a calibrated date being of a certain age or younger than it}
+\title{Find the probability of a calibrated distribution being of a certain age or younger than it}
 \usage{
 younger(
   x,
   y,
-  er,
+  er = c(),
   cc = 1,
   postbomb = FALSE,
   glue = 0,
@@ -25,11 +25,11 @@ younger(
 )
 }
 \arguments{
-\item{x}{The year of interest, in cal BP by default.}
+\item{x}{The year or years of interest, in cal BP by default.}
 
-\item{y}{The radiocarbon date's mean.}
+\item{y}{The radiocarbon date's mean. Alternatively, can be an age distribution (two columns: ages and their probabilities) or a vector of ages.}
 
-\item{er}{The radiocarbon date's lab error.}
+\item{er}{The radiocarbon date's lab error. Leave empty if y is an age distribution.}
 
 \item{cc}{calibration curve for the radiocarbon date(s) (see the \code{rintcal} package).}
 
@@ -60,13 +60,13 @@ younger(
 \item{threshold}{Report only values above a threshold. Defaults to \code{threshold=0}.}
 }
 \value{
-The probability of a date being of a certain calendar age or younger than it.
+The probability of a date being of a certain calendar age or younger than it. Returns a vector if x contains multiple ages.
 }
 \description{
-Find the probability that a sample is of a certain calendar age x or younger than it, by calculating the proportion of the calibrated distribution up to and including x (i.e., summing the calibrated distribution up to year x).
+Find the probability that a date or distribution is of a certain calendar age x or younger than it, by calculating the proportion of the calibrated distribution up to and including x (i.e., summing the calibrated distribution up to year x).
 }
 \details{
-The function can only deal with one date at a time.
+Instead of providing a to-be-calibrated age (y +- er), one can also provide an age distribution (as two columns: cal BP ages and their probabilities) or a vector of ages.
 }
 \examples{
 younger(2800, 2450, 20)

@@ -6,7 +6,7 @@
 # C14		C14tocalBP	C14toBCAD	C14tob2k				C14toF14C	C14topMC	C14toDelta14C
 # F14C		NA			NA			NA			F14CtoC14				F14CtopMC	F14CtoDelta14C
 # pMC		NA			NA			NA			pMCtoC14	pMCtoF14C				pMCtoDelta14C
-# Delta14C		NA			NA			NA			Delta14CtoC14	Delta14CtoF14C	Delta14CtopMC
+# Delta14C	NA			NA			NA			Delta14CtoC14	Delta14CtoF14C	Delta14CtopMC
 
 
 
@@ -52,7 +52,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=0, cc.dir=NULL, thiscurve=NUL
     delta14c <- calBPtoDelta14C(x, cc=cc, postbomb=postbomb, cc.dir=cc.dir, thiscurve=thiscurve)[,1]
     message(calbp, " cal BP equals ", round(bcad, digits), " cal BC/AD, ", round(c14, digits),
       " 14C BP, ", round(f14c, digits+2), " F14C, ", round(pmc, digits+2),
-      " pMC, ", round(delta14c, digits+2), " Delta14C (cc=", cc, ")\n")
+      " pMC, ", round(delta14c, digits+2), " Delta14C (cc=", cc, ")")
   } else
   
   if(grepl("bc", tolower(from))) { # BC/AD
@@ -80,7 +80,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=0, cc.dir=NULL, thiscurve=NUL
     delta14c <- NA # do not calculate since no theta
     message(c14, " 14C BP equals c. ", paste(round(calbp, digits), collapse="/"), " cal BP, c. ", 
       paste(round(bcad, digits), collapse="/"), " cal BC/AD, ",
-      round(f14c, digits+2), " F14C, ", round(pmc, digits+2), " pMC\n")
+      round(f14c, digits+2), " F14C, ", round(pmc, digits+2), " pMC")
   } else
   
   if(grepl("f", tolower(from))) { # F14C
@@ -93,7 +93,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=0, cc.dir=NULL, thiscurve=NUL
     message(f14c, " F14C equals ", round(pmc, digits+2), " pMC, ",
       round(c14, digits), " 14C BP, c. ",
       paste(round(calbp, digits), collapse="/"), " cal BP, c. ",
-      paste(round(bcad, digits), collapse="/"), " cal BC/AD\n")
+      paste(round(bcad, digits), collapse="/"), " cal BC/AD")
   } else
   
   if(grepl("p", tolower(from))) { # pMC
@@ -107,7 +107,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=0, cc.dir=NULL, thiscurve=NUL
     message(pmc, " pMC equals ", round(f14c, digits), " F14C, ",
       round(c14, digits), " 14C BP, c. ",
       paste(round(calbp, digits), collapse="/"), " cal BP, c. ",
-      paste(round(bcad, digits), collapse="/"), " cal BC/AD\n")
+      paste(round(bcad, digits), collapse="/"), " cal BC/AD")
   } else
       stop("Please provide a correct entry for parameter 'from'")
   
@@ -161,7 +161,7 @@ fromto <- function(x, from="calBP", cc=1, postbomb=0, cc.dir=NULL, thiscurve=NUL
   par(mar=c(4,3,3,3))
   mincalbp <- min(calbp) - width
   maxcalbp <- max(calbp) + width
-  message("mincalbp=", mincalbp, ", maxcalbp=", maxcalbp, ", cc1=", cc, ", cc2=", cc, ", cc1.postbomb=", postbomb, ", cc2.postbomb=", postbomb)
+  #message("mincalbp=", round(mincalbp, digits), ", maxcalbp=", round(maxcalbp, digits), ", cc1=", cc, ", cc2=", cc, ", cc1.postbomb=", postbomb, ", cc2.postbomb=", postbomb)
   Delta14C.coors <- draw.ccurve(mincalbp, maxcalbp, cc1=cc, cc2=cc, cc1.postbomb=postbomb, cc2.postbomb=postbomb, timescale2="d", cc2.col=Delta14C.col, cc2.fill=Delta14C.col, add.yaxis=TRUE, cc.dir=cc.dir, ka=ka, bty="n", legend=NA, xaxs="i", yaxt="n", c14.lab="", cal.rev=cal.rev)
   C14.coors <- par("usr")
   if(!is.na(delta14c))
@@ -903,7 +903,7 @@ F14CtoC14 <- function(F14C, er=NULL, roundby=Inf, lambda=8033, botherrors=FALSE)
   if(is.null(er)) # no errors
     return(round(y, roundby))
   
-  if(min(er) < 0)
+  if(any(er<0, na.rm=TRUE))
     stop("cannot have negative errors")
   
   # report the older (=larger) error if only reporting one

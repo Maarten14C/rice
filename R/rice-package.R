@@ -9,7 +9,7 @@
 #' @author Maarten Blaauw <maarten.blaauw@qub.ac.uk>
 #' @description Provides equations for the handling of radiocarbon dates, for example to calculate different radiocarbon timescales (C14 age, F14C, pMC, Delta14C), for their calibration, and estimating the effects of contamination. This package accompanies the data package rintcal.
 #' @importFrom utils read.table write.table packageName data install.packages installed.packages browseURL download.file read.csv head tail
-#' @importFrom stats approx dnorm median weighted.mean runif pchisq density quantile dgamma rgamma rnorm rbeta sd setNames complete.cases rpois
+#' @importFrom stats approx dnorm median weighted.mean runif pchisq density quantile dgamma rgamma rnorm rbeta sd setNames complete.cases rpois ecdf
 #' @importFrom grDevices rgb extendrange grey rainbow colorRampPalette 
 #' @importFrom graphics axis par legend lines points polygon segments text mtext abline image rect curve arrows strwidth strheight layout
 #' @importFrom rlang sym
@@ -25,11 +25,11 @@ NULL
 
 # trying to deal with reported NOTE:
 #   "Found the following files/directories: ‘rnaturalearthhires’"
-.onLoad <- function(libname, pkgname) {
-  if (is.null(Sys.getenv("R_RNATURAL_EARTH_CACHE", unset = NA))) {
-    Sys.setenv("R_RNATURAL_EARTH_CACHE" = tempdir())
-  }
-}
+.onLoad <- function(libname, pkgname) 
+  if(is.null(Sys.getenv("R_RNATURAL_EARTH_CACHE", unset=NA))) 
+    Sys.setenv("R_RNATURAL_EARTH_CACHE"=tempdir())
+  
+
 
 #
 # # function from rintcal, which for rice's fromto function requires as.D:

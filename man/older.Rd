@@ -7,7 +7,7 @@
 older(
   x,
   y,
-  er,
+  er = c(),
   cc = 1,
   postbomb = FALSE,
   glue = 0,
@@ -27,7 +27,7 @@ older(
 \arguments{
 \item{x}{The year of interest, in cal BP by default.}
 
-\item{y}{The radiocarbon date's mean.}
+\item{y}{The radiocarbon date's mean. Alternatively, can be an age distribution (two columns: ages and their probabilities) or a vector of ages.}
 
 \item{er}{The radiocarbon date's lab error.}
 
@@ -68,7 +68,7 @@ Find the probability of a calibrated date being older than an age x.
 Find the probability that a sample is older than a certain calendar age x, by calculating the proportion of the calibrated distribution 'after' x (i.e., 1 - the summed calibrated distribution up to year x).
 }
 \details{
-The function can only deal with one date at a time.
+The function can only deal with one date at a time. Instead of providing a to-be-calibrated age (y +- er), one can also provide an age distribution (as two columns: cal BP ages and their probabilities) or a vector of ages.
 }
 \examples{
 older(2800, 2450, 20)

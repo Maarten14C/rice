@@ -668,7 +668,7 @@ push.normal <- function(y, er, mean, sdev, add=TRUE, subtract=FALSE, seed=NA, n=
     par(fig=c(0,1,0,1), mar=c(5,4,4,2), mgp=c(3,1,0))
   }
   print(hpds)
-  invisible(list(shifted=shifted, hpds=hpds))
+  invisible(list(shifted=cbind(shifted$x, shifted$y/sum(shifted$y)), hpds=hpds))
 }
 
 
@@ -765,7 +765,7 @@ push.gamma <- function(y, er, mean, shape, add=TRUE, subtract=FALSE, seed=NA, n=
     par(fig=c(0,1,0,1), mar=c(5,4,4,2), mgp=c(3,1,0))
   }
   print(hpds)
-  invisible(list(shifted=shifted, hpds=hpds))
+  invisible(list(shifted=cbind(shifted$x, shifted$y/sum(shifted$y)), hpds=hpds))
 }
 
 
