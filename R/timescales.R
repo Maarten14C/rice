@@ -277,6 +277,10 @@ calBPtoC14 <- function(x, cc=1, postbomb=FALSE, glue=0, rule=1, cc.dir=NULL, thi
 
   mu <- approx(Cc[,1], Cc[,2], x, rule=rule)$y
   er <- approx(Cc[,1], Cc[,3], x, rule=rule)$y
+  
+  if(any(x < min(Cc[,1], na.rm=TRUE)) || any(x > max(Cc[,1], na.rm=TRUE))) 
+    message(sprintf("age(s) outside calibration curve range (%.f-%.0f cal BP)",  
+      min(Cc[,1], na.rm=TRUE), max(Cc[,1], na.rm=TRUE)))
 
   return(round(data.frame(C14=mu, er=er), roundby))
 }
@@ -902,10 +906,11 @@ F14CtoC14 <- function(F14C, er=NULL, roundby=Inf, lambda=8033, botherrors=FALSE)
 
   if(is.null(er)) # no errors
     return(round(y, roundby))
-  
   if(any(er<0, na.rm=TRUE))
     stop("cannot have negative errors")
-  
+  if(length(er) == 1)
+    er <- rep(er, length(F14C))
+
   # report the older (=larger) error if only reporting one
   valid.er <- which(F14C - er > 0)
   error.older <- rep(NaN, length(y))

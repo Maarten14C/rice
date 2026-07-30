@@ -20,19 +20,19 @@ Radiocarbon dating requires a range of calculations, for example calibration[^1]
 
 On first usage of the package, it has to be installed: 
 
-```{r, eval=FALSE}
+```{r install, eval=FALSE}
 install.packages('rice')
 ``` 
 
 The companion data package 'rintcal' which has the radiocarbon calibration curves will be installed if it isn't already. New versions of R packages appear regularly, so please re-issue the above command regularly to remain up-to-date, or use:
 
-```{r, eval=FALSE}
+```{r update, eval=FALSE}
 update.packages()
 ``` 
 
 To obtain access to the calibration curves and radiocarbon functions, first the package has to be loaded:
 
-```{r}
+```{r load}
 library(rice)
 ```
 
@@ -44,7 +44,7 @@ C-14 or radiocarbon is a radioactive isotope that decays with a half-life of aro
 
 As cosmic rays interact with N-14, they produce C-14 at a global rate of around 6 kg C-14 per year. As can be seen in the first panel of the below Figure, if C-14 were stable and allowed to fill the atmosphere (as 14CO2) at that rate for 50,000 years, it'd reach 300,000 kg. However, since C-14 decays at a constant rate, over time an equilibrium would be reached between production and decay (top-right panel). Additionally, C-14 does not only accumulate in the atmosphere, but also diffuses into the ocean which is much larger than the atmosphere (bottom-left panel). 14C is usually expressed as the 14C/12C ratio (bottom-right). The dashed line is the atmospheric 14C/12C ratio in AD 1950 (since the ocean has lower 14C/12C ratios, its 14C ages are older).
 
-```{r, fig.width=7, fig.asp=.8, dpi=100}
+```{r C14.cycle, fig.width=7, fig.asp=.8, dpi=100}
 layout(matrix(1:4, ncol=2, byrow=TRUE))
 C14.cycle(as.ratio=FALSE, exchange=0, halflife=Inf) # top-left panel
 C14.cycle(as.ratio=FALSE, exchange=0) # top-right
@@ -54,7 +54,7 @@ C14.cycle() # bottom-right
 
 Given a starting concentration $A_0$ of some organic material that we want to find the age of, the remaining amount of radiocarbon at time $t$ can be found as $A_t = A_0 e^{-\lambda t}$:
 
-```{r, fig.width=4, fig.asp=.8}
+```{r howmuchC14, fig.width=4, fig.asp=.8}
 howmuchC14(0)
 howmuchC14(55e3)
 x <- seq(0, 55e3, length=100) # a sequence of ages
@@ -64,17 +64,23 @@ plot(x, y, type="l", xlab="time (cal BP)", ylab="C-14 remaining")
 
 Younger samples will have more C-14 atoms left than older ones, and thus will get higher counts-per-second at the AMS's C-14 detector. Want to hear a 'sonification' of the counts-per-second of C-14 atoms? The frequency of the tone relates to the counts per second, and the clicks represent the particles crashing into the detector. A visualisation of the counts as well as how they translate into a C-14 age is also provided. (This requires the 'audio' R package to be installed; if it isn't, a notification will be displayed with installation instructions.)
 
-```{r, eval=FALSE}
+```{r music, eval=FALSE}
 radio(30000)
 ```
 
 <img src="./radio.png" width="400" />
 
+The radiocarbon dating of material of a certain calendar age (e.g., 9000 cal BP) can be simulated quickly and cheaply as:
+
+```{r sim.date}
+sim.date(9000, 10) # 10 dates
+```
+
 ---
 
 Radiocarbon laboratories correct their measurements for fractionation (to -25 &permil; by default) and for background measurements before they are reported. These calculations can be seen here:
 
-```{r}
+```{r fractionation_and_background}
 adjust.fractionation(9000, -17) # the sample's d13C was measured at -17
 adjust.background(9000, 50, 48000, 200) # a well-oiled machine, with backgrounds of F=0.00254
 ```
@@ -83,7 +89,7 @@ adjust.background(9000, 50, 48000, 200) # a well-oiled machine, with backgrounds
 
 C-14 ages are not exactly similar to calendar ages, owing to past fluctuations in atmospheric C-14 concentrations. We need calibration curves to correct for these fluctuations. The calibration curves can be plotted (we're adding a 1:1 line to see how C14 ages deviate from calendar ages over time):
 
-```{r, fig.width=4, fig.asp=.8}
+```{r draw_calibration_curve_1, fig.width=4, fig.asp=.8}
 draw.ccurve()
 grid()
 abline(0, 1, lty=2)
@@ -91,26 +97,26 @@ abline(0, 1, lty=2)
 
 Or, comparing two calibration curves, on the BC/AD scale:
 
-```{r, fig.width=4, fig.asp=.8}
+```{r draw_calibration_curve_2, fig.width=4, fig.asp=.8}
 draw.ccurve(1000, 2020, BCAD=TRUE, cc2='marine20', add.yaxis=TRUE)
 ```
 
 Or zooming in to between AD 1600 and 2000:
 
-```{r, fig.width=4, fig.asp=.8}
+```{r draw_calibration_curve_3, fig.width=4, fig.asp=.8}
 draw.ccurve(1600, 1950, BCAD=TRUE)
 ```
 
 Note the wiggles, or recurring C-14 ages? Calibration curves such as IntCal20 come with 3 columns: cal BP ($\theta$), the corresponding C-14 ages ($\mu$), and their errors ($\sigma$). Whereas each cal BP or BC/AD year has a single $\mu$ and $\sigma$, owing to wiggles in the calibration curves, any single $\mu$ will often have multiple $\theta$'s:
 
-```{r}
+```{r timescales_1}
 BCADtoC14(1694) # gives 129 +- 9 14C BP 
 C14toBCAD(129) # the curve crosses 129 14C BP 5 times
 ```
 
 Let's add these values to the previous plot:
 
-```{r, fig.width=4, fig.asp=.8}
+```{r timescales_2, fig.width=4, fig.asp=.8}
 draw.ccurve(1600, 1950, BCAD=TRUE)
 abline(h=BCADtoC14(1694), lty=3)
 abline(v=C14toBCAD(129), lty=3)
@@ -118,27 +124,28 @@ abline(v=C14toBCAD(129), lty=3)
 
 Atmospheric nuclear tests around AD 1950-1964 caused a huge human-made C-14 peak (resulting in highly negative C-14 ages):
 
-```{r, fig.width=4, fig.asp=.8}
+```{r draw_ccurve_1, fig.width=4, fig.asp=.8}
 draw.ccurve(1600, 2020, BCAD=TRUE, cc2='nh1')
 ```
 
 Since the postbomb curve dwarfs the IntCal20 curve, we could also plot both on separate vertical axes:
 
-```{r, fig.width=4, fig.asp=.8}
+```{r draw_ccurve_2, fig.width=4, fig.asp=.8}
 draw.ccurve(1600, 2020, BCAD=TRUE, cc2='nh1', add.yaxis=TRUE)
 ```
 
 The calibration curves can also be plotted in the timescales of F14C, pMC or $\Delta{14}\text{C}$ (see below), e.g.:
 
-```{r, fig.width=4, fig.asp=.8}
+```{r draw_ccurve_3, fig.width=4, fig.asp=.8}
 draw.ccurve(50000, 35000, timescale="D")
 ```
 
 Some older calibration curves are also available for historical interest, e.g.:
 
-```{r, fig.width=4, fig.asp=.8}
+```{r draw_ccurve_4, fig.width=4, fig.asp=.8}
 draw.ccurve(cc1="stuiver_suess_1966", cc2="pearson_stuiver_1986")
 ```
+
 
 
 # Timescales
@@ -157,14 +164,14 @@ This package provides functions to translate values between the radiocarbon-rele
 
 As an example of the above functions, the IntCal20 C14 age and error belonging to one or more cal BP or cal BCAD ages can be found (interpolating linearly where necessary):
 
-```{r}
+```{r timescales_3}
 calBPtoC14(10.5)
 BCADtoC14(1940:1950)
 ```
 
 To translate between cal BC/AD and cal BP ages, we can use (the last example avoids 0 BC/AD, since some calendars do not include zero):
 
-```{r}
+```{r timescales_4}
 BCADtocalBP(2025)
 BCADtocalBP(-1, zero=TRUE)
 BCADtocalBP(-1, zero=FALSE)
@@ -172,21 +179,21 @@ BCADtocalBP(-1, zero=FALSE)
 
 Delta14C ($\Delta$^14^C, a proxy for atmospheric ^14^C concentration at *t* cal BP) can be transferred to F^14^C, and the other way around:
 
-```{r}
+```{r timescales_5}
 Delta14CtoF14C(152, t=4000)
 F14CtoDelta14C(0.71, t=4000)
 ```
 
 This can also be done with C14 ages:
 
-```{r}
+```{r timescales_6}
 C14toDelta14C(152, t=4000)
 Delta14CtoC14(592, t=4000)
 ```
 
 Although ages are most often expressed as 14C BP, radiocarbon labs calculate these ages from the measured F14C values. Since 14C BP = -8033 * ln(F), the distributions of especially older 14C ages and those with large errors become skewed, sometimes with their tails extending into infinite ages:
  
-```{r, fig.width=5, fig.asp=1}
+```{r draw.CF, fig.width=5, fig.asp=1}
 draw.CF(50000, 3000) 
 ```
 
@@ -194,7 +201,7 @@ draw.CF(50000, 3000)
 
 Here's a function to transform values between multiple timescales and visualise them:
 
-```{r, fig.width=8, fig.asp=.6}
+```{r fromto, fig.width=8, fig.asp=.6}
 fromto(100, "calBP")
 ```
 
@@ -202,7 +209,7 @@ fromto(100, "calBP")
 
 These functions can be used to investigate $\Delta^{14}\text{C}$ over time:
 
-```{r, fig.width=4, fig.asp=.8}
+```{r draw.D14C, fig.width=4, fig.asp=.8}
 x <- seq(0, 55e3, length=1e3)
 cc <- calBPtoC14(x)
 Dcc <- C14toDelta14C(cc[,1], cc[,2], x)
@@ -215,7 +222,7 @@ lines(x/1e3, Dcc[,1]-Dcc[,2])
 
 We can also use draw.ccurve to plot the IntCal20 curve as both C-14 years and $\Delta^{14}\text{C}$:
 
-```{r, fig.width=6, fig.asp=.8}
+```{r drawcurve, fig.width=6, fig.asp=.8}
 draw.ccurve(cc2="IntCal20", timescale2="D", add.yaxis=TRUE)
 ```
 
@@ -223,14 +230,14 @@ draw.ccurve(cc2="IntCal20", timescale2="D", add.yaxis=TRUE)
 
 Sometimes, the same material is measured using multiple radiocarbon dates. If we can be sure that the dated material stems from one single age in time (e.g., multiple dates on the same single bone, or perhaps the cereal grains within one bowl which could be assumed to all stem from the same season), then we can check to which degree the dates agree using a Chi^2^-test (Ward & Wilson 1978)[^5]. If they do agree, then a pooled mean can be calculated. For example, take the Shroud of Turin, which was dated multiple times in three different labs:
 
-```{r}
+```{r shroud}
 data(shroud)
 shroud
 ```
 
 Let's check if we can pool the dates:
 
-```{r}
+```{r pool}
 pool(shroud$y,shroud$er) 
 Zu <- grep("ETH", shroud$ID) # Zurich lab only
 pool(shroud$y[Zu],shroud$er[Zu])
@@ -238,37 +245,37 @@ pool(shroud$y[Zu],shroud$er[Zu])
 
 Then the weighted mean can be calculated, with the error taken as the largest of the weighted uncertainty and the standard deviation:
 
-```{r}
+```{r wmeans}
 weighted_means(shroud$y[Zu],shroud$er[Zu])
 ```
 
 If it can indeed be safely assumed that all dates stem from the same (unknown) calendar year, then the age distribution of that single year can be plotted together with the individual calibrated ages:
 
-```{r, fig.width=5, fig.asp=.8}
+```{r as.one, fig.width=5, fig.asp=.8}
 as.one(shroud$y,shroud$er)
 ```
  
 It would however often be much safer to assume that the multiple dates were deposited over not just one calendar year but rather over a period, e.g., over 50 years. To do so, a moving bin is made, and for each bin placement it is checked how much of the calibrated distribution of each date fits within that bin. Here is an example, using a bin width of 100 years, moving at 25 year steps (the top value indicates that around 660 cal BP, a total of around 4-5 dates fit within the 100-year bin):
 
-```{r, fig.width=5, fig.asp=.8}
+```{r as.bin, fig.width=5, fig.asp=.8}
 as.bin(shroud$y,shroud$er, 100, move.by=25)
 ```
 
 The spread of multiple calibrated dates can be visualised and summarised:
 
-```{r, fig.width=5, fig.asp=.8}
+```{r spread, fig.width=5, fig.asp=.8}
 spread(shroud$y,shroud$er)
 ```
 
 The time-span between two dates can be calculated (by sampling *n* pairs of random ages from both calibrated distributions and plotting the time-span for each pair):
 
-```{r, fig.width=5, fig.asp=.8}
+```{r span, fig.width=5, fig.asp=.8}
 span(700, 20, 750, 20)
 ```
 
 We can assess to what degree two calibrated distributions are overlapping (as the minimum calibrated height for each calendar year in a range). For example, imagine two dates from the same archaeological layer, a twig (3820 &pm; 40 C-14 BP, requiring calibration with IntCal20) and a marine shell (4430 &pm; 40 C-14 BP, requiring Marine20, with a regional marine offset of 90 &pm; 25). By what percentage do the two calibrated distributions overlap?
 
-```{r, fig.width=5, fig.asp=.8}
+```{r overlap, fig.width=5, fig.asp=.8}
 y <- c(3820, 4430+90)
 er <- c(40, sqrt(40^2 + 25^2)) 
 cc <- c(1,2)
@@ -277,7 +284,7 @@ overlap(y, er, cc=cc)
 
 The calibrated ranges of radiocarbon dates can also be displayed in a table (either on a webbrowser or as Word document):
 
-```{r, fig.width=4, fig.asp=1}
+```{r calibratable, fig.width=4, fig.asp=1}
 data(shroud)
 calibratable(shroud$y, shroud$er, shroud$ID, BCAD=TRUE)
 ```
@@ -286,31 +293,31 @@ calibratable(shroud$y, shroud$er, shroud$ID, BCAD=TRUE)
 
 To calculate the effect of contamination on radiocarbon ages, e.g. what age would be observed if material with a "true" radiocarbon age of 5000 &pm; 20 ^14^C BP would be contaminated with 10\% of modern carbon (F^14^C=1)?
 
-```{r, fig.width=5, fig.asp=.8}
+```{r contaminate_1, fig.width=5, fig.asp=.8}
 contaminate(5000, 20, 10, F.contam=1)
 ```
 
 Or imagine that you measured a dinosaur bone, dating to far beyond the limit of radiocarbon dating, and the sample is very clean as it contains only 0.5\% &pm; 0.1\% modern contamination:
 
-```{r, fig.width=5, fig.asp=.8}
+```{r contaminate_2, fig.width=5, fig.asp=.8}
 contaminate(66e6, 1e6, 0.5, 0.1, 1)
 ```
 
 The other way round, e.g., inferring what would happen to an observed age if its assumed 10% modern contamination were to be removed:
 
-```{r, fig.width=5, fig.asp=.8}
+```{r clean_1, fig.width=5, fig.asp=.8}
 clean(9000, 100, 10)
 ```
 
 We can also calculate the amount of contamination, or muck, required to 'explain away' certain ages. For example, one of the measurements of the Shroud of Turin dates to 591 &pm; 30 C14 BP. How much modern contamination would have to be inferred for the material to really date to, say, AD 40?
 
-```{r, fig.width=5, fig.asp=.8}
+```{r muck_1, fig.width=5, fig.asp=.8}
 muck(591, 30, BCADtoC14(40)[,1], 0, 1)
 ```
 
 So we'd require the sample to have been contaminated by 67% modern carbon to still date to around AD 40. But what if the sample had been repaired in, say, the AD 1532 fire, thus adding material of an not-entirely-modern F14C value (i.e., taking into account both the atmospheric C-14 concentrations in AD 1532 and the fact that some of the C14 will have decayed since then)?
 
-```{r, fig.width=5, fig.asp=.8}
+```{r muckshroud, fig.width=5, fig.asp=.8}
 perFaith <- BCADtoC14(40)
 repairF <- BCADtoF14C(1532)
 muck(591, 30, perFaith[,1], perFaith[,2], repairF[,1], repairF[,2])
@@ -320,13 +327,13 @@ This means that the dated sample would have to consist almost entirely of Mediev
 
 What if we had a sample with a known percentage of contamination, and wanted to know the required activity (F14C) of said contamination to explain away a date? This can be done by providing the percentage contamination (e.g., 10\%):
 
-```{r, fig.width=5, fig.asp=.8}
+```{r muck_2, fig.width=5, fig.asp=.8}
 muck(500, 20, 600, 25, perc.contam=10)
 ```
 
 The effect of different levels of contamination can be visualised:
 
-```{r, fig.width=6, fig.asp=.8}
+```{r draw.contamination_1, fig.width=6, fig.asp=.8}
 real.14C <- seq(0, 50e3, length=200)
 contam <- seq(0, 10, length=101) # 0 to 10% contamination
 contam.col <- rainbow(length(contam))
@@ -339,7 +346,7 @@ for (i in 1:length(contam)) {
 
 If that is too much code for you, try this function instead:
 
-```{r, fig.width=6, fig.asp=.8}
+```{r draw.contamination_2, fig.width=6, fig.asp=.8}
 draw.contamination()
 ```
 
@@ -347,7 +354,7 @@ draw.contamination()
 
 Sometimes, one needs to estimate a missing radiocarbon age from a sample which has C14 dates on both the entire sample and on fractions, but where one of the samples was too small to be dated. This can be used in for example soils separated into size fractions, or samples dated using both bulk and humic/humin fractions, where one of the samples turns out to be too small to be dated. This equation requires the bulk age, the ages of the dated fractions, and the carbon contents and weights of all fractions.
 
-```{r}
+```{r fractions}
 Cs <- c(.02, .05, .03, .04) # carbon contents of each fraction
 wghts <- c(5, 4, 2, .5) # weights for all fractions, e.g., in mg
 ages <- c(130, 130, 130, NA) # ages of all fractions. The unmeasured one is NA
@@ -361,20 +368,20 @@ The above function can also be used to find the expected age of an entire sample
 
 Now on to calibration of radiocarbon dates. We can obtain the calibrated probability distributions from radiocarbon dates, e.g., one of 130 &pm; 10 C14 BP:
 
-```{r, fig.width=4, fig.asp=.8}
+```{r calib_1, fig.width=4, fig.asp=.8}
 calib.130 <- caldist(130, 10, BCAD=TRUE)
 plot(calib.130, type="l")
 ```
 
 It is also possible to find the likelihood of a single calendar year for our radiocarbon age, e.g., 145 cal BP:
 
-```{r}
+```{r l.calib}
 l.calib(145, 130, 10)
 ```
 
 To sample n=100 random values from a calibrated distribution (where the probability of a year being sampled is proportional to its calibrated height):
 
-```{r, fig.width=4, fig.asp=.8}
+```{r r.calib, fig.width=4, fig.asp=.8}
 dice <- r.calib(100, 130, 10)
 plot(density(dice))
 rug(dice)
@@ -382,13 +389,13 @@ rug(dice)
 
 For reporting purposes, calibrated dates are often reduced to their 95% highest posterior density (hpd) ranges (please report all, not just your favourite one!):
 
-```{r}
+```{r hpd}
 hpd(calib.130)
 ```
 
 Additionally, calibrated dates are often reduced to single point estimates. Note however how poor representations they are of the entire calibrated distribution!
 
-```{r, fig.width=4, fig.asp=.8}
+```{r calib_plot, fig.width=4, fig.asp=.8}
 calib.2450 <- caldist(2450, 20)
 plot(calib.2450, type="l")
 points.2450 <- point.estimates(calib.2450)
@@ -397,34 +404,34 @@ abline(v=points.2450, col=1:4, lty=2)
 ```
 
 Want a plot of the radiocarbon and calibrated distributions, together with their hpd ranges?
-```{r, fig.width=5, fig.asp=1}
+```{r calibrate_1, fig.width=5, fig.asp=1}
 calibrate(2450, 40)
 ```
 
 Sometimes one would want to smooth a calibration curve to take into account the fact that material has accumulated over a certain time (e.g., a tree, or peat). To do so, a calibration curve can be smoothed to produce a tailor-made calibration curve, after which this one is used to calibrate the date:
 
-```{r, fig.width=5, fig.asp=1}
+```{r calibrate_2, fig.width=5, fig.asp=1}
 mycurve <- smooth.ccurve(smooth=50)
 calibrate(2450, 40, thiscurve=mycurve)
 ```
 
 Calibrating 'young' radiocarbon dates (close to 0 C14 BP) can cause an error, because a bomb curve might be required to capture the youngest ages. Do not worry, there is an option to avoid that error:
 
-```{r, fig.width=5, fig.asp=1}
+```{r calibrate_3, fig.width=5, fig.asp=1}
 try(calibrate(130,30))
 calibrate(130, 30, bombalert=FALSE)
 ```
 
 It is also possible to analyse the calibrated probability distributions, e.g. what is the probability (between 0 and 1) that the date stems from material that is of the age of 150 cal BP or younger? Or that it is older than that age?
 
-```{r}
+```{r younger.older}
 younger(150, 130, 10)
 older(150, 130, 10)
 ```
 
 Or if you wish to calculate the probability covered between two age points (e.g., here between 300 and 150 cal BP):
 
-```{r}
+```{r p.range}
 p.range(300, 150, 130, 10)
 ```
 
@@ -432,7 +439,7 @@ The probabilities reported by `p.range` should be similar to those reported by t
 
 At times there could be a lag in the date, for example if material has accumulated over decades. We can calibrate a date and then add a lag, by adding or subtracting either a normal distribution or a gamma one:
 
-```{r, fig.width=5, fig.asp=1}
+```{r push.normal, fig.width=5, fig.asp=1}
 push.normal(2450,40, 400,20)
 ```
 
@@ -441,11 +448,11 @@ push.normal(2450,40, 400,20)
 Dates on marine material will often have to be calibrated with the Marine20 calibration curve[^7], and many coastal locations will have an additional regional reservoir offset (deltaR) (Reimer and Reimer 2006)[^8]. The on-line database at <http://calib.org/marine/> is very useful for this; it features the radiocarbon ages and deltaR of many shells of known collection date. The data from this database were downloaded (in August 2024) and can be queried. For example, a map can be drawn with all shell data within certain coordinates:
 
 
-```{r, eval=FALSE}
+```{r map.shells_1, eval=FALSE}
 myshells <- map.shells(S=54, W=-8, N=61, E=0) # the northern part of the UK
 ```
 
-```{r, fig.width=5, fig.asp=1, echo=FALSE}
+```{r map.shells_2, fig.width=5, fig.asp=1, echo=FALSE}
 if(requireNamespace("sf", quietly = TRUE) &&
   requireNamespace("rnaturalearth", quietly = TRUE) &&
   requireNamespace("rnaturalearthdata", quietly = TRUE)) {
@@ -459,12 +466,12 @@ If you don't have the R package 'rnaturalearth' installed, you will be asked to 
 
 The output can also be queried:
 
-```{r, eval=FALSE}
+```{r shells.mean_1, eval=FALSE}
 head(myshells)
 shells.mean(myshells)
 ```
 
-```{r, fig.width=5, fig.asp=1, echo=FALSE}
+```{r shells.mean_2, fig.width=5, fig.asp=1, echo=FALSE}
 myshells <- map.shells(S=54, W=-8, N=61, E=0, currents=FALSE) # the northern part of the UK
 head(myshells)
 shells.mean(myshells)
@@ -476,14 +483,14 @@ myshells <- find.shells(20, -30, 20)
 shells.mean(myshells, distance=TRUE)
 ```
 
-```{r, fig.width=5, fig.asp=1, echo=FALSE}
+```{r shells.mean_3, fig.width=5, fig.asp=1, echo=FALSE}
 myshells <- find.shells(20, -30, 20, currents=FALSE)
 shells.mean(myshells, distance=TRUE)
 ```
 
 Instead of a static map, for `find.shells` and `map.shells` you can also request an interactive, browsable map, which will open in your Internet browser:
 
-```{r, fig.width=5, fig.asp=1, eval=FALSE}
+```{r find.shells, fig.width=5, fig.asp=1, eval=FALSE}
 find.shells(120, 10, 50, browse=TRUE)
 ```
 <img src="./findshells_browse.png" width="600" />
@@ -492,7 +499,7 @@ find.shells(120, 10, 50, browse=TRUE)
 
 The `p3k14c` R package[^9] contains over 175,000 radiocarbon dates (!) and is available on github[^10] (at c. 25 MB it's too big for CRAN). Within `rice`, the data from `p13k14c` can be downloaded, plotted and browsed as follows:
 
-```{r, fig.width=5, fig.asp=1, eval=FALSE}
+```{r p3k14c, fig.width=5, fig.asp=1, eval=FALSE}
 p3k14c <- map.dates()
 ```
 <img src="./p3k14c.png" width="600" />
@@ -503,7 +510,7 @@ For another "database of databases", have a look at c14bazAAR[^11] which is also
 
 It is also possible to draw multiple calibrated distributions:
 
-```{r, fig.width=4, fig.asp=1}
+```{r draw.dates_1, fig.width=4, fig.asp=1}
 set.seed(123)
 dates <- sort(sample(500:2500,5))
 errors <- .05*dates
@@ -514,14 +521,14 @@ draw.dates(dates, errors, depths, BCAD=TRUE, labels=my.labels, age.lim=c(0, 1800
 
 or add them to an existing plot:
 
-```{r, fig.width=4, fig.asp=1}
+```{r draw.dates_2, fig.width=4, fig.asp=1}
 plot(250*1:5, 5:1, xlim=c(0, 1800), ylim=c(5,0), xlab="AD", ylab="dates")
 draw.dates(dates, errors, depths, BCAD=TRUE, add=TRUE, labels=my.labels, mirror=FALSE)
 ```
 
 or get creative (inspired by Jocelyn Bell Burnell[^12], Joy Division[^13] and the Hallstatt Plateau[^14]):
 
-```{r, fig.width=5, fig.asp=1}
+```{r joy, fig.width=5, fig.asp=1}
 n <- 50; set.seed(42) # number of dates; always the same answer
 from <- 2200; to <- 2900 # calendar age limits
 y <- rnorm(n, 2620, 30) - 6*(1:n) # going through the Hallstatt Plateau

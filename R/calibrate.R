@@ -863,7 +863,7 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, zero=FALSE, postbomb=
 
 
 
-#' @name simulate.date
+#' @name sim.date
 #' @title Simulate a radiocarbon date
 #' @description Simulate a radiocarbon date based on a calendar age (cal BP or BC/AD), the corresponding calibration curve's C14 age, scatter and any offset.   
 #' @details The calibration curve is queried at the requested cal BP age(s). Laboratory uncertainty, calibration-curve uncertainty and any offset uncertainty are combined in quadrature.
@@ -872,7 +872,7 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, zero=FALSE, postbomb=
 #' @param F.er The laboratory error of the radiocarbon date, on the F scale. Defaults to 2 permille. 
 #' @param error.multiplier Multiplier of the laboratory uncertainty (F.er). Some radiocarbon labs have different error multipliers for different materials. Defaults to 1.
 #' @param cc.error Whether calibration-curve uncertainties should be included. Defaults to TRUE. Setting this to FALSE treats the calibration curve as known without uncertainty/error and is intended primarily for simulations and sensitivity analyses.
-#' @param scatter Multiplier of the laboratory uncertainty. If scatter > 0, dates are sampled from a normal distribution with standard deviation = scatter * total uncertainty. Set scatter=0 to return the expected radiocarbon age without random variation.
+#' @param scatter Randomness of the dates. If scatter > 0, dates are sampled from a normal distribution with standard deviation = scatter * total uncertainty. Set scatter=0 to return the expected radiocarbon age without random variation.
 #' @param cc The calibration curve to smooth. Calibration curve for 14C dates: 'cc=1' for IntCal20 (northern hemisphere terrestrial), 'cc=2' for Marine20 (marine), 'cc=3' for SHCal20 (southern hemisphere terrestrial). Alternatively, one can also write, e.g., "IntCal20", "Marine13". One can also make a custom-built calibration curve, e.g. using 'mix.ccurves()', and load this using 'cc=4'. In this case, it is recommended to place the custom calibration curve in its own directory, using 'cc.dir' (see below). Explanations of the numbers are provided in the table footer. If there is more than one cc provided, they will be printed in an extra table column.
 #' @param postbomb Use 'postbomb=TRUE' to get a postbomb calibration curve (default 'postbomb=FALSE'). For monthly data, type e.g. 'cc="sh1-2_monthly"'
 #' @param glue Glue postbomb and prebomb curves together. Defaults to 0 (none), can be 1 (IntCal20 + NH1), 2 (IntCal20 + NH2), 3 (IntCal20 + NH3), 4 (SHCal20 + SH1-2) or 5 (SHCal20 + SH3). Note that this will override the value of cc.
@@ -883,13 +883,13 @@ calibratable <- function(y, er, lab=c(), cc=1, BCAD=FALSE, zero=FALSE, postbomb=
 #' @param rule Approximation rule for finding the calibration curve's C14 age.
 #' @param deltaR Age offset (e.g. for marine samples). If present, the age offset will be simulated as a normal distribution, deltaR +-deltaSTD.
 #' @param deltaSTD Uncertainty of the age offset (1 standard deviation). If present, the age offset will be simulated as a normal distribution, deltaR +-deltaSTD.
-#' @param round Rounding for the output. Defaults to whatever decimals are returned by the underlying functions. To round to the year, use \code{round=0}, for the nearest decade, use \code{round=-1}, for centuries use \code{round=-2}, for near-monthly resolution use \code{round=1}, and so on.
+#' @param round Rounding for the output. Defaults to 0 decimals. To round to the year, use \code{round=0}, for the nearest decade, use \code{round=-1}, for centuries use \code{round=-2}, for near-monthly resolution use \code{round=1}, and so on. Set to \code{round=Inf} to retrieve all digits.
 #' @return The simulated C14 age and error
 #' @author Maarten Blaauw
 #' @examples
-#'  simulate.date(900)
+#'  sim.date(900, 5, BCAD=TRUE)
 #' @export
-simulate.date <- function(x, n=1, F.er=0.002, scatter=1, error.multiplier=1, cc.error=TRUE, cc=1, postbomb=FALSE, glue=0, BCAD=FALSE, zero=FALSE, thiscurve=NULL, cc.dir=NULL, rule=1, deltaR=0, deltaSTD=0, round=Inf) {
+sim.date <- function(x, n=1, F.er=0.002, scatter=1, error.multiplier=1, cc.error=TRUE, cc=1, postbomb=FALSE, glue=0, BCAD=FALSE, zero=FALSE, thiscurve=NULL, cc.dir=NULL, rule=1, deltaR=0, deltaSTD=0, round=0) {
   if(length(x)==1 && n > 1)
     x <- rep(x, n)
 
@@ -907,15 +907,27 @@ simulate.date <- function(x, n=1, F.er=0.002, scatter=1, error.multiplier=1, cc.
   if(any(scatter < 0))
     stop("scatter cannot be negative")
   
+  # find the F14C values of the calibration curve and translate to C14 BP
   as.F <- calBPtoF14C(x, cc=cc, postbomb=postbomb, glue=glue, rule=rule,
-    thiscurve=thiscurve, cc.dir=cc.dir) # find the F14C values
-  if(!cc.error) # the user does not want to know about calibration curve uncertainty
-    as.F[,2] <- 0
-  as.C14 <- F14CtoC14(as.F[,1], sqrt(as.F[,2]^2+(error.multiplier*F.er)^2)) # transform to C14, adding lab error
-  off <- rnorm(length(x), deltaR, deltaSTD) # adjust for any age offset
-  sim <- rnorm(length(x), as.C14[,1]+off, scatter*as.C14[,2]) # deterministic if scatter=0
+    thiscurve=thiscurve, cc.dir=cc.dir)
+  F.true <- as.F[,1]
+  if(cc.error)
+    F.true <- rnorm(length(x), F.true, as.F[,2])
+  as.C14 <- F14CtoC14(F.true, error.multiplier*F.er)
 
-  return(data.frame(age=round(sim, round), er=round(as.C14[,2], round)))
+  # adjust for any age offset
+  off <- deltaR
+  if(scatter > 0 && deltaSTD > 0)  
+    off <- rnorm(length(x), deltaR, deltaSTD)
+  er <- as.C14[,2]
+
+  if(scatter > 0) {
+    er <- jitter(scatter*er)
+    sim <- rnorm(length(x), as.C14[,1]+off, er)
+  } else
+    sim <- as.C14[,1]+off
+
+  return(data.frame(age=round(sim, round), er=round(er, round)))
 }
 
 
