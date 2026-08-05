@@ -1,11 +1,12 @@
 # rice 2.2.2
-* new function `create.date` to simulate a radiocarbon date from a calendar date. This looks up the calibration curve's C14 age and error, adds any scatter and reservoir effect, and uses a 2 permille laboratory error by default. 
+* new function `sim.date` to simulate a radiocarbon date from a calendar date. This looks up the calibration curve's C14 age and error, adds any scatter and reservoir effect, and uses a 2 permille laboratory error by default. 
 * the functions `younger`, `older` and `p.range` now also accept age distributions (two columns: ages and their probabilities) or vectors of ages (e.g., rnorm(1e6, 2450, 50)).
-* the functions `younger`, `older` and `p.range` now deal better with BCAD=TRUE.
+* the functions `younger`, `older` and `p.range` now deal better with `BCAD=TRUE`.
 * in functions which use `BCAD=TRUE` as option, `zero` is now an additional option (for those who wish to include 0 BC/AD; defaults to FALSE).
 * the functions `push.gammma` and `push.normal` now invisibly return the distribution (ages and probabilities) as well as the hpd ranges. 
 * cleaned up the messaging of the `fromto` function.
 * `F14CtoC14` now returns correct uncertainties if >1 F14C values are provided together with just 1 value for er (for example, `F14CtoC14(runif(10, .3, .4), .002)`).
+* the `calibrate` function gains options to specify `xaxt` and `yaxt` (set to `"n"` for no horizontal/vertical axis, or to the default `"s"` for an axis).
 * corrected a versioning error in the News.md file of rice version 2.2.1 (some of the items currently listed under version 2.2.1 were wrongly listed under the then unreleased version 2.2.2).
 * updated the vignette.
 

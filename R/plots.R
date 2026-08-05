@@ -333,6 +333,8 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
 #' @param mar Plot margins (amount of white space along edges of axes 1-4).
 #' @param xaxs Whether or not to extend the limits of the horizontal axis. Defaults to \code{xaxs="i"} which does not extend the limits.
 #' @param yaxs Whether or not to extend the limits of the vertical axis. Defaults to \code{yaxs="i"} which does not extend the limits.
+#' @param xaxt Whether or not to draw the horizontal axis. Defaults to \code{xaxt="s"} which draws the axis.
+#' @param yaxt Whether or not to draw the vertical axis. Defaults to \code{xaxt="s"} which draws the axis.
 #' @param bty Draw a box around the graph ("n" for none, and "l", "7", "c", "u", "]" or "o" for correspondingly shaped boxes).
 #' @param cc.dir Directory of the calibration curves. Defaults to where the package's files are stored (system.file), but can be set to, e.g., \code{cc.dir="curves"}.
 #' @param cc.er The error of the calibration curve. Only used for plotting the uncalibrated C14 distribution, which by default only shows the date's uncertainty (the calibration curve uncertainty is indeed taken into account during calibration). If known, the calibration curve's error can be added.
@@ -348,7 +350,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
 #' calibrate(age=130, error=10, BCAD=TRUE, bombalert=FALSE)
 #' calibrate(4450, 40, reservoir=c(100, 50))
 #' @export
-calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, thiscurve=c(), as.F=TRUE, is.F=FALSE, is.pMC=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, draw=TRUE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.border=cc.col, date.col="red", dist.col=rgb(0,0,0,0.3), dist.border=dist.col, hpd.col=dist.col, dist.height=0.3, dist.float=c(.01, .01), cal.rev=TRUE, yr.steps=FALSE, cc.resample=NA, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, round.age=c(), round.hpd.ages=c(), round.hpd.probs=1, every=NA, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", warning.loc="right", print.truncate.warning=TRUE, mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", bty="l", cc.dir=NULL, cc.er=0, asymmetric=TRUE, ...) {
+calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, glue=0, deltaR=0, deltaSTD=0, thiscurve=c(), as.F=TRUE, is.F=FALSE, is.pMC=FALSE, reservoir=0, prob=0.95, BCAD=FALSE, ka=FALSE, draw=TRUE, cal.lab=c(), C14.lab=c(), cal.lim=c(), C14.lim=c(), cc.col=rgb(0,.5,0,0.7), cc.border=cc.col, date.col="red", dist.col=rgb(0,0,0,0.3), dist.border=dist.col, hpd.col=dist.col, dist.height=0.3, dist.float=c(.01, .01), cal.rev=TRUE, yr.steps=FALSE, cc.resample=NA, threshold=0.0005, edge=TRUE, normal=TRUE, t.a=3, t.b=4, rounded=1, round.age=c(), round.hpd.ages=c(), round.hpd.probs=1, every=NA, extend.range=.05, legend.cex=0.8, legend1.loc="topleft", legend2.loc="topright", warning.loc="right", print.truncate.warning=TRUE, mgp=c(2,1,0), mar=c(3,3,1,1), xaxs="i", yaxs="i", xaxt="s", yaxt="s", bty="l", cc.dir=NULL, cc.er=0, asymmetric=TRUE, ...) {
   
   if(is.F && is.pMC)
     stop("Cannot have both is.F=TRUE and is.PMC=TRUE.")
@@ -481,22 +483,21 @@ calibrate <- function(age=2450, error=50, cc=1, postbomb=FALSE, bombalert=TRUE, 
               if(ka)
                 C14.lab <- expression(""^14*C~kBP) else
                   C14.lab <- expression(""^14*C~BP)
-    xaxt <- ifelse(BCAD || ka, "n", "s")
-    yaxt <- ifelse(ka, "n", "s")
 
-    plot(0, type="n", xlim=cal.lim, ylim=cc.lim, xlab=cal.lab, ylab=C14.lab, xaxt=xaxt, yaxt=yaxt, xaxs=xaxs, yaxs=yaxs, bty=bty, mgp=mgp, mar=mar)
-    if(ka) {
-      axis(1, pretty(cal.lim), labels=pretty(cal.lim)/1e3)
-      axis(2, pretty(cc.lim), labels=pretty(cc.lim)/1e3)
-    } else {
-        axis(1)
-        axis(2)
-    }
+    plot(0, type="n", xlim=cal.lim, ylim=cc.lim, xlab=cal.lab, ylab=C14.lab, xaxt="n", yaxt="n", xaxs=xaxs, yaxs=yaxs, bty=bty, mgp=mgp, mar=mar)
+    if(xaxt != "n")
+      if(ka)
+        axis(1, pretty(cal.lim), labels=pretty(cal.lim)/1e3) else
+          axis(1)
+     if(yaxt != "n")
+       if(ka)
+         axis(2, pretty(cc.lim), labels=pretty(cc.lim)/1e3) else
+           axis(2)
+
     # draw the data
     coors <- par('usr')
     polygon(ccpol, border=cc.border, col=cc.col)
 
-    # C14.hpds <- 
     draw.dist(cbind(C14.dist[,1], C14.dist[,2]/max(C14.dist[,2])),
       on.y=TRUE, x.pos=callim, as.unit=FALSE, fraction=dist.height, mirror=FALSE, up=TRUE,
       prob=prob, BCAD=BCAD, hpd.border=NA, hpd.col=hpd.col, dist.col=dist.col, dist.border=dist.border)

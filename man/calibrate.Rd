@@ -57,6 +57,8 @@ calibrate(
   mar = c(3, 3, 1, 1),
   xaxs = "i",
   yaxs = "i",
+  xaxt = "s",
+  yaxt = "s",
   bty = "l",
   cc.dir = NULL,
   cc.er = 0,
@@ -168,6 +170,10 @@ calibrate(
 \item{xaxs}{Whether or not to extend the limits of the horizontal axis. Defaults to \code{xaxs="i"} which does not extend the limits.}
 
 \item{yaxs}{Whether or not to extend the limits of the vertical axis. Defaults to \code{yaxs="i"} which does not extend the limits.}
+
+\item{xaxt}{Whether or not to draw the horizontal axis. Defaults to \code{xaxt="s"} which draws the axis.}
+
+\item{yaxt}{Whether or not to draw the vertical axis. Defaults to \code{xaxt="s"} which draws the axis.}
 
 \item{bty}{Draw a box around the graph ("n" for none, and "l", "7", "c", "u", "]" or "o" for correspondingly shaped boxes).}
 

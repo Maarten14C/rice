@@ -1,3 +1,8 @@
+# doesn't adjust vertical axis:
+#par(xaxt="n", yaxt="n")
+#calibrate(asC14[,1],asC14[,2], BCAD=TRUE, cal.lim=c(-5000, 1500), legend1.loc=NA, legend2.loc=NA)
+
+
 # could draw.dates and calibratable be modified to work with custom-built as well as prebuilt curves? E.g., using cc=4 for a custom-built curve, cc=5 for another one...
 
 # can intcal.data be made to show the SH data? Currently shows the NH data
