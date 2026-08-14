@@ -83,72 +83,84 @@ export(span)
 export(spread)
 export(weighted_means)
 export(younger)
-importFrom(ggplot2,aes)
-importFrom(ggplot2,coord_sf)
-importFrom(ggplot2,element_line)
-importFrom(ggplot2,element_rect)
-importFrom(ggplot2,geom_point)
-importFrom(ggplot2,geom_sf)
-importFrom(ggplot2,ggplot)
-importFrom(ggplot2,labs)
-importFrom(ggplot2,scale_color_gradient)
-importFrom(ggplot2,scale_color_gradientn)
-importFrom(ggplot2,theme)
-importFrom(grDevices,colorRampPalette)
-importFrom(grDevices,extendrange)
-importFrom(grDevices,grey)
-importFrom(grDevices,rainbow)
-importFrom(grDevices,rgb)
-importFrom(graphics,abline)
-importFrom(graphics,arrows)
-importFrom(graphics,axis)
-importFrom(graphics,curve)
-importFrom(graphics,image)
-importFrom(graphics,layout)
-importFrom(graphics,legend)
-importFrom(graphics,lines)
-importFrom(graphics,mtext)
-importFrom(graphics,par)
-importFrom(graphics,points)
-importFrom(graphics,polygon)
-importFrom(graphics,rect)
-importFrom(graphics,segments)
-importFrom(graphics,strheight)
-importFrom(graphics,strwidth)
-importFrom(graphics,text)
+importFrom(ggplot2,
+  aes,
+  coord_sf,
+  element_line,
+  element_rect,
+  geom_point,
+  geom_sf,
+  ggplot,
+  labs,
+  scale_color_gradient,
+  scale_color_gradientn,
+  theme
+)
+importFrom(grDevices,
+  colorRampPalette,
+  extendrange,
+  grey,
+  rainbow,
+  rgb
+)
+importFrom(graphics,
+  abline,
+  arrows,
+  axis,
+  curve,
+  image,
+  layout,
+  legend,
+  lines,
+  mtext,
+  par,
+  points,
+  polygon,
+  rect,
+  segments,
+  strheight,
+  strwidth,
+  text
+)
 importFrom(maps,map)
-importFrom(rintcal,ccurve)
-importFrom(rintcal,glue.ccurves)
-importFrom(rintcal,intcal.data)
-importFrom(rintcal,list.ccurves)
-importFrom(rintcal,mix.ccurves)
-importFrom(rintcal,new.ccdir)
+importFrom(rintcal,
+  ccurve,
+  glue.ccurves,
+  intcal.data,
+  list.ccurves,
+  mix.ccurves,
+  new.ccdir
+)
 importFrom(rlang,sym)
-importFrom(stats,approx)
-importFrom(stats,complete.cases)
-importFrom(stats,density)
-importFrom(stats,dgamma)
-importFrom(stats,dnorm)
-importFrom(stats,ecdf)
-importFrom(stats,median)
-importFrom(stats,pchisq)
-importFrom(stats,quantile)
-importFrom(stats,rbeta)
-importFrom(stats,rgamma)
-importFrom(stats,rnorm)
-importFrom(stats,rpois)
-importFrom(stats,runif)
-importFrom(stats,sd)
-importFrom(stats,setNames)
-importFrom(stats,weighted.mean)
-importFrom(utils,browseURL)
-importFrom(utils,data)
-importFrom(utils,download.file)
-importFrom(utils,head)
-importFrom(utils,install.packages)
-importFrom(utils,installed.packages)
-importFrom(utils,packageName)
-importFrom(utils,read.csv)
-importFrom(utils,read.table)
-importFrom(utils,tail)
-importFrom(utils,write.table)
+importFrom(stats,
+  approx,
+  complete.cases,
+  density,
+  dgamma,
+  dnorm,
+  ecdf,
+  median,
+  pchisq,
+  quantile,
+  rbeta,
+  rgamma,
+  rnorm,
+  rpois,
+  runif,
+  sd,
+  setNames,
+  weighted.mean
+)
+importFrom(utils,
+  browseURL,
+  data,
+  download.file,
+  head,
+  install.packages,
+  installed.packages,
+  packageName,
+  read.csv,
+  read.table,
+  tail,
+  write.table
+)
