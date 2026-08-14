@@ -1,4 +1,4 @@
-# rice 2.2.2
+# rice 2.3.0
 * new function `sim.date` to simulate a radiocarbon date from a calendar date. This looks up the calibration curve's C14 age and error, adds any scatter and reservoir effect, and uses a 2 permille laboratory error by default. 
 * the functions `younger`, `older` and `p.range` now also accept age distributions (two columns: ages and their probabilities) or vectors of ages (e.g., rnorm(1e6, 2450, 50)).
 * the functions `younger`, `older` and `p.range` now deal better with `BCAD=TRUE`.
