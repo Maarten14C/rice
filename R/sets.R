@@ -218,8 +218,8 @@ as.bin <- function(y, er, width=100, move.by=c(), move.res=100, cc=1, postbomb=F
 #'   hpd.overlap(distA, distB)
 #' @export
 hpd.overlap <- function(distA, distB, prob=.95, add.zeros=FALSE) {
-  hpdA <- hpd(distA, prob=prob, add.zeros=add.zeros)	
-  hpdB <- hpd(distB, prob=prob, add.zeros=add.zeros)	
+  hpdA <- hpd(distA, prob=prob, add.zeros=add.zeros)
+  hpdB <- hpd(distB, prob=prob, add.zeros=add.zeros)
   
   # keep only valid intervals
   hpdA <- hpdA[complete.cases(hpdA[, 1:2]) & is.finite(hpdA[,1]) & is.finite(hpdA[,2]), , drop = FALSE]
@@ -331,7 +331,7 @@ overlap <- function(y, er=c(), labels=c(), is.F=FALSE, res=1e3, cc=1, postbomb=F
         xrng <- range(xseq) else
           xrng <- rev(range(xseq))
     if(!cal.rev)
-      xrng <- rev(xrng)	  
+      xrng <- rev(xrng)
     if(length(xlab) == 0)
       if(BCAD)
         xlab <- "cal BC/AD" else

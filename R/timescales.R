@@ -1142,7 +1142,7 @@ pMC.age <- function() {
 #' @return A deprecation message
 #' @export
 age.pMC <- function() {
-  message("age.pMC has been deprecated. Use C14topMC instead") 	
+  message("age.pMC has been deprecated. Use C14topMC instead")
 }
 
 
@@ -1162,6 +1162,6 @@ F14C.age <- function() {
 #' @return A deprecation message
 #' @export
 age.F14C <- function() {
-  message("age.F14C has been deprecated. Use C14toF14C instead") 	
+  message("age.F14C has been deprecated. Use C14toF14C instead")
 }
 

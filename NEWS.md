@@ -1,3 +1,7 @@
+# rice 2.3.1
+* new function `atom` to combine protons and neutrons into atoms. The resulting element and isotope are reported, and if it is an unstable one, details of the decay are listed. 
+* new function `decay_series` related to the `atom` function, to extract and plot isotope decay series, e.g., `decay_series("C", 8)` or `decay_series("U", 146)`.
+
 # rice 2.3.0
 * new function `sim.date` to simulate a radiocarbon date from a calendar date. This looks up the calibration curve's C14 age and error, adds any scatter and reservoir effect, and uses a 2 permille laboratory error by default. 
 * the functions `younger`, `older` and `p.range` now also accept age distributions (two columns: ages and their probabilities) or vectors of ages (e.g., rnorm(1e6, 2450, 50)).

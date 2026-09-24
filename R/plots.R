@@ -126,7 +126,7 @@ draw.ccurve <- function(cal1=c(), cal2=c(), cc=c(), cc1="IntCal20", cc2=NA, cc1.
         F <- C14toF14C(cc.2[,2], cc.2[,3])
         cc.2[,2:3] <- F
         if(length(cc2.lab) == 0)
-          cc2.lab <- expression("F"^14*C)		
+          cc2.lab <- expression("F"^14*C)
       }
     if(grepl("p", tolower(timescale2))) {
       p <- C14topMC(cc.2[,2], cc.2[,3])
@@ -854,7 +854,7 @@ draw.dates <- function(age, error, depth=c(), cc=1, postbomb=FALSE, bombalert=TR
     if(age.rev || cal.rev)
       age.lim <- rev(age.lim)
     if(oncurve) {
-  	  d.lim <- rev(d.lim)
+      d.lim <- rev(d.lim)
       if(length(curve.lim) == 2)
         d.lim <- curve.lim
     }

@@ -1,5 +1,7 @@
 # could draw.dates and calibratable be modified to work with custom-built as well as prebuilt curves? E.g., using cc=4 for a custom-built curve, cc=5 for another one...
 
+# show real AMS counts, standards, real samples, multiple measurements
+
 # can intcal.data be made to show the SH data? Currently shows the NH data
 
 # add decay correction delta (difference between year of measurement and year of collection) D = 1000*[(1+D14C/1000)exp(lambda dt) - 1]
@@ -13,6 +15,435 @@
 # fruits-type model that mixes atmospheric and marine calibration curves. Freshwater effects can cause C14 shifts of up to 1k.
 
 # error multipliers, rounding. Could add procedures for different labs, e.g. QUB_bg, etc. This would be useful for reasons of transparency and community standards. Add data from historical UBA standards/backgrounds?
+
+
+
+#' @name atom
+#' @title Build an atom
+#' From the number of protons and neutrons, report the corresponding element/isotope, its abundance, half-life, decay mode and daughter product.
+#' @details The number of protons determines the element, and the number of neutrons the isotope. Some combinations of protons and neutrons are impossible (NA), others exist for only a very short time before decaying, and others are stable.
+#'
+#' If only the number of protons is provided, a range of possible amounts of neutrons is returned, et vice versa.
+#'
+#' Data downloaded from https://www-nds.iaea.org/relnsd/v1/data?fields=ground_states&nuclides=all
+#' @return Invisibly returns a list with the atom's name, symbol, abundance, half-life and decay mode.
+#' A message describing the isotope is printed.
+#' @param protons The number of protons in the atom's nucleus. Alternatively, the name or symbol of an element can provided.
+#' @param neutrons The number of neutrons in the atom's nucleus. If left empty, the function will report the amounts of neutrons of the isotopes of the element in question.
+#' @param roundby Rounding of the halflife (if the isotope is unstable). Defaults to 1 decimal.
+#' @param talk Report the results. Defaults to TRUE.
+#' @author Maarten Blaauw
+#' @examples
+#'   atom(1,0)
+#'   atom("carbon")
+#'   atom("C")
+#'   atom(6,7)
+#'   atom(6,8)
+#'   atom("lead")
+#'   atom(82, 128)
+#' @export
+atom <- function(protons=c(), neutrons=c(), roundby=1, talk=TRUE) {
+
+  # if incomplete or wrong entries are provided, tell what more is required
+  if(length(protons) == 0 && length(neutrons) == 0) {
+    message("please provide a value for protons and/or neutrons, e.g. atom(1,0)")
+    return(invisible(NULL))
+  }
+
+  if(length(protons) == 1 && is.character(protons)) {
+    if(nchar(protons) <= 2)
+      idx <- which(tolower(elements$symbol) %in% tolower(protons))[1] else
+        idx <- which(tolower(elements$name) %in% tolower(protons))[1]
+    if(length(idx) == 0 || is.na(idx)) {
+      message("cannot find this element")
+      return(invisible(NULL))
+    }
+    protons <- as.numeric(elements$protons[idx])
+  }
+
+  if(length(protons) == 0 && length(neutrons) == 1) {
+    if(!neutrons %in% 0:178) {
+      message("'neutrons' has to be a whole number between 0 and 178")
+      return(invisible(NULL))
+    }
+    these.protons <- elements$protons[which(elements$neutrons == neutrons)]
+    message("for atoms with ", neutrons, " neutrons, choose between ", min(these.protons), 
+      " and ", max(these.protons), " protons")
+    return(invisible(NULL))
+  }
+
+  if(length(protons) == 1 && length(neutrons) == 0) {
+    if(!protons %in% 1:118) {
+      message("protons should be a whole number between 1 and 118")
+      return(invisible(NULL))
+    }
+    these.neutrons <- elements$neutrons[which(elements$protons == protons)]   
+    element.name <- tolower(unique(elements$name[elements$protons==protons]))
+    if(length(these.neutrons) == 1)
+      message("to see the isotopes for ", element.name, " (", protons, 
+        " protons), choose ", these.neutrons, " neutrons") else
+          message("isotopes of ", element.name, " (", protons, 
+        " protons) have between ", min(these.neutrons), 
+        " and ", max(these.neutrons), " neutrons")
+    return(invisible(NULL))
+  }
+
+  if(length(protons) != 1 || !protons %in% 1:118) {
+    message("'protons' has to be a single whole number between 1 and 118")
+    return(invisible(NULL))
+  }
+  if(length(neutrons) != 1 || !neutrons %in% 0:178) {
+    message("'neutrons' has to be a whole number between 0 and 178")
+    return(invisible(NULL))
+  }
+    
+  # all is OK
+  thisone <- which(elements$protons==protons & elements$neutrons==neutrons)
+  if(length(thisone) == 0)
+    return(NA)
+
+  # convert seconds to human-readable time units
+  convert_to_units <- function(s, digits=roundby, seconds_in_day=86400,
+    seconds_in_year=365.25*seconds_in_day, seconds_in_millennium=1000*seconds_in_year,
+    seconds_in_Ma=1e6*seconds_in_year, seconds_in_Ga=1e9*seconds_in_year) {
+    if (s < 1e-9) {
+      return(paste0(formatC(s/1e-9, format="e", digits=digits), " nanoseconds"))
+    } else if (s < 1e-6) {
+      return(paste0(formatC(s/1e-9, format="f", digits=digits), " nanoseconds"))
+    } else if (s < 1e-3) {
+      return(paste0(formatC(s/1e-6, format="f", digits=digits), " microseconds"))
+    } else if (s < 1) {
+      return(paste0(formatC(s/1e-3, format="f", digits=digits), " milliseconds"))
+    } else if (s < 60) {
+      return(paste0(formatC(s, format="f", digits=digits), " seconds"))
+    } else if (s < 3600) {
+      return(paste0(formatC(s / 60, format="f", digits=digits), " minutes"))
+    } else if (s < 100*seconds_in_day) {
+      return(paste0(formatC(s / 3600, format="f", digits=digits), " hours"))
+    } else if (s < 100*seconds_in_year) {
+      return(paste0(formatC(s / seconds_in_day, format="f", digits=digits), " days"))
+    } else if (s < 100*seconds_in_millennium) {
+      return(paste0(formatC(s / seconds_in_year, format="f", digits=digits), " years"))
+    } else if (s < 100*seconds_in_Ma) {
+      return(paste0(formatC(s / seconds_in_millennium, format="f", digits=digits), " ka"))
+    } else if(s < 100*seconds_in_Ga) {
+      return(paste0(formatC(s / seconds_in_Ma, format="f", digits=digits), " Ma"))
+    } else if(s / seconds_in_Ga <= 1e4)
+      return(paste0(formatC(s / seconds_in_Ga, format="f", digits=digits), " Ga")) else
+        return(paste0(formatC(s / seconds_in_Ga, format="e", digits=digits), " Ga"))
+  }
+
+  name <- tolower(elements$name[thisone])
+  symbol <- elements$symbol[thisone]
+  decay <- elements$decay[thisone]
+  halflife <- elements$halflife[thisone]
+  abundance <- elements$abundance[thisone]
+  if(is.na(halflife))
+    halflife.txt <- "unknown" else
+      if(halflife == 0) # stable
+        halflife.txt <- "stable" else
+          halflife.txt <- convert_to_units(halflife)
+
+  decay.txt <- "mode not listed"; daughter.txt <- " decay mode not listed"
+  new.protons <- c(); new.neutrons <- c()
+  decays <- c("stable"="stable", "A"="alpha decay",
+    "B+"="beta+ decay", "B-"="beta- decay", 
+    "EC"="electron capture",
+    "N"="neutron emission", "2N"="two-neutron emission",
+    "P"="proton emission", "2P"="two-proton emission",
+    "IT"="isomeric transition", "SF"="spontaneous fission",
+    "B-N"="beta- and neutron emission",
+    "B-2N"="beta- and two-neutron emission",
+    "B+P"="beta+ and proton emission",
+    "B-A"="beta- and alpha decay",
+    "ECP"="electron capture and proton emission",
+    "EC+B+"="electron capture / beta-plus decay",
+    "2EC"="double electron capture",
+    "2B-"="double beta- decay", "2B+"="double beta+ decay",
+    "ECSF"="electron capture with spontaneous fission")
+  decay.map <- list("stable"=c(0, 0),
+    "A"=c(2, 2), "B+"=c(1, -1), "EC"=c(1, -1), "EC+B+"=c(1, -1),
+    "B-"=c(-1, 1), "N"=c(0, 1), "2N"=c(0, 2), "P"= c(1, 0),
+    "2P"=c(2, 0), "B-N"=c(-1, 2), "B-2N"=c(-1, 3), "B+P"=c(2, -1),
+    "ECP"=c(2, -1), "B-A"=c(-1, -3), "2EC"=c(2, -2),
+    "2B+"=c(2, -2), "2B-"=c(-2, 2))
+  if(!is.na(decay) && decay %in% names(decays))
+    decay.txt <- decays[[decay]]
+
+  daughter.protons <- protons
+  daughter.neutrons <- neutrons
+  daughter.weight <- protons + neutrons
+  daughter.name <- NA
+  daughter.symbol <- NA
+  daughter.txt <- ""
+  new.protons <- NA
+  new.neutrons <- NA
+  if(!is.na(decay)) {
+    decay.protons <- 0
+    decay.neutrons <- 0
+    fission <- NA
+
+    if(decay %in% names(decay.map)) {
+      daughter.protons <- daughter.protons - decay.map[[decay]][1]
+      daughter.neutrons <- daughter.neutrons - decay.map[[decay]][2]
+      daughter.weight <- daughter.protons + daughter.neutrons
+    }
+    if(decay %in% c("SF", "ECSF")) {
+      fission <- " into multiple and variable fragments"
+      daughter.protons <- daughter.neutrons <- NA
+    }
+
+    if(!decay %in% names(decay.map) && !decay %in% c("SF","ECSF","IT"))
+      stop(paste("Unknown decay type:", decay))
+  
+    if(!is.na(fission))
+      daughter.txt <- fission else {
+        daughter <- which(elements$protons==daughter.protons & elements$neutrons==daughter.neutrons)
+        if(length(daughter) > 0) {
+          daughter.name <- tolower(elements$name[daughter])
+          daughter.symbol <- elements$symbol[daughter]
+          daughter.txt <- paste0(" to ", daughter.name, "-", daughter.weight)
+        } else {
+            daughter.name <- unique(
+              tolower(elements$name[elements$protons == daughter.protons]))
+            daughter.symbol <- unique(
+              elements$symbol[elements$protons == daughter.protons])
+            daughter.txt <- paste0(" to ", daughter.name, "-", daughter.weight)
+          }
+      }
+  }
+
+  if(is.na(halflife))
+    msg <- (paste0(name, " (", symbol, "-", protons+neutrons, ", ", 
+      protons, " protons and ", neutrons, " neutrons), half-life unknown, ", 
+      decay.txt, " to ",
+      daughter.name, "-", daughter.weight)) else
+        if(halflife == 0)
+          msg <- (paste0(name, " (", symbol, "-", protons+neutrons, ", ", 
+            protons, " protons and ", neutrons, " neutrons), stable")) else
+              msg <- (paste0(name, " (", symbol, "-", protons+neutrons, ", ", 
+                protons, " protons and ", neutrons, " neutrons), half-life ",
+                  halflife.txt, ", ", decay.txt, daughter.txt))
+  if(talk)
+    message(msg)
+
+  invisible(list(name=name, symbol=symbol, protons=protons, neutrons=neutrons,
+    abundance=abundance, decay=decay,
+    halflife=halflife.txt, halflife_seconds=halflife,
+    daughter.name=daughter.name, daughter.symbol=daughter.symbol,
+    daughter.protons=daughter.protons, daughter.neutrons=daughter.neutrons,
+    message=msg))
+}
+
+
+
+#' @name decay_series
+#' @title Decay series of isotopes
+#' @description Given a starting isotope, show the decay chain all the way to reaching a stable isotope.
+#' @details The `atom` function is called for each of the isotopes in the decay series, and a plot is made. 
+#' 
+#' @param protons The number of protons in the atom's nucleus. Alternatively, the name or symbol of an element can provided.
+#' @param neutrons The number of neutrons in the atom's nucleus. If left empty, the function will report the amounts of neutrons of the isotopes of the element in question.
+#' @param plot Plot the results. Defaults to TRUE.
+#' @param add Add data to an existing plot (instead of making a new plot). Defaults to FALSE.
+#' @param n Number of isotopes to draw, starting from the first isotope. Defaults to drawing all isotopes in the decay series.
+#' @param box.size Size of the box around the isotope symbols. Defaults to 0.9. 
+#' @param arrows Whether or not to draw arrows between the parent and daughter isotopes. Defaults to TRUE.
+#' @param draw.box Whether or not to draw a box around the element. Defaults to TRUE.
+#' @param draw.symbol Whether or not to draw the element's symbol, e.g. 14C. Defaults to TRUE.
+#' @param grid.col The colour of the grid. Defaults to light grey, \code{grid.col=grey(.75)}.
+#' @param xlim Limits of the x axis. Calculated automatically by default.
+#' @param ylim Limits of the y axis. Calculated automatically by default.
+#' @param cex Controls how much of each isotope box is filled by the isotope's symbol (with superscript mass numbers). Values around 2–3 typically produce labels that occupy most of the box while remaining legible. Defaults to 2.
+#' @param offset Offset of the symbol within the isotope's box. Defaults to centre, 0.5.
+#' @param mar Margins around the plot. Defaults to mar=c(3,3,0.5,0.5)
+#' @param mgp Locations of the axis titles, labels and lines. Defaults to mgp=(1.5, 0.7, 0)
+#' @param asp If set to 1, plots the units of the horizontal and vertical axis at 1:1 proportion. 
+#' @param talk Report the results. Defaults to TRUE.
+#' @author Maarten Blaauw
+#' @examples
+#'   decay_series("U", 146) # U-238 series
+#'   decay_series("U", 143) # U-235 series
+#'   decay_series("Th", 142) # Thorium series
+#' @export
+decay_series <- function(protons, neutrons, plot=TRUE, add=FALSE, n=c(), box.size=.8, arrows=TRUE, draw.box=TRUE, draw.symbol=TRUE, grid.col=grey(.75), xlim=c(), ylim=c(), cex=2, offset=.5, mar=c(3,3,.5, .5), mgp=c(1.5, .7, 0), asp=0, talk=TRUE) {
+  series <- list(protons=numeric(), neutrons=numeric(), name=c(), symbol=c(), halflife_s=c(), decay=c(), daughter.protons=c(), daughter.neutrons=c(), message=c())
+
+  snap <- atom(protons, neutrons, talk=FALSE)
+  quickplot <- function(p0=snap$protons, n0=snap$neutrons) { # plot the element even if no decay
+    if(length(xlim) == 0)
+      xlim <- p0*c(.95, 1.05) + c(-1,1) # space for the boxes
+    if(length(ylim) == 0)
+      ylim <- n0*c(.95, 1.05) + c(-1,1)
+    par(bty="l", mar=mar, mgp=mgp)
+    if(!add)
+      plot(0, type="l", xlim=xlim, ylim=ylim, xlab="protons", ylab="neutrons", asp=asp)
+    grid(col=grid.col)
+    symbol <- bquote(""^{.(p0+n0)}*.(snap$symbol))
+    l.dim <- max(strwidth(symbol), strheight(symbol), box.size) # dimensions
+    bx <- box.size/2
+    if(draw.box)
+      rect(p0, n0, p0+box.size, n0+box.size, col="white", lwd=2, border="black")
+    if(draw.symbol)
+      text(p0+bx, n0+bx, symbol, cex=cex/(l.dim), adj=offset)
+    }
+
+  if(is.null(snap) || length(snap) == 1 && is.na(snap)) {
+    if(talk)
+      message("no information for this starting element")
+    if(plot) quickplot()
+    return(invisible(NA))
+  }
+
+  if(snap$halflife == "stable") {
+    if(talk)
+      message("the starting element is stable")
+    if(plot) quickplot()
+    return(invisible(NA))
+  }
+
+  if(!is.na(snap$daughter.protons))
+    if(snap$daughter.protons == protons && snap$daughter.neutrons == neutrons) {
+      if(talk)
+        message("Decay does not change nuclide; terminating chain")
+      if(plot) quickplot()
+      return(invisible(NA))
+    }
+
+  i <- 0
+  repeat {
+    i <- i+1
+    series$name[[i]] <- snap$name
+    series$symbol[[i]] <- snap$symbol
+    if(snap$halflife == "stable")
+      snap$halflife <- NA
+    series$halflife[[i]] <- snap$halflife
+    series$halflife_s[[i]] <- snap$halflife_seconds
+    series$message[[i]] <- snap$message
+    series$protons[[i]] <- snap$protons
+    series$neutrons[[i]] <- snap$neutrons
+    next.p <- snap$daughter.protons
+    next.n <- snap$daughter.neutrons
+    series$daughter.protons[[i]] <- next.p
+    series$daughter.neutrons[[i]] <- next.n
+    series$decay[[i]] <- snap$decay
+
+    if(is.na(snap$daughter.protons) || is.na(snap$daughter.neutrons))
+      break
+    if(is.na(snap$decay) || snap$decay == "stable")
+      break
+    if(snap$decay == "IT") # the daughter isotope will be the same as the parent
+      break
+    if(snap$daughter.protons == snap$protons &&
+      snap$daughter.neutrons == snap$neutrons) {
+        if(talk)
+          message("Decay does not lead to a unique daughter nuclide; terminating chain")
+        break
+    }
+
+    snap <- atom(next.p, next.n, talk=FALSE)
+
+    if(length(snap) == 1 && is.na(snap)) {
+      series$name[[i+1]] <- paste0(
+        unique(elements$name[elements$protons == next.p]))
+      series$symbol[[i+1]] <- unique(
+        elements$symbol[elements$protons == next.p])
+      series$protons[[i+1]] <- next.p
+      series$neutrons[[i+1]] <- next.n
+      series$halflife[[i+1]] <- NA
+      series$message[[i+1]] <- paste0(tolower(series$name[[i+1]]),
+        "-", next.p+next.n, " (not in database)")
+      break
+    }
+  }
+
+  if(talk) {
+    msg <- c()
+    for(i in seq_along(series$protons)) {
+      decay.txt <- strsplit(series$message[[i]], " to ")[[1]][1]
+      msg[i] <- paste0(strrep(" ", i), decay.txt,
+        if(i<length(series$message)){" to:\n"}) # add an extra space for each step
+      }
+    message(msg)
+    }
+  
+  if(plot) {
+    rng.protons <- c(.95, 1.05)*
+      range(c(series$protons, series$daughter.protons), na.rm=TRUE)
+    rng.neutrons <- c(.95, 1.05)*
+      range(c(series$neutrons, series$daughter.neutrons), na.rm=TRUE)
+  
+    decay.cols <- c("B-"="blue", "EC+B+"="orange", A="red", 
+     EC="grey", P="darkgreen", SF="brown", N="cyan")
+
+    bx <- box.size/2
+    if(length(xlim) == 0)
+      xlim <- range(rng.protons+c(-1,1)) # space for the boxes
+    if(length(ylim) == 0)
+      ylim <- range(rng.neutrons+c(-1,1))
+    par(bty="l", mar=mar, mgp=mgp)
+    if(!add)
+      plot(0, type="l", xlim=xlim, ylim=ylim, xlab="protons", ylab="neutrons", asp=asp)  
+   grid(col=grid.col)
+   if(length(n)==0)
+      n <- length(series$protons)
+    for(i in 1:min(n, length(series$decay))) {
+      p <- series$protons[[i]]
+      n0 <- series$neutrons[[i]]
+      hl <- series$halflife[[i]]
+      dp <- series$daughter.protons[[i]]
+      dn <- series$daughter.neutrons[[i]]
+
+      d <- if(i <= length(series$decay)) series$decay[[i]] else NA
+      col <- 1
+      if(!is.na(hl) && hl != "stable")
+        if(!is.na(d) && d %in% names(decay.cols))
+         col <- decay.cols[[d]]
+      if(arrows &&
+        !anyNA(c(p, n0, dp, dn)) && (p != dp || n0 != dn))
+          arrows(p+bx, n0+bx, dp+bx, dn+bx, col=col, code=2, length=.05)
+    }
+
+    nseq <- seq_len(min(n, length(series$protons)))
+    l.dim <- 0
+    for(i in nseq) {
+      np <- series$protons[[i]] + series$neutrons[[i]]
+      symbol <- bquote(""^{.(np)}*series$symbol[[i]]) #, e.g., ^{14}C
+      l.dim <- max(l.dim, strwidth(symbol), strheight(symbol)) # dimensions
+    }
+
+    for(i in nseq) {
+      p <- series$protons[[i]]
+      n0 <- series$neutrons[[i]]
+      hl <- series$halflife[[i]]
+      col <- 1 
+      legend.cols <- col
+      if(hl != "stable" && !is.na(hl)) {
+        d <- if(i <= length(series$decay)) series$decay[[i]] else NA
+        if(d %in% names(decay.cols))
+          col <- decay.cols[[d]]
+          legend.cols[i] <- col   
+      }
+      if(draw.box)
+        rect(p, n0, p+box.size, n0+box.size, col="white", lwd=ifelse(i==1,2,1), border=col)
+      if(draw.symbol)
+        text(p+bx, n0+bx, bquote(""^{.(p+n0)}*.(series$symbol[[i]])),
+          cex=cex/(l.dim*box.size), adj=offset)
+    }
+
+    decay.legend <- unique(unlist(series$decay))
+    decay.labels <- sapply(decay.legend, function(x) # alpha/beta symbols
+      switch(x, "A"=expression(alpha), "B-"=expression(beta^"-"), 
+        "B+"=expression(beta^"+"), "EC+B+"=expression("EC+"*beta^"+"),
+        "B-N"=expression(beta^"-"*N),"B-2N"=expression(beta^"-"*"2N"),
+        "B+P"=expression(beta^"+"*"P"), "B-A"=expression(beta^"-"*alpha),
+         "2B+"=expression(2*beta^"+"), "2B-"=expression(2*beta^"-"),  x))
+    legend.cols <- unname(decay.cols[decay.legend])
+    legend("topleft", legend=decay.labels, text.col=legend.cols, bty="n", bg="white") 
+  }
+  
+  invisible(series)
+}
 
 
 
@@ -406,14 +837,14 @@ C14.cycle <- function(rate=6, duration=50e3, n.steps=1e5, halflife=5730, CO2.ppm
     if(rr[1] == rr[2]) # rate is constant
       x <- rep(mean(yr), length(rate)) else
         x <- yr[3] + (rate - rr[1]) * diff(yr[3:4]) / diff(rr) # scale to lefthand axis
-    rect(yr[1], yr[3], yr[2], .35*yr[4], col=bg.rate, border=NA)	
+    rect(yr[1], yr[3], yr[2], .35*yr[4], col=bg.rate, border=NA)
     lines(time, .3*x, col=col.rate) # only go up to one third the height of the lefthand axis
     axis(4, at=c(0, .3*(yr[4]-yr[3])), labels=c(round(min(rate),2), round(max(rate),2)), cex.axis=.8, col.axis=col.rate, col.ticks=col.rate, padj=-1.2)
     legend("right", legend=c("atmosphere", "ocean", "rate"),
       col=c(col.atmosphere, col.ocean, col.rate), lty=1, bty="n", cex=0.7)
   } else 
     legend("right", legend=c("atmosphere", "ocean"),
-      col=c(col.atmosphere, col.ocean), lty=1, bty="n", cex=0.7)	
+      col=c(col.atmosphere, col.ocean), lty=1, bty="n", cex=0.7)
 
   invisible(data.frame(time=time, rate=rate, atm=atm, ocean=ocean, R.atm=R.atm, R.ocean=R.ocean))
 }

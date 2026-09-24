@@ -11,7 +11,7 @@
 #' @importFrom utils read.table write.table packageName data install.packages installed.packages browseURL download.file read.csv head tail
 #' @importFrom stats approx dnorm median weighted.mean runif pchisq density quantile dgamma rgamma rnorm rbeta sd setNames complete.cases rpois ecdf
 #' @importFrom grDevices rgb extendrange grey rainbow colorRampPalette 
-#' @importFrom graphics axis par legend lines points polygon segments text mtext abline image rect curve arrows strwidth strheight layout
+#' @importFrom graphics axis par legend lines points polygon segments text mtext abline image rect curve arrows strwidth strheight layout grid
 #' @importFrom rlang sym
 #' @importFrom ggplot2 ggplot geom_sf coord_sf geom_point aes scale_color_gradient scale_color_gradientn labs theme element_line element_rect
 #' @importFrom maps map

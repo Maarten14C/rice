@@ -20,7 +20,7 @@ ocean.map <- function(S, W, N, E, shells=c(), browse=FALSE, mapsize="large", pad
   if(warn) {
     if(browse) {
       if(getRversion() < "4.0.0")
-        stop("For browseable maps, R >= 4.0.0 is required. Please update your R installation.")		
+        stop("For browseable maps, R >= 4.0.0 is required. Please update your R installation.")
       if(!lflt)
         stop("Please install the leaflet package:\ninstall.packages(\"leaflet\")")
       if(!coper)
@@ -221,9 +221,9 @@ find.shells <- function(longitude, latitude, nearest=50, browse=FALSE, colour="d
   ocean.map(S, W, N, E, shells=nearshells,
     mapsize=mapsize, browse=browse, ocean.col=ocean.col, land.col=land.col,
     rainbow=rainbow, symbol=symbol, symbol.legend=symbol.legend, 
-	legend.loc=legend.loc, legend.size=legend.size, 
-	mincol=mincol, maxcol=maxcol, colour=colour, 
-	warn=warn, padding=padding)
+    legend.loc=legend.loc, legend.size=legend.size,
+    mincol=mincol, maxcol=maxcol, colour=colour,
+    warn=warn, padding=padding)
   
   if(interactive())
     if(isTRUE(currents)) {
@@ -295,10 +295,10 @@ map.shells <- function(S=48, W=-15, N=62, E=5, browse=FALSE, colour="dR", rainbo
 
   ocean.map(S, W, N, E, shells=sel,
     mapsize=mapsize, browse=browse, ocean.col=ocean.col, 
-	  land.col=land.col, rainbow=rainbow, symbol=symbol, 
-	  symbol.legend=symbol.legend, legend.loc=legend.loc, 
-	  legend.size=legend.size, mincol=mincol, maxcol=maxcol, 
-	  colour=colour, warn=warn, padding=padding)
+      land.col=land.col, rainbow=rainbow, symbol=symbol,
+      symbol.legend=symbol.legend, legend.loc=legend.loc,
+      legend.size=legend.size, mincol=mincol, maxcol=maxcol,
+      colour=colour, warn=warn, padding=padding)
   
   if(interactive())
     if(isTRUE(currents)) {

@@ -322,7 +322,7 @@ clean <- function(y, er=0, percentage, percentage.error=0.001, F.contam=1, F.con
         fraction.samples <- fraction.samples * fraction / mean(fraction.samples) # normalise
       }
     if(all(er == 0)) # then waste no time sampling
-      F.obs.samples <- F.obs[,1] else	  
+      F.obs.samples <- F.obs[,1] else
         F.obs.samples <- rnorm(length(fraction.samples), F.obs[,1], F.obs[,2])
     if(F.contam.er == 0) # then waste no time sampling
       F.contam.samples <- F.contam else
@@ -568,7 +568,7 @@ muck <- function(y.obs, y.obs.er=0, y.target, y.target.er=0, F.contam=1, F.conta
           message("That's >100%, please check your values (is it a postbomb date?)")
       } else {
         if(MC)
-          message("F of contamination: ", F.contam, " +- ", F.contam.er)	else
+          message("F of contamination: ", F.contam, " +- ", F.contam.er) else
             message("F of contamination: ", F.contam)
       }
     }
@@ -632,7 +632,7 @@ push.normal <- function(y, er, mean, sdev, add=TRUE, subtract=FALSE, seed=NA, n=
   if(!is.na(seed))
     if(is.numeric(seed))
       set.seed(seed) else
-        message("seed has to be numeric")	  	  
+        message("seed has to be numeric")
   
   shift <- rnorm(n, mean, sdev) 
   calib <- caldist(y, er, cc=cc, postbomb=postbomb, thiscurve=thiscurve, normalise=TRUE, BCAD=BCAD, cc.dir=cc.dir)
@@ -726,7 +726,7 @@ push.gamma <- function(y, er, mean, shape, add=TRUE, subtract=FALSE, seed=NA, n=
   if(!is.na(seed))
     if(is.numeric(seed))
       set.seed(seed) else
-        message("seed has to be numeric")	  	  
+        message("seed has to be numeric")
   
   shift <- rgamma(n, shape, shape/mean)
   calib <- caldist(y, er, cc=cc, postbomb=postbomb, thiscurve=thiscurve, normalise=TRUE, BCAD=BCAD, cc.dir=cc.dir, is.F=is.F)

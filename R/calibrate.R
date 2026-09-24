@@ -117,8 +117,8 @@ point.estimates <- function(calib, wmean=TRUE, median=TRUE, mode=TRUE, midpoint=
 
  if(is.null(dim(calib)) || ncol(calib) == 1) { # then it's NOT a 'calib' but just a set of values. Reformat into a 'histogram'
     asdist <- density(unlist(calib))
-    calib <- cbind(asdist$x, asdist$y)	 
-  }	 
+    calib <- cbind(asdist$x, asdist$y)
+  }
     
   to.report <- c()
   name <- c()
@@ -176,8 +176,8 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
 
   if(is.null(dim(calib)) || ncol(calib) == 1) { # then it's NOT a 'calib' but just a set of values. Reformat into 'histogram'
      asdist <- density(unlist(calib))
-     calib <- cbind(asdist$x, asdist$y)	 
-  }	
+     calib <- cbind(asdist$x, asdist$y)
+  }
 
   # re-interpolate to desired precision
   if(ka) {
@@ -438,11 +438,11 @@ younger <- function(x, y, er=c(), cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, 
     cal <- caldist(y, er, cc, postbomb=postbomb, glue=glue, bombalert=bombalert, deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, t.a=t.a, t.b=t.b, as.F=as.F, is.F=is.F, threshold=threshold)
   } else 
       if(is.matrix(y) || is.data.frame(y)) {
-		if(ncol(y) == 2) { # two columns: ages and their probabilities
+        if(ncol(y) == 2) { # two columns: ages and their probabilities
           o <- order(y[,1], decreasing=FALSE)
           cal <- cbind(y[o,1], y[o,2])
-		} else 
-		    stop("Age distributions must have two columns: ages and probabilities")	
+        } else
+            stop("Age distributions must have two columns: ages and probabilities")
       } else # then we assume y has multiple age entries, from which we find the proportion younger than x
           return(ecdf(y)(x))
 
@@ -524,7 +524,7 @@ older <- function(x, y, er=c(), cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, de
 p.range <- function(x1, x2, y, er=c(), cc=1, postbomb=FALSE, glue=0, bombalert=TRUE, deltaR=0, deltaSTD=0, normal=TRUE, as.F=FALSE, is.F=FALSE, t.a=3, t.b=4, BCAD=FALSE, zero=FALSE, threshold=0) {
   p <- younger(c(x1, x2), y, er, cc=cc, postbomb=postbomb, glue=glue, bombalert=bombalert, 
     deltaR=deltaR, deltaSTD=deltaSTD, normal=normal, as.F=as.F, is.F=is.F, t.a=t.a, t.b=t.b, 
-	BCAD=BCAD, zero=zero, threshold=threshold)
+    BCAD=BCAD, zero=zero, threshold=threshold)
   
   return(abs(diff(p)))
 }
