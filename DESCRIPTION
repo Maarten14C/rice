@@ -1,7 +1,7 @@
 Package: rice
 Type: Package
 Title: Radiocarbon Equations
-Version: 2.3.1
+Version: 2.4.0
 Authors@R: c(
   person("Maarten", "Blaauw", email="maarten.blaauw@qub.ac.uk", role=c("aut", "cre"),
     comment=c(ORCID="0000-0002-5680-1515")),
@@ -25,4 +25,4 @@ VignetteBuilder: knitr
 NeedsCompilation: no
 LazyData: true
 Config/testthat/edition: 3
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1

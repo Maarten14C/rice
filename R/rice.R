@@ -1,10 +1,10 @@
+# write a 3D muck function with F_young, F_old, F_real, a tetrahedron, and then F_obs will be a plane slicing through the tetrahedron showing all possible combinations of the 3 components/end-members. Ternary plot. vertices = Real, Old, Young. Colour = F14C, iso-Fobs contour, optional Dirichlet prior, posterior cloud
+
 # could draw.dates and calibratable be modified to work with custom-built as well as prebuilt curves? E.g., using cc=4 for a custom-built curve, cc=5 for another one...
 
 # show real AMS counts, standards, real samples, multiple measurements
 
 # can intcal.data be made to show the SH data? Currently shows the NH data
-
-# add decay correction delta (difference between year of measurement and year of collection) D = 1000*[(1+D14C/1000)exp(lambda dt) - 1]
 
 # simulate spallation/magnetism, Cs sputtering, AMS beam, stripping
 

@@ -1125,6 +1125,57 @@ Delta14CtopMC <- function(Delta14C, er=NULL, t, roundby=Inf)
 
 
 
+#' @name D14C_decaycorrect
+#' @title Correct D14C for decay since sampling
+#' @details Correct D14C values for time passed between sampling and measurement. This can be used for example to compare samples that were collected over multiple years. 
+#' This function is intended for correcting D14C values to their sampling date. 
+#' Such corrections are generally not needed for conventional radiocarbon ages (14C BP), for which the correction is simply equal 
+#' to the elapsed time between sampling and measurement.
+#' @param Delta14C The Delta14C value to correct for
+#' @param er Reported error of the Delta14C value. Returns just the mean if left empty.
+#' @param t_collected when the sample was collected (in BC/AD).
+#' @param t_measured when the sample was measured (in BC/AD).
+#' @param lambda Radiocarbon's mean-life, based on the Cambridge half-life.
+#' @return The D14C value, corrected for time passed since collection.
+#' @examples
+#'   D14C_decaycorrect(120, 2, t_collected=1997, t_measured=2026)
+#' @export
+D14C_decaycorrect <- function(Delta14C, er=NULL, t_collected, t_measured, lambda=5730/log(2)) {
+  corr <- exp((t_measured - t_collected) / lambda)
+  D <- 1000 * ((1+(Delta14C/1000)) * corr -1 )
+
+  if(is.null(er))
+    return(data.frame(Delta14C=D)) else 
+      return(data.frame(Delta14C=D, er=corr*er)) 
+}
+
+
+
+#' @name F14C_decaycorrect
+#' @title Correct F14C for decay since sampling
+#' @details Correct F14C values for time passed between sampling and measurement. This can be used for example to compare samples that were collected over multiple years. 
+#' This function is intended for correcting F14C values to their sampling date. 
+#' Such corrections are generally not needed for conventional radiocarbon ages (14C BP), for which the correction is simply equal 
+#' to the elapsed time between sampling and measurement.
+#' @param F14C The F14C value to correct for.
+#' @param er Reported error of the F14C value. Returns just the mean if left empty.
+#' @param t_collected when the sample was collected (in BC/AD).
+#' @param t_measured when the sample was measured (in BC/AD).
+#' @param lambda Radiocarbon's mean-life, based on the Cambridge half-life.
+#' @return The F14C value, corrected for time passed since collection.
+#' @examples
+#'   F14C_decaycorrect(.98, .002, t_collected=1997, t_measured=2026)
+#' @export
+F14C_decaycorrect <- function(F14C, er=NULL, t_collected, t_measured, lambda=5730/log(2)) {
+  corr <- exp((t_measured - t_collected) / lambda)
+
+  if(is.null(er))
+    return(data.frame(F14C=F14C * corr)) else 
+      return(data.frame(F14C=F14C * corr, er=corr*er)) 
+}
+
+
+
 ### functions to be retired below here
 
 #' @name pMC.age
