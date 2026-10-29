@@ -291,7 +291,7 @@ decay_series <- function(protons, neutrons, plot=TRUE, add=FALSE, n=c(), box.siz
   if(is.null(snap) || length(snap) == 1 && is.na(snap)) {
     if(talk)
       message("no information for this starting element")
-    if(plot) quickplot()
+    #if(plot) quickplot()
     return(invisible(NA))
   }
 

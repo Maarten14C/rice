@@ -48,9 +48,13 @@ atom(6,6)
 atom(6,8)
 ```
 
-C-14 or radiocarbon is a radioactive isotope that decays with a half-life of around 5730 years, and which is commonly used to date organic material back to around 50,000 years ago. 
+C-14 or radiocarbon is a radioactive isotope that decays with a half-life of around 5730 years, and which is commonly used to date organic material back to around 50,000 years ago.
 
-As cosmic rays interact with N-14, they produce C-14 at a global rate of around 6 kg C-14 per year. As can be seen in the first panel of the below Figure, if C-14 were stable and allowed to fill the atmosphere (as 14CO2) at that rate for 50,000 years, it'd reach 300,000 kg. However, since C-14 decays at a constant rate, over time an equilibrium would be reached between production and decay (top-right panel). Additionally, C-14 does not only accumulate in the atmosphere, but also diffuses into the ocean which is much larger than the atmosphere (bottom-left panel). 14C is usually expressed as the 14C/12C ratio (bottom-right). The dashed line is the atmospheric 14C/12C ratio in AD 1950 (since the ocean has lower 14C/12C ratios, its 14C ages are older).
+```{r decay_series}
+decay_series("C", 8)
+```
+
+As cosmic rays interact with N-14, they produce C-14 at a global rate of around 6 kg (i.e., about the weight of a well-fed cat) C-14 per year. As can be seen in the first panel of the below Figure, if C-14 were stable and allowed to fill the atmosphere (as 14CO2) at that rate for 50,000 years, it'd reach 300,000 kg. However, since C-14 decays at a constant rate, over time an equilibrium would be reached between production and decay (top-right panel). Additionally, C-14 does not only accumulate in the atmosphere, but also diffuses into the ocean which contains much more carbon than the atmosphere (bottom-left panel). The amount of 14C in the atmosphere thus fluctuates around 500 kg (that's about the weight of an adult male polar bear), whereas the amount in the ocean is around 50,000 kg (around half a blue whale). 14C is usually expressed as the 14C/12C ratio (bottom-right panel). The dashed line is the atmospheric 14C/12C ratio in AD 1950 (since the ocean has lower 14C/12C ratios, its 14C ages are older).
 
 ```{r C14.cycle, fig.width=7, fig.asp=.8, dpi=100}
 layout(matrix(1:4, ncol=2, byrow=TRUE))
