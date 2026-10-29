@@ -186,6 +186,7 @@ hpd <- function(calib, prob=0.95, return.raw=FALSE, BCAD=FALSE, ka=FALSE, age.ro
   }
 
   calib <- calib[order(calib[,1]),] # ensure calendar ages are in increasing order
+  calib[is.na(calib[,2]),2] <- 0 # Oct 2026, to remove NAs
 
   dx <- min(diff(unique(calib[,1])))
   if(add.zeros) # pad the extremes with 0s
@@ -323,9 +324,9 @@ l.calib <- function(x, y, er, cc=1, postbomb=FALSE, BCAD=FALSE, zero=FALSE, glue
     if(length(y) > 1 || length(er)>1)
       stop("cannot deal with multiple entries for both x and y+er") 
   
-  if(cc == 0) { # June 2025
+  if(length(cc) == 1 && cc == 0) { # June 2025
     if(normal)
-      prob <- dnorm(x, y, er) else 
+      prob <- dnorm(x, y, er) else
         prob <- ( (t.b + ((x - y)^2) / (2 * er^2)) ^ (-1 * (t.a + 0.5))) /er
     prob[is.na(prob)] <- 0
     return(prob)
