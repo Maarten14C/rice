@@ -1,3 +1,8 @@
+
+# p3k14c <- map.dates() causes Error in get("p3k14c_data", envir = asNamespace("p3k14c")) :
+  # object 'p3k14c_data' not found
+# repaired now but still a bug in rice 2.4.0
+
 # write a 3D muck function with F_young, F_old, F_real, a tetrahedron, and then F_obs will be a plane slicing through the tetrahedron showing all possible combinations of the 3 components/end-members. Ternary plot. vertices = Real, Old, Young. Colour = F14C, iso-Fobs contour, optional Dirichlet prior, posterior cloud
 
 # could draw.dates and calibratable be modified to work with custom-built as well as prebuilt curves? E.g., using cc=4 for a custom-built curve, cc=5 for another one...
